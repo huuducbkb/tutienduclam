@@ -138,7 +138,7 @@
         <button class="play-btn" onclick="openTab('play')">▶ PLAY</button>
     </div>
 
-    <!-- Sidebar Menu Slide-out (Cấu hình / Save / Load / Reset) -->
+    <!-- Sidebar Menu Slide-out (Cấu hình / Save / Load / Export / Import / Reset) -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span>⚙ CẤU HÌNH</span>
@@ -150,8 +150,14 @@
         </div>
         <hr style="border-color: var(--border-color); margin: 12px 0;">
         <div class="label-title" style="margin-bottom:8px;">QUẢN LÝ TIẾN TRÌNH</div>
-        <button class="sidebar-item" style="background: var(--accent-green);" onclick="saveGame()">💾 Lưu Game (Save)</button>
-        <button class="sidebar-item" style="background: var(--accent-blue);" onclick="loadGame()">📂 Tải Tiến Trình (Load)</button>
+        <button class="sidebar-item" style="background: var(--accent-green);" onclick="saveGame()">💾 Lưu Trình Duyệt (Save)</button>
+        <button class="sidebar-item" style="background: var(--accent-blue);" onclick="loadGame()">📂 Tải Trình Duyệt (Load)</button>
+        
+        <hr style="border-color: var(--border-color); margin: 10px 0;">
+        <button class="sidebar-item" style="background: var(--accent-purple);" onclick="exportSaveFile()">📥 Xuất File Save (.json)</button>
+        <button class="sidebar-item" style="background: #1f6beb;" onclick="importSaveFile()">📤 Nhập File Save (.json)</button>
+        <input type="file" id="fileInput" style="display:none" accept=".json" onchange="handleFileSelect(event)">
+
         <button class="sidebar-item" style="background: var(--accent-red); margin-top: 15px;" onclick="resetAllFields()">🧹 RESET TẤT CẢ CẤU HÌNH</button>
     </div>
 
@@ -440,6 +446,48 @@
             }
         }
 
+        // HÀM XUẤT FILE SAVE OUT LAPTOP (.JSON)
+        function exportSaveFile() {
+            saveGame(); // Tự động lưu bản mới nhất vào Local Storage trước
+            const rawData = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
+            if (!rawData) {
+                alert("⚠️ Chưa có dữ liệu save nào để xuất!");
+                return;
+            }
+            const blob = new Blob([rawData], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "hongduc_tutien_save.json";
+            a.click();
+            log("Exported save file hongduc_tutien_save.json");
+        }
+
+        // HÀM KÍCH HOẠT CHỌN FILE ĐỂ NHẬP SAVE TRÊN IPHONE
+        function importSaveFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        // XỬ LÝ FILE SAVE TẢI LÊN
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    JSON.parse(content); // Kiểm tra file JSON hợp lệ
+                    localStorage.setItem('HONDUC_TU_TIEN_SAVE', content);
+                    loadGame(); // Khôi phục dữ liệu ngay sau khi nhập thành công
+                    log("Imported save file successfully.");
+                    alert("📥 Đã nhập file Save thành công! Bạn có thể tiếp tục chơi.");
+                } catch (err) {
+                    alert("❌ File save không hợp lệ!");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const rawData = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
             if(rawData) {
@@ -554,7 +602,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 `;
         }
 
-        // Tự động chuyển đổi thẻ [TÓM TẮT] từ AI thành Khung Viền Vàng HTML
         function formatSummaryBox(text) {
             const summaryRegex = /\[TÓM TẮT\]:\s*([\s\S]*?)(?=\n\n|\n[0-9]+\.|\nNgười sẽ|\nNgươi sẽ|$)/i;
             return text.replace(summaryRegex, function(match, p1) {

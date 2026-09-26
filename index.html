@@ -1,3 +1,52 @@
+Nguyên nhân là do ô nhập liệu của hai mục **"TÊN & THÂN PHẬN MC"** và **"TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN"** đang dùng thẻ `<input type="text">`. Thẻ `<input>` chỉ hỗ trợ văn bản trên 1 dòng duy nhất và sẽ bị tràn ngang khi văn bản dài.
+
+Dưới đây là các vị trí cần sửa trong mã nguồn `index.html`:
+
+---
+
+### 1. Sửa ô "TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN" (Tab World)
+
+Thay thẻ `<input type="text" id="gameTitle"...>` bằng thẻ `<textarea>`:
+
+**Cũ:**
+
+```html
+<input type="text" id="gameTitle" placeholder="Nhập tên trò chơi...">
+
+```
+
+**Mới:**
+
+```html
+<textarea id="gameTitle" style="min-height: 60px;" placeholder="Nhập tên trò chơi..."></textarea>
+
+```
+
+---
+
+### 2. Sửa ô "TÊN & THÂN PHẬN MC" (Tab MC)
+
+Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
+
+**Cũ:**
+
+```html
+<input type="text" id="mcName" placeholder="VD: Lâm Thần - 16 tuổi - Đệ tử ngoại môn">
+
+```
+
+**Mới:**
+
+```html
+<textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hàn Tuyệt - 16 tuổi - Đệ tử ngoại môn..."></textarea>
+
+```
+
+---
+
+### 3. Mã nguồn `index.html` hoàn chỉnh đã được chỉnh sửa
+
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -166,7 +215,7 @@
                 </div>
                 <button class="btn-aigen" onclick="aiGenField('gameTitle', 'Tên trò chơi hoặc tác phẩm tu tiên độc đáo')">✨ AI GEN</button>
             </div>
-            <input type="text" id="gameTitle" placeholder="Nhập tên trò chơi...">
+            <textarea id="gameTitle" style="min-height: 60px;" placeholder="Nhập tên trò chơi..."></textarea>
         </div>
 
         <div class="form-group">
@@ -253,7 +302,7 @@
                 <div class="label-title">TÊN & THÂN PHẬN MC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcName" placeholder="VD: Lâm Thần - 16 tuổi - Đệ tử ngoại môn">
+            <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Lâm Thần - 16 tuổi - Đệ tử ngoại môn"></textarea>
         </div>
         <div class="form-group">
             <div class="input-header">
@@ -628,3 +677,5 @@ Yêu cầu:
     </script>
 </body>
 </html>
+
+```

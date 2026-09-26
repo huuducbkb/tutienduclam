@@ -12,7 +12,7 @@
             --accent-purple: #8957e5;
             --accent-blue: #388bfd;
             --accent-green: #238636;
-            --accent-red: #da3633;
+            --accent-gold: #d29922;
             --text-color: #c9d1d9;
             --border-color: #30363d;
             --subtext-color: #8b949e;
@@ -35,7 +35,7 @@
 
         /* Tabs Navigation */
         .tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; background: var(--panel-bg); padding: 6px; border-radius: 8px; -webkit-overflow-scrolling: touch; }
-        .tab-btn { flex: 1; min-width: 70px; padding: 10px 6px; border: none; background: transparent; color: var(--subtext-color); font-weight: bold; border-radius: 6px; white-space: nowrap; font-size: 13px; cursor: pointer; text-align: center; }
+        .tab-btn { flex: 1; min-width: 65px; padding: 8px 4px; border: none; background: transparent; color: var(--subtext-color); font-weight: bold; border-radius: 6px; white-space: nowrap; font-size: 12px; cursor: pointer; text-align: center; }
         .tab-btn.active { background: var(--input-bg); color: var(--accent-blue); border: 1px solid var(--border-color); }
 
         /* Tab Content */
@@ -74,8 +74,10 @@
         .btn-undo { background: #30363d; color: #f0f6fc; }
 
         /* Play Box & Logs */
-        #story-box { background: var(--input-bg); height: 480px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
-        .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 90px; overflow-y: auto; margin-top: 10px; }
+        #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+        .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
+        
+        .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); }
     </style>
 </head>
 <body>
@@ -110,13 +112,13 @@
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 MC</button>
         <button class="tab-btn" onclick="openTab('npc')">👥 NPCs</button>
-        <button class="tab-btn" onclick="openTab('loc')">📍 Location</button>
+        <button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh</button>
+        <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
         <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
     </div>
 
     <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
-        <!-- 1. Tên trò chơi -->
         <div class="form-group">
             <div class="input-header">
                 <div>
@@ -128,7 +130,6 @@
             <input type="text" id="gameTitle" placeholder="Nhập tên trò chơi...">
         </div>
 
-        <!-- 2. Độ khó -->
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">THIẾT LẬP ĐỘ KHÓ TRÒ CHƠI</div>
@@ -141,163 +142,54 @@
             <textarea id="difficultyCustom" style="margin-top:8px; min-height:60px;" placeholder="Ghi chú thêm về độ khó..."></textarea>
         </div>
 
-        <!-- 3. Bối cảnh -->
         <div class="form-group">
             <div class="input-header">
-                <div>
-                    <div class="label-title">BỐI CẢNH</div>
-                    <div class="label-desc">Mô tả tổng quan về không gian, thời gian và tình trạng hiện tại của thế giới.</div>
-                </div>
+                <div class="label-title">BỐI CẢNH</div>
                 <button class="btn-aigen" onclick="aiGenField('worldContext', 'Mô tả bối cảnh tổng quan của thế giới tu tiên huyền huyễn')">✨ AI GEN</button>
             </div>
             <textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea>
         </div>
 
-        <!-- 4. Mốc thời gian mở đầu -->
         <div class="form-group">
             <div class="input-header">
-                <div>
-                    <div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div>
-                    <div class="label-desc">Thời điểm cụ thể mà câu chuyện bắt đầu.</div>
-                </div>
+                <div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div>
                 <button class="btn-aigen" onclick="aiGenField('startTime', 'Mốc thời gian kỷ nguyên/năm mở đầu câu chuyện')">✨ AI GEN</button>
             </div>
             <textarea id="startTime" placeholder="Ví dụ: Năm 2045, Kỷ nguyên thứ 3..."></textarea>
         </div>
 
-        <!-- 5. Kịch bản mở đầu -->
         <div class="form-group">
             <div class="input-header">
-                <div>
-                    <div class="label-title">KỊCH BẢN MỞ ĐẦU</div>
-                    <div class="label-desc">Tình huống khởi đầu ngay khi nhân vật chính xuất hiện.</div>
-                </div>
+                <div class="label-title">KỊCH BẢN MỞ ĐẦU</div>
                 <button class="btn-aigen" onclick="aiGenField('startScript', 'Kịch bản khởi đầu hấp dẫn khi nhân vật xuất hiện')">✨ AI GEN</button>
             </div>
             <textarea id="startScript" placeholder="Diễn biến khởi đầu của câu chuyện..."></textarea>
         </div>
 
-        <!-- 6. Quy tắc thế giới -->
         <div class="form-group">
             <div class="input-header">
-                <div>
-                    <div class="label-title">QUY TẮC THẾ GIỚI (LUẬT LỆ, CẤM KỴ)</div>
-                    <div class="label-desc">Các quy tắc ma thuật, thiên đạo hoặc quy tắc sinh tồn.</div>
-                </div>
+                <div class="label-title">QUY TẮC THẾ GIỚI (LUẬT LỆ, CẤM KỴ)</div>
                 <button class="btn-aigen" onclick="aiGenField('worldRules', 'Các quy tắc thế giới, cấm kỵ và thiên đạo')">✨ AI GEN</button>
             </div>
             <textarea id="worldRules" placeholder="Những luật lệ và quy luật của thế giới này..."></textarea>
         </div>
 
-        <!-- 7. Quy tắc đặt tên -->
         <div class="form-group">
             <div class="input-header">
-                <div class="label-title">QUY TẮC ĐẶT TÊN (NAMING CONVENTIONS)</div>
+                <div class="label-title">QUY TẮC ĐẶT TÊN</div>
                 <button class="btn-aigen" onclick="aiGenField('namingRules', 'Quy tắc đặt tên cho nhân vật, môn phái, vật phẩm')">✨ AI GEN</button>
             </div>
             <textarea id="namingRules" placeholder="Quy tắc đặt tên..."></textarea>
         </div>
 
-        <!-- 8. Thể loại -->
         <div class="form-group">
             <div class="input-header">
-                <div class="label-title">THỂ LOẠI (GENRE)</div>
-                <button class="btn-aigen" onclick="aiGenField('genre', 'Thể loại chính và phụ của tác phẩm')">✨ AI GEN</button>
+                <div class="label-title">THỂ LOẠI & ÂM HƯỞNG</div>
+                <button class="btn-aigen" onclick="aiGenField('genre', 'Thể loại chính và âm hưởng không khí tác phẩm')">✨ AI GEN</button>
             </div>
-            <textarea id="genre" placeholder="Thể loại thế giới..."></textarea>
+            <textarea id="genre" placeholder="Thể loại và âm hưởng..."></textarea>
         </div>
 
-        <!-- 9. Âm hưởng chủ đạo -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">ÂM HƯỞNG CHỦ ĐẠO (MAIN MOOD)</div>
-                <button class="btn-aigen" onclick="aiGenField('mainMood', 'Âm hưởng, màu sắc chủ đạo và không khí tác phẩm')">✨ AI GEN</button>
-            </div>
-            <textarea id="mainMood" placeholder="Âm hưởng, màu sắc chủ đạo..."></textarea>
-        </div>
-
-        <!-- 10. Nhịp độ -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">NHỊP ĐỘ (PACING)</div>
-                <button class="btn-aigen" onclick="aiGenField('pacing', 'Mô tả nhịp độ diễn biến câu chuyện')">✨ AI GEN</button>
-            </div>
-            <textarea id="pacing" placeholder="Nhịp độ diễn biến..."></textarea>
-        </div>
-
-        <!-- 11. Địa lý & Vùng lãnh thổ -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">ĐỊA LÝ & VÙNG LÃNH THỔ</div>
-                <button class="btn-aigen" onclick="aiGenField('geography', 'Mô tả địa lý, lục địa và các vùng lãnh thổ chính')">✨ AI GEN</button>
-            </div>
-            <textarea id="geography" placeholder="Địa lý, vùng lãnh thổ..."></textarea>
-        </div>
-
-        <!-- 12. Lịch sử thế giới -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">LỊCH SỬ THẾ GIỚI</div>
-                <button class="btn-aigen" onclick="aiGenField('worldHistory', 'Tóm tắt lịch sử, đại chiến và các kỷ nguyên quá khứ')">✨ AI GEN</button>
-            </div>
-            <textarea id="worldHistory" placeholder="Lịch sử thế giới..."></textarea>
-        </div>
-
-        <!-- 13. Văn hóa & Phong tục -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">VĂN HÓA & PHONG TỤC</div>
-                <button class="btn-aigen" onclick="aiGenField('culture', 'Văn hóa, ngôn ngữ, phong tục tập quán cư dân')">✨ AI GEN</button>
-            </div>
-            <textarea id="culture" placeholder="Văn hóa, ngôn ngữ, tập tục..."></textarea>
-        </div>
-
-        <!-- 14. Kinh tế & Xã hội -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">KINH TẾ & XÃ HỘI</div>
-                <button class="btn-aigen" onclick="aiGenField('economy', 'Hệ thống kinh tế, tiền tệ và phân hóa giai tầng xã hội')">✨ AI GEN</button>
-            </div>
-            <textarea id="economy" placeholder="Cấu trúc kinh tế, phân hóa xã hội..."></textarea>
-        </div>
-
-        <!-- 15. Tôn giáo & Tín ngưỡng -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">TÔN GIÁO & TÍN NGƯỠNG</div>
-                <button class="btn-aigen" onclick="aiGenField('religion', 'Các tôn giáo, thần linh và giáo phái thờ phụng')">✨ AI GEN</button>
-            </div>
-            <textarea id="religion" placeholder="Tôn giáo chính, nghi lễ..."></textarea>
-        </div>
-
-        <!-- 16. Các quốc gia & Thế lực -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">CÁC QUỐC GIA & THẾ LỰC</div>
-                <button class="btn-aigen" onclick="aiGenField('factions', 'Danh sách các môn phái, vương quốc, thế lực lớn')">✨ AI GEN</button>
-            </div>
-            <textarea id="factions" placeholder="Quốc gia, tổ chức, giáo phái..."></textarea>
-        </div>
-
-        <!-- 17. Mối quan hệ giữa các thế lực -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">MỐI QUAN HỆ GIỮA CÁC THẾ LỰC</div>
-                <button class="btn-aigen" onclick="aiGenField('factionRelations', 'Mối quan hệ ngoại giao, liên minh và xung đột phe phái')">✨ AI GEN</button>
-            </div>
-            <textarea id="factionRelations" placeholder="Xung đột, liên minh, trung lập..."></textarea>
-        </div>
-
-        <!-- 18. Các yếu tố độc đáo -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">CÁC YẾU TỐ ĐỘC ĐÁO</div>
-                <button class="btn-aigen" onclick="aiGenField('uniqueElements', 'Các yếu tố độc đáo, sinh vật dị năng, pháp bảo đặc thù')">✨ AI GEN</button>
-            </div>
-            <textarea id="uniqueElements" placeholder="Sinh vật đặc hữu, công nghệ cốt lõi..."></textarea>
-        </div>
-
-        <!-- 19. Hệ thống sức mạnh / Cảnh giới -->
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">HỆ THỐNG SỨC MẠNH / CẢNH GIỚI</div>
@@ -306,40 +198,21 @@
             <textarea id="powerSystem" placeholder="Bắt buộc chi tiết hóa bậc năng lực, rank, cảnh giới..."></textarea>
         </div>
 
-        <!-- 20. Kiểm soát logic & Các yếu tố loại trừ -->
         <div class="form-group">
             <div class="input-header">
-                <div class="label-title">KIỂM SOÁT LOGIC & LOẠI TRỪ</div>
-                <button class="btn-aigen" onclick="aiGenField('logicControl', 'Những yếu tố bị cấm, tuyệt đối không tồn tại để giữ logic')">✨ AI GEN</button>
+                <div class="label-title">VĂN PHONG & NGÔI KỂ</div>
+                <button class="btn-aigen" onclick="aiGenField('writingStyle', 'Định hướng văn phong miêu tả và ngôi kể')">✨ AI GEN</button>
             </div>
-            <textarea id="logicControl" placeholder="Những thứ không được phép tồn tại trong thế giới này..."></textarea>
-        </div>
-
-        <!-- 21. Văn phong -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">VĂN PHONG</div>
-                <button class="btn-aigen" onclick="aiGenField('writingStyle', 'Định hướng văn phong miêu tả, từ ngữ trần thuật phù hợp')">✨ AI GEN</button>
-            </div>
-            <textarea id="writingStyle" placeholder="Văn phong miêu tả trần thuật, cách dùng từ..."></textarea>
-        </div>
-
-        <!-- 22. Ngôi kể -->
-        <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">NGÔI KỂ</div>
-                <button class="btn-aigen" onclick="aiGenField('narrationPerspective', 'Lựa chọn ngôi kể phù hợp cho trải nghiệm roleplay tốt nhất')">✨ AI GEN</button>
-            </div>
-            <textarea id="narrationPerspective" placeholder="Ngôi thứ ba, ngôi thứ nhất..."></textarea>
+            <textarea id="writingStyle" placeholder="Văn phong miêu tả trần thuật..."></textarea>
         </div>
     </div>
 
-    <!-- TAB 2: MC -->
+    <!-- TAB 2: MC & INVENTORY -->
     <div id="mc" class="tab-content">
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">TÊN & THÂN PHẬN MC</div>
-                <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính 16 tuổi')">✨ AI GEN</button>
+                <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
             <input type="text" id="mcName" placeholder="VD: Lâm Thần - 16 tuổi - Đệ tử ngoại môn">
         </div>
@@ -350,44 +223,57 @@
             </div>
             <textarea id="mcSkills" placeholder="VD: Tạp linh căn, ngộ tính cao..."></textarea>
         </div>
+        
+        <hr style="border-color: var(--border-color); margin: 15px 0;">
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (INVENTORY)</div>
         <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">🎒 TÚI ĐỒ (INVENTORY)</div>
-                <button class="btn-aigen" onclick="aiGenField('mcInventory', 'Vật phẩm khởi đầu trong túi đồ MC')">✨ AI GEN</button>
-            </div>
-            <textarea id="mcInventory" placeholder="VD: 10 Linh thạch hạ phẩm, 1 Dược đao..."></textarea>
+            <div class="label-desc">Ghi chép các vật phẩm, tài nguyên, linh thạch MC đang mang theo. Bạn có thể tự chỉnh sửa hoặc thêm bớt bất kỳ lúc nào.</div>
+            <textarea id="mcInventory" style="min-height: 120px;" placeholder="VD: 
+- 10 Linh thạch hạ phẩm
+- 1 Dược đao bằng sắt
+- 1 Viên Tụ Khí Đan (Lớp sơ cấp)"></textarea>
         </div>
     </div>
 
-    <!-- TAB 3: NPCS -->
+    <!-- TAB 3: NPCS CODEX -->
     <div id="npc" class="tab-content">
+        <div class="section-tag">👥 CODEX: DANH SÁCH NPC ĐÃ XUẤT HIỆN</div>
+        <div class="label-desc">Đây là bộ nhớ nhân vật. Bất kỳ NPC nào xuất hiện trong game, bạn có thể ghi chép vào đây. AI BẮT BUỘC phải đọc danh sách này trước khi tạo phản hồi để không bị quên/nhầm lẫn.</div>
         <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">DANH SÁCH NPC & TÍNH CÁCH</div>
-                <button class="btn-aigen" onclick="aiGenField('npcList', 'Tạo danh sách 2-3 NPC quan trọng gồm tên, cảnh giới và thái độ')">✨ AI GEN</button>
-            </div>
-            <textarea id="npcList" placeholder="VD:
-- Hồng Đức: Trưởng lão (Địch ý, nghi ngờ MC)
-- Ân Nghiên: Sư tỷ Trúc Cơ (Trung lập, lạnh lùng)"></textarea>
+            <textarea id="npcList" style="min-height: 220px;" placeholder="VD:
+1. Tiêu Vô Kỵ: Trưởng lão Ngoại môn Thanh Vân Tông (Trúc Cơ Hậu Kỳ). Thái độ: Kiêu ngạo, thù địch.
+2. Liễu Như Yên: Đại tiểu thư Liễu gia (Trúc Cơ Sơ Kỳ). Thái độ: Giả tạo, độc ác.
+3. Lão Quái Tử: Tán tu bí ẩn (Kim Đan). Thái độ: Quỷ quyệt, muốn đoạt xá."></textarea>
         </div>
     </div>
 
-    <!-- TAB 4: LOCATION -->
+    <!-- TAB 4: LOCATIONS CODEX -->
     <div id="loc" class="tab-content">
+        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT</div>
+        <div class="label-desc">Lưu trữ các địa danh, tông môn, bí cảnh hoặc thành thị đã khám phá.</div>
         <div class="form-group">
-            <div class="input-header">
-                <div class="label-title">ĐỊA ĐIỂM & BẢN ĐỒ KHAI PHÁ</div>
-                <button class="btn-aigen" onclick="aiGenField('locations', 'Danh sách các địa điểm khởi đầu hấp dẫn')">✨ AI GEN</button>
-            </div>
-            <textarea id="locations" placeholder="VD: 
-- Thị Trấn Bát Quái: Nơi giao dịch hỗn loạn.
-- Dược Vương Cốc: Nơi hái linh thảo nguy hiểm."></textarea>
+            <textarea id="locations" style="min-height: 220px;" placeholder="VD:
+- Thanh Vân Tông: Môn phái chính ở Đông Lục.
+- Hắc Mộc Lâm: Khu rừng nguy hiểm đầy ma thú và tán tu.
+- Thị Trấn Bát Quái: Nơi trao đổi pháp bảo và linh dược hỗn loạn."></textarea>
         </div>
     </div>
 
-    <!-- TAB 5: PLAY & LOGS -->
+    <!-- TAB 5: ITEMS CODEX -->
+    <div id="items" class="tab-content">
+        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI</div>
+        <div class="label-desc">Ghi chép các thần khí, pháp bảo, công pháp hoặc bảo vật quan trọng từng xuất hiện trong cốt truyện.</div>
+        <div class="form-group">
+            <textarea id="worldItems" style="min-height: 220px;" placeholder="VD:
+- Phàm Nhân Kiếm: Bảo kiếm cổ đại bị phong ấn.
+- Bát Quái Kính: Pháp bảo phòng ngự cấp Kim Đan của Liễu gia.
+- Cửu Trọng Thiên Kinh: Công pháp tu tiên thất truyền."></textarea>
+        </div>
+    </div>
+
+    <!-- TAB 6: PLAY & LOGS -->
     <div id="play" class="tab-content">
-        <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới ở tab World và bấm "KHỞI TẠO GAME MỚI" bên dưới!</div>
+        <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!</div>
         
         <button class="sidebar-item" style="background:#238636; text-align:center;" onclick="startGame()">⚡ KHỞI TẠO GAME MỚI</button>
         
@@ -406,15 +292,13 @@
 
     <script>
         let chatHistory = [];
-        let turnHtmlHistory = []; // Lưu lại lịch sử hiển thị khung truyện để Undo
+        let turnHtmlHistory = [];
 
         const inputIds = [
             'apiKey', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
-            'mainMood', 'pacing', 'geography', 'worldHistory', 'culture', 
-            'economy', 'religion', 'factions', 'factionRelations', 'uniqueElements', 
-            'powerSystem', 'logicControl', 'writingStyle', 'narrationPerspective', 
-            'mcName', 'mcSkills', 'mcInventory', 'npcList', 'locations'
+            'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
+            'npcList', 'locations', 'worldItems'
         ];
 
         function toggleSidebar() {
@@ -451,8 +335,8 @@
             });
 
             localStorage.setItem('HONDUC_TU_TIEN_SAVE', JSON.stringify(gameData));
-            log("Game state and configurations saved successfully.");
-            alert("💾 Đã lưu game thành công!");
+            log("Game state & Codex Memory saved successfully.");
+            alert("💾 Đã lưu game và toàn bộ dữ liệu Sổ Tay (Codex)!");
             toggleSidebar();
         }
 
@@ -476,8 +360,8 @@
                     });
                 }
 
-                log("Game state loaded successfully.");
-                alert("📂 Đã tải lại game thành công!");
+                log("Game state & Codex Memory loaded.");
+                alert("📂 Đã khôi phục thành công bản lưu và Sổ Tay!");
                 toggleSidebar();
                 openTab('play');
             } catch(e) {
@@ -485,7 +369,6 @@
             }
         }
 
-        // Auto Load khi mở trang (nếu có)
         window.addEventListener('DOMContentLoaded', () => {
             const rawData = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
             if(rawData) {
@@ -508,19 +391,17 @@
                 return;
             }
 
-            // Xóa cặp tin nhắn gần nhất: [User Action, Model Response]
-            chatHistory.pop(); // Xóa Model response
-            chatHistory.pop(); // Xóa User action
+            chatHistory.pop();
+            chatHistory.pop();
 
-            // Khôi phục giao diện khung truyện về bước trước đó
             if (turnHtmlHistory.length > 0) {
-                turnHtmlHistory.pop(); // Xóa trạng thái hiện tại
+                turnHtmlHistory.pop();
                 const previousState = turnHtmlHistory[turnHtmlHistory.length - 1];
                 document.getElementById('story-box').innerText = previousState || "Đã quay lại lượt trước.";
             }
 
-            log("Undo executed. Returned to previous turn.");
-            alert("↩ Đã quay lại lượt trước! Bạn có thể nhập lại hành động khác.");
+            log("Undo executed.");
+            alert("↩ Đã quay lại lượt trước!");
         }
 
         // ================= CALL GEMINI API =================
@@ -532,7 +413,7 @@
                 return null; 
             }
 
-            log("Calling Gemini API...");
+            log("Sending request to AI...");
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
@@ -565,7 +446,7 @@
                 chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
                 return aiReply;
             } catch(e) {
-                chatHistory.pop(); // Revert user message on error
+                chatHistory.pop();
                 log("ERROR: " + e.message);
                 alert("Lỗi gọi AI: " + e.message);
                 return null;
@@ -576,23 +457,40 @@
             const field = document.getElementById(fieldId);
             log("AI Gen requested for: " + fieldId);
             const originalVal = field.value;
-            field.value = "AI đang suy nghĩ và viết...";
+            field.value = "AI đang suy nghĩ...";
             
             const res = await callGemini(`Hãy đóng vai Game Master, hãy tạo nội dung chi tiết cho mục sau trong game roleplay tu tiên: ${promptMsg}. Chỉ trả về nội dung text ngắn gọn, cuốn hút, đúng trọng tâm.`);
             if(res) {
                 field.value = res;
-                field.style.height = 'auto';
-                field.style.height = (field.scrollHeight + 10) + 'px';
             } else {
                 field.value = originalVal;
             }
+        }
+
+        // Đóng gói Memory Codex để ép AI kiểm tra trước khi suy diễn
+        function getCodexMemoryPrompt() {
+            return `
+[CẬP NHẬT CODEX TRẠNG THÁI HIỆN TẠI - AI BẮT BUỘC QUÉT DỮ LIỆU NÀY TRƯỚC KHÍ XỬ LÝ]:
+1. 🎒 TÚI ĐỒ / INVENTORY MC:
+${document.getElementById('mcInventory').value || 'Không có'}
+
+2. 👥 DANH SÁCH NPC DỰ THƯỞNG & THÁI ĐỘ:
+${document.getElementById('npcList').value || 'Chưa ghi nhận'}
+
+3. 📍 ĐỊA DANH / VÙNG ĐẤT ĐÃ KHÁM PHÁ:
+${document.getElementById('locations').value || 'Chưa ghi nhận'}
+
+4. ⚔️ PHÁP BẢO & BẢO VẬT TRONG THẾ GIỚI:
+${document.getElementById('worldItems').value || 'Chưa ghi nhận'}
+==================================================
+`;
         }
 
         async function startGame() {
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
             turnHtmlHistory = [];
-            storyBox.innerText = "🔄 Đang tổng hợp dữ liệu thế giới và khởi tạo game...";
+            storyBox.innerText = "🔄 Đang tổng hợp dữ liệu thế giới, kiểm tra Codex và khởi tạo game...";
             log("Starting new game session...");
 
             const systemPrompt = `Bạn là Game Master chuyên nghiệp cho Game Roleplay Text.
@@ -603,28 +501,13 @@ Dưới đây là TOÀN BỘ CẤU HÌNH THẾ GIỚI do người chơi thiết 
 - Mốc Thời Gian: ${document.getElementById('startTime').value}
 - Kịch Bản Mở Đầu: ${document.getElementById('startScript').value}
 - Quy Tắc Thế Giới: ${document.getElementById('worldRules').value}
-- Quy Tắc Đặt Tên: ${document.getElementById('namingRules').value}
-- Thể Loại: ${document.getElementById('genre').value}
-- Âm Hưởng: ${document.getElementById('mainMood').value}
-- Nhịp Độ: ${document.getElementById('pacing').value}
-- Địa Lý: ${document.getElementById('geography').value}
-- Lịch Sử: ${document.getElementById('worldHistory').value}
-- Văn Hóa & Phong Tục: ${document.getElementById('culture').value}
-- Kinh Tế & Xã Hội: ${document.getElementById('economy').value}
-- Tôn Giáo: ${document.getElementById('religion').value}
-- Các Thế Lực: ${document.getElementById('factions').value}
-- Mối Quan Hệ Thế Lực: ${document.getElementById('factionRelations').value}
-- Yếu Tố Độc Đáo: ${document.getElementById('uniqueElements').value}
-- Cảnh Giới / Sức Mạnh: ${document.getElementById('powerSystem').value}
-- Yếu Tố Loại Trừ: ${document.getElementById('logicControl').value}
-- Văn Phong: ${document.getElementById('writingStyle').value}
-- Ngôi Kể: ${document.getElementById('narrationPerspective').value}
+- Thể Loại & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
+- Cảnh Giới: ${document.getElementById('powerSystem').value}
 
 [NHÂN VẬT CHÍNH]: ${document.getElementById('mcName').value}
 [KỸ NĂNG]: ${document.getElementById('mcSkills').value}
-[TÚI ĐỒ]: ${document.getElementById('mcInventory').value}
-[NPCs]: ${document.getElementById('npcList').value}
-[ĐỊA ĐIỂM]: ${document.getElementById('locations').value}
+
+${getCodexMemoryPrompt()}
 
 Nhiệm vụ: Hãy bắt đầu Dẫn chuyện mở đầu thật sống động, tuân thủ đúng văn phong và bối cảnh trên. Cuối bài đưa ra 3-4 lựa chọn hành động có đánh số (1, 2, 3, 4) và tùy chọn nhập tự do.`;
 
@@ -646,7 +529,16 @@ Nhiệm vụ: Hãy bắt đầu Dẫn chuyện mở đầu thật sống động
             input.value = '';
             log("Player action: " + action);
 
-            const reply = await callGemini(`Người chơi thực hiện: "${action}". Hãy dẫn chuyện tiếp diễn biến, cập nhật tình huống và đưa ra các lựa chọn mới.`);
+            // Gửi kèm Codex Memory ở từng lượt đi
+            const actionPrompt = `${getCodexMemoryPrompt()}
+Người chơi thực hiện hành động: "${action}".
+Yêu cầu AI:
+- Quét kỹ danh sách NPC, Địa danh, Pháp bảo và Túi đồ ở trên để không bị nhầm lẫn hay quên nhân vật/vật phẩm.
+- Dẫn chuyện tiếp diễn biến hợp lý.
+- Nếu có cập nhật thêm về NPC mới, đồ vật mới nhặt được hoặc địa danh mới, hãy nhắc nhẹ ở cuối để người chơi lưu vào Codex.
+- Cuối bài đưa ra các lựa chọn tiếp theo.`;
+
+            const reply = await callGemini(actionPrompt);
             if(reply) {
                 const updatedContent = previousText + `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n` + reply;
                 storyBox.innerText = updatedContent;

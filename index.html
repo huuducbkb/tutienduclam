@@ -95,8 +95,31 @@
             padding: 6px 10px;
             border-left: 4px solid #ff5555;
             border-radius: 4px;
-            margin: 10px 0;
+            margin: 12px 0;
             display: block;
+        }
+
+        /* Khung tóm tắt viền vàng */
+        .summary-box {
+            background: rgba(210, 153, 34, 0.1);
+            border: 1px solid var(--accent-gold);
+            border-left: 4px solid var(--accent-gold);
+            color: #f0e6d2;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .summary-title {
+            color: var(--accent-gold);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
@@ -321,7 +344,6 @@
         let chatHistory = [];
         let turnHtmlHistory = [];
 
-        // Các ID ô thông tin cần xóa khi Reset (Trừ API Key)
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
@@ -350,23 +372,18 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // HÀM RESET TẤT CẢ CẤU HÌNH
         function resetAllFields() {
-            const confirmReset = confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không? (API Key vẫn được giữ lại)");
+            const confirmReset = confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?");
             if (!confirmReset) return;
 
-            // Xóa nội dung trong tất cả ô nhập liệu
             fieldsToReset.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
 
-            // Reset lịch sử chơi
             chatHistory = [];
             turnHtmlHistory = [];
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
-
-            // Xóa dữ liệu lưu tạm trong trình duyệt
             localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
 
             log("Tất cả cấu hình và bản lưu đã được Reset.");
@@ -453,7 +470,7 @@
                 document.getElementById('story-box').innerHTML = previousHtmlState;
             }
 
-            log("Undo executed. Deleted last action from AI chat history.");
+            log("Undo executed.");
             alert("↩ Đã xóa kết quả lựa chọn cũ! Bạn có thể nhập lại lựa chọn mới.");
         }
 
@@ -537,6 +554,14 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 `;
         }
 
+        // Tự động chuyển đổi thẻ [TÓM TẮT] từ AI thành Khung Viền Vàng HTML
+        function formatSummaryBox(text) {
+            const summaryRegex = /\[TÓM TẮT\]:\s*([\s\S]*?)(?=\n\n|\n[0-9]+\.|\nNgười sẽ|\nNgươi sẽ|$)/i;
+            return text.replace(summaryRegex, function(match, p1) {
+                return `<div class="summary-box"><div class="summary-title">⚡ TÓM TẮT TÌNH HUỐNG HIỆN TẠI</div>${p1.trim()}</div>`;
+            });
+        }
+
         function parseAndAutoUpdateCodex(fullResponseText) {
             try {
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
@@ -550,18 +575,21 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
                     log("⚡ Auto-updated Codex Memory tabs successfully!");
 
-                    return fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
+                    let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
+                    return formatSummaryBox(cleanText);
                 }
             } catch(e) {
                 log("Parse Codex JSON info error: " + e.message);
             }
-            return fullResponseText;
+            return formatSummaryBox(fullResponseText);
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC CẬP NHẬT CODEX BẮT BUỘC]:
-Cuối mỗi bài dẫn chuyện, hãy luôn kèm theo 1 khối mã JSON tự động cập nhật danh sách đầy đủ mới nhất cho 4 danh mục theo đúng cấu trúc sau:
+[QUY TẮC ĐỊNH DẠNG BẮT BUỘC]:
+1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT DỄ HIỂU NHƯ SAU:
+[TÓM TẮT]: (Tóm tắt tình thế nguy hiểm/cơ hội hiện tại của nhân vật ngắn gọn trong 1-2 câu).
 
+2. Cuối mỗi bài dẫn chuyện, hãy kèm theo 1 khối mã JSON tự động cập nhật danh sách Codex:
 \`\`\`json
 {
   "mcInventory": "Danh sách vật phẩm MC đang giữ đầy đủ (xuống dòng từng item)",
@@ -599,7 +627,7 @@ Cấu hình game:
 ${getCodexMemoryPrompt()}
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài đưa ra 3-4 lựa chọn hành động có đánh số và nhớ đính kèm khối JSON tự động cập nhật Codex!`;
+Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động có đánh số và đính kèm khối JSON tự động cập nhật Codex!`;
 
             const reply = await callGemini(systemPrompt);
             if(reply) {
@@ -632,8 +660,8 @@ ${JSON_STRUCTURE_INSTRUCTION}
 
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi và đúng với Quy Tắc AI Ưu Tiên.
-2. Tự động ghi chép/cập nhật những thay đổi về Túi đồ, NPC, Địa danh, Pháp bảo vào khối JSON cuối bài.
-3. Cuối bài đưa ra các lựa chọn tiếp theo.`;
+2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
+3. Tự động ghi chép/cập nhật những thay đổi vào khối JSON cuối bài.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

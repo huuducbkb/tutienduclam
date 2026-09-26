@@ -1,50 +1,25 @@
-Nguyên nhân là do ô nhập liệu của hai mục **"TÊN & THÂN PHẬN MC"** và **"TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN"** đang dùng thẻ `<input type="text">`. Thẻ `<input>` chỉ hỗ trợ văn bản trên 1 dòng duy nhất và sẽ bị tràn ngang khi văn bản dài.
+Nhìn vào hình ảnh và video quay lại giao diện web của bạn, lý do bị lỗi (màn hình hiển thị nguyên cả khối code HTML Markdown thay vì giao diện chuẩn) là do **bạn đã dán đoạn code trả lời dạng văn bản (markdown) trực tiếp vào file HTML**.
 
-Dưới đây là các vị trí cần sửa trong mã nguồn `index.html`:
+Cụ thể, trong file `index.html` của bạn đang chứa các dòng như:
+
+* ````html`
+* `### 1. Sửa ô "TÊN TRÒ CHƠI..."`
+* ```
+
+
+```
+
+
+
+Trình duyệt không thể hiểu các đoạn văn bản hướng dẫn hay dấu đóng/mở khối code (````html`) nên nó coi đó là văn bản thô và hiển thị trực tiếp ra màn hình.
 
 ---
 
-### 1. Sửa ô "TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN" (Tab World)
+### Cách khắc phục:
 
-Thay thẻ `<input type="text" id="gameTitle"...>` bằng thẻ `<textarea>`:
-
-**Cũ:**
-
-```html
-<input type="text" id="gameTitle" placeholder="Nhập tên trò chơi...">
-
-```
-
-**Mới:**
-
-```html
-<textarea id="gameTitle" style="min-height: 60px;" placeholder="Nhập tên trò chơi..."></textarea>
-
-```
-
----
-
-### 2. Sửa ô "TÊN & THÂN PHẬN MC" (Tab MC)
-
-Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
-
-**Cũ:**
-
-```html
-<input type="text" id="mcName" placeholder="VD: Lâm Thần - 16 tuổi - Đệ tử ngoại môn">
-
-```
-
-**Mới:**
-
-```html
-<textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hàn Tuyệt - 16 tuổi - Đệ tử ngoại môn..."></textarea>
-
-```
-
----
-
-### 3. Mã nguồn `index.html` hoàn chỉnh đã được chỉnh sửa
+1. **Mở file code HTML trên máy tính** (hoặc trình chỉnh sửa code/GitHub của bạn).
+2. **Xóa toàn bộ nội dung cũ trong file `index.html**`.
+3. **Sao chép (Copy) lại chính xác và chỉ dán khối code HTML thuần dưới đây** (không dán các dòng hướng dẫn hay chữ ````html` ở đầu/cuối):
 
 ```html
 <!DOCTYPE html>
@@ -137,7 +112,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
             line-height: 1.6; 
         }
 
-        /* Style Bôi đỏ nổi bật cho Hành động của bạn */
         .player-action-highlight {
             color: #ff5555;
             font-weight: bold;
@@ -156,7 +130,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
 </head>
 <body>
 
-    <!-- Header Bar -->
     <div class="header">
         <div class="header-title">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -165,7 +138,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         <button class="play-btn" onclick="openTab('play')">▶ PLAY</button>
     </div>
 
-    <!-- Sidebar Menu Slide-out (Cấu hình / Save / Load) -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span>⚙ CẤU HÌNH</span>
@@ -181,7 +153,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         <button class="sidebar-item" style="background: var(--accent-blue);" onclick="loadGame()">📂 Tải Tiến Trình (Load)</button>
     </div>
 
-    <!-- Tabs Navigation -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 MC</button>
@@ -191,7 +162,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
     </div>
 
-    <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
         <div class="form-group" style="background: #1c1012; padding: 10px; border-radius: 6px; border: 1px solid #7d2828;">
             <div class="input-header">
@@ -295,7 +265,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         </div>
     </div>
 
-    <!-- TAB 2: MC & INVENTORY -->
     <div id="mc" class="tab-content">
         <div class="form-group">
             <div class="input-header">
@@ -320,7 +289,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         </div>
     </div>
 
-    <!-- TAB 3: NPCS CODEX -->
     <div id="npc" class="tab-content">
         <div class="section-tag">👥 CODEX: DANH SÁCH NPC ĐÃ XUẤT HIỆN (AUTO UPDATED)</div>
         <div class="label-desc">⚡ AI sẽ TỰ ĐỘNG THÊM/SỬA danh sách NPC ở đây khi bạn gặp nhân vật mới hoặc khi mối quan hệ biến đổi.</div>
@@ -329,7 +297,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         </div>
     </div>
 
-    <!-- TAB 4: LOCATIONS CODEX -->
     <div id="loc" class="tab-content">
         <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT (AUTO UPDATED)</div>
         <div class="label-desc">⚡ Tự động ghi chép các địa danh, tông môn, bí cảnh khi nhân vật di chuyển qua.</div>
@@ -338,7 +305,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         </div>
     </div>
 
-    <!-- TAB 5: ITEMS CODEX -->
     <div id="items" class="tab-content">
         <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (AUTO UPDATED)</div>
         <div class="label-desc">⚡ Tự động lưu trữ thông tin về các thần khí, pháp bảo quan trọng xuất hiện trong truyện.</div>
@@ -347,7 +313,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
         </div>
     </div>
 
-    <!-- TAB 6: PLAY & LOGS -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!</div>
         
@@ -396,7 +361,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // ================= SAVE & LOAD GAME =================
         function saveGame() {
             const gameData = {
                 chatHistory: chatHistory,
@@ -460,18 +424,15 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
             }
         });
 
-        // ================= UNDO / QUAY LẠI LƯỢT TRƯỚC (XÓA DỮ LIỆU CŨ TRÁNH AI NHẦM) =================
         function undoLastTurn() {
             if (chatHistory.length <= 2) {
                 alert("⚠️ Không thể quay lại thêm nữa (đã ở lượt khởi đầu game)!");
                 return;
             }
 
-            // Xóa triệt để 1 cặp tin nhắn (User action + Model response) khỏi bộ nhớ AI
             chatHistory.pop(); 
             chatHistory.pop(); 
 
-            // Cập nhật lại giao diện câu chuyện
             if (turnHtmlHistory.length > 1) {
                 turnHtmlHistory.pop();
                 const previousHtmlState = turnHtmlHistory[turnHtmlHistory.length - 1];
@@ -482,7 +443,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
             alert("↩ Đã xóa kết quả lựa chọn cũ! Bạn có thể nhập lại lựa chọn mới.");
         }
 
-        // ================= CALL GEMINI API =================
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -545,7 +505,6 @@ Thay thẻ `<input type="text" id="mcName"...>` bằng thẻ `<textarea>`:
             }
         }
 
-        // ================= TRUY XUẤT VÀ TỰ ĐỘNG BÓC TÁCH JSON CODEX =================
         function getCodexMemoryPrompt() {
             return `
 [DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
@@ -644,7 +603,6 @@ Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài đưa
 
             const previousHtml = storyBox.innerHTML;
             
-            // Bôi đỏ và đóng khung cho [HÀNH ĐỘNG CỦA BẠN]
             const formattedActionHtml = `<div class="player-action-highlight">[HÀNH ĐỘNG CỦA BẠN]: ${action}</div>`;
             storyBox.innerHTML += formattedActionHtml + `<div><i>[AI ĐANG XỬ LÝ & CẬP NHẬT CODEX...]</i></div>`;
             input.value = '';
@@ -679,3 +637,5 @@ Yêu cầu:
 </html>
 
 ```
+
+4. **Lưu lại và Tải lại trang web** để kiểm tra giao diện hoàn chỉnh.

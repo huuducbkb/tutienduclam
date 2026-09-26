@@ -75,11 +75,34 @@
         .btn-undo { background: #30363d; color: #f0f6fc; }
 
         /* Play Box & Logs */
-        #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+        #story-box { 
+            background: var(--input-bg); 
+            height: 450px; 
+            overflow-y: auto; 
+            padding: 12px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            white-space: pre-wrap; 
+            margin-bottom: 12px; 
+            font-size: 14px; 
+            line-height: 1.6; 
+        }
+
+        /* Style Bôi đỏ nổi bật cho Hành động của bạn */
+        .player-action-highlight {
+            color: #ff5555;
+            font-weight: bold;
+            background: rgba(255, 85, 85, 0.12);
+            padding: 6px 10px;
+            border-left: 4px solid #ff5555;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: block;
+        }
+
         .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
         
         .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); }
-        .priority-tag { border-left-color: var(--accent-red); color: #f85149; }
     </style>
 </head>
 <body>
@@ -121,16 +144,15 @@
 
     <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
-        <!-- MỤC QUY TẮC AI ƯU TIÊN MỚI THÊM -->
         <div class="form-group" style="background: #1c1012; padding: 10px; border-radius: 6px; border: 1px solid #7d2828;">
             <div class="input-header">
                 <div>
                     <div class="label-title" style="color: #f85149;">🚨 QUY TẮC AI (ƯU TIÊN CAO NHẤT)</div>
-                    <div class="label-desc">Các chỉ thị bắt buộc AI phải tuân thủ tuyệt đối trong mọi phản hồi (Ví dụ: Không tự quyết định thay người chơi, luôn miêu tả sống động, tuân thủ logic cảnh giới...).</div>
+                    <div class="label-desc">Các chỉ thị bắt buộc AI phải tuân thủ tuyệt đối trong mọi phản hồi.</div>
                 </div>
                 <button class="btn-aigen" style="background: var(--accent-red);" onclick="aiGenField('aiRules', 'Chỉ thị bắt buộc AI Game Master phải tuân thủ tuyệt đối')">✨ AI GEN</button>
             </div>
-            <textarea id="aiRules" style="border-color: #7d2828; min-height: 100px;" placeholder="Ví dụ: 
+            <textarea id="aiRules" style="border-color: #7d2828; min-height: 90px;" placeholder="Ví dụ: 
 1. Tuyệt đối không tự ý hành động thay cho người chơi.
 2. Mọi tình huống chiến đấu phải dựa theo chênh lệch cảnh giới.
 3. Luôn đưa ra từ 3 đến 4 lựa chọn ở cuối bài..."></textarea>
@@ -330,7 +352,7 @@
             const gameData = {
                 chatHistory: chatHistory,
                 turnHtmlHistory: turnHtmlHistory,
-                storyBoxContent: document.getElementById('story-box').innerText,
+                storyBoxContent: document.getElementById('story-box').innerHTML,
                 inputs: {}
             };
 
@@ -356,7 +378,7 @@
                 const gameData = JSON.parse(rawData);
                 chatHistory = gameData.chatHistory || [];
                 turnHtmlHistory = gameData.turnHtmlHistory || [];
-                document.getElementById('story-box').innerText = gameData.storyBoxContent || "Chưa có dữ liệu.";
+                document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
 
                 if(gameData.inputs) {
                     Object.keys(gameData.inputs).forEach(id => {
@@ -389,24 +411,26 @@
             }
         });
 
-        // ================= UNDO / QUAY LẠI LƯỢT TRƯỚC =================
+        // ================= UNDO / QUAY LẠI LƯỢT TRƯỚC (XÓA DỮ LIỆU CŨ TRÁNH AI NHẦM) =================
         function undoLastTurn() {
             if (chatHistory.length <= 2) {
                 alert("⚠️ Không thể quay lại thêm nữa (đã ở lượt khởi đầu game)!");
                 return;
             }
 
-            chatHistory.pop();
-            chatHistory.pop();
+            // Xóa triệt để 1 cặp tin nhắn (User action + Model response) khỏi bộ nhớ AI
+            chatHistory.pop(); 
+            chatHistory.pop(); 
 
-            if (turnHtmlHistory.length > 0) {
+            // Cập nhật lại giao diện câu chuyện
+            if (turnHtmlHistory.length > 1) {
                 turnHtmlHistory.pop();
-                const previousState = turnHtmlHistory[turnHtmlHistory.length - 1];
-                document.getElementById('story-box').innerText = previousState || "Đã quay lại lượt trước.";
+                const previousHtmlState = turnHtmlHistory[turnHtmlHistory.length - 1];
+                document.getElementById('story-box').innerHTML = previousHtmlState;
             }
 
-            log("Undo executed.");
-            alert("↩ Đã quay lại lượt trước!");
+            log("Undo executed. Deleted last action from AI chat history.");
+            alert("↩ Đã xóa kết quả lựa chọn cũ! Bạn có thể nhập lại lựa chọn mới.");
         }
 
         // ================= CALL GEMINI API =================
@@ -530,7 +554,7 @@ Cuối mỗi bài dẫn chuyện, hãy luôn kèm theo 1 khối mã JSON tự đ
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
             turnHtmlHistory = [];
-            storyBox.innerText = "🔄 Đang khởi tạo thế giới và thiết lập Auto Codex...";
+            storyBox.innerHTML = "🔄 Đang khởi tạo thế giới và thiết lập Auto Codex...";
             log("Starting new game session...");
 
             const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - BẮT BUỘC TUÂN THỦ]:
@@ -544,7 +568,7 @@ Cấu hình game:
 - Mốc Thời Gian: ${document.getElementById('startTime').value}
 - Kịch Bản Mở Đầu: ${document.getElementById('startScript').value}
 - Quy Tắc Thế Giới: ${document.getElementById('worldRules').value}
-- Thể Loại & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
+- Thể Loaị & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
 - Cảnh Giới: ${document.getElementById('powerSystem').value}
 
 [MC]: ${document.getElementById('mcName').value}
@@ -558,7 +582,7 @@ Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài đưa
             const reply = await callGemini(systemPrompt);
             if(reply) {
                 const cleanText = parseAndAutoUpdateCodex(reply);
-                storyBox.innerText = cleanText;
+                storyBox.innerHTML = cleanText;
                 turnHtmlHistory.push(cleanText);
             }
         }
@@ -569,8 +593,11 @@ Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài đưa
             const action = input.value.trim();
             if(!action) return;
 
-            const previousText = storyBox.innerText;
-            storyBox.innerText += `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n[AI ĐANG XỬ LÝ & CẬP NHẬT CODEX...]`;
+            const previousHtml = storyBox.innerHTML;
+            
+            // Bôi đỏ và đóng khung cho [HÀNH ĐỘNG CỦA BẠN]
+            const formattedActionHtml = `<div class="player-action-highlight">[HÀNH ĐỘNG CỦA BẠN]: ${action}</div>`;
+            storyBox.innerHTML += formattedActionHtml + `<div><i>[AI ĐANG XỬ LÝ & CẬP NHẬT CODEX...]</i></div>`;
             input.value = '';
             log("Player action: " + action);
 
@@ -590,12 +617,12 @@ Yêu cầu:
             const reply = await callGemini(actionPrompt);
             if(reply) {
                 const cleanText = parseAndAutoUpdateCodex(reply);
-                const updatedContent = previousText + `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n` + cleanText;
-                storyBox.innerText = updatedContent;
+                const updatedContent = previousHtml + formattedActionHtml + cleanText;
+                storyBox.innerHTML = updatedContent;
                 storyBox.scrollTop = storyBox.scrollHeight;
                 turnHtmlHistory.push(updatedContent);
             } else {
-                storyBox.innerText = previousText;
+                storyBox.innerHTML = previousHtml;
             }
         }
     </script>

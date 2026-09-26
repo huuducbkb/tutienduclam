@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG</title>
+    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG (AUTO CODEX)</title>
     <style>
         :root {
             --bg-color: #0b0e14;
@@ -225,49 +225,37 @@
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (INVENTORY)</div>
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (AUTO UPDATED)</div>
         <div class="form-group">
-            <div class="label-desc">Ghi chép các vật phẩm, tài nguyên, linh thạch MC đang mang theo. Bạn có thể tự chỉnh sửa hoặc thêm bớt bất kỳ lúc nào.</div>
-            <textarea id="mcInventory" style="min-height: 120px;" placeholder="VD: 
-- 10 Linh thạch hạ phẩm
-- 1 Dược đao bằng sắt
-- 1 Viên Tụ Khí Đan (Lớp sơ cấp)"></textarea>
+            <div class="label-desc">⚡ Hệ thống AI sẽ TỰ ĐỘNG CẬP NHẬT danh sách vật phẩm ở đây sau mỗi hành động trong game.</div>
+            <textarea id="mcInventory" style="min-height: 120px;" placeholder="Tự động ghi chép..."></textarea>
         </div>
     </div>
 
     <!-- TAB 3: NPCS CODEX -->
     <div id="npc" class="tab-content">
-        <div class="section-tag">👥 CODEX: DANH SÁCH NPC ĐÃ XUẤT HIỆN</div>
-        <div class="label-desc">Đây là bộ nhớ nhân vật. Bất kỳ NPC nào xuất hiện trong game, bạn có thể ghi chép vào đây. AI BẮT BUỘC phải đọc danh sách này trước khi tạo phản hồi để không bị quên/nhầm lẫn.</div>
+        <div class="section-tag">👥 CODEX: DANH SÁCH NPC ĐÃ XUẤT HIỆN (AUTO UPDATED)</div>
+        <div class="label-desc">⚡ AI sẽ TỰ ĐỘNG THÊM/SỬA danh sách NPC ở đây khi bạn gặp nhân vật mới hoặc khi mối quan hệ biến đổi.</div>
         <div class="form-group">
-            <textarea id="npcList" style="min-height: 220px;" placeholder="VD:
-1. Tiêu Vô Kỵ: Trưởng lão Ngoại môn Thanh Vân Tông (Trúc Cơ Hậu Kỳ). Thái độ: Kiêu ngạo, thù địch.
-2. Liễu Như Yên: Đại tiểu thư Liễu gia (Trúc Cơ Sơ Kỳ). Thái độ: Giả tạo, độc ác.
-3. Lão Quái Tử: Tán tu bí ẩn (Kim Đan). Thái độ: Quỷ quyệt, muốn đoạt xá."></textarea>
+            <textarea id="npcList" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
         </div>
     </div>
 
     <!-- TAB 4: LOCATIONS CODEX -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT</div>
-        <div class="label-desc">Lưu trữ các địa danh, tông môn, bí cảnh hoặc thành thị đã khám phá.</div>
+        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT (AUTO UPDATED)</div>
+        <div class="label-desc">⚡ Tự động ghi chép các địa danh, tông môn, bí cảnh khi nhân vật di chuyển qua.</div>
         <div class="form-group">
-            <textarea id="locations" style="min-height: 220px;" placeholder="VD:
-- Thanh Vân Tông: Môn phái chính ở Đông Lục.
-- Hắc Mộc Lâm: Khu rừng nguy hiểm đầy ma thú và tán tu.
-- Thị Trấn Bát Quái: Nơi trao đổi pháp bảo và linh dược hỗn loạn."></textarea>
+            <textarea id="locations" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
         </div>
     </div>
 
     <!-- TAB 5: ITEMS CODEX -->
     <div id="items" class="tab-content">
-        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI</div>
-        <div class="label-desc">Ghi chép các thần khí, pháp bảo, công pháp hoặc bảo vật quan trọng từng xuất hiện trong cốt truyện.</div>
+        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (AUTO UPDATED)</div>
+        <div class="label-desc">⚡ Tự động lưu trữ thông tin về các thần khí, pháp bảo quan trọng xuất hiện trong truyện.</div>
         <div class="form-group">
-            <textarea id="worldItems" style="min-height: 220px;" placeholder="VD:
-- Phàm Nhân Kiếm: Bảo kiếm cổ đại bị phong ấn.
-- Bát Quái Kính: Pháp bảo phòng ngự cấp Kim Đan của Liễu gia.
-- Cửu Trọng Thiên Kinh: Công pháp tu tiên thất truyền."></textarea>
+            <textarea id="worldItems" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
         </div>
     </div>
 
@@ -335,8 +323,8 @@
             });
 
             localStorage.setItem('HONDUC_TU_TIEN_SAVE', JSON.stringify(gameData));
-            log("Game state & Codex Memory saved successfully.");
-            alert("💾 Đã lưu game và toàn bộ dữ liệu Sổ Tay (Codex)!");
+            log("Game state & Auto Codex saved.");
+            alert("💾 Đã lưu game và toàn bộ dữ liệu Auto Codex!");
             toggleSidebar();
         }
 
@@ -360,8 +348,8 @@
                     });
                 }
 
-                log("Game state & Codex Memory loaded.");
-                alert("📂 Đã khôi phục thành công bản lưu và Sổ Tay!");
+                log("Game state & Auto Codex loaded.");
+                alert("📂 Đã khôi phục thành công bản lưu!");
                 toggleSidebar();
                 openTab('play');
             } catch(e) {
@@ -467,34 +455,71 @@
             }
         }
 
-        // Đóng gói Memory Codex để ép AI kiểm tra trước khi suy diễn
+        // ================= TRUY XUẤT VÀ TỰ ĐỘNG BÓC TÁCH JSON CODEX =================
         function getCodexMemoryPrompt() {
             return `
-[CẬP NHẬT CODEX TRẠNG THÁI HIỆN TẠI - AI BẮT BUỘC QUÉT DỮ LIỆU NÀY TRƯỚC KHÍ XỬ LÝ]:
-1. 🎒 TÚI ĐỒ / INVENTORY MC:
-${document.getElementById('mcInventory').value || 'Không có'}
+[DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
+- 🎒 TÚI ĐỒ / INVENTORY MC:
+${document.getElementById('mcInventory').value || 'Chưa có'}
 
-2. 👥 DANH SÁCH NPC DỰ THƯỞNG & THÁI ĐỘ:
-${document.getElementById('npcList').value || 'Chưa ghi nhận'}
+- 👥 DANH SÁCH NPC:
+${document.getElementById('npcList').value || 'Chưa có'}
 
-3. 📍 ĐỊA DANH / VÙNG ĐẤT ĐÃ KHÁM PHÁ:
-${document.getElementById('locations').value || 'Chưa ghi nhận'}
+- 📍 ĐỊA DANH / VÙNG ĐẤT:
+${document.getElementById('locations').value || 'Chưa có'}
 
-4. ⚔️ PHÁP BẢO & BẢO VẬT TRONG THẾ GIỚI:
-${document.getElementById('worldItems').value || 'Chưa ghi nhận'}
+- ⚔️ PHÁP BẢO & BẢO VẬT THẾ GIỚI:
+${document.getElementById('worldItems').value || 'Chưa có'}
 ==================================================
 `;
         }
+
+        function parseAndAutoUpdateCodex(fullResponseText) {
+            try {
+                // Tách đoạn JSON được AI bọc trong thẻ ```json ... ```
+                const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
+                if (jsonMatch && jsonMatch[1]) {
+                    const codexData = JSON.parse(jsonMatch[1]);
+                    
+                    if(codexData.mcInventory !== undefined) document.getElementById('mcInventory').value = codexData.mcInventory;
+                    if(codexData.npcList !== undefined) document.getElementById('npcList').value = codexData.npcList;
+                    if(codexData.locations !== undefined) document.getElementById('locations').value = codexData.locations;
+                    if(codexData.worldItems !== undefined) document.getElementById('worldItems').value = codexData.worldItems;
+
+                    log("⚡ Auto-updated Codex Memory tabs successfully!");
+
+                    // Loại bỏ đoạn khối JSON khỏi câu chuyện hiển thị ra màn hình
+                    return fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
+                }
+            } catch(e) {
+                log("Parse Codex JSON info error: " + e.message);
+            }
+            return fullResponseText;
+        }
+
+        const JSON_STRUCTURE_INSTRUCTION = `
+[QUY TẮC CẬP NHẬT CODEX BẮT BUỘC]:
+Cuối mỗi bài dẫn chuyện, hãy luôn kèm theo 1 khối mã JSON tự động cập nhật danh sách đầy đủ mới nhất cho 4 danh mục theo đúng cấu trúc sau:
+
+\`\`\`json
+{
+  "mcInventory": "Danh sách vật phẩm MC đang giữ đầy đủ (xuống dòng từng item)",
+  "npcList": "Danh sách tất cả NPC đã xuất hiện + cảnh giới + thái độ mới nhất",
+  "locations": "Danh sách các địa danh đã khám phá",
+  "worldItems": "Danh sách các pháp bảo/công pháp/thần khí đã xuất hiện"
+}
+\`\`\`
+`;
 
         async function startGame() {
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
             turnHtmlHistory = [];
-            storyBox.innerText = "🔄 Đang tổng hợp dữ liệu thế giới, kiểm tra Codex và khởi tạo game...";
+            storyBox.innerText = "🔄 Đang khởi tạo thế giới và thiết lập Auto Codex...";
             log("Starting new game session...");
 
-            const systemPrompt = `Bạn là Game Master chuyên nghiệp cho Game Roleplay Text.
-Dưới đây là TOÀN BỘ CẤU HÌNH THẾ GIỚI do người chơi thiết lập:
+            const systemPrompt = `Bạn là Game Master chuyên nghiệp cho Game Roleplay Tu Tiên.
+Cấu hình game:
 - Tên Trò Chơi: ${document.getElementById('gameTitle').value}
 - Độ Khó: ${document.getElementById('difficultySelect').value} (${document.getElementById('difficultyCustom').value})
 - Bối Cảnh: ${document.getElementById('worldContext').value}
@@ -504,17 +529,19 @@ Dưới đây là TOÀN BỘ CẤU HÌNH THẾ GIỚI do người chơi thiết 
 - Thể Loại & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
 - Cảnh Giới: ${document.getElementById('powerSystem').value}
 
-[NHÂN VẬT CHÍNH]: ${document.getElementById('mcName').value}
-[KỸ NĂNG]: ${document.getElementById('mcSkills').value}
+[MC]: ${document.getElementById('mcName').value}
+[KĨ NĂNG]: ${document.getElementById('mcSkills').value}
 
 ${getCodexMemoryPrompt()}
+${JSON_STRUCTURE_INSTRUCTION}
 
-Nhiệm vụ: Hãy bắt đầu Dẫn chuyện mở đầu thật sống động, tuân thủ đúng văn phong và bối cảnh trên. Cuối bài đưa ra 3-4 lựa chọn hành động có đánh số (1, 2, 3, 4) và tùy chọn nhập tự do.`;
+Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài đưa ra 3-4 lựa chọn hành động có đánh số và nhớ đính kèm khối JSON tự động cập nhật Codex!`;
 
             const reply = await callGemini(systemPrompt);
             if(reply) {
-                storyBox.innerText = reply;
-                turnHtmlHistory.push(reply);
+                const cleanText = parseAndAutoUpdateCodex(reply);
+                storyBox.innerText = cleanText;
+                turnHtmlHistory.push(cleanText);
             }
         }
 
@@ -525,22 +552,24 @@ Nhiệm vụ: Hãy bắt đầu Dẫn chuyện mở đầu thật sống động
             if(!action) return;
 
             const previousText = storyBox.innerText;
-            storyBox.innerText += `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n[AI ĐANG XỬ LÝ...]`;
+            storyBox.innerText += `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n[AI ĐANG XỬ LÝ & CẬP NHẬT CODEX...]`;
             input.value = '';
             log("Player action: " + action);
 
-            // Gửi kèm Codex Memory ở từng lượt đi
             const actionPrompt = `${getCodexMemoryPrompt()}
-Người chơi thực hiện hành động: "${action}".
-Yêu cầu AI:
-- Quét kỹ danh sách NPC, Địa danh, Pháp bảo và Túi đồ ở trên để không bị nhầm lẫn hay quên nhân vật/vật phẩm.
-- Dẫn chuyện tiếp diễn biến hợp lý.
-- Nếu có cập nhật thêm về NPC mới, đồ vật mới nhặt được hoặc địa danh mới, hãy nhắc nhẹ ở cuối để người chơi lưu vào Codex.
-- Cuối bài đưa ra các lựa chọn tiếp theo.`;
+Hành động của người chơi: "${action}".
+
+${JSON_STRUCTURE_INSTRUCTION}
+
+Yêu cầu:
+1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
+2. Tự động ghi chép/cập nhật những thay đổi về Túi đồ, NPC, Địa danh, Pháp bảo vào khối JSON cuối bài.
+3. Cuối bài đưa ra các lựa chọn tiếp theo.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {
-                const updatedContent = previousText + `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n` + reply;
+                const cleanText = parseAndAutoUpdateCodex(reply);
+                const updatedContent = previousText + `\n\n[HÀNH ĐỘNG CỦA BẠN]: ${action}\n\n` + cleanText;
                 storyBox.innerText = updatedContent;
                 storyBox.scrollTop = storyBox.scrollHeight;
                 turnHtmlHistory.push(updatedContent);

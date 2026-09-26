@@ -13,6 +13,7 @@
             --accent-blue: #388bfd;
             --accent-green: #238636;
             --accent-gold: #d29922;
+            --accent-red: #da3633;
             --text-color: #c9d1d9;
             --border-color: #30363d;
             --subtext-color: #8b949e;
@@ -60,7 +61,7 @@
             line-height: 1.5; 
             font-family: inherit; 
             resize: vertical; 
-            min-height: 100px; 
+            min-height: 90px; 
         }
 
         /* AI Gen Button Frame */
@@ -78,6 +79,7 @@
         .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
         
         .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); }
+        .priority-tag { border-left-color: var(--accent-red); color: #f85149; }
     </style>
 </head>
 <body>
@@ -119,6 +121,21 @@
 
     <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
+        <!-- MỤC QUY TẮC AI ƯU TIÊN MỚI THÊM -->
+        <div class="form-group" style="background: #1c1012; padding: 10px; border-radius: 6px; border: 1px solid #7d2828;">
+            <div class="input-header">
+                <div>
+                    <div class="label-title" style="color: #f85149;">🚨 QUY TẮC AI (ƯU TIÊN CAO NHẤT)</div>
+                    <div class="label-desc">Các chỉ thị bắt buộc AI phải tuân thủ tuyệt đối trong mọi phản hồi (Ví dụ: Không tự quyết định thay người chơi, luôn miêu tả sống động, tuân thủ logic cảnh giới...).</div>
+                </div>
+                <button class="btn-aigen" style="background: var(--accent-red);" onclick="aiGenField('aiRules', 'Chỉ thị bắt buộc AI Game Master phải tuân thủ tuyệt đối')">✨ AI GEN</button>
+            </div>
+            <textarea id="aiRules" style="border-color: #7d2828; min-height: 100px;" placeholder="Ví dụ: 
+1. Tuyệt đối không tự ý hành động thay cho người chơi.
+2. Mọi tình huống chiến đấu phải dựa theo chênh lệch cảnh giới.
+3. Luôn đưa ra từ 3 đến 4 lựa chọn ở cuối bài..."></textarea>
+        </div>
+
         <div class="form-group">
             <div class="input-header">
                 <div>
@@ -283,7 +300,7 @@
         let turnHtmlHistory = [];
 
         const inputIds = [
-            'apiKey', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 
+            'apiKey', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
             'npcList', 'locations', 'worldItems'
@@ -476,7 +493,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
         function parseAndAutoUpdateCodex(fullResponseText) {
             try {
-                // Tách đoạn JSON được AI bọc trong thẻ ```json ... ```
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
                 if (jsonMatch && jsonMatch[1]) {
                     const codexData = JSON.parse(jsonMatch[1]);
@@ -488,7 +504,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
                     log("⚡ Auto-updated Codex Memory tabs successfully!");
 
-                    // Loại bỏ đoạn khối JSON khỏi câu chuyện hiển thị ra màn hình
                     return fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                 }
             } catch(e) {
@@ -518,7 +533,10 @@ Cuối mỗi bài dẫn chuyện, hãy luôn kèm theo 1 khối mã JSON tự đ
             storyBox.innerText = "🔄 Đang khởi tạo thế giới và thiết lập Auto Codex...";
             log("Starting new game session...");
 
-            const systemPrompt = `Bạn là Game Master chuyên nghiệp cho Game Roleplay Tu Tiên.
+            const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - BẮT BUỘC TUÂN THỦ]:
+${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt nào.'}
+
+==================================================
 Cấu hình game:
 - Tên Trò Chơi: ${document.getElementById('gameTitle').value}
 - Độ Khó: ${document.getElementById('difficultySelect').value} (${document.getElementById('difficultyCustom').value})
@@ -556,13 +574,16 @@ Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài đưa
             input.value = '';
             log("Player action: " + action);
 
-            const actionPrompt = `${getCodexMemoryPrompt()}
+            const actionPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - BẮT BUỘC TUÂN THỦ]:
+${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt nào.'}
+
+${getCodexMemoryPrompt()}
 Hành động của người chơi: "${action}".
 
 ${JSON_STRUCTURE_INSTRUCTION}
 
 Yêu cầu:
-1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
+1. Tiếp diễn câu chuyện dựa trên hành động của người chơi và đúng với Quy Tắc AI Ưu Tiên.
 2. Tự động ghi chép/cập nhật những thay đổi về Túi đồ, NPC, Địa danh, Pháp bảo vào khối JSON cuối bài.
 3. Cuối bài đưa ra các lựa chọn tiếp theo.`;
 

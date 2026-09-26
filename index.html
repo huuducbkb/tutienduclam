@@ -1,27 +1,4 @@
-Nhìn vào hình ảnh và video quay lại giao diện web của bạn, lý do bị lỗi (màn hình hiển thị nguyên cả khối code HTML Markdown thay vì giao diện chuẩn) là do **bạn đã dán đoạn code trả lời dạng văn bản (markdown) trực tiếp vào file HTML**.
-
-Cụ thể, trong file `index.html` của bạn đang chứa các dòng như:
-
-* ````html`
-* `### 1. Sửa ô "TÊN TRÒ CHƠI..."`
-* ```
-
-
-```
-
-
-
-Trình duyệt không thể hiểu các đoạn văn bản hướng dẫn hay dấu đóng/mở khối code (````html`) nên nó coi đó là văn bản thô và hiển thị trực tiếp ra màn hình.
-
----
-
-### Cách khắc phục:
-
-1. **Mở file code HTML trên máy tính** (hoặc trình chỉnh sửa code/GitHub của bạn).
-2. **Xóa toàn bộ nội dung cũ trong file `index.html**`.
-3. **Sao chép (Copy) lại chính xác và chỉ dán khối code HTML thuần dưới đây** (không dán các dòng hướng dẫn hay chữ ````html` ở đầu/cuối):
-
-```html
+html
 <!DOCTYPE html>
 <html lang="vi">
 <head>

@@ -106,6 +106,7 @@
 </head>
 <body>
 
+    <!-- Header Bar -->
     <div class="header">
         <div class="header-title">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -114,6 +115,7 @@
         <button class="play-btn" onclick="openTab('play')">▶ PLAY</button>
     </div>
 
+    <!-- Sidebar Menu Slide-out (Cấu hình / Save / Load / Reset) -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span>⚙ CẤU HÌNH</span>
@@ -127,8 +129,10 @@
         <div class="label-title" style="margin-bottom:8px;">QUẢN LÝ TIẾN TRÌNH</div>
         <button class="sidebar-item" style="background: var(--accent-green);" onclick="saveGame()">💾 Lưu Game (Save)</button>
         <button class="sidebar-item" style="background: var(--accent-blue);" onclick="loadGame()">📂 Tải Tiến Trình (Load)</button>
+        <button class="sidebar-item" style="background: var(--accent-red); margin-top: 15px;" onclick="resetAllFields()">🧹 RESET TẤT CẢ CẤU HÌNH</button>
     </div>
 
+    <!-- Tabs Navigation -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 MC</button>
@@ -138,6 +142,7 @@
         <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
     </div>
 
+    <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
         <div class="form-group" style="background: #1c1012; padding: 10px; border-radius: 6px; border: 1px solid #7d2828;">
             <div class="input-header">
@@ -241,6 +246,7 @@
         </div>
     </div>
 
+    <!-- TAB 2: MC & INVENTORY -->
     <div id="mc" class="tab-content">
         <div class="form-group">
             <div class="input-header">
@@ -265,6 +271,7 @@
         </div>
     </div>
 
+    <!-- TAB 3: NPCS CODEX -->
     <div id="npc" class="tab-content">
         <div class="section-tag">👥 CODEX: DANH SÁCH NPC ĐÃ XUẤT HIỆN (AUTO UPDATED)</div>
         <div class="label-desc">⚡ AI sẽ TỰ ĐỘNG THÊM/SỬA danh sách NPC ở đây khi bạn gặp nhân vật mới hoặc khi mối quan hệ biến đổi.</div>
@@ -273,6 +280,7 @@
         </div>
     </div>
 
+    <!-- TAB 4: LOCATIONS CODEX -->
     <div id="loc" class="tab-content">
         <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT (AUTO UPDATED)</div>
         <div class="label-desc">⚡ Tự động ghi chép các địa danh, tông môn, bí cảnh khi nhân vật di chuyển qua.</div>
@@ -281,6 +289,7 @@
         </div>
     </div>
 
+    <!-- TAB 5: ITEMS CODEX -->
     <div id="items" class="tab-content">
         <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (AUTO UPDATED)</div>
         <div class="label-desc">⚡ Tự động lưu trữ thông tin về các thần khí, pháp bảo quan trọng xuất hiện trong truyện.</div>
@@ -289,6 +298,7 @@
         </div>
     </div>
 
+    <!-- TAB 6: PLAY & LOGS -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!</div>
         
@@ -311,12 +321,15 @@
         let chatHistory = [];
         let turnHtmlHistory = [];
 
-        const inputIds = [
-            'apiKey', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 
+        // Các ID ô thông tin cần xóa khi Reset (Trừ API Key)
+        const fieldsToReset = [
+            'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
             'npcList', 'locations', 'worldItems'
         ];
+
+        const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -335,6 +348,31 @@
             const logBox = document.getElementById('sysLogs');
             logBox.innerHTML += `<br>> ${msg}`;
             logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // HÀM RESET TẤT CẢ CẤU HÌNH
+        function resetAllFields() {
+            const confirmReset = confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không? (API Key vẫn được giữ lại)");
+            if (!confirmReset) return;
+
+            // Xóa nội dung trong tất cả ô nhập liệu
+            fieldsToReset.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Reset lịch sử chơi
+            chatHistory = [];
+            turnHtmlHistory = [];
+            document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
+
+            // Xóa dữ liệu lưu tạm trong trình duyệt
+            localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
+
+            log("Tất cả cấu hình và bản lưu đã được Reset.");
+            alert("🧹 Đã làm sạch toàn bộ cấu hình! Bạn có thể tạo thế giới game mới.");
+            toggleSidebar();
+            openTab('world');
         }
 
         function saveGame() {
@@ -611,7 +649,3 @@ Yêu cầu:
     </script>
 </body>
 </html>
-
-```
-
-4. **Lưu lại và Tải lại trang web** để kiểm tra giao diện hoàn chỉnh.

@@ -56,6 +56,7 @@
 </head>
 <body>
 
+    <!-- Header -->
     <div class="header">
         <div class="header-title">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -64,6 +65,7 @@
         <button class="play-btn" onclick="openTab('play')">▶ PLAY</button>
     </div>
 
+    <!-- Sidebar Menu Slide-out -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span>⚙ HỒNG ĐỨC TU TIÊN LỘ</span>
@@ -78,6 +80,7 @@
         </div>
     </div>
 
+    <!-- Tabs Menu -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 MC</button>
@@ -86,6 +89,7 @@
         <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
     </div>
 
+    <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
         <div class="form-group">
             <div class="input-header">
@@ -114,6 +118,7 @@
         </div>
     </div>
 
+    <!-- TAB 2: MC -->
     <div id="mc" class="tab-content">
         <div class="form-group">
             <label>TÊN & THÂN PHẬN NHÂN VẬT CHÍNH</label>
@@ -129,6 +134,7 @@
         </div>
     </div>
 
+    <!-- TAB 3: NPCS -->
     <div id="npc" class="tab-content">
         <div class="form-group">
             <div class="input-header">
@@ -141,6 +147,7 @@
         </div>
     </div>
 
+    <!-- TAB 4: LOCATION -->
     <div id="loc" class="tab-content">
         <div class="form-group">
             <label>ĐỊA ĐIỂM & BẢN ĐỒ KHAI PHÁ</label>
@@ -150,6 +157,7 @@
         </div>
     </div>
 
+    <!-- TAB 5: PLAY & LOGS -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy thiết lập các Tab và bấm "KHỞI TẠO GAME" ở dưới!</div>
         <button class="sidebar-item" style="background:#238636; text-align:center;" onclick="startGame()">⚡ KHỞI TẠO GAME MỚI</button>
@@ -193,9 +201,10 @@
                 return null; 
             }
 
-            log("Calling Gemini API (1.5-flash-latest)...");
-            // Endpoint cập nhật phiên bản mới nhất hỗ trợ ổn định nhất
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+            log("Calling Gemini API (2.5-flash)...");
+            
+            // Endpoint chính thức của phiên bản Gemini 2.5 Flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
@@ -208,9 +217,8 @@
                 const data = await response.json();
                 
                 if(data.error) {
-                    // Tự động thử lại phiên bản 2.0 nếu 1.5 gặp sự cố
-                    log("Fallback to gemini-2.0-flash...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+                    log("Fallback to gemini-3.5-flash-lite...");
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -221,7 +229,7 @@
                     
                     const aiReply = dataFb.candidates[0].content.parts[0].text;
                     chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-                    log("Response received from Gemini 2.0.");
+                    log("Response received from fallback model.");
                     return aiReply;
                 }
                 

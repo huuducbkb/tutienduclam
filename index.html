@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG (AUTO CODEX & PACING CONTROL)</title>
+    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG (VISUAL INVENTORY & CODEX)</title>
     <style>
         :root {
             --bg-color: #0b0e14;
@@ -64,6 +64,96 @@
             min-height: 90px; 
         }
 
+        /* Visual Inventory Styling */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .item-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .item-icon-box {
+            width: 50px;
+            height: 50px;
+            background: #1c2128;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .item-icon-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 13px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-qty {
+            background: var(--accent-blue);
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .item-quality {
+            font-size: 11px;
+            color: var(--accent-gold);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .item-effect {
+            font-size: 11px;
+            color: var(--subtext-color);
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .item-unknown {
+            color: #f85149 !important;
+            font-style: italic;
+        }
+
         /* AI Gen Button Frame */
         .input-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
         .btn-aigen { background: var(--accent-purple); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
@@ -99,7 +189,6 @@
             display: block;
         }
 
-        /* Khung tóm tắt viền vàng */
         .summary-box {
             background: rgba(210, 153, 34, 0.1);
             border: 1px solid var(--accent-gold);
@@ -123,7 +212,6 @@
         }
 
         .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
-        
         .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); }
     </style>
 </head>
@@ -138,7 +226,7 @@
         <button class="play-btn" onclick="openTab('play')">▶ PLAY</button>
     </div>
 
-    <!-- Sidebar Menu Slide-out (Cấu hình / Save / Load / Export / Import / Reset) -->
+    <!-- Sidebar Menu Slide-out -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span>⚙ CẤU HÌNH</span>
@@ -185,7 +273,7 @@
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên). Không cho nhân vật đột phá liên tục hay gặp cơ duyên dễ dàng.
 2. Tuyệt đối không tự ý hành động thay cho người chơi.
 3. Luôn duy trì NPC SỐNG (Bạch Vi...) và phân loại rõ NPC ĐÃ CHẾT.
-4. Mọi đan dược, linh thạch tiêu hao phải cập nhật số lượng thực tế.
+4. TÚI ĐỒ: Vật phẩm vượt quá phẩm chất/tri thức của cảnh giới hiện tại (VD Luyện Khí kỳ) phải ghi công dụng là '??? (Chưa đủ kiến thức nhận biết)', chờ cơ duyên/đột phá mới giải mã.
 5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
 
@@ -277,28 +365,59 @@
         </div>
     </div>
 
-    <!-- TAB 2: MC & INVENTORY -->
+    <!-- TAB 2: MC & VISUAL INVENTORY -->
     <div id="mc" class="tab-content">
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">TÊN & THÂN PHẬN MC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
-            <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hồng Đức (U Minh Tử) - Trúc Cơ sơ kỳ"></textarea>
+            <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hồng Đức - Luyện Khí Kỳ tầng 3 (Thô thông dược lý)"></textarea>
         </div>
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">KỸ NĂNG & NĂNG LỰC CỐT LÕI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Kỹ năng, căn cơ và năng lực đặc biệt của MC')">✨ AI GEN</button>
             </div>
-            <textarea id="mcSkills" placeholder="VD: Thiên Cơ Bàn, Trận pháp, Ẩn giấu khí tức..."></textarea>
+            <textarea id="mcSkills" placeholder="VD: Bổ Thiên Thuật, Trận pháp sơ cấp, Ẩn giấu khí tức..."></textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (QUẢN LÝ TIÊU HAO REALTIME)</div>
-        <div class="form-group">
-            <div class="label-desc">⚡ Hệ thống AI sẽ TỰ ĐỘNG CẬP NHẬT số lượng vật phẩm tiêu hao (linh thạch, đan dược, phù lục...) tại đây.</div>
-            <textarea id="mcInventory" style="min-height: 120px;" placeholder="Tự động ghi chép chi tiết tiêu hao (VD: Linh thạch hạ phẩm: 65/100)..."></textarea>
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (VISUAL AUTO INVENTORY)</div>
+        <div class="label-desc">⚡ Hiển thị hình ảnh, phẩm chất, số lượng và công dụng. Các vật phẩm phẩm chất quá cao so với cảnh giới sẽ ghi <i>??? (Chưa đủ kiến thức nhận biết)</i>.</div>
+        
+        <!-- TRÌNH DIỄN HÌNH ẢNH THẺ VẬT PHẨM -->
+        <div id="inventoryVisualGrid" class="inventory-grid">
+            <!-- Thẻ mẫu khởi đầu -->
+            <div class="item-card">
+                <div class="item-icon-box">💎</div>
+                <div class="item-details">
+                    <div class="item-title-row">
+                        <span class="item-name">Linh Thạch Hạ Phẩm</span>
+                        <span class="item-qty">x50</span>
+                    </div>
+                    <div class="item-quality">Phẩm chất: Hạ Phẩm</div>
+                    <div class="item-effect">Dùng để giao dịch mua bán hoặc thu nạp linh khí bù đắp tu vi.</div>
+                </div>
+            </div>
+
+            <div class="item-card">
+                <div class="item-icon-box">🍄</div>
+                <div class="item-details">
+                    <div class="item-title-row">
+                        <span class="item-name">Huyết Linh Chi (Vạn Năm)</span>
+                        <span class="item-qty">x1</span>
+                    </div>
+                    <div class="item-quality">Phẩm chất: ??? (Cực Cao)</div>
+                    <div class="item-effect item-unknown">⚡ ??? (Tri thức Luyện Khí Kỳ chưa thể nhận biết công dụng chi tiết, cần cơ duyên hoặc cao nhân chỉ điểm)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RAW DATA TEXTAREA CHO AI UPDATE -->
+        <div class="form-group" style="margin-top: 15px;">
+            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA (AI TỰ ĐỘNG ĐỒNG BỘ DẠNG TEXT):</div>
+            <textarea id="mcInventory" style="min-height: 80px; font-size:12px; color:#8b949e;" placeholder="Dữ liệu thô của túi đồ..."></textarea>
         </div>
     </div>
 
@@ -385,8 +504,7 @@
         }
 
         function resetAllFields() {
-            const confirmReset = confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?");
-            if (!confirmReset) return;
+            if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?")) return;
 
             fieldsToReset.forEach(id => {
                 const el = document.getElementById(id);
@@ -396,12 +514,45 @@
             chatHistory = [];
             turnHtmlHistory = [];
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
+            document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
             localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
 
             log("Tất cả cấu hình và bản lưu đã được Reset.");
-            alert("🧹 Đã làm sạch toàn bộ cấu hình! Bạn có thể tạo thế giới game mới.");
+            alert("🧹 Đã làm sạch toàn bộ cấu hình!");
             toggleSidebar();
             openTab('world');
+        }
+
+        function renderInventoryVisual(itemsArray) {
+            const grid = document.getElementById('inventoryVisualGrid');
+            if(!itemsArray || !Array.isArray(itemsArray) || itemsArray.length === 0) {
+                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
+                return;
+            }
+
+            let html = '';
+            itemsArray.forEach(item => {
+                const icon = item.icon || '📦';
+                const isImage = icon.startsWith('http://') || icon.startsWith('https://');
+                const iconContent = isImage ? `<img src="${icon}" alt="${item.name}">` : icon;
+                
+                const isUnknown = item.effect && (item.effect.includes('???') || item.effect.includes('Chưa đủ kiến thức'));
+                const effectClass = isUnknown ? 'item-effect item-unknown' : 'item-effect';
+
+                html += `
+                <div class="item-card">
+                    <div class="item-icon-box">${iconContent}</div>
+                    <div class="item-details">
+                        <div class="item-title-row">
+                            <span class="item-name">${item.name || 'Vật phẩm lạ'}</span>
+                            <span class="item-qty">x${item.quantity || 1}</span>
+                        </div>
+                        <div class="item-quality">Phẩm chất: ${item.quality || 'Thường'}</div>
+                        <div class="${effectClass}">${item.effect || 'Chưa rõ công dụng.'}</div>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
         }
 
         function saveGame() {
@@ -409,6 +560,7 @@
                 chatHistory: chatHistory,
                 turnHtmlHistory: turnHtmlHistory,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
+                inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
                 inputs: {}
             };
 
@@ -419,7 +571,7 @@
 
             localStorage.setItem('HONDUC_TU_TIEN_SAVE', JSON.stringify(gameData));
             log("Game state & Auto Codex saved.");
-            alert("💾 Đã lưu game và toàn bộ dữ liệu Auto Codex!");
+            alert("💾 Đã lưu game và toàn bộ dữ liệu Visual Inventory!");
             toggleSidebar();
         }
 
@@ -435,6 +587,9 @@
                 chatHistory = gameData.chatHistory || [];
                 turnHtmlHistory = gameData.turnHtmlHistory || [];
                 document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
+                if(gameData.inventoryVisualHTML) {
+                    document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
+                }
 
                 if(gameData.inputs) {
                     Object.keys(gameData.inputs).forEach(id => {
@@ -455,10 +610,7 @@
         function exportSaveFile() {
             saveGame();
             const rawData = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
-            if (!rawData) {
-                alert("⚠️ Chưa có dữ liệu save nào để xuất!");
-                return;
-            }
+            if (!rawData) return;
             const blob = new Blob([rawData], { type: "application/json" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
@@ -483,7 +635,7 @@
                     localStorage.setItem('HONDUC_TU_TIEN_SAVE', content);
                     loadGame();
                     log("Imported save file successfully.");
-                    alert("📥 Đã nhập file Save thành công! Bạn có thể tiếp tục chơi.");
+                    alert("📥 Đã nhập file Save thành công!");
                 } catch (err) {
                     alert("❌ File save không hợp lệ!");
                 }
@@ -502,13 +654,16 @@
                             if(el) el.value = gameData.inputs[id];
                         });
                     }
+                    if(gameData.inventoryVisualHTML) {
+                        document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
+                    }
                 } catch(e){}
             }
         });
 
         function undoLastTurn() {
             if (chatHistory.length <= 2) {
-                alert("⚠️ Không thể quay lại thêm nữa (đã ở lượt khởi đầu game)!");
+                alert("⚠️ Không thể quay lại thêm nữa!");
                 return;
             }
 
@@ -522,7 +677,7 @@
             }
 
             log("Undo executed.");
-            alert("↩ Đã xóa kết quả lựa chọn cũ! Bạn có thể nhập lại lựa chọn mới.");
+            alert("↩ Đã xóa kết quả lựa chọn cũ! Bạn có thể nhập lại.");
         }
 
         async function callGemini(promptText) {
@@ -579,7 +734,7 @@
             const originalVal = field.value;
             field.value = "AI đang suy nghĩ...";
             
-            const res = await callGemini(`Hãy đóng vai Game Master, hãy tạo nội dung chi tiết cho mục sau trong game roleplay tu tiên: ${promptMsg}. Chỉ trả về nội dung text ngắn gọn, cuốn hút, đúng trọng tâm.`);
+            const res = await callGemini(`Hãy đóng vai Game Master, tạo nội dung chi tiết cho mục: ${promptMsg}. Trả về nội dung text ngắn gọn, đúng trọng tâm.`);
             if(res) {
                 field.value = res;
             } else {
@@ -590,7 +745,7 @@
         function getCodexMemoryPrompt() {
             return `
 [DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
-- 🎒 TÚI ĐỒ / INVENTORY MC (Kiểm soát tiêu hao):
+- 🎒 TÚI ĐỒ / INVENTORY MC:
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
 - 🟢 NPC ACTIVE (CÒN SỐNG):
@@ -621,13 +776,19 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                 if (jsonMatch && jsonMatch[1]) {
                     const codexData = JSON.parse(jsonMatch[1]);
                     
-                    if(codexData.mcInventory !== undefined) document.getElementById('mcInventory').value = codexData.mcInventory;
+                    if(codexData.mcInventoryList !== undefined && Array.isArray(codexData.mcInventoryList)) {
+                        renderInventoryVisual(codexData.mcInventoryList);
+                        document.getElementById('mcInventory').value = JSON.stringify(codexData.mcInventoryList, null, 2);
+                    } else if(codexData.mcInventory !== undefined) {
+                        document.getElementById('mcInventory').value = typeof codexData.mcInventory === 'object' ? JSON.stringify(codexData.mcInventory) : codexData.mcInventory;
+                    }
+
                     if(codexData.npcActive !== undefined) document.getElementById('npcActive').value = codexData.npcActive;
                     if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
                     if(codexData.locations !== undefined) document.getElementById('locations').value = codexData.locations;
                     if(codexData.worldItems !== undefined) document.getElementById('worldItems').value = codexData.worldItems;
 
-                    log("⚡ Auto-updated Codex Memory tabs successfully!");
+                    log("⚡ Auto-updated Visual Inventory & Codex Memory tabs successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     return formatSummaryBox(cleanText);
@@ -639,18 +800,37 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG & QUẢN LÝ CODEX BẮC BUỘC]:
-1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT DỄ HIỂU NHƯ SAU:
-[TÓM TẮT]: (Tóm tắt tình thế nguy hiểm/cơ hội hiện tại của nhân vật ngắn gọn trong 1-2 câu).
+[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY & CODEX BẮC BUỘC]:
+1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
+[TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
-2. Cuối mỗi bài dẫn chuyện, bắt buộc kèm theo 1 khối mã JSON tự động cập nhật danh sách Codex:
+2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex. 
+ĐẶC BIỆT MỤC "mcInventoryList" LÀ NGUYÊN MỘT MẢNG OBJECT HIỂN THỊ HÌNH ẢNH/EMOJI CỦA VẬT PHẨM:
+- Trường "icon": Chọn Emoji phù hợp nhất đại diện cho vật phẩm (VD: 🌿, 🍄, 💎, ⚔️, 📜, 🍶, 🛡️...)
+- Quy tắc Tri thức Cảnh giới: Nếu MC ở cảnh giới thấp (ví dụ Luyện Khí kỳ) nhặt/sở hữu vật phẩm quá cao cấp hoặc bí ẩn, mục "effect" BẮT BUỘC ghi: "??? (Tri thức cảnh giới hiện tại chưa thể nhận biết, cần cơ duyên hoặc cao nhân chỉ điểm)". Khi MC có cơ duyên nhận biết được, hãy cập nhật lại "effect" thực tế!
+
 \`\`\`json
 {
-  "mcInventory": "Liệt kê chi tiết túi đồ và số lượng tiêu hao thực tế (VD: Linh thạch: 65/100, Đan dược: 2/5)",
-  "npcActive": "Danh sách các NPC CÒN SỐNG (Bạch Vi...) + Cảnh giới + Thái độ (TUYỆT ĐỐI KHÔNG TỰ Ý XÓA)",
-  "npcArchive": "Danh sách các NPC ĐÃ CHẾT + Nguyên nhân chết / Lịch sử liên quan",
+  "mcInventoryList": [
+    {
+      "name": "Linh Thạch Hạ Phẩm",
+      "icon": "💎",
+      "quantity": 50,
+      "quality": "Hạ Phẩm",
+      "effect": "Tu luyện hoặc trao đổi mua bán."
+    },
+    {
+      "name": "Vạn Năm Huyết Linh Chi",
+      "icon": "🍄",
+      "quantity": 1,
+      "quality": "??? (Cực Cao)",
+      "effect": "??? (Tri thức Luyện Khí Kỳ chưa thể nhận biết công dụng chi tiết)"
+    }
+  ],
+  "npcActive": "Danh sách các NPC CÒN SỐNG + Cảnh giới + Thái độ",
+  "npcArchive": "Danh sách các NPC ĐÃ CHẾT + Lịch sử",
   "locations": "Danh sách các địa danh đã khám phá",
-  "worldItems": "Danh sách các pháp bảo/công pháp/thần khí đã xuất hiện"
+  "worldItems": "Danh sách các pháp bảo/công pháp quan trọng xuất hiện"
 }
 \`\`\`
 `;
@@ -659,7 +839,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
             turnHtmlHistory = [];
-            storyBox.innerHTML = "🔄 Đang khởi tạo thế giới và thiết lập Auto Codex...";
+            storyBox.innerHTML = "🔄 Đang khởi tạo thế giới và thiết lập Visual Inventory...";
             log("Starting new game session...");
 
             const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
@@ -716,7 +896,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi với nhịp độ cẩn trọng, thực tế.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động ghi chép/cập nhật những thay đổi vào khối JSON cuối bài (chú ý trừ đúng số lượng tiêu hao vật phẩm và phân loại NPC).`;
+3. Tự động cập nhật danh sách "mcInventoryList" dưới dạng mảng Object có icon/emoji, phẩm chất, số lượng và công dụng (nhớ quy tắc '???' nếu vượt quá tri thức cảnh giới hiện tại của MC).`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

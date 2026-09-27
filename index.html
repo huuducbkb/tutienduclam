@@ -66,11 +66,11 @@
         .item-effect { font-size: 11px; color: var(--subtext-color); line-height: 1.3; word-wrap: break-word; }
         .item-unknown { color: #f85149 !important; font-style: italic; }
 
-        /* LOCATIONS GRID STYLE */
-        .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
-        .loc-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
-        .loc-info { flex: 1; min-width: 0; }
-        .loc-name { font-weight: bold; font-size: 13px; color: #fff; margin-bottom: 4px; }
+        /* LOCATIONS & WEAPONS GRID STYLE */
+        .loc-grid, .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
+        .loc-card, .weapon-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
+        .loc-info, .weapon-info { flex: 1; min-width: 0; }
+        .loc-name, .weapon-name { font-weight: bold; font-size: 13px; color: #fff; margin-bottom: 4px; }
         .loc-badge { display: inline-block; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; }
         .loc-danger-low { background: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid #238636; }
         .loc-danger-mid { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #d29922; }
@@ -160,7 +160,7 @@
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
 2. Tuyệt đối không tự ý hành động thay cho người chơi.
 3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT.
-4. Túi đồ phẩm chất quá cao ghi '??? (Chưa đủ kiến thức nhận biết)'.
+4. Túi đồ hoặc pháp bảo phẩm chất quá cao / bí bảo chưa rõ ghi '?' và 'Chờ cơ duyên xảo hợp để biết'.
 5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
 
@@ -350,11 +350,33 @@
         </div>
     </div>
 
-    <!-- TAB 5: ITEMS -->
+    <!-- TAB 5: ITEMS / WEAPONS -->
     <div id="items" class="tab-content">
-        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI</div>
-        <div class="form-group">
-            <textarea id="worldItems" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
+        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (VISUAL)</div>
+        <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo kèm cấp bậc và khả năng sử dụng. Nếu chưa rõ sẽ hiển thị dấu ? chờ cơ duyên xảo hợp.</div>
+        
+        <div id="weaponVisualGrid" class="weapon-grid">
+            <div class="weapon-card">
+                <div class="item-icon-box">🗡️</div>
+                <div class="weapon-info">
+                    <div class="weapon-name">Thanh Lược Kiếm (Hạ Phẩm Pháp Khí)</div>
+                    <span class="loc-badge loc-danger-low">Cấp bậc: Hạ Phẩm Pháp Khí</span>
+                    <div class="loc-detail-text">🛠️ Khả năng sử dụng: Chém sắt như chém bùn, phù hợp tu sĩ Luyện Khí Kỳ ngự kiếm công kích.</div>
+                </div>
+            </div>
+            <div class="weapon-card" style="border-color: #7d2828;">
+                <div class="item-icon-box" style="color: #f85149; font-weight:bold;">?</div>
+                <div class="weapon-info">
+                    <div class="weapon-name" style="color: #f85149;">Vật Sáng Bất Định (Bí Bảo Vô Danh)</div>
+                    <span class="loc-badge loc-danger-high" style="background: rgba(218, 54, 51, 0.2); color: #f85149; border-color: #da3633;">Cấp bậc: ? (Chưa rõ)</span>
+                    <div class="loc-detail-text" style="color: #f85149; font-style: italic;">🛠️ Khả năng sử dụng: Chưa rõ công dụng. Chờ cơ duyên xảo hợp để giải mã nhận biết.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA PHÁP BẢO:</div>
+            <textarea id="worldItems" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô pháp bảo..."></textarea>
         </div>
     </div>
 
@@ -664,6 +686,48 @@
             grid.innerHTML = html;
         }
 
+        /* --- XỬ LÝ HIỂN THỊ PHÁP BẢO VISUAL --- */
+        function renderWeaponsVisual(weaponArray) {
+            const grid = document.getElementById('weaponVisualGrid');
+            if(!weaponArray || !Array.isArray(weaponArray) || weaponArray.length === 0) {
+                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có pháp bảo nào được ghi nhận...</div>';
+                return;
+            }
+
+            let html = '';
+            weaponArray.forEach(wp => {
+                const icon = wp.icon || '🗡️';
+                const isImage = icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/');
+                const iconContent = isImage ? `<img src="${icon}" alt="${wp.name}">` : icon;
+
+                const isUnknown = (wp.rank && wp.rank.includes('?')) || (wp.usage && wp.usage.includes('Chờ cơ duyên'));
+                const cardStyle = isUnknown ? 'border-color: #7d2828;' : '';
+                const iconStyle = isUnknown ? 'color: #f85149; font-weight:bold;' : '';
+                const nameStyle = isUnknown ? 'color: #f85149;' : '';
+                const usageStyle = isUnknown ? 'color: #f85149; font-style: italic;' : '';
+                
+                let badgeClass = 'loc-danger-low';
+                let badgeRank = wp.rank || 'Hạ Phẩm';
+                const rLower = (wp.rank || '').toLowerCase();
+                if (rLower.includes('cao') || rLower.includes('thần khí') || rLower.includes('linh bảo') || rLower.includes('?')) {
+                    badgeClass = 'loc-danger-high';
+                } else if (rLower.includes('trung') || rLower.includes('thượng')) {
+                    badgeClass = 'loc-danger-mid';
+                }
+
+                html += `
+                <div class="weapon-card" style="${cardStyle}">
+                    <div class="item-icon-box" style="${iconStyle}">${iconContent}</div>
+                    <div class="weapon-info">
+                        <div class="weapon-name" style="${nameStyle}">${wp.name || 'Pháp bảo lạ'}</div>
+                        <span class="loc-badge ${badgeClass}">Cấp bậc: ${badgeRank}</span>
+                        <div class="loc-detail-text" style="${usageStyle}">🛠️ Khả năng sử dụng: ${wp.usage || 'Chưa rõ công dụng. Chờ cơ duyên xảo hợp để biết.'}</div>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
         function resetAllFields() {
             if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?")) return;
 
@@ -681,6 +745,7 @@
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
             document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
             document.getElementById('locVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
+            document.getElementById('weaponVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có pháp bảo nào được ghi nhận...</div>';
             localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
 
             log("Tất cả cấu hình và bản lưu đã được Reset.");
@@ -728,6 +793,7 @@
                 storyBoxContent: document.getElementById('story-box').innerHTML,
                 inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
                 locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
+                weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML,
                 mcAvatarBase64: mcAvatarBase64,
                 npcList: npcList,
                 inputs: {}
@@ -766,6 +832,9 @@
                 }
                 if(gameData.locVisualHTML) {
                     document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
+                }
+                if(gameData.weaponVisualHTML) {
+                    document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
                 }
                 if(gameData.mcAvatarBase64) {
                     setMcAvatarImage(gameData.mcAvatarBase64);
@@ -845,6 +914,9 @@
                     }
                     if(gameData.locVisualHTML) {
                         document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
+                    }
+                    if(gameData.weaponVisualHTML) {
+                        document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
                     }
                     if(gameData.npcList) {
                         npcList = gameData.npcList;
@@ -1004,10 +1076,14 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('locations').value = JSON.stringify(codexData.locationsList, null, 2);
                     }
 
-                    if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
-                    if(codexData.worldItems !== undefined) document.getElementById('worldItems').value = codexData.worldItems;
+                    if(codexData.weaponsList !== undefined && Array.isArray(codexData.weaponsList)) {
+                        renderWeaponsVisual(codexData.weaponsList);
+                        document.getElementById('worldItems').value = JSON.stringify(codexData.weaponsList, null, 2);
+                    }
 
-                    log("⚡ Auto-updated Visual Inventory, NPCs, Locations & Codex Memory successfully!");
+                    if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
+
+                    log("⚡ Auto-updated Visual Inventory, NPCs, Locations, Weapons & Codex Memory successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     return formatSummaryBox(cleanText);
@@ -1019,14 +1095,15 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, NPCS, LOCATIONS & CODEX BẮC BUỘC]:
+[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, NPCS, LOCATIONS, WEAPONS & CODEX BẮC BUỘC]:
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
 2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
 - "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji.
 - "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm từ 0 đến 100).
-- "locationsList": Mảng object địa danh, mỗi địa danh gồm: "name" (tên), "icon" (emoji hoặc hình ảnh), "position" (vị trí cụ thể), "danger" (cấp độ nguy hiểm: Thấp/Trung bình/Cao/Chí tử), "accessRules" (khả năng có thể vào hoặc điều kiện vào, ngoại trừ/trừ nhân vật chính).
+- "locationsList": Mảng object địa danh ("name", "icon", "position", "danger", "accessRules").
+- "weaponsList": Mảng object pháp bảo/bảo vật, mỗi pháp bảo gồm: "name" (tên), "icon" (emoji/hình ảnh hoặc "?" nếu là bí bảo chưa biết), "rank" (cấp bậc, nếu chưa rõ ghi "? (Chưa rõ)"), "usage" (khả năng sử dụng; nếu bí bảo chưa biết hoặc nhân vật chưa đủ kiến thức nhận biết, phải ghi rõ: "Chưa rõ công dụng. Chờ cơ duyên xảo hợp để biết").
 
 \`\`\`json
 {
@@ -1053,11 +1130,24 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
       "icon": "🏔️",
       "position": "Đông Nam Triều Quốc",
       "danger": "Thấp (Khu vực tông môn an toàn)",
-      "accessRules": "Cần đệ tử lệnh hoặc sự cho phép của trưởng lão. Cấm phàm nhân và ngoại địch xâm nhập."
+      "accessRules": "Cần đệ tử lệnh hoặc sự cho phép của trưởng lão."
     }
   ],
-  "npcArchive": "Danh sách NPC ĐÃ CHẾT",
-  "worldItems": "Danh sách pháp bảo"
+  "weaponsList": [
+    {
+      "name": "Thanh Lược Kiếm",
+      "icon": "🗡️",
+      "rank": "Hạ Phẩm Pháp Khí",
+      "usage": "Ngự kiếm phi hành hoặc công kích tầm xa sơ cấp."
+    },
+    {
+      "name": "Vật Sáng Bất Định",
+      "icon": "?",
+      "rank": "? (Chưa rõ)",
+      "usage": "Chưa rõ công dụng. Chờ cơ duyên xảo hợp để biết."
+    }
+  ],
+  "npcArchive": "Danh sách NPC ĐÃ CHẾT"
 }
 \`\`\`
 `;
@@ -1089,7 +1179,7 @@ Cấu hình game:
 ${getCodexMemoryPrompt()}
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy dẫn chuyện đoạn mở đầu thật sống động, giữ nhịp độ chậm rãi, nguy hiểm rình rập. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động có đánh số và đính kèm khối JSON tự động cập nhật Codex!`;
+Hãy dẫn chuyện đoạn mở đầu thật sinh động, giữ nhịp độ chậm rãi, nguy hiểm rình rập. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động có đánh số và đính kèm khối JSON tự động cập nhật Codex!`;
 
             const reply = await callGemini(systemPrompt);
             if(reply) {
@@ -1123,7 +1213,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcInventoryList", "npcActiveList" và "locationsList" đầy đủ thông tin vị trí, độ nguy hiểm, điều kiện vào.`;
+3. Tự động cập nhật danh sách "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList" đầy đủ thông tin chi tiết. Nếu gặp bảo vật chưa biết, hãy để dấu ? và ghi rõ chờ cơ duyên xảo hợp.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

@@ -66,6 +66,17 @@
         .item-effect { font-size: 11px; color: var(--subtext-color); line-height: 1.3; word-wrap: break-word; }
         .item-unknown { color: #f85149 !important; font-style: italic; }
 
+        /* LOCATIONS GRID STYLE */
+        .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
+        .loc-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
+        .loc-info { flex: 1; min-width: 0; }
+        .loc-name { font-weight: bold; font-size: 13px; color: #fff; margin-bottom: 4px; }
+        .loc-badge { display: inline-block; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; }
+        .loc-danger-low { background: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid #238636; }
+        .loc-danger-mid { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #d29922; }
+        .loc-danger-high { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid #da3633; }
+        .loc-detail-text { font-size: 11px; color: var(--subtext-color); margin-top: 3px; line-height: 1.3; }
+
         .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-top: 10px; }
         .npc-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; }
         .npc-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
@@ -318,9 +329,24 @@
 
     <!-- TAB 4: LOCATIONS -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT</div>
-        <div class="form-group">
-            <textarea id="locations" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
+        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT (VISUAL)</div>
+        <div class="label-desc">⚡ Tự động ghi chép hiển thị trực quan thông tin vị trí, độ nguy hiểm và điều kiện vào.</div>
+        
+        <div id="locVisualGrid" class="loc-grid">
+            <div class="loc-card">
+                <div class="item-icon-box">🏔️</div>
+                <div class="loc-info">
+                    <div class="loc-name">Thanh Vân Môn - Ngoại Tông</div>
+                    <span class="loc-badge loc-danger-low">Nguy hiểm: Thấp (An toàn)</span>
+                    <div class="loc-detail-text">📍 Vị trí: Đông Nam Triều Quốc</div>
+                    <div class="loc-detail-text">🚪 Điều kiện vào: Đệ tử ký danh hoặc có lệnh bài. Trừ phàm nhân và kẻ địch bị truy nã.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA ĐỊA DANH:</div>
+            <textarea id="locations" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô địa danh..."></textarea>
         </div>
     </div>
 
@@ -375,7 +401,6 @@
 
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
 
-        // Hàm tự tạo link avatar AI theo tên nhân vật
         function generateAutoAvatar(name) {
             return `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name || 'NPC')}`;
         }
@@ -473,7 +498,6 @@
             let html = '';
             npcList.forEach((npc, index) => {
                 const affInfo = getAffinityInfo(npc.affinity);
-                // Nếu NPC chưa có avatar, tự tạo tự động bằng AI Avatar
                 if (!npc.avatar || npc.avatar.trim() === '') {
                     npc.avatar = generateAutoAvatar(npc.name);
                 }
@@ -603,6 +627,43 @@
             reader.readAsDataURL(file);
         }
 
+        /* --- XỬ LÝ HIỂN THỊ ĐỊA DANH VISUAL --- */
+        function renderLocationsVisual(locArray) {
+            const grid = document.getElementById('locVisualGrid');
+            if(!locArray || !Array.isArray(locArray) || locArray.length === 0) {
+                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
+                return;
+            }
+
+            let html = '';
+            locArray.forEach(loc => {
+                const icon = loc.icon || '📍';
+                const isImage = icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/');
+                const iconContent = isImage ? `<img src="${icon}" alt="${loc.name}">` : icon;
+
+                let dangerClass = 'loc-danger-low';
+                let dangerText = loc.danger || 'Thấp';
+                const dLower = (loc.danger || '').toLowerCase();
+                if (dLower.includes('cao') || dLower.includes('chí tử') || dLower.includes('nguy hiểm cao')) {
+                    dangerClass = 'loc-danger-high';
+                } else if (dLower.includes('trung') || dLower.includes('vừa')) {
+                    dangerClass = 'loc-danger-mid';
+                }
+
+                html += `
+                <div class="loc-card">
+                    <div class="item-icon-box">${iconContent}</div>
+                    <div class="loc-info">
+                        <div class="loc-name">${loc.name || 'Vùng đất vô danh'}</div>
+                        <span class="loc-badge ${dangerClass}">Nguy hiểm: ${dangerText}</span>
+                        <div class="loc-detail-text">📍 Vị trí: ${loc.position || 'Chưa rõ'}</div>
+                        <div class="loc-detail-text">🚪 Điều kiện vào (Trừ MC): ${loc.accessRules || 'Tự do ra vào'}</div>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
         function resetAllFields() {
             if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?")) return;
 
@@ -619,6 +680,7 @@
 
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
             document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
+            document.getElementById('locVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
             localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
 
             log("Tất cả cấu hình và bản lưu đã được Reset.");
@@ -665,6 +727,7 @@
                 turnHtmlHistory: turnHtmlHistory,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
                 inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
+                locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
                 mcAvatarBase64: mcAvatarBase64,
                 npcList: npcList,
                 inputs: {}
@@ -700,6 +763,9 @@
                 
                 if(gameData.inventoryVisualHTML) {
                     document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
+                }
+                if(gameData.locVisualHTML) {
+                    document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
                 }
                 if(gameData.mcAvatarBase64) {
                     setMcAvatarImage(gameData.mcAvatarBase64);
@@ -776,6 +842,9 @@
                     }
                     if(gameData.inventoryVisualHTML) {
                         document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
+                    }
+                    if(gameData.locVisualHTML) {
+                        document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
                     }
                     if(gameData.npcList) {
                         npcList = gameData.npcList;
@@ -916,7 +985,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                                 if(aiNpc.affinity !== undefined) exist.affinity = aiNpc.affinity;
                                 if(aiNpc.avatar) exist.avatar = aiNpc.avatar;
                             } else {
-                                // Tự động tạo Avatar AI nếu AI không trả về ảnh
                                 const autoAvatarUrl = aiNpc.avatar || generateAutoAvatar(aiNpc.name);
                                 npcList.push({
                                     id: 'npc_' + Date.now() + Math.random().toString(36).substr(2, 4),
@@ -931,11 +999,15 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         renderNpcs();
                     }
 
+                    if(codexData.locationsList !== undefined && Array.isArray(codexData.locationsList)) {
+                        renderLocationsVisual(codexData.locationsList);
+                        document.getElementById('locations').value = JSON.stringify(codexData.locationsList, null, 2);
+                    }
+
                     if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
-                    if(codexData.locations !== undefined) document.getElementById('locations').value = codexData.locations;
                     if(codexData.worldItems !== undefined) document.getElementById('worldItems').value = codexData.worldItems;
 
-                    log("⚡ Auto-updated Visual Inventory, NPCs & Codex Memory successfully!");
+                    log("⚡ Auto-updated Visual Inventory, NPCs, Locations & Codex Memory successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     return formatSummaryBox(cleanText);
@@ -947,13 +1019,14 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, NPCS & CODEX BẮC BUỘC]:
+[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, NPCS, LOCATIONS & CODEX BẮC BUỘC]:
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
 2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
 - "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji.
 - "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm từ 0 đến 100).
+- "locationsList": Mảng object địa danh, mỗi địa danh gồm: "name" (tên), "icon" (emoji hoặc hình ảnh), "position" (vị trí cụ thể), "danger" (cấp độ nguy hiểm: Thấp/Trung bình/Cao/Chí tử), "accessRules" (khả năng có thể vào hoặc điều kiện vào, ngoại trừ/trừ nhân vật chính).
 
 \`\`\`json
 {
@@ -974,8 +1047,16 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
       "affinity": 65
     }
   ],
+  "locationsList": [
+    {
+      "name": "Thanh Vân Môn",
+      "icon": "🏔️",
+      "position": "Đông Nam Triều Quốc",
+      "danger": "Thấp (Khu vực tông môn an toàn)",
+      "accessRules": "Cần đệ tử lệnh hoặc sự cho phép của trưởng lão. Cấm phàm nhân và ngoại địch xâm nhập."
+    }
+  ],
   "npcArchive": "Danh sách NPC ĐÃ CHẾT",
-  "locations": "Danh sách địa danh",
   "worldItems": "Danh sách pháp bảo"
 }
 \`\`\`
@@ -1042,7 +1123,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcInventoryList" và "npcActiveList" (có kèm điểm hảo cảm thay đổi dựa trên hành động).`;
+3. Tự động cập nhật danh sách "mcInventoryList", "npcActiveList" và "locationsList" đầy đủ thông tin vị trí, độ nguy hiểm, điều kiện vào.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {
@@ -1058,5 +1139,3 @@ Yêu cầu:
     </script>
 </body>
 </html>
-
-```

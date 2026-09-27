@@ -1,3 +1,20 @@
+Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **ô tải / gắn ảnh đại diện (Avatar) cho MC**, hiển thị trực tiếp trong **Thẻ Thông Tin Nhân Vật** gọn đẹp và tự động lưu/load cùng tiến trình game.
+
+---
+
+### Các điểm mới được cập nhật:
+
+1. **Khung Avatar MC đa năng:**
+* Hỗ trợ **nhập URL hình ảnh** (ví dụ link ảnh từ Pinterest, Imgur, ImgBB...).
+* Hỗ trợ **Tải ảnh từ máy/điện thoại** (tự mã hóa thành dạng Base64 lưu trực tiếp vào bộ nhớ).
+
+
+2. **Khung Preview Nhân Vật (MC Profile Card):** Tự động hiển thị Avatar vuông vức, bo góc thẩm mỹ kèm tên, cảnh giới và kỹ năng ngay trong Tab MC.
+3. **Đồng bộ Save/Load & Reset:** Ảnh đại diện tự động lưu vào file `.json` cũng như `LocalStorage`, không lo mất ảnh khi tắt trình duyệt hay chuyển thiết bị.
+
+---
+
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1028,3 +1045,5 @@ Yêu cầu:
     </script>
 </body>
 </html>
+
+```

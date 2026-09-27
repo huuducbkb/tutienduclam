@@ -1,20 +1,3 @@
-Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **ô tải / gắn ảnh đại diện (Avatar) cho MC**, hiển thị trực tiếp trong **Thẻ Thông Tin Nhân Vật** gọn đẹp và tự động lưu/load cùng tiến trình game.
-
----
-
-### Các điểm mới được cập nhật:
-
-1. **Khung Avatar MC đa năng:**
-* Hỗ trợ **nhập URL hình ảnh** (ví dụ link ảnh từ Pinterest, Imgur, ImgBB...).
-* Hỗ trợ **Tải ảnh từ máy/điện thoại** (tự mã hóa thành dạng Base64 lưu trực tiếp vào bộ nhớ).
-
-
-2. **Khung Preview Nhân Vật (MC Profile Card):** Tự động hiển thị Avatar vuông vức, bo góc thẩm mỹ kèm tên, cảnh giới và kỹ năng ngay trong Tab MC.
-3. **Đồng bộ Save/Load & Reset:** Ảnh đại diện tự động lưu vào file `.json` cũng như `LocalStorage`, không lo mất ảnh khi tắt trình duyệt hay chuyển thiết bị.
-
----
-
-```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -39,52 +22,34 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); font-size: 14px; line-height: 1.5; padding: 10px; }
 
-        /* Header Bar */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--panel-bg); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); }
         .header-title { font-size: 16px; font-weight: bold; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; }
         .menu-btn, .play-btn { background: #21262d; border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .play-btn { background: var(--accent-green); }
 
-        /* Slide-out Sidebar */
         .sidebar { position: fixed; top: 0; left: -280px; width: 270px; height: 100%; background: var(--panel-bg); border-right: 1px solid var(--border-color); transition: 0.3s; z-index: 100; padding: 15px; overflow-y: auto; }
         .sidebar.active { left: 0; }
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 16px; font-weight: bold; }
         .sidebar-item { display: block; width: 100%; padding: 10px 12px; background: #21262d; border: 1px solid var(--border-color); color: #fff; text-align: left; border-radius: 6px; margin-bottom: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-        /* Tabs Navigation */
         .tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; background: var(--panel-bg); padding: 6px; border-radius: 8px; -webkit-overflow-scrolling: touch; }
         .tab-btn { flex: 1; min-width: 65px; padding: 8px 4px; border: none; background: transparent; color: var(--subtext-color); font-weight: bold; border-radius: 6px; white-space: nowrap; font-size: 12px; cursor: pointer; text-align: center; }
         .tab-btn.active { background: var(--input-bg); color: var(--accent-blue); border: 1px solid var(--border-color); }
 
-        /* Tab Content */
         .tab-content { display: none; background: var(--panel-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; }
         .tab-content.active { display: block; }
 
-        /* Form Controls */
         .form-group { margin-bottom: 16px; }
         .label-title { color: #fff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         .label-desc { color: var(--subtext-color); font-size: 11px; margin-top: 2px; margin-bottom: 6px; line-height: 1.3; }
         
         input, select { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; padding: 10px; font-size: 14px; font-family: inherit; }
-        
-        textarea { 
-            width: 100%; 
-            background: var(--input-bg); 
-            border: 1px solid var(--border-color); 
-            border-radius: 6px; 
-            color: #fff; 
-            padding: 10px; 
-            font-size: 14px; 
-            line-height: 1.5; 
-            font-family: inherit; 
-            resize: vertical; 
-            min-height: 90px; 
-        }
+        textarea { width: 100%; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; padding: 10px; font-size: 14px; line-height: 1.5; font-family: inherit; resize: vertical; min-height: 90px; }
 
-        /* MC AVATAR & PROFILE CARD STYLING */
+        /* MC PROFILE & LOCAL UPLOAD AVATAR */
         .mc-profile-card {
             display: flex;
-            gap: 14px;
+            gap: 16px;
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             padding: 12px;
@@ -104,7 +69,6 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
             justify-content: center;
             overflow: hidden;
             flex-shrink: 0;
-            position: relative;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
@@ -114,176 +78,63 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
             object-fit: cover;
         }
 
-        .avatar-placeholder {
-            font-size: 38px;
-            color: var(--subtext-color);
-        }
+        .avatar-placeholder { font-size: 38px; color: var(--subtext-color); }
 
         .avatar-controls {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            width: 100%;
+            gap: 8px;
+            flex: 1;
         }
 
         .btn-upload-file {
-            background: #21262d;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 6px 10px;
+            background: var(--accent-blue);
+            border: none;
+            color: #fff;
+            padding: 8px 12px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
+            display: inline-block;
         }
 
-        /* Visual Inventory Styling */
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .item-card {
-            background: var(--input-bg);
+        .btn-remove-avatar {
+            background: #21262d;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .item-icon-box {
-            width: 50px;
-            height: 50px;
-            background: #1c2128;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-
-        .item-icon-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .item-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .item-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .item-name {
-            font-weight: bold;
-            font-size: 13px;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .item-qty {
-            background: var(--accent-blue);
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            flex-shrink: 0;
-        }
-
-        .item-quality {
+            color: var(--accent-red);
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 11px;
-            color: var(--accent-gold);
-            margin-bottom: 4px;
-            font-weight: 600;
+            cursor: pointer;
+            width: fit-content;
         }
 
-        .item-effect {
-            font-size: 11px;
-            color: var(--subtext-color);
-            line-height: 1.3;
-            word-wrap: break-word;
-        }
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+        .item-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .item-icon-box { width: 50px; height: 50px; background: #1c2128; border: 1px solid var(--border-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; overflow: hidden; }
+        .item-icon-box img { width: 100%; height: 100%; object-fit: cover; }
+        .item-details { flex: 1; min-width: 0; }
+        .item-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .item-name { font-weight: bold; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-qty { background: var(--accent-blue); color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; flex-shrink: 0; }
+        .item-quality { font-size: 11px; color: var(--accent-gold); margin-bottom: 4px; font-weight: 600; }
+        .item-effect { font-size: 11px; color: var(--subtext-color); line-height: 1.3; word-wrap: break-word; }
+        .item-unknown { color: #f85149 !important; font-style: italic; }
 
-        .item-unknown {
-            color: #f85149 !important;
-            font-style: italic;
-        }
-
-        /* AI Gen Button Frame */
         .input-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
         .btn-aigen { background: var(--accent-purple); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 
-        /* Action Buttons Group in Game Tab */
         .game-controls { display: flex; gap: 8px; margin-top: 8px; }
         .btn-action { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); color: #fff; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; }
         .btn-send { background: var(--accent-purple); }
         .btn-undo { background: #30363d; color: #f0f6fc; }
 
-        /* Play Box & Logs */
-        #story-box { 
-            background: var(--input-bg); 
-            height: 450px; 
-            overflow-y: auto; 
-            padding: 12px; 
-            border-radius: 6px; 
-            border: 1px solid var(--border-color); 
-            white-space: pre-wrap; 
-            margin-bottom: 12px; 
-            font-size: 14px; 
-            line-height: 1.6; 
-        }
-
-        .player-action-highlight {
-            color: #ff5555;
-            font-weight: bold;
-            background: rgba(255, 85, 85, 0.12);
-            padding: 6px 10px;
-            border-left: 4px solid #ff5555;
-            border-radius: 4px;
-            margin: 12px 0;
-            display: block;
-        }
-
-        .summary-box {
-            background: rgba(210, 153, 34, 0.1);
-            border: 1px solid var(--accent-gold);
-            border-left: 4px solid var(--accent-gold);
-            color: #f0e6d2;
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin: 12px 0;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-        .summary-title {
-            color: var(--accent-gold);
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 12px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+        .player-action-highlight { color: #ff5555; font-weight: bold; background: rgba(255, 85, 85, 0.12); padding: 6px 10px; border-left: 4px solid #ff5555; border-radius: 4px; margin: 12px 0; display: block; }
+        .summary-box { background: rgba(210, 153, 34, 0.1); border: 1px solid var(--accent-gold); border-left: 4px solid var(--accent-gold); color: #f0e6d2; padding: 10px 12px; border-radius: 6px; margin: 12px 0; font-size: 13px; line-height: 1.5; }
+        .summary-title { color: var(--accent-gold); font-weight: bold; text-transform: uppercase; font-size: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
 
         .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
         .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); }
@@ -291,7 +142,6 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
 </head>
 <body>
 
-    <!-- Header Bar -->
     <div class="header">
         <div class="header-title">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -300,7 +150,6 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
         <button class="play-btn" onclick="openTab('play')">▶ PLAY</button>
     </div>
 
-    <!-- Sidebar Menu Slide-out -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <span>⚙ CẤU HÌNH</span>
@@ -323,7 +172,6 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
         <button class="sidebar-item" style="background: var(--accent-red); margin-top: 15px;" onclick="resetAllFields()">🧹 RESET TẤT CẢ CẤU HÌNH</button>
     </div>
 
-    <!-- Tabs Navigation -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 MC</button>
@@ -344,19 +192,16 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 <button class="btn-aigen" style="background: var(--accent-red);" onclick="aiGenField('aiRules', 'Chỉ thị bắt buộc AI Game Master phải tuân thủ tuyệt đối chuẩn Phàm Nhân Tu Tiên')">✨ AI GEN</button>
             </div>
             <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
-1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên). Không cho nhân vật đột phá liên tục hay gặp cơ duyên dễ dàng.
+1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
 2. Tuyệt đối không tự ý hành động thay cho người chơi.
-3. Luôn duy trì NPC SỐNG (Bạch Vi...) và phân loại rõ NPC ĐÃ CHẾT.
-4. TÚI ĐỒ: Vật phẩm vượt quá phẩm chất/tri thức của cảnh giới hiện tại (VD Luyện Khí kỳ) phải ghi công dụng là '??? (Chưa đủ kiến thức nhận biết)', chờ cơ duyên/đột phá mới giải mã.
+3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT.
+4. Túi đồ phẩm chất quá cao ghi '??? (Chưa đủ kiến thức nhận biết)'.
 5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
 
         <div class="form-group">
             <div class="input-header">
-                <div>
-                    <div class="label-title">TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN</div>
-                    <div class="label-desc">Tên gọi chính thức của tác phẩm hoặc trò chơi.</div>
-                </div>
+                <div class="label-title">TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN</div>
                 <button class="btn-aigen" onclick="aiGenField('gameTitle', 'Tên trò chơi hoặc tác phẩm tu tiên độc đáo')">✨ AI GEN</button>
             </div>
             <textarea id="gameTitle" style="min-height: 60px;" placeholder="Nhập tên trò chơi..."></textarea>
@@ -368,8 +213,8 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 <button class="btn-aigen" onclick="aiGenField('difficultyCustom', 'Quy tắc độ khó và thử thách của thế giới game')">✨ AI GEN</button>
             </div>
             <select id="difficultySelect">
-                <option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn / Thông thường) - Khốc liệt, tài nguyên khan hiếm, quái vật bá đạo...</option>
-                <option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)">NSFW (Nhạy cảm / Người lớn) - Thử thách trong tình ái, dụ dỗ...</option>
+                <option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn / Thông thường) - Khốc liệt, tài nguyên khan hiếm...</option>
+                <option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)">NSFW (Nhạy cảm / Người lớn) - Thử thách trong tình ái...</option>
             </select>
             <textarea id="difficultyCustom" style="margin-top:8px; min-height:60px;" placeholder="Ghi chú thêm về độ khó..."></textarea>
         </div>
@@ -377,7 +222,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">BỐI CẢNH</div>
-                <button class="btn-aigen" onclick="aiGenField('worldContext', 'Mô tả bối cảnh tổng quan của thế giới tu tiên huyền huyễn')">✨ AI GEN</button>
+                <button class="btn-aigen" onclick="aiGenField('worldContext', 'Mô tả bối cảnh tổng quan của thế giới tu tiên')">✨ AI GEN</button>
             </div>
             <textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea>
         </div>
@@ -403,7 +248,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 <div class="label-title">QUY TẮC THẾ GIỚI (LUẬT LỆ, CẤM KỴ)</div>
                 <button class="btn-aigen" onclick="aiGenField('worldRules', 'Các quy tắc thế giới, cấm kỵ và thiên đạo')">✨ AI GEN</button>
             </div>
-            <textarea id="worldRules" placeholder="Những luật lệ và quy luật của thế giới này..."></textarea>
+            <textarea id="worldRules" placeholder="Những luật lệ và quy luật của thế giới..."></textarea>
         </div>
 
         <div class="form-group">
@@ -425,9 +270,9 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">HỆ THỐNG SỨC MẠNH / CẢNH GIỚI</div>
-                <button class="btn-aigen" onclick="aiGenField('powerSystem', 'Hệ thống cảnh giới sức mạnh chi tiết (Luyện Khí, Trúc Cơ, Kim Đan...)')">✨ AI GEN</button>
+                <button class="btn-aigen" onclick="aiGenField('powerSystem', 'Hệ thống cảnh giới sức mạnh chi tiết')">✨ AI GEN</button>
             </div>
-            <textarea id="powerSystem" placeholder="Bắt buộc chi tiết hóa bậc năng lực, rank, cảnh giới..."></textarea>
+            <textarea id="powerSystem" placeholder="Chi tiết các bậc năng lực, rank, cảnh giới..."></textarea>
         </div>
 
         <div class="form-group">
@@ -439,23 +284,24 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
         </div>
     </div>
 
-    <!-- TAB 2: MC & VISUAL INVENTORY -->
+    <!-- TAB 2: MC -->
     <div id="mc" class="tab-content">
         <div class="section-tag">🖼️ ẢNH ĐẠI DIỆN & THÔNG TIN NHÂN VẬT CHÍNH</div>
         
-        <!-- MC PROFILE & AVATAR CARD -->
+        <!-- MC AVATAR LOCAL UPLOAD ONLY -->
         <div class="mc-profile-card">
             <div class="avatar-box" id="avatarPreviewBox">
                 <span class="avatar-placeholder" id="avatarPlaceholder">🧙‍♂️</span>
                 <img id="avatarImg" src="" style="display:none;" alt="MC Avatar">
             </div>
             <div class="avatar-controls">
-                <div class="label-title" style="font-size:11px;">GẮN ẢNH ĐẠI DIỆN MC:</div>
-                <input type="text" id="mcAvatarUrl" placeholder="Dán URL ảnh (https://...)" onchange="updateMcAvatarFromUrl(this.value)" style="font-size: 12px; padding: 6px 8px;">
+                <div class="label-title" style="font-size:12px;">ẢNH ĐẠI DIỆN MC</div>
+                <div class="label-desc" style="margin-bottom:4px;">Tải ảnh từ máy tính hoặc điện thoại:</div>
                 <label class="btn-upload-file">
                     📁 Chọn ảnh từ thiết bị...
                     <input type="file" id="avatarFileInput" style="display:none;" accept="image/*" onchange="uploadMcAvatarFile(event)">
                 </label>
+                <button class="btn-remove-avatar" id="btnRemoveAvatar" style="display:none;" onclick="removeMcAvatar()">❌ Xóa ảnh</button>
             </div>
         </div>
 
@@ -472,14 +318,13 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 <div class="label-title">KỸ NĂNG & NĂNG LỰC CỐT LÕI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Kỹ năng, căn cơ và năng lực đặc biệt của MC')">✨ AI GEN</button>
             </div>
-            <textarea id="mcSkills" placeholder="VD: Bổ Thiên Thuật, Trận pháp sơ cấp, Ẩn giấu khí tức..."></textarea>
+            <textarea id="mcSkills" placeholder="VD: Bổ Thiên Thuật, Trận pháp sơ cấp..."></textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
         <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (VISUAL AUTO INVENTORY)</div>
-        <div class="label-desc">⚡ Hiển thị hình ảnh, phẩm chất, số lượng và công dụng. Các vật phẩm phẩm chất quá cao so với cảnh giới sẽ ghi <i>??? (Chưa đủ kiến thức nhận biết)</i>.</div>
+        <div class="label-desc">⚡ Tự động hiển thị vật phẩm kèm hình ảnh/emoji.</div>
         
-        <!-- TRÌNH DIỄN HÌNH ẢNH THẺ VẬT PHẨM -->
         <div id="inventoryVisualGrid" class="inventory-grid">
             <div class="item-card">
                 <div class="item-icon-box">💎</div>
@@ -489,62 +334,46 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                         <span class="item-qty">x50</span>
                     </div>
                     <div class="item-quality">Phẩm chất: Hạ Phẩm</div>
-                    <div class="item-effect">Dùng để giao dịch mua bán hoặc thu nạp linh khí bù đắp tu vi.</div>
-                </div>
-            </div>
-
-            <div class="item-card">
-                <div class="item-icon-box">🍄</div>
-                <div class="item-details">
-                    <div class="item-title-row">
-                        <span class="item-name">Huyết Linh Chi (Vạn Năm)</span>
-                        <span class="item-qty">x1</span>
-                    </div>
-                    <div class="item-quality">Phẩm chất: ??? (Cực Cao)</div>
-                    <div class="item-effect item-unknown">⚡ ??? (Tri thức Luyện Khí Kỳ chưa thể nhận biết công dụng chi tiết, cần cơ duyên hoặc cao nhân chỉ điểm)</div>
+                    <div class="item-effect">Dùng để giao dịch hoặc thu nạp linh khí.</div>
                 </div>
             </div>
         </div>
 
-        <!-- RAW DATA TEXTAREA CHO AI UPDATE -->
         <div class="form-group" style="margin-top: 15px;">
-            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA (AI TỰ ĐỘNG ĐỒNG BỘ DẠNG TEXT):</div>
+            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA:</div>
             <textarea id="mcInventory" style="min-height: 80px; font-size:12px; color:#8b949e;" placeholder="Dữ liệu thô của túi đồ..."></textarea>
         </div>
     </div>
 
-    <!-- TAB 3: NPCS CODEX -->
+    <!-- TAB 3: NPCS -->
     <div id="npc" class="tab-content">
-        <div class="section-tag">👥 CODEX: QUẢN LÝ NPC SỐNG & LỊCH SỬ (AUTO UPDATED)</div>
-        <div class="label-desc">⚡ Tách biệt danh sách NPC Còn Sống (Active) và NPC Đã Chết (Archive) để phục vụ tái ngộ hoặc tra cứu lịch sử.</div>
+        <div class="section-tag">👥 CODEX: QUẢN LÝ NPC SỐNG & LỊCH SỬ</div>
         <div class="form-group">
             <div class="label-title" style="margin-bottom: 4px; color: var(--accent-green);">🟢 NPC ACTIVE (CÒN SỐNG):</div>
-            <textarea id="npcActive" style="min-height: 120px; margin-bottom: 12px;" placeholder="Ví dụ: Bạch Vi (Trúc Cơ sơ kỳ) - Thanh Vân Tông - Thái độ: Căm hận..."></textarea>
+            <textarea id="npcActive" style="min-height: 120px; margin-bottom: 12px;" placeholder="Ví dụ: Bạch Vi (Trúc Cơ sơ kỳ)..."></textarea>
             
             <div class="label-title" style="margin-bottom: 4px; color: var(--accent-red);">🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ):</div>
-            <textarea id="npcArchive" style="min-height: 100px;" placeholder="Ví dụ: Lão đạo sĩ (Bị phản phệ) / Hắc y nhân (Bị mai phục)..."></textarea>
+            <textarea id="npcArchive" style="min-height: 100px;" placeholder="Ví dụ: Lão đạo sĩ (Bị phản phệ)..."></textarea>
         </div>
     </div>
 
-    <!-- TAB 4: LOCATIONS CODEX -->
+    <!-- TAB 4: LOCATIONS -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT (AUTO UPDATED)</div>
-        <div class="label-desc">⚡ Tự động ghi chép các địa danh, tông môn, bí cảnh khi nhân vật di chuyển qua.</div>
+        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT</div>
         <div class="form-group">
             <textarea id="locations" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
         </div>
     </div>
 
-    <!-- TAB 5: ITEMS CODEX -->
+    <!-- TAB 5: ITEMS -->
     <div id="items" class="tab-content">
-        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (AUTO UPDATED)</div>
-        <div class="label-desc">⚡ Tự động lưu trữ thông tin về các thần khí, pháp bảo quan trọng xuất hiện trong truyện.</div>
+        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI</div>
         <div class="form-group">
             <textarea id="worldItems" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
         </div>
     </div>
 
-    <!-- TAB 6: PLAY & LOGS -->
+    <!-- TAB 6: PLAY -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!</div>
         
@@ -555,7 +384,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
             
             <div class="game-controls">
                 <button class="btn-action btn-send" onclick="sendAction()">GỬI HÀNH ĐỘNG ➔</button>
-                <button class="btn-action btn-undo" onclick="undoLastTurn()" title="Xóa lượt trước để chọn lại">↩ QUAY LẠI LƯỢT TRƯỚC</button>
+                <button class="btn-action btn-undo" onclick="undoLastTurn()">↩ QUAY LẠI LƯỢT TRƯỚC</button>
             </div>
         </div>
 
@@ -566,12 +395,13 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
     <script>
         let chatHistory = [];
         let turnHtmlHistory = [];
+        let mcAvatarBase64 = ""; // Lưu trữ avatar chuỗi nén nhẹ
 
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
-            'npcActive', 'npcArchive', 'locations', 'worldItems', 'mcAvatarUrl'
+            'npcActive', 'npcArchive', 'locations', 'worldItems'
         ];
 
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
@@ -595,24 +425,31 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // AVATAR FUNCTIONS
+        // TỰ ĐỘNG CẮT VÀ NÉN ẢNH ĐẠI DIỆN
         function setMcAvatarImage(src) {
             const img = document.getElementById('avatarImg');
             const placeholder = document.getElementById('avatarPlaceholder');
+            const btnRemove = document.getElementById('btnRemoveAvatar');
+            
             if (src && src.trim() !== '') {
                 img.src = src;
                 img.style.display = 'block';
                 placeholder.style.display = 'none';
+                if(btnRemove) btnRemove.style.display = 'inline-block';
+                mcAvatarBase64 = src;
             } else {
                 img.src = '';
                 img.style.display = 'none';
                 placeholder.style.display = 'block';
+                if(btnRemove) btnRemove.style.display = 'none';
+                mcAvatarBase64 = "";
             }
         }
 
-        function updateMcAvatarFromUrl(url) {
-            setMcAvatarImage(url);
-            log("MC Avatar updated from URL.");
+        function removeMcAvatar() {
+            setMcAvatarImage('');
+            document.getElementById('avatarFileInput').value = '';
+            log("Đã xóa ảnh đại diện.");
         }
 
         function uploadMcAvatarFile(event) {
@@ -621,10 +458,25 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const base64Src = e.target.result;
-                document.getElementById('mcAvatarUrl').value = base64Src;
-                setMcAvatarImage(base64Src);
-                log("MC Avatar uploaded from local file.");
+                const img = new Image();
+                img.onload = function() {
+                    // Nén resize về kích thước 150x150 cực nhẹ
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 150;
+                    canvas.height = 150;
+
+                    let minSide = Math.min(img.width, img.height);
+                    let sx = (img.width - minSide) / 2;
+                    let sy = (img.height - minSide) / 2;
+
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, 150, 150);
+                    const resizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+                    setMcAvatarImage(resizedBase64);
+                    log("Tải lên và nén ảnh đại diện thành công!");
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -639,7 +491,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
 
             chatHistory = [];
             turnHtmlHistory = [];
-            setMcAvatarImage('');
+            removeMcAvatar();
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
             document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
             localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
@@ -688,6 +540,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 turnHtmlHistory: turnHtmlHistory,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
                 inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
+                mcAvatarBase64: mcAvatarBase64,
                 inputs: {}
             };
 
@@ -696,10 +549,14 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 if(el) gameData.inputs[id] = el.value;
             });
 
-            localStorage.setItem('HONDUC_TU_TIEN_SAVE', JSON.stringify(gameData));
-            log("Game state & Auto Codex saved.");
-            alert("💾 Đã lưu game và toàn bộ dữ liệu Avatar/Visual Inventory!");
-            toggleSidebar();
+            try {
+                localStorage.setItem('HONDUC_TU_TIEN_SAVE', JSON.stringify(gameData));
+                log("Game state saved.");
+                alert("💾 Đã lưu game thành công!");
+                toggleSidebar();
+            } catch (e) {
+                alert("Lỗi dung lượng lưu trữ: " + e.message);
+            }
         }
 
         function loadGame() {
@@ -717,23 +574,23 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                 if(gameData.inventoryVisualHTML) {
                     document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
                 }
+                if(gameData.mcAvatarBase64) {
+                    setMcAvatarImage(gameData.mcAvatarBase64);
+                }
 
                 if(gameData.inputs) {
                     Object.keys(gameData.inputs).forEach(id => {
                         const el = document.getElementById(id);
                         if(el) el.value = gameData.inputs[id];
                     });
-                    if (gameData.inputs['mcAvatarUrl']) {
-                        setMcAvatarImage(gameData.inputs['mcAvatarUrl']);
-                    }
                 }
 
-                log("Game state & Auto Codex loaded.");
-                alert("📂 Đã khôi phục thành công bản lưu!");
+                log("Game state restored.");
+                alert("📂 Khôi phục thành công bản lưu!");
                 toggleSidebar();
                 openTab('play');
             } catch(e) {
-                alert("Lỗi khi khôi phục bản lưu: " + e.message);
+                alert("Lỗi khôi phục: " + e.message);
             }
         }
 
@@ -746,7 +603,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
             a.href = URL.createObjectURL(blob);
             a.download = "hongduc_tutien_save.json";
             a.click();
-            log("Exported save file hongduc_tutien_save.json");
+            log("Xuất file save thành công.");
         }
 
         function importSaveFile() {
@@ -764,8 +621,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                     JSON.parse(content);
                     localStorage.setItem('HONDUC_TU_TIEN_SAVE', content);
                     loadGame();
-                    log("Imported save file successfully.");
-                    alert("📥 Đã nhập file Save thành công!");
+                    alert("📥 Nhập file save thành công!");
                 } catch (err) {
                     alert("❌ File save không hợp lệ!");
                 }
@@ -783,9 +639,9 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
                             const el = document.getElementById(id);
                             if(el) el.value = gameData.inputs[id];
                         });
-                        if (gameData.inputs['mcAvatarUrl']) {
-                            setMcAvatarImage(gameData.inputs['mcAvatarUrl']);
-                        }
+                    }
+                    if(gameData.mcAvatarBase64) {
+                        setMcAvatarImage(gameData.mcAvatarBase64);
                     }
                     if(gameData.inventoryVisualHTML) {
                         document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
@@ -796,7 +652,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
 
         function undoLastTurn() {
             if (chatHistory.length <= 2) {
-                alert("⚠️ Không thể quay lại thêm nữa!");
+                alert("⚠️ Không thể quay lại thêm!");
                 return;
             }
 
@@ -810,7 +666,7 @@ Dưới đây là mã nguồn HTML/JS hoàn chỉnh đã được tích hợp **
             }
 
             log("Undo executed.");
-            alert("↩ Đã xóa kết quả lựa chọn cũ! Bạn có thể nhập lại.");
+            alert("↩ Đã quay lại lượt trước!");
         }
 
         async function callGemini(promptText) {
@@ -940,7 +796,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex. 
 ĐẶC BIỆT MỤC "mcInventoryList" LÀ NGUYÊN MỘT MẢNG OBJECT HIỂN THỊ HÌNH ẢNH/EMOJI CỦA VẬT PHẨM:
 - Trường "icon": Chọn Emoji phù hợp nhất đại diện cho vật phẩm (VD: 🌿, 🍄, 💎, ⚔️, 📜, 🍶, 🛡️...)
-- Quy tắc Tri thức Cảnh giới: Nếu MC ở cảnh giới thấp (ví dụ Luyện Khí kỳ) nhặt/sở hữu vật phẩm quá cao cấp hoặc bí ẩn, mục "effect" BẮT BUỘC ghi: "??? (Tri thức cảnh giới hiện tại chưa thể nhận biết, cần cơ duyên hoặc cao nhân chỉ điểm)". Khi MC có cơ duyên nhận biết được, hãy cập nhật lại "effect" thực tế!
+- Quy tắc Tri thức Cảnh giới: Nếu MC ở cảnh giới thấp nhặt/sở hữu vật phẩm quá cao cấp, mục "effect" BẮT BUỘC ghi: "??? (Tri thức cảnh giới hiện tại chưa thể nhận biết, cần cơ duyên hoặc cao nhân chỉ điểm)". Khi MC có cơ duyên nhận biết được, hãy cập nhật lại "effect" thực tế!
 
 \`\`\`json
 {
@@ -951,19 +807,12 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
       "quantity": 50,
       "quality": "Hạ Phẩm",
       "effect": "Tu luyện hoặc trao đổi mua bán."
-    },
-    {
-      "name": "Vạn Năm Huyết Linh Chi",
-      "icon": "🍄",
-      "quantity": 1,
-      "quality": "??? (Cực Cao)",
-      "effect": "??? (Tri thức Luyện Khí Kỳ chưa thể nhận biết công dụng chi tiết)"
     }
   ],
-  "npcActive": "Danh sách các NPC CÒN SỐNG + Cảnh giới + Thái độ",
-  "npcArchive": "Danh sách các NPC ĐÃ CHẾT + Lịch sử",
-  "locations": "Danh sách các địa danh đã khám phá",
-  "worldItems": "Danh sách các pháp bảo/công pháp quan trọng xuất hiện"
+  "npcActive": "Danh sách NPC CÒN SỐNG",
+  "npcArchive": "Danh sách NPC ĐÃ CHẾT",
+  "locations": "Danh sách địa danh",
+  "worldItems": "Danh sách pháp bảo"
 }
 \`\`\`
 `;
@@ -972,11 +821,11 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
             turnHtmlHistory = [];
-            storyBox.innerHTML = "🔄 Đang khởi tạo thế giới và thiết lập Visual Inventory...";
+            storyBox.innerHTML = "🔄 Đang khởi tạo thế giới...";
             log("Starting new game session...");
 
             const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
-${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt nào.'}
+${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt.'}
 
 ==================================================
 Cấu hình game:
@@ -1014,12 +863,12 @@ Hãy dẫn chuyện đoạn mở đầu thật sống động, giữ nhịp đ�
             const previousHtml = storyBox.innerHTML;
             
             const formattedActionHtml = `<div class="player-action-highlight">[HÀNH ĐỘNG CỦA BẠN]: ${action}</div>`;
-            storyBox.innerHTML += formattedActionHtml + `<div><i>[AI ĐANG XỬ LÝ & CẬP NHẬT CODEX...]</i></div>`;
+            storyBox.innerHTML += formattedActionHtml + `<div><i>[AI ĐANG XỬ LÝ...]</i></div>`;
             input.value = '';
             log("Player action: " + action);
 
             const actionPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
-${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt nào.'}
+${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt.'}
 
 ${getCodexMemoryPrompt()}
 Hành động của người chơi: "${action}".
@@ -1027,9 +876,9 @@ Hành động của người chơi: "${action}".
 ${JSON_STRUCTURE_INSTRUCTION}
 
 Yêu cầu:
-1. Tiếp diễn câu chuyện dựa trên hành động của người chơi với nhịp độ cẩn trọng, thực tế.
+1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcInventoryList" dưới dạng mảng Object có icon/emoji, phẩm chất, số lượng và công dụng (nhớ quy tắc '???' nếu vượt quá tri thức cảnh giới hiện tại của MC).`;
+3. Tự động cập nhật danh sách "mcInventoryList" dưới dạng mảng Object có icon/emoji.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {
@@ -1045,5 +894,3 @@ Yêu cầu:
     </script>
 </body>
 </html>
-
-```

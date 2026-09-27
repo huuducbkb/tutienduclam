@@ -161,8 +161,8 @@
             </div>
             <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
-2. Tuyệt đối không tự ý hành động thay cho người chơi.
-3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT.
+2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng trong mcInventoryList. Đã dùng hết thì xóa khỏi túi đồ.
+3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT dưới dạng văn bản mô tả (không dùng object).
 4. Túi đồ hoặc pháp bảo phẩm chất quá cao / bí bảo chưa rõ ghi '?' và 'Chờ cơ duyên xảo hợp để biết'.
 5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
@@ -286,7 +286,7 @@
                 <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI (ĐỂ AI KHÔNG QUÊN)</div>
                 <button class="btn-aigen" onclick="aiGenField('mcLevel', 'Level hoặc Cảnh giới hiện tại của nhân vật chính')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 3 (Sơ kỳ) / Level 15">
+            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 4 (Sơ kỳ)">
         </div>
 
         <div class="form-group">
@@ -307,7 +307,7 @@
                 <div class="item-details">
                     <div class="item-title-row">
                         <span class="item-name">Linh Thạch Hạ Phẩm</span>
-                        <span class="item-qty">x50</span>
+                        <span class="item-qty">x5</span>
                     </div>
                     <div class="item-quality">Phẩm chất: Hạ Phẩm</div>
                     <div class="item-effect">Dùng để giao dịch hoặc thu nạp linh khí.</div>
@@ -347,10 +347,10 @@
             <div class="loc-card">
                 <div class="item-icon-box">🏔️</div>
                 <div class="loc-info">
-                    <div class="loc-name">Thanh Vân Môn - Ngoại Tông</div>
-                    <span class="loc-badge loc-danger-low">Nguy hiểm: Thấp (An toàn)</span>
-                    <div class="loc-detail-text">📍 Vị trí: Đông Nam Triều Quốc</div>
-                    <div class="loc-detail-text">🚪 Điều kiện vào: Đệ tử ký danh hoặc có lệnh bài. Trừ phàm nhân và kẻ địch bị truy nã.</div>
+                    <div class="loc-name">Hang Động Ẩn Trốn</div>
+                    <span class="loc-badge loc-danger-mid">Nguy hiểm: Trung Bình</span>
+                    <div class="loc-detail-text">📍 Vị trí: Ngoại vi Sơn Điền</div>
+                    <div class="loc-detail-text">🚪 Điều kiện vào: Nơi ở ẩn tu luyện có cấm chế đơn giản.</div>
                 </div>
             </div>
         </div>
@@ -364,23 +364,15 @@
     <!-- TAB 5: ITEMS / WEAPONS -->
     <div id="items" class="tab-content">
         <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (VISUAL)</div>
-        <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo kèm cấp bậc và khả năng sử dụng. Nếu chưa rõ sẽ hiển thị dấu ? chờ cơ duyên xảo hợp.</div>
+        <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo kèm cấp bậc và khả năng sử dụng. If chưa rõ sẽ hiển thị dấu ? chờ cơ duyên xảo hợp.</div>
         
         <div id="weaponVisualGrid" class="weapon-grid">
             <div class="weapon-card">
                 <div class="item-icon-box">🗡️</div>
                 <div class="weapon-info">
-                    <div class="weapon-name">Thanh Lược Kiếm (Hạ Phẩm Pháp Khí)</div>
-                    <span class="loc-badge loc-danger-low">Cấp bậc: Hạ Phẩm Pháp Khí</span>
-                    <div class="loc-detail-text">🛠️ Khả năng sử dụng: Chém sắt như chém bùn, phù hợp tu sĩ Luyện Khí Kỳ ngự kiếm công kích.</div>
-                </div>
-            </div>
-            <div class="weapon-card" style="border-color: #7d2828;">
-                <div class="item-icon-box" style="color: #f85149; font-weight:bold;">?</div>
-                <div class="weapon-info">
-                    <div class="weapon-name" style="color: #f85149;">Vật Sáng Bất Định (Bí Bảo Vô Danh)</div>
-                    <span class="loc-badge loc-danger-high" style="background: rgba(218, 54, 51, 0.2); color: #f85149; border-color: #da3633;">Cấp bậc: ? (Chưa rõ)</span>
-                    <div class="loc-detail-text" style="color: #f85149; font-style: italic;">🛠️ Khả năng sử dụng: Chưa rõ công dụng. Chờ cơ duyên xảo hợp để giải mã nhận biết.</div>
+                    <div class="weapon-name">Thiết Lệnh Vấy Máu</div>
+                    <span class="loc-badge loc-danger-low">Cấp bậc: Chưa rõ</span>
+                    <div class="loc-detail-text">🛠️ Khả năng sử dụng: Vật phẩm vô danh nhặt từ tán tu.</div>
                 </div>
             </div>
         </div>
@@ -415,16 +407,7 @@
         let turnHtmlHistory = [];
         let mcAvatarBase64 = "";
         let turnCounter = 0;
-        let npcList = [
-            {
-                id: "npc_1",
-                name: "Hồng Đức (Mẫu)",
-                identity: "Luyện Khí Tầng 3 - Sư huynh",
-                personality: "Trầm lặng, cẩn trọng, trọng tình nghĩa.",
-                avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=HongDuc",
-                affinity: 60
-            }
-        ];
+        let npcList = [];
 
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
@@ -587,7 +570,7 @@
         function renderNpcs() {
             const container = document.getElementById('npcContainer');
             if(!npcList || npcList.length === 0) {
-                container.innerHTML = `<div style="color:var(--subtext-color); font-style:italic; grid-column: 1/-1;">Chưa có NPC nào. Bấm "THÊM NPC MỚI" ở trên để khởi tạo.</div>`;
+                container.innerHTML = `<div style="color:var(--subtext-color); font-style:italic; grid-column: 1/-1;">Chưa có NPC nào còn sống. Bấm "THÊM NPC MỚI" ở trên để khởi tạo.</div>`;
                 return;
             }
 
@@ -662,7 +645,7 @@
         }
 
         function removeNpc(index) {
-            if(confirm("Xóa NPC này khỏi danh sách?")) {
+            if(confirm("Xóa NPC này khỏi danh sách còn sống?")) {
                 npcList.splice(index, 1);
                 renderNpcs();
             }
@@ -836,7 +819,15 @@
             }
 
             let html = '';
-            itemsArray.forEach(item => {
+            // Lọc bỏ những item có số lượng <= 0
+            const activeItems = itemsArray.filter(item => (item.quantity === undefined || item.quantity > 0));
+
+            if(activeItems.length === 0) {
+                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống (đã tiêu hao hết vật phẩm)...</div>';
+                return;
+            }
+
+            activeItems.forEach(item => {
                 const icon = item.icon || '📦';
                 const isImage = icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/');
                 const iconContent = isImage ? `<img src="${icon}" alt="${item.name}">` : icon;
@@ -1096,7 +1087,7 @@ ${document.getElementById('mcInventory').value || 'Chưa có'}
 - 🟢 DANH SÁCH NPC ACTIVE & ĐIỂM HẢO CẢM (0-100):
 ${npcSummary || 'Chưa có'}
 
-- 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ):
+- 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - DẠNG CHỮ):
 ${document.getElementById('npcArchive').value || 'Chưa có'}
 
 - 📍 ĐỊA DANH / VÙNG ĐẤT:
@@ -1151,8 +1142,10 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     }
                     
                     if(codexData.mcInventoryList !== undefined && Array.isArray(codexData.mcInventoryList)) {
-                        renderInventoryVisual(codexData.mcInventoryList);
-                        document.getElementById('mcInventory').value = JSON.stringify(codexData.mcInventoryList, null, 2);
+                        // Lọc bỏ vật phẩm có quantity = 0 trước khi cập nhật
+                        const validInventory = codexData.mcInventoryList.filter(item => (item.quantity === undefined || item.quantity > 0));
+                        renderInventoryVisual(validInventory);
+                        document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
                     }
 
                     if(codexData.npcActiveList !== undefined && Array.isArray(codexData.npcActiveList)) {
@@ -1188,7 +1181,18 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('worldItems').value = JSON.stringify(codexData.weaponsList, null, 2);
                     }
 
-                    if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
+                    // SỬA LỖI [object Object]: Bắt buộc chuyển đổi npcArchive thành chuỗi văn bản
+                    if(codexData.npcArchive !== undefined) {
+                        if (typeof codexData.npcArchive === 'object') {
+                            if (Array.isArray(codexData.npcArchive)) {
+                                document.getElementById('npcArchive').value = codexData.npcArchive.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n');
+                            } else {
+                                document.getElementById('npcArchive').value = JSON.stringify(codexData.npcArchive, null, 2);
+                            }
+                        } else {
+                            document.getElementById('npcArchive').value = String(codexData.npcArchive);
+                        }
+                    }
 
                     log("⚡ Auto-updated Visual Inventory, MC Level, NPCs, Locations, Weapons & Codex Memory successfully!");
 
@@ -1210,19 +1214,20 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
 2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
 - "mcLevel": Cảnh giới/Level hiện tại của MC (Cập nhật khi có sự bứt phá hoặc tăng tiến).
-- "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji.
+- "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji. LƯU Ý: Nếu vật phẩm đã dùng hết (số lượng = 0), hãy XOÁ KHỎI MẢNG NÀY!
 - "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm từ 0 đến 100).
 - "locationsList": Mảng object địa danh ("name", "icon", "position", "danger", "accessRules").
-- "weaponsList": Mảng object pháp bảo/bảo vật, mỗi pháp bảo gồm: "name" (tên), "icon" (emoji/hình ảnh hoặc "?" nếu là bí bảo chưa biết), "rank" (cấp bậc, nếu chưa rõ ghi "? (Chưa rõ)"), "usage" (khả năng sử dụng; nếu bí bảo chưa biết hoặc nhân vật chưa đủ kiến thức nhận biết, phải ghi rõ: "Chưa rõ công dụng. Chờ cơ duyên xảo hợp để biết").
+- "weaponsList": Mảng object pháp bảo/bảo vật.
+- "npcArchive": CHUỖI VĂN BẢN THUẦN (String) liệt kê danh sách NPC đã chết/lịch sử, KHÔNG ĐƯỢC để dạng Object hay Array! VD: "- Ma tu mặt sẹo (Luyện Khí tầng 6): Đã chết dưới tay Hồng Đức."
 
 \`\`\`json
 {
-  "mcLevel": "Luyện Khí Kỳ tầng 3",
+  "mcLevel": "Luyện Khí Kỳ tầng 4",
   "mcInventoryList": [
     {
       "name": "Linh Thạch Hạ Phẩm",
       "icon": "💎",
-      "quantity": 50,
+      "quantity": 5,
       "quality": "Hạ Phẩm",
       "effect": "Tu luyện hoặc trao đổi mua bán."
     }
@@ -1250,15 +1255,9 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
       "icon": "🗡️",
       "rank": "Hạ Phẩm Pháp Khí",
       "usage": "Ngự kiếm phi hành hoặc công kích tầm xa sơ cấp."
-    },
-    {
-      "name": "Vật Sáng Bất Định",
-      "icon": "?",
-      "rank": "? (Chưa rõ)",
-      "usage": "Chưa rõ công dụng. Chờ cơ duyên xảo hợp để biết."
     }
   ],
-  "npcArchive": "Danh sách NPC ĐÃ CHẾT"
+  "npcArchive": "- Ma tu mặt sẹo (Luyện Khí Kỳ tầng 6): Đã bị tiêu diệt tại hang động."
 }
 \`\`\`
 `;
@@ -1328,7 +1327,9 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcLevel", "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList" đầy đủ thông tin chi tiết. Nếu MC thăng cấp hoặc tiến giới, hãy đổi giá trị "mcLevel" tương ứng. Nếu gặp bảo vật chưa biết, hãy để dấu ? và ghi rõ chờ cơ duyên xảo hợp.`;
+3. Tự động cập nhật danh sách "mcLevel", "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList" đầy đủ thông tin chi tiết. 
+4. Nếu MC sử dụng vật phẩm/đan dược trong quá trình tu luyện hay chiến đấu, HÃY TRỪ HOẶC XÓA KHỎI "mcInventoryList" nếu đã dùng hết!
+5. npcArchive PHẢI là dạng chuỗi văn bản (String)!`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

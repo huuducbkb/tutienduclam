@@ -100,6 +100,10 @@
         .summary-box { background: rgba(210, 153, 34, 0.1); border: 1px solid var(--accent-gold); border-left: 4px solid var(--accent-gold); color: #f0e6d2; padding: 10px 12px; border-radius: 6px; margin: 12px 0; font-size: 13px; line-height: 1.5; }
         .summary-title { color: var(--accent-gold); font-weight: bold; text-transform: uppercase; font-size: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
 
+        .tts-btn-container { margin: 8px 0 14px 0; display: flex; gap: 8px; align-items: center; }
+        .btn-tts { background: #238636; border: 1px solid var(--border-color); color: #fff; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-tts-stop { background: #da3633; }
+
         .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
         .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
     </style>
@@ -276,7 +280,7 @@
             <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Hồng Đức (Đệ tử ngoại tông Thanh Vân Môn)"></textarea>
         </div>
 
-        <!-- MỤC MỚI BỔ SUNG: CẢNH GIỚI / LEVEL MC -->
+        <!-- MỤC CẢNH GIỚI / LEVEL MC -->
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI (ĐỂ AI KHÔNG QUÊN)</div>
@@ -410,6 +414,7 @@
         let chatHistory = [];
         let turnHtmlHistory = [];
         let mcAvatarBase64 = "";
+        let turnCounter = 0;
         let npcList = [
             {
                 id: "npc_1",
@@ -421,7 +426,6 @@
             }
         ];
 
-        // Cập nhật mảng lưu reset bao gồm mcLevel
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
@@ -454,7 +458,70 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        /* --- XỬ LÝ ẢNH MC --- */
+        /* --- XỬ LÝ ĐỌC VĂN BẢN (TEXT-TO-SPEECH) GIỌNG NỮ --- */
+        function playFemaleTTS(text, btnElement) {
+            if (!('speechSynthesis' in window)) {
+                alert("Trình duyệt của bạn không hỗ trợ tính năng đọc văn bản TTS.");
+                return;
+            }
+
+            window.speechSynthesis.cancel(); 
+
+            let cleanText = text.replace(/<[^>]*>?/gm, '').replace(/\[TÓM TẮT\]:?/gi, '').trim();
+            if(!cleanText) return;
+
+            let utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'vi-VN';
+            utterance.rate = 1.0; 
+            utterance.pitch = 1.2; 
+
+            let voices = window.speechSynthesis.getVoices();
+            let femaleVoice = voices.find(v => v.lang.includes('vi') && (
+                v.name.toLowerCase().includes('female') || 
+                v.name.toLowerCase().includes('hoai-my') || 
+                v.name.toLowerCase().includes('nhi') || 
+                v.name.toLowerCase().includes('linh') || 
+                v.name.toLowerCase().includes('google')
+            )) || voices.find(v => v.lang.includes('vi'));
+
+            if (femaleVoice) {
+                utterance.voice = femaleVoice;
+            }
+
+            if(btnElement) {
+                btnElement.innerHTML = '🔊 Đang đọc...';
+                btnElement.style.background = '#8957e5';
+            }
+
+            utterance.onend = function() {
+                if(btnElement) {
+                    btnElement.innerHTML = '🔊 Đọc giọng nữ';
+                    btnElement.style.background = '#238636';
+                }
+            };
+
+            utterance.onerror = function() {
+                if(btnElement) {
+                    btnElement.innerHTML = '🔊 Đọc giọng nữ';
+                    btnElement.style.background = '#238636';
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopTTS() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
         function setMcAvatarImage(src) {
             const img = document.getElementById('avatarImg');
             const placeholder = document.getElementById('avatarPlaceholder');
@@ -509,7 +576,6 @@
             reader.readAsDataURL(file);
         }
 
-        /* --- XỬ LÝ NPC & HẢO CẢM (0 - 100) --- */
         function getAffinityInfo(val) {
             if (val <= 20) return { status: 'Thù Địch', color: '#f85149' };
             if (val <= 40) return { status: 'Lạnh Nhạt', color: '#d29922' };
@@ -657,7 +723,6 @@
             reader.readAsDataURL(file);
         }
 
-        /* --- XỬ LÝ HIỂN THỊ ĐỊA DANH VISUAL --- */
         function renderLocationsVisual(locArray) {
             const grid = document.getElementById('locVisualGrid');
             if(!locArray || !Array.isArray(locArray) || locArray.length === 0) {
@@ -694,7 +759,6 @@
             grid.innerHTML = html;
         }
 
-        /* --- XỬ LÝ HIỂN THỊ PHÁP BẢO VISUAL --- */
         function renderWeaponsVisual(weaponArray) {
             const grid = document.getElementById('weaponVisualGrid');
             if(!weaponArray || !Array.isArray(weaponArray) || weaponArray.length === 0) {
@@ -744,9 +808,11 @@
                 if (el) el.value = '';
             });
 
+            stopTTS();
             chatHistory = [];
             turnHtmlHistory = [];
             npcList = [];
+            turnCounter = 0;
             removeMcAvatar();
             renderNpcs();
 
@@ -798,6 +864,7 @@
             const gameData = {
                 chatHistory: chatHistory,
                 turnHtmlHistory: turnHtmlHistory,
+                turnCounter: turnCounter,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
                 inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
                 locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
@@ -833,6 +900,7 @@
                 const gameData = JSON.parse(rawData);
                 chatHistory = gameData.chatHistory || [];
                 turnHtmlHistory = gameData.turnHtmlHistory || [];
+                turnCounter = gameData.turnCounter || 0;
                 document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
                 
                 if(gameData.inventoryVisualHTML) {
@@ -935,6 +1003,7 @@
         });
 
         function undoLastTurn() {
+            stopTTS();
             if (chatHistory.length <= 2) {
                 alert("⚠️ Không thể quay lại thêm!");
                 return;
@@ -1015,7 +1084,6 @@
             }
         }
 
-        // Đã cập nhật đưa MC Level/Cảnh giới vào Codex memory prompt
         function getCodexMemoryPrompt() {
             let npcSummary = npcList.map(n => `- ${n.name} (${n.identity}): ${n.personality} [Điểm Hảo Cảm: ${n.affinity}/100]`).join('\n');
 
@@ -1047,13 +1115,37 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             });
         }
 
+        function buildTurnHtml(rawText) {
+            turnCounter++;
+            let textId = 'turn_text_' + turnCounter;
+            
+            let summaryIndex = rawText.indexOf('<div class="summary-box">');
+            let mainNarrative = rawText;
+            let summaryPart = '';
+
+            if (summaryIndex !== -1) {
+                mainNarrative = rawText.substring(0, summaryIndex).trim();
+                summaryPart = rawText.substring(summaryIndex);
+            }
+
+            let ttsControlHtml = `
+            <div id="${textId}">${mainNarrative}</div>
+            <div class="tts-btn-container">
+                <button class="btn-tts" onclick="playFemaleTTS(document.getElementById('${textId}').innerText, this)">🔊 Đọc giọng nữ</button>
+                <button class="btn-tts btn-tts-stop" onclick="stopTTS()">🛑 Dừng đọc</button>
+            </div>
+            ${summaryPart}
+            `;
+
+            return ttsControlHtml;
+        }
+
         function parseAndAutoUpdateCodex(fullResponseText) {
             try {
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
                 if (jsonMatch && jsonMatch[1]) {
                     const codexData = JSON.parse(jsonMatch[1]);
 
-                    // Nếu AI trả về level/cảnh giới mới trong JSON thì tự động cập nhật lại ô mcLevel
                     if(codexData.mcLevel !== undefined && codexData.mcLevel.trim() !== "") {
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
@@ -1101,12 +1193,14 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     log("⚡ Auto-updated Visual Inventory, MC Level, NPCs, Locations, Weapons & Codex Memory successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
-                    return formatSummaryBox(cleanText);
+                    let formatted = formatSummaryBox(cleanText);
+                    return buildTurnHtml(formatted);
                 }
             } catch(e) {
                 log("Parse Codex JSON info error: " + e.message);
             }
-            return formatSummaryBox(fullResponseText);
+            let formatted = formatSummaryBox(fullResponseText);
+            return buildTurnHtml(formatted);
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
@@ -1170,9 +1264,11 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 `;
 
         async function startGame() {
+            stopTTS();
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
             turnHtmlHistory = [];
+            turnCounter = 0;
             storyBox.innerHTML = "🔄 Đang khởi tạo thế giới...";
             log("Starting new game session...");
 
@@ -1208,6 +1304,7 @@ Hãy dẫn chuyện đoạn mở đầu thật sinh động, giữ nhịp độ 
         }
 
         async function sendAction() {
+            stopTTS();
             const input = document.getElementById('userInput');
             const storyBox = document.getElementById('story-box');
             const action = input.value.trim();

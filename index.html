@@ -79,6 +79,7 @@
         .loc-danger-mid { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #d29922; }
         .loc-danger-high { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid #da3633; }
         .loc-detail-text { font-size: 11px; color: var(--subtext-color); margin-top: 3px; line-height: 1.3; }
+        .loc-events-box { background: rgba(137, 87, 229, 0.1); border: 1px solid rgba(137, 87, 229, 0.3); border-radius: 6px; padding: 6px 8px; margin-top: 6px; font-size: 11px; color: #d2a8ff; line-height: 1.4; }
 
         .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-top: 10px; }
         .npc-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; }
@@ -114,7 +115,7 @@
 </head>
 <body>
 
-    <!-- TOP NAV BAR: ĐÃ CHUYỂN NÚT KHỞI TẠO GAME LÊN ĐÂY -->
+    <!-- TOP NAV BAR -->
     <div class="header">
         <div class="header-title">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -168,7 +169,7 @@
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
 2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng trong mcInventoryList. Đã dùng hết thì xóa khỏi túi đồ.
 3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT dưới dạng văn bản mô tả (không dùng object).
-4. Túi đồ hoặc pháp bảo phẩm chất quá cao / bí bảo chưa rõ ghi '?' và 'Chờ cơ duyên xảo hợp để biết'.
+4. Lưu giữ toàn bộ các ĐỊA DANH đã đi qua (không xóa bỏ địa danh cũ) kèm theo các SỰ KIỆN / BÍ CẢNH đã trải qua tại đó để làm cơ sở xây dựng bản đồ game.
 5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
 
@@ -285,7 +286,6 @@
             <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Hồng Đức (Đệ tử ngoại tông Thanh Vân Môn)"></textarea>
         </div>
 
-        <!-- MỤC CẢNH GIỚI / LEVEL MC -->
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI (ĐỂ AI KHÔNG QUÊN)</div>
@@ -345,17 +345,18 @@
 
     <!-- TAB 4: LOCATIONS -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: DANH SÁCH ĐỊA DANH / VÙNG ĐẤT (VISUAL)</div>
-        <div class="label-desc">⚡ Tự động ghi chép hiển thị trực quan thông tin vị trí, độ nguy hiểm và điều kiện vào.</div>
+        <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH & SỰ KIỆN ĐÃ TRẢI QUA (VISUAL)</div>
+        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua kèm theo các bí cảnh, sự kiện đã tham gia để xây dựng bản đồ game chính xác.</div>
         
         <div id="locVisualGrid" class="loc-grid">
             <div class="loc-card">
                 <div class="item-icon-box">🏔️</div>
                 <div class="loc-info">
-                    <div class="loc-name">Hang Động Ẩn Trốn</div>
+                    <div class="loc-name">Huyền Thất Môn</div>
                     <span class="loc-badge loc-danger-mid">Nguy hiểm: Trung Bình</span>
-                    <div class="loc-detail-text">📍 Vị trí: Ngoại vi Sơn Điền</div>
-                    <div class="loc-detail-text">🚪 Điều kiện vào: Nơi ở ẩn tu luyện có cấm chế đơn giản.</div>
+                    <div class="loc-detail-text">📍 Vị trí: Phía Bắc Sơn Điền</div>
+                    <div class="loc-detail-text">🚪 Điều kiện vào: Cần có đệ tử lệnh hoặc phá giải cấm chế ngoài sơn môn.</div>
+                    <div class="loc-events-box">📜 <b>Sự kiện / Bí cảnh đã qua:</b> Tham gia bí cảnh sương mù, thu hoạch 3 gốc Linh Thảo và giao tranh với tán tu áo xám.</div>
                 </div>
             </div>
         </div>
@@ -391,8 +392,6 @@
     <!-- TAB 6: PLAY -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "⚡ KHỞI TẠO GAME" ở góc trên bên phải!</div>
-        
-        <!-- Đã lược bỏ nút Khởi tạo game mới dư thừa ở đây -->
 
         <div class="form-group" style="margin-top: 10px;">
             <input type="text" id="userInput" placeholder="Nhập lựa chọn (1,2,3...) hoặc hành động tự do...">
@@ -446,7 +445,6 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        /* --- XỬ LÝ ĐỌC VĂN BẢN (TEXT-TO-SPEECH) GIỌNG NỮ --- */
         function playFemaleTTS(text, btnElement) {
             if (!('speechSynthesis' in window)) {
                 alert("Trình duyệt của bạn không hỗ trợ tính năng đọc văn bản TTS.");
@@ -636,22 +634,6 @@
             container.innerHTML = html;
         }
 
-        /* TỰ ĐỘNG XÓA BẢNG NPC KHI ĐÃ CHẾT HOẶC CẦN CHUYỂN VÀO ARCHIVE */
-        function updateNPCStatus(npcId, isDead, deathLog) {
-            if (isDead) {
-                const index = npcList.findIndex(n => n.id === npcId);
-                if (index !== -1) {
-                    npcList.splice(index, 1);
-                    renderNpcs();
-                }
-
-                const archiveArea = document.getElementById('npcArchive');
-                if (archiveArea && deathLog) {
-                    archiveArea.value += (archiveArea.value.trim() ? '\n' : '') + `- ${deathLog}`;
-                }
-            }
-        }
-
         function addNewNpcCard() {
             const newName = 'NPC Mới ' + (npcList.length + 1);
             npcList.push({
@@ -727,6 +709,7 @@
             reader.readAsDataURL(file);
         }
 
+        /* RENDER ĐỊA DANH KÈM SỰ KIỆN / BÍ CẢNH ĐÃ TRẢI QUA */
         function renderLocationsVisual(locArray) {
             const grid = document.getElementById('locVisualGrid');
             if(!locArray || !Array.isArray(locArray) || locArray.length === 0) {
@@ -749,6 +732,11 @@
                     dangerClass = 'loc-danger-mid';
                 }
 
+                let eventsHtml = '';
+                if (loc.events && loc.events.trim() !== '') {
+                    eventsHtml = `<div class="loc-events-box">📜 <b>Sự kiện / Bí cảnh đã qua:</b> ${loc.events}</div>`;
+                }
+
                 html += `
                 <div class="loc-card">
                     <div class="item-icon-box">${iconContent}</div>
@@ -756,7 +744,8 @@
                         <div class="loc-name">${loc.name || 'Vùng đất vô danh'}</div>
                         <span class="loc-badge ${dangerClass}">Nguy hiểm: ${dangerText}</span>
                         <div class="loc-detail-text">📍 Vị trí: ${loc.position || 'Chưa rõ'}</div>
-                        <div class="loc-detail-text">🚪 Điều kiện vào (Trừ MC): ${loc.accessRules || 'Tự do ra vào'}</div>
+                        <div class="loc-detail-text">🚪 Điều kiện vào: ${loc.accessRules || 'Tự do ra vào'}</div>
+                        ${eventsHtml}
                     </div>
                 </div>`;
             });
@@ -840,7 +829,6 @@
             }
 
             let html = '';
-            // Lọc bỏ những item có số lượng <= 0
             const activeItems = itemsArray.filter(item => (item.quantity === undefined || item.quantity > 0));
 
             if(activeItems.length === 0) {
@@ -1111,7 +1099,7 @@ ${npcSummary || 'Chưa có'}
 - 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - DẠNG CHỮ):
 ${document.getElementById('npcArchive').value || 'Chưa có'}
 
-- 📍 ĐỊA DANH / VÙNG ĐẤT:
+- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN TƯƠNG TỨC (LƯU LẠI TOÀN BỘ, KHÔNG ĐƯỢC XÓA ĐỊA DANH CŨ):
 ${document.getElementById('locations').value || 'Chưa có'}
 
 - ⚔️ PHÁP BẢO & BẢO VẬT THẾ GIỚI:
@@ -1163,7 +1151,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     }
                     
                     if(codexData.mcInventoryList !== undefined && Array.isArray(codexData.mcInventoryList)) {
-                        // Lọc bỏ vật phẩm có quantity = 0 trước khi cập nhật
                         const validInventory = codexData.mcInventoryList.filter(item => (item.quantity === undefined || item.quantity > 0));
                         renderInventoryVisual(validInventory);
                         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
@@ -1192,6 +1179,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         renderNpcs();
                     }
 
+                    /* CẬP NHẬT TÍCH LŨY ĐỊA DANH VÀ GHI CHÚ SỰ KIỆN */
                     if(codexData.locationsList !== undefined && Array.isArray(codexData.locationsList)) {
                         renderLocationsVisual(codexData.locationsList);
                         document.getElementById('locations').value = JSON.stringify(codexData.locationsList, null, 2);
@@ -1202,7 +1190,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('worldItems').value = JSON.stringify(codexData.weaponsList, null, 2);
                     }
 
-                    // Bắt buộc chuyển đổi npcArchive thành chuỗi văn bản
                     if(codexData.npcArchive !== undefined) {
                         if (typeof codexData.npcArchive === 'object') {
                             if (Array.isArray(codexData.npcArchive)) {
@@ -1215,7 +1202,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         }
                     }
 
-                    log("⚡ Auto-updated Visual Inventory, MC Level, NPCs, Locations, Weapons & Codex Memory successfully!");
+                    log("⚡ Auto-updated Visual Inventory, MC Level, NPCs, Locations with Events & Weapons successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     let formatted = formatSummaryBox(cleanText);
@@ -1234,12 +1221,12 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
 2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
-- "mcLevel": Cảnh giới/Level hiện tại của MC (Cập nhật khi có sự bứt phá hoặc tăng tiến).
-- "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji. LƯU Ý: Nếu vật phẩm đã dùng hết (số lượng = 0), hãy XOÁ KHỎI MẢNG NÀY!
-- "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm từ 0 đến 100).
-- "locationsList": Mảng object địa danh ("name", "icon", "position", "danger", "accessRules").
+- "mcLevel": Cảnh giới/Level hiện tại của MC.
+- "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji (Lưu ý xóa vật phẩm nếu số lượng = 0).
+- "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm 0-100).
+- "locationsList": Mảng object địa danh. **QUY TẮC QUAN TRỌNG**: PHẢI TÍCH LŨY LẠI TẤT CẢ CÁC ĐỊA DANH TỪ TRƯỚC ĐẾN NAY (TUYỆT ĐỐI KHÔNG XÓA BỎ ĐỊA DANH CŨ KHI SANG NƠI KHÁC). Mỗi địa danh phải bao gồm: "name", "icon", "position", "danger", "accessRules", và đặc biệt trường "events" ghi chú rõ các sự kiện, bí cảnh, chiến tích hoặc nhiệm vụ mà MC đã trải qua tại địa danh đó để làm cơ sở xây dựng bản đồ game.
 - "weaponsList": Mảng object pháp bảo/bảo vật.
-- "npcArchive": CHUỖI VĂN BẢN THUẦN (String) liệt kê danh sách NPC đã chết/lịch sử, KHÔNG ĐƯỢC để dạng Object hay Array! VD: "- Ma tu mặt sẹo (Luyện Khí tầng 6): Đã chết dưới tay Hồng Đức."
+- "npcArchive": CHUỖI VĂN BẢN THUẦN (String) liệt kê danh sách NPC đã chết/lịch sử.
 
 \`\`\`json
 {
@@ -1263,11 +1250,12 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
   ],
   "locationsList": [
     {
-      "name": "Thanh Vân Môn",
+      "name": "Huyền Thất Môn",
       "icon": "🏔️",
-      "position": "Đông Nam Triều Quốc",
-      "danger": "Thấp (Khu vực tông môn an toàn)",
-      "accessRules": "Cần đệ tử lệnh hoặc sự cho phép của trưởng lão."
+      "position": "Phía Bắc Sơn Điền",
+      "danger": "Trung Bình",
+      "accessRules": "Cần đệ tử lệnh.",
+      "events": "Tham gia bí cảnh sương mù, thu hoạch linh thảo và tránh được bẫy trận pháp."
     }
   ],
   "weaponsList": [
@@ -1283,7 +1271,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 \`\`\`
 `;
 
-        /* HÀM XÁC NHẬN KHỞI TẠO GAME MỚI (TRÁNH BẤM NHẦM) */
         function confirmAndStartGame() {
             const confirmReset = confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa tiến trình cũ và KHỞI TẠO GAME MỚI không?");
             if (confirmReset) {
@@ -1343,11 +1330,10 @@ Hãy dẫn chuyện đoạn mở đầu thật sinh động, giữ nhịp độ 
             
             const actionId = `action-turn-${Date.now()}`;
             const formattedActionHtml = `<div id="${actionId}" class="player-action-highlight">[HÀNH ĐỘNG CỦA BẠN]: ${action}</div>`;
-            storyBox.innerHTML += formattedActionHtml + `<div><i>[AI ĐANG XỬ LÝ...]</i></div>`;
+            storyBox.innerHTML += formattedActionHtml + `<div><i>[AI Đang XỬ LÝ...]</i></div>`;
             input.value = '';
             log("Player action: " + action);
 
-            /* TỰ ĐỘNG CUỘN ĐẾN ĐOẠN VĂN HÀNH ĐỘNG MỚI (SMOOTH SCROLL) */
             setTimeout(() => {
                 const newActionElem = document.getElementById(actionId);
                 if (newActionElem) {
@@ -1368,7 +1354,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcLevel", "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList" đầy đủ thông tin chi tiết. 
+3. Tự động cập nhật danh sách "mcLevel", "mcInventoryList", "npcActiveList", "locationsList" (lưu ý: GIỮ LẠI TẤT CẢ ĐỊA DANH CŨ, cập nhật sự kiện mới vào trường "events" của địa danh tương ứng) và "weaponsList".
 4. Nếu MC sử dụng vật phẩm/đan dược trong quá trình tu luyện hay chiến đấu, HÃY TRỪ HOẶC XÓA KHỎI "mcInventoryList" nếu đã dùng hết!
 5. npcArchive PHẢI là dạng chuỗi văn bản (String)!`;
 
@@ -1379,7 +1365,6 @@ Yêu cầu:
                 storyBox.innerHTML = updatedContent;
                 turnHtmlHistory.push(updatedContent);
 
-                /* CUỘN MƯỢT ĐẾN NỘI DUNG VỪA TẠO */
                 setTimeout(() => {
                     const actionElem = document.getElementById(actionId);
                     if (actionElem) {

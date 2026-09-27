@@ -64,6 +64,63 @@
             min-height: 90px; 
         }
 
+        /* MC AVATAR & PROFILE CARD STYLING */
+        .mc-profile-card {
+            display: flex;
+            gap: 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+
+        .avatar-box {
+            width: 90px;
+            height: 90px;
+            border-radius: 8px;
+            border: 2px solid var(--accent-gold);
+            background: #1c2128;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            font-size: 38px;
+            color: var(--subtext-color);
+        }
+
+        .avatar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .btn-upload-file {
+            background: #21262d;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
         /* Visual Inventory Styling */
         .inventory-grid {
             display: grid;
@@ -367,6 +424,24 @@
 
     <!-- TAB 2: MC & VISUAL INVENTORY -->
     <div id="mc" class="tab-content">
+        <div class="section-tag">🖼️ ẢNH ĐẠI DIỆN & THÔNG TIN NHÂN VẬT CHÍNH</div>
+        
+        <!-- MC PROFILE & AVATAR CARD -->
+        <div class="mc-profile-card">
+            <div class="avatar-box" id="avatarPreviewBox">
+                <span class="avatar-placeholder" id="avatarPlaceholder">🧙‍♂️</span>
+                <img id="avatarImg" src="" style="display:none;" alt="MC Avatar">
+            </div>
+            <div class="avatar-controls">
+                <div class="label-title" style="font-size:11px;">GẮN ẢNH ĐẠI DIỆN MC:</div>
+                <input type="text" id="mcAvatarUrl" placeholder="Dán URL ảnh (https://...)" onchange="updateMcAvatarFromUrl(this.value)" style="font-size: 12px; padding: 6px 8px;">
+                <label class="btn-upload-file">
+                    📁 Chọn ảnh từ thiết bị...
+                    <input type="file" id="avatarFileInput" style="display:none;" accept="image/*" onchange="uploadMcAvatarFile(event)">
+                </label>
+            </div>
+        </div>
+
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">TÊN & THÂN PHẬN MC</div>
@@ -374,6 +449,7 @@
             </div>
             <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hồng Đức - Luyện Khí Kỳ tầng 3 (Thô thông dược lý)"></textarea>
         </div>
+
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">KỸ NĂNG & NĂNG LỰC CỐT LÕI</div>
@@ -388,7 +464,6 @@
         
         <!-- TRÌNH DIỄN HÌNH ẢNH THẺ VẬT PHẨM -->
         <div id="inventoryVisualGrid" class="inventory-grid">
-            <!-- Thẻ mẫu khởi đầu -->
             <div class="item-card">
                 <div class="item-icon-box">💎</div>
                 <div class="item-details">
@@ -479,7 +554,7 @@
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
-            'npcActive', 'npcArchive', 'locations', 'worldItems'
+            'npcActive', 'npcArchive', 'locations', 'worldItems', 'mcAvatarUrl'
         ];
 
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
@@ -503,6 +578,40 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
+        // AVATAR FUNCTIONS
+        function setMcAvatarImage(src) {
+            const img = document.getElementById('avatarImg');
+            const placeholder = document.getElementById('avatarPlaceholder');
+            if (src && src.trim() !== '') {
+                img.src = src;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                img.src = '';
+                img.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+
+        function updateMcAvatarFromUrl(url) {
+            setMcAvatarImage(url);
+            log("MC Avatar updated from URL.");
+        }
+
+        function uploadMcAvatarFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Src = e.target.result;
+                document.getElementById('mcAvatarUrl').value = base64Src;
+                setMcAvatarImage(base64Src);
+                log("MC Avatar uploaded from local file.");
+            };
+            reader.readAsDataURL(file);
+        }
+
         function resetAllFields() {
             if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?")) return;
 
@@ -513,6 +622,7 @@
 
             chatHistory = [];
             turnHtmlHistory = [];
+            setMcAvatarImage('');
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "KHỞI TẠO GAME MỚI" bên dưới!';
             document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
             localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
@@ -533,7 +643,7 @@
             let html = '';
             itemsArray.forEach(item => {
                 const icon = item.icon || '📦';
-                const isImage = icon.startsWith('http://') || icon.startsWith('https://');
+                const isImage = icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/');
                 const iconContent = isImage ? `<img src="${icon}" alt="${item.name}">` : icon;
                 
                 const isUnknown = item.effect && (item.effect.includes('???') || item.effect.includes('Chưa đủ kiến thức'));
@@ -571,7 +681,7 @@
 
             localStorage.setItem('HONDUC_TU_TIEN_SAVE', JSON.stringify(gameData));
             log("Game state & Auto Codex saved.");
-            alert("💾 Đã lưu game và toàn bộ dữ liệu Visual Inventory!");
+            alert("💾 Đã lưu game và toàn bộ dữ liệu Avatar/Visual Inventory!");
             toggleSidebar();
         }
 
@@ -596,6 +706,9 @@
                         const el = document.getElementById(id);
                         if(el) el.value = gameData.inputs[id];
                     });
+                    if (gameData.inputs['mcAvatarUrl']) {
+                        setMcAvatarImage(gameData.inputs['mcAvatarUrl']);
+                    }
                 }
 
                 log("Game state & Auto Codex loaded.");
@@ -653,6 +766,9 @@
                             const el = document.getElementById(id);
                             if(el) el.value = gameData.inputs[id];
                         });
+                        if (gameData.inputs['mcAvatarUrl']) {
+                            setMcAvatarImage(gameData.inputs['mcAvatarUrl']);
+                        }
                     }
                     if(gameData.inventoryVisualHTML) {
                         document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;

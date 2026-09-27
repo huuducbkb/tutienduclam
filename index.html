@@ -21,7 +21,6 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        /* Cấu hình cuộn mượt cho toàn bộ trang */
         html { scroll-behavior: smooth; }
         body { background-color: var(--bg-color); color: var(--text-color); font-size: 14px; line-height: 1.5; padding: 10px; }
 
@@ -148,7 +147,7 @@
 
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
-        <button class="tab-btn" onclick="openTab('mc')">👤 MC</button>
+        <button class="tab-btn" onclick="openTab('mc')">👤 NVC</button>
         <button class="tab-btn" onclick="openTab('npc')">👥 NPCs</button>
         <button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh</button>
         <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
@@ -258,17 +257,17 @@
         </div>
     </div>
 
-    <!-- TAB 2: MC -->
+    <!-- TAB 2: NVC -->
     <div id="mc" class="tab-content">
-        <div class="section-tag">🖼️ ẢNH ĐẠI DIỆN & THÔNG TIN NHÂN VẬT CHÍNH</div>
+        <div class="section-tag">🖼️ ẢNH ĐẠI DIỆN & THÔNG TIN NHÂN VẬT CHÍNH (NVC)</div>
         
         <div class="profile-card">
             <div class="avatar-box" id="avatarPreviewBox">
                 <span class="avatar-placeholder" id="avatarPlaceholder">🧙‍♂️</span>
-                <img id="avatarImg" src="" style="display:none;" alt="MC Avatar">
+                <img id="avatarImg" src="" style="display:none;" alt="NVC Avatar">
             </div>
             <div class="avatar-controls">
-                <div class="label-title" style="font-size:12px;">ẢNH ĐẠI DIỆN MC</div>
+                <div class="label-title" style="font-size:12px;">ẢNH ĐẠI DIỆN NVC</div>
                 <div class="label-desc" style="margin-bottom:4px;">Tải ảnh từ máy tính hoặc điện thoại:</div>
                 <label class="btn-upload-file">
                     📁 Chọn ảnh từ thiết bị...
@@ -280,7 +279,7 @@
 
         <div class="form-group">
             <div class="input-header">
-                <div class="label-title">TÊN & THÂN PHẬN MC</div>
+                <div class="label-title">TÊN & THÂN PHẬN NVC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
             <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Hồng Đức (Đệ tử ngoại tông Thanh Vân Môn)"></textarea>
@@ -288,7 +287,7 @@
 
         <div class="form-group">
             <div class="input-header">
-                <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI (ĐỂ AI KHÔNG QUÊN)</div>
+                <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcLevel', 'Level hoặc Cảnh giới hiện tại của nhân vật chính')">✨ AI GEN</button>
             </div>
             <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 4 (Sơ kỳ)">
@@ -296,14 +295,27 @@
 
         <div class="form-group">
             <div class="input-header">
-                <div class="label-title">KĨ NĂNG & NĂNG LỰC CỐT LÕI</div>
-                <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Kỹ năng, căn cơ và năng lực đặc biệt của MC')">✨ AI GEN</button>
+                <div class="label-title" style="color: #388bfd;">⏳ TỔNG THỜI GIAN TU LUYỆN / TRONG GAME (KHÔNG PHẢI TUỔI)</div>
+                <button class="btn-aigen" onclick="aiGenField('mcGameTime', 'Tổng thời gian bế quan/tu luyện đã trôi qua trong game')">✨ AI GEN</button>
             </div>
-            <textarea id="mcSkills" placeholder="VD: Bổ Thiên Thuật, Trận pháp sơ cấp..."></textarea>
+            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 0 năm 3 tháng (Mới bước vào con đường tu tiên)">
+            <div class="label-desc">💡 AI căn cứ vào đây để tính thời hạn tu luyện/bế quan hợp lý (VD: Luyện khí tầng 1->2 mất 2 năm, tầng 2->3 mất 6 năm, đại cảnh giới cao hơn tốn hàng chục/hàng trăm năm).</div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-header">
+                <div class="label-title" style="color: var(--accent-purple);">🔥 KĨ NĂNG ĐÃ HỌC & CÔNG PHÁP</div>
+                <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Danh sách kỹ năng đã học kèm theo tên nâng cấp theo cảnh giới')">✨ AI GEN</button>
+            </div>
+            <textarea id="mcSkills" placeholder="VD: 
+- Liệt Diễm Chưởng (Sơ cấp - Luyện Khí Kỳ)
+- Ngự Phong Thuật (Vi thành)
+- Bổ Thiên Thuật (Nội công)
+Note: Khi tăng 1 đại cảnh giới, tên chiêu thức sẽ tự nâng cấp (VD: Liệt Diễm Chưởng -> Bạo Diễm Chưởng khi lên Trúc Cơ)."></textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (VISUAL AUTO INVENTORY)</div>
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG NVC (VISUAL AUTO INVENTORY)</div>
         <div class="label-desc">⚡ Tự động hiển thị vật phẩm kèm hình ảnh/emoji.</div>
         
         <div id="inventoryVisualGrid" class="inventory-grid">
@@ -416,7 +428,7 @@
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
-            'powerSystem', 'writingStyle', 'mcName', 'mcLevel', 'mcSkills', 'mcInventory', 
+            'powerSystem', 'writingStyle', 'mcName', 'mcLevel', 'mcGameTime', 'mcSkills', 'mcInventory', 
             'npcArchive', 'locations', 'worldItems'
         ];
 
@@ -531,7 +543,7 @@
         function removeMcAvatar() {
             setMcAvatarImage('');
             document.getElementById('avatarFileInput').value = '';
-            log("Đã xóa ảnh đại diện MC.");
+            log("Đã xóa ảnh đại diện NVC.");
         }
 
         function uploadMcAvatarFile(event) {
@@ -555,7 +567,7 @@
                     const resizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
 
                     setMcAvatarImage(resizedBase64);
-                    log("Tải lên và nén ảnh MC thành công!");
+                    log("Tải lên và nén ảnh NVC thành công!");
                 };
                 img.src = e.target.result;
             };
@@ -709,7 +721,6 @@
             reader.readAsDataURL(file);
         }
 
-        /* RENDER ĐỊA DANH KÈM SỰ KIỆN / BÍ CẢNH ĐÃ TRẢI QUA */
         function renderLocationsVisual(locArray) {
             const grid = document.getElementById('locVisualGrid');
             if(!locArray || !Array.isArray(locArray) || locArray.length === 0) {
@@ -1088,9 +1099,13 @@
             let npcSummary = npcList.map(n => `- ${n.name} (${n.identity}): ${n.personality} [Điểm Hảo Cảm: ${n.affinity}/100]`).join('\n');
 
             return `
-[DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
-- 👤 MC LEVEL / CẢNH GIỚI HIỆN TẠI: ${document.getElementById('mcLevel').value || 'Chưa rõ'}
-- 🎒 TÚI ĐỒ / INVENTORY MC:
+[DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI CỦA NVC]:
+- 👤 CẢNH GIỚI HIỆN TẠI: ${document.getElementById('mcLevel').value || 'Chưa rõ'}
+- ⏳ TỔNG THỜI GIAN TRONG GAME (BẾ QUAN/TU LUYỆN): ${document.getElementById('mcGameTime').value || '0 năm'}
+- 🔥 KỸ NĂNG & CÔNG PHÁP ĐÃ HỌC: 
+${document.getElementById('mcSkills').value || 'Chưa có'}
+
+- 🎒 TÚI ĐỒ / INVENTORY NVC:
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
 - 🟢 DANH SÁCH NPC ACTIVE & ĐIỂM HẢO CẢM (0-100):
@@ -1149,6 +1164,18 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     if(codexData.mcLevel !== undefined && codexData.mcLevel.trim() !== "") {
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
+
+                    if(codexData.mcGameTime !== undefined && codexData.mcGameTime.trim() !== "") {
+                        document.getElementById('mcGameTime').value = codexData.mcGameTime;
+                    }
+
+                    if(codexData.mcSkills !== undefined) {
+                        if (typeof codexData.mcSkills === 'object') {
+                            document.getElementById('mcSkills').value = JSON.stringify(codexData.mcSkills, null, 2);
+                        } else {
+                            document.getElementById('mcSkills').value = String(codexData.mcSkills);
+                        }
+                    }
                     
                     if(codexData.mcInventoryList !== undefined && Array.isArray(codexData.mcInventoryList)) {
                         const validInventory = codexData.mcInventoryList.filter(item => (item.quantity === undefined || item.quantity > 0));
@@ -1179,7 +1206,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         renderNpcs();
                     }
 
-                    /* CẬP NHẬT TÍCH LŨY ĐỊA DANH VÀ GHI CHÚ SỰ KIỆN */
                     if(codexData.locationsList !== undefined && Array.isArray(codexData.locationsList)) {
                         renderLocationsVisual(codexData.locationsList);
                         document.getElementById('locations').value = JSON.stringify(codexData.locationsList, null, 2);
@@ -1202,7 +1228,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         }
                     }
 
-                    log("⚡ Auto-updated Visual Inventory, MC Level, NPCs, Locations with Events & Weapons successfully!");
+                    log("⚡ Auto-updated NVC Level, Game Time, Skills, Visual Inventory, NPCs, Locations & Weapons successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     let formatted = formatSummaryBox(cleanText);
@@ -1216,26 +1242,38 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, MC LEVEL, NPCS, LOCATIONS, WEAPONS & CODEX BẮC BUỘC]:
+[QUY TẮC ĐỊNH DẠNG TÍNH THỜI GIAN TU LUYỆN, KỸ NĂNG NVC VÀ CODEX BẮC BUỘC]:
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
-2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
-- "mcLevel": Cảnh giới/Level hiện tại của MC.
+2. QUY TẮC BẮC BUỘC VỀ THỜI GIAN VÀ KỸ NĂNG NVC:
+- Tính mốc "mcGameTime" là tổng thời gian NVC tu luyện/chơi game từ lúc bắt đầu (Không phải tuổi tác).
+- Dùng "mcGameTime" làm căn cứ sắp xếp thời gian bế quan/đột phá chuẩn tu tiên:
+  + Luyện Khí Kỳ tầng 1 lên tầng 2: ~2 năm.
+  + Tầng 2 lên tầng 3: ~6 năm.
+  + Tầng cao hơn hoặc các đại cảnh giới lớn hơn (Trúc Cơ, Kim Đan, Nguyên Anh...): Tốn nhiều thập kỷ hoặc hàng trăm năm.
+- QUY TẮC NÂNG CẤP TÊN KỸ NĂNG ("mcSkills"): Khi NVC đột phá tăng 1 Đại Cảnh Giới (ví dụ từ Luyện Khí Kỳ -> Trúc Cơ Kỳ), hãy tự động đổi tên nâng cấp các chiêu thức đã học (Ví dụ: "Liệt Diễm Chưởng" nâng cấp lên thành "Bạo Diễm Chưởng").
+
+3. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
+- "mcLevel": Cảnh giới hiện tại của NVC.
+- "mcGameTime": Chuỗi tổng thời gian tu luyện từ lúc chơi game (VD: "2 năm 3 tháng").
+- "mcSkills": Chuỗi hoặc mảng danh sách kỹ năng đã được cập nhật/nâng cấp tên chiêu thức.
 - "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji (Lưu ý xóa vật phẩm nếu số lượng = 0).
 - "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm 0-100).
-- "locationsList": Mảng object địa danh. **QUY TẮC QUAN TRỌNG**: PHẢI TÍCH LŨY LẠI TẤT CẢ CÁC ĐỊA DANH TỪ TRƯỚC ĐẾN NAY (TUYỆT ĐỐI KHÔNG XÓA BỎ ĐỊA DANH CŨ KHI SANG NƠI KHÁC). Mỗi địa danh phải bao gồm: "name", "icon", "position", "danger", "accessRules", và đặc biệt trường "events" ghi chú rõ các sự kiện, bí cảnh, chiến tích hoặc nhiệm vụ mà MC đã trải qua tại địa danh đó để làm cơ sở xây dựng bản đồ game.
+- "locationsList": Mảng object địa danh tích lũy toàn bộ.
 - "weaponsList": Mảng object pháp bảo/bảo vật.
 - "npcArchive": CHUỖI VĂN BẢN THUẦN (String) liệt kê danh sách NPC đã chết/lịch sử.
 
 \`\`\`json
 {
-  "mcLevel": "Luyện Khí Kỳ tầng 4",
+  "mcLevel": "Luyện Khí Kỳ tầng 2",
+  "mcGameTime": "2 năm 0 tháng",
+  "mcSkills": "- Liệt Diễm Chưởng (Sơ cấp)\n- Ngự Phong Thuật",
   "mcInventoryList": [
     {
       "name": "Linh Thạch Hạ Phẩm",
       "icon": "💎",
-      "quantity": 5,
+      "quantity": 3,
       "quality": "Hạ Phẩm",
       "effect": "Tu luyện hoặc trao đổi mua bán."
     }
@@ -1255,7 +1293,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
       "position": "Phía Bắc Sơn Điền",
       "danger": "Trung Bình",
       "accessRules": "Cần đệ tử lệnh.",
-      "events": "Tham gia bí cảnh sương mù, thu hoạch linh thảo và tránh được bẫy trận pháp."
+      "events": "Bế quan 2 năm đột phá thành công Luyện Khí tầng 2."
     }
   ],
   "weaponsList": [
@@ -1302,9 +1340,10 @@ Cấu hình game:
 - Thể Loaị & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
 - Cảnh Giới: ${document.getElementById('powerSystem').value}
 
-[MC]: ${document.getElementById('mcName').value}
-[MC LEVEL / CẢNH GIỚI]: ${document.getElementById('mcLevel').value}
-[KĨ NĂNG]: ${document.getElementById('mcSkills').value}
+[NVC]: ${document.getElementById('mcName').value}
+[NVC LEVEL / CẢNH GIỚI]: ${document.getElementById('mcLevel').value}
+[TỔNG THỜI GIAN TRONG GAME]: ${document.getElementById('mcGameTime').value}
+[KĨ NĂNG & CÔNG PHÁP]: ${document.getElementById('mcSkills').value}
 
 ${getCodexMemoryPrompt()}
 ${JSON_STRUCTURE_INSTRUCTION}
@@ -1354,8 +1393,8 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcLevel", "mcInventoryList", "npcActiveList", "locationsList" (lưu ý: GIỮ LẠI TẤT CẢ ĐỊA DANH CŨ, cập nhật sự kiện mới vào trường "events" của địa danh tương ứng) và "weaponsList".
-4. Nếu MC sử dụng vật phẩm/đan dược trong quá trình tu luyện hay chiến đấu, HÃY TRỪ HOẶC XÓA KHỎI "mcInventoryList" nếu đã dùng hết!
+3. Tự động cập nhật danh sách "mcLevel", "mcGameTime" (cộng thời gian bế quan/tu luyện nếu có), "mcSkills" (nâng cấp tên kỹ năng khi lên đại cảnh giới), "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList".
+4. Nếu NVC sử dụng vật phẩm/đan dược trong quá trình tu luyện hay chiến đấu, HÃY TRỪ HOẶC XÓA KHỎI "mcInventoryList" nếu đã dùng hết!
 5. npcArchive PHẢI là dạng chuỗi văn bản (String)!`;
 
             const reply = await callGemini(actionPrompt);

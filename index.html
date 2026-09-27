@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG (AUTO CODEX)</title>
+    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG (AUTO CODEX & PACING CONTROL)</title>
     <style>
         :root {
             --bg-color: #0b0e14;
@@ -66,7 +66,7 @@
 
         /* AI Gen Button Frame */
         .input-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
-        .btn-aigen { background: var(--accent-purple); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; shrink: 0; white-space: nowrap; }
+        .btn-aigen { background: var(--accent-purple); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 
         /* Action Buttons Group in Game Tab */
         .game-controls { display: flex; gap: 8px; margin-top: 8px; }
@@ -176,15 +176,17 @@
         <div class="form-group" style="background: #1c1012; padding: 10px; border-radius: 6px; border: 1px solid #7d2828;">
             <div class="input-header">
                 <div>
-                    <div class="label-title" style="color: #f85149;">🚨 QUY TẮC AI (ƯU TIÊN CAO NHẤT)</div>
-                    <div class="label-desc">Các chỉ thị bắt buộc AI phải tuân thủ tuyệt đối trong mọi phản hồi.</div>
+                    <div class="label-title" style="color: #f85149;">🚨 QUY TẮC AI & PACING (ƯU TIÊN CAO NHẤT)</div>
+                    <div class="label-desc">Quy tắc chuẩn Phàm Nhân Tu Tiên: Nhịp độ chậm, cẩn trọng, tiêu hao rõ ràng.</div>
                 </div>
-                <button class="btn-aigen" style="background: var(--accent-red);" onclick="aiGenField('aiRules', 'Chỉ thị bắt buộc AI Game Master phải tuân thủ tuyệt đối')">✨ AI GEN</button>
+                <button class="btn-aigen" style="background: var(--accent-red);" onclick="aiGenField('aiRules', 'Chỉ thị bắt buộc AI Game Master phải tuân thủ tuyệt đối chuẩn Phàm Nhân Tu Tiên')">✨ AI GEN</button>
             </div>
-            <textarea id="aiRules" style="border-color: #7d2828; min-height: 90px;" placeholder="Ví dụ: 
-1. Tuyệt đối không tự ý hành động thay cho người chơi.
-2. Mọi tình huống chiến đấu phải dựa theo chênh lệch cảnh giới.
-3. Luôn đưa ra từ 3 đến 4 lựa chọn ở cuối bài..."></textarea>
+            <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
+1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên). Không cho nhân vật đột phá liên tục hay gặp cơ duyên dễ dàng.
+2. Tuyệt đối không tự ý hành động thay cho người chơi.
+3. Luôn duy trì NPC SỐNG (Bạch Vi...) và phân loại rõ NPC ĐÃ CHẾT.
+4. Mọi đan dược, linh thạch tiêu hao phải cập nhật số lượng thực tế.
+5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
 
         <div class="form-group">
@@ -282,30 +284,34 @@
                 <div class="label-title">TÊN & THÂN PHẬN MC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
-            <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Lâm Thần - 16 tuổi - Đệ tử ngoại môn"></textarea>
+            <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hồng Đức (U Minh Tử) - Trúc Cơ sơ kỳ"></textarea>
         </div>
         <div class="form-group">
             <div class="input-header">
                 <div class="label-title">KỸ NĂNG & NĂNG LỰC CỐT LÕI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Kỹ năng, căn cơ và năng lực đặc biệt của MC')">✨ AI GEN</button>
             </div>
-            <textarea id="mcSkills" placeholder="VD: Tạp linh căn, ngộ tính cao..."></textarea>
+            <textarea id="mcSkills" placeholder="VD: Thiên Cơ Bàn, Trận pháp, Ẩn giấu khí tức..."></textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (AUTO UPDATED)</div>
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG MC (QUẢN LÝ TIÊU HAO REALTIME)</div>
         <div class="form-group">
-            <div class="label-desc">⚡ Hệ thống AI sẽ TỰ ĐỘNG CẬP NHẬT danh sách vật phẩm ở đây sau mỗi hành động trong game.</div>
-            <textarea id="mcInventory" style="min-height: 120px;" placeholder="Tự động ghi chép..."></textarea>
+            <div class="label-desc">⚡ Hệ thống AI sẽ TỰ ĐỘNG CẬP NHẬT số lượng vật phẩm tiêu hao (linh thạch, đan dược, phù lục...) tại đây.</div>
+            <textarea id="mcInventory" style="min-height: 120px;" placeholder="Tự động ghi chép chi tiết tiêu hao (VD: Linh thạch hạ phẩm: 65/100)..."></textarea>
         </div>
     </div>
 
     <!-- TAB 3: NPCS CODEX -->
     <div id="npc" class="tab-content">
-        <div class="section-tag">👥 CODEX: DANH SÁCH NPC ĐÃ XUẤT HIỆN (AUTO UPDATED)</div>
-        <div class="label-desc">⚡ AI sẽ TỰ ĐỘNG THÊM/SỬA danh sách NPC ở đây khi bạn gặp nhân vật mới hoặc khi mối quan hệ biến đổi.</div>
+        <div class="section-tag">👥 CODEX: QUẢN LÝ NPC SỐNG & LỊCH SỬ (AUTO UPDATED)</div>
+        <div class="label-desc">⚡ Tách biệt danh sách NPC Còn Sống (Active) và NPC Đã Chết (Archive) để phục vụ tái ngộ hoặc tra cứu lịch sử.</div>
         <div class="form-group">
-            <textarea id="npcList" style="min-height: 220px;" placeholder="Tự động ghi chép..."></textarea>
+            <div class="label-title" style="margin-bottom: 4px; color: var(--accent-green);">🟢 NPC ACTIVE (CÒN SỐNG):</div>
+            <textarea id="npcActive" style="min-height: 120px; margin-bottom: 12px;" placeholder="Ví dụ: Bạch Vi (Trúc Cơ sơ kỳ) - Thanh Vân Tông - Thái độ: Căm hận..."></textarea>
+            
+            <div class="label-title" style="margin-bottom: 4px; color: var(--accent-red);">🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ):</div>
+            <textarea id="npcArchive" style="min-height: 100px;" placeholder="Ví dụ: Lão đạo sĩ (Bị phản phệ) / Hắc y nhân (Bị mai phục)..."></textarea>
         </div>
     </div>
 
@@ -354,7 +360,7 @@
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
-            'npcList', 'locations', 'worldItems'
+            'npcActive', 'npcArchive', 'locations', 'worldItems'
         ];
 
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
@@ -446,9 +452,8 @@
             }
         }
 
-        // HÀM XUẤT FILE SAVE OUT LAPTOP (.JSON)
         function exportSaveFile() {
-            saveGame(); // Tự động lưu bản mới nhất vào Local Storage trước
+            saveGame();
             const rawData = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
             if (!rawData) {
                 alert("⚠️ Chưa có dữ liệu save nào để xuất!");
@@ -462,12 +467,10 @@
             log("Exported save file hongduc_tutien_save.json");
         }
 
-        // HÀM KÍCH HOẠT CHỌN FILE ĐỂ NHẬP SAVE TRÊN IPHONE
         function importSaveFile() {
             document.getElementById('fileInput').click();
         }
 
-        // XỬ LÝ FILE SAVE TẢI LÊN
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -476,9 +479,9 @@
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    JSON.parse(content); // Kiểm tra file JSON hợp lệ
+                    JSON.parse(content);
                     localStorage.setItem('HONDUC_TU_TIEN_SAVE', content);
-                    loadGame(); // Khôi phục dữ liệu ngay sau khi nhập thành công
+                    loadGame();
                     log("Imported save file successfully.");
                     alert("📥 Đã nhập file Save thành công! Bạn có thể tiếp tục chơi.");
                 } catch (err) {
@@ -587,11 +590,14 @@
         function getCodexMemoryPrompt() {
             return `
 [DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
-- 🎒 TÚI ĐỒ / INVENTORY MC:
+- 🎒 TÚI ĐỒ / INVENTORY MC (Kiểm soát tiêu hao):
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
-- 👥 DANH SÁCH NPC:
-${document.getElementById('npcList').value || 'Chưa có'}
+- 🟢 NPC ACTIVE (CÒN SỐNG):
+${document.getElementById('npcActive').value || 'Chưa có'}
+
+- 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ):
+${document.getElementById('npcArchive').value || 'Chưa có'}
 
 - 📍 ĐỊA DANH / VÙNG ĐẤT:
 ${document.getElementById('locations').value || 'Chưa có'}
@@ -616,7 +622,8 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     const codexData = JSON.parse(jsonMatch[1]);
                     
                     if(codexData.mcInventory !== undefined) document.getElementById('mcInventory').value = codexData.mcInventory;
-                    if(codexData.npcList !== undefined) document.getElementById('npcList').value = codexData.npcList;
+                    if(codexData.npcActive !== undefined) document.getElementById('npcActive').value = codexData.npcActive;
+                    if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
                     if(codexData.locations !== undefined) document.getElementById('locations').value = codexData.locations;
                     if(codexData.worldItems !== undefined) document.getElementById('worldItems').value = codexData.worldItems;
 
@@ -632,15 +639,16 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG BẮT BUỘC]:
+[QUY TẮC ĐỊNH DẠNG & QUẢN LÝ CODEX BẮC BUỘC]:
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT DỄ HIỂU NHƯ SAU:
 [TÓM TẮT]: (Tóm tắt tình thế nguy hiểm/cơ hội hiện tại của nhân vật ngắn gọn trong 1-2 câu).
 
-2. Cuối mỗi bài dẫn chuyện, hãy kèm theo 1 khối mã JSON tự động cập nhật danh sách Codex:
+2. Cuối mỗi bài dẫn chuyện, bắt buộc kèm theo 1 khối mã JSON tự động cập nhật danh sách Codex:
 \`\`\`json
 {
-  "mcInventory": "Danh sách vật phẩm MC đang giữ đầy đủ (xuống dòng từng item)",
-  "npcList": "Danh sách tất cả NPC đã xuất hiện + cảnh giới + thái độ mới nhất",
+  "mcInventory": "Liệt kê chi tiết túi đồ và số lượng tiêu hao thực tế (VD: Linh thạch: 65/100, Đan dược: 2/5)",
+  "npcActive": "Danh sách các NPC CÒN SỐNG (Bạch Vi...) + Cảnh giới + Thái độ (TUYỆT ĐỐI KHÔNG TỰ Ý XÓA)",
+  "npcArchive": "Danh sách các NPC ĐÃ CHẾT + Nguyên nhân chết / Lịch sử liên quan",
   "locations": "Danh sách các địa danh đã khám phá",
   "worldItems": "Danh sách các pháp bảo/công pháp/thần khí đã xuất hiện"
 }
@@ -654,7 +662,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             storyBox.innerHTML = "🔄 Đang khởi tạo thế giới và thiết lập Auto Codex...";
             log("Starting new game session...");
 
-            const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - BẮT BUỘC TUÂN THỦ]:
+            const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
 ${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt nào.'}
 
 ==================================================
@@ -674,7 +682,7 @@ Cấu hình game:
 ${getCodexMemoryPrompt()}
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động có đánh số và đính kèm khối JSON tự động cập nhật Codex!`;
+Hãy dẫn chuyện đoạn mở đầu thật sống động, giữ nhịp độ chậm rãi, nguy hiểm rình rập. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động có đánh số và đính kèm khối JSON tự động cập nhật Codex!`;
 
             const reply = await callGemini(systemPrompt);
             if(reply) {
@@ -697,7 +705,7 @@ Hãy dẫn chuyện đoạn mở đầu thật sống động. Cuối bài tạo
             input.value = '';
             log("Player action: " + action);
 
-            const actionPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - BẮT BUỘC TUÂN THỦ]:
+            const actionPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
 ${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt nào.'}
 
 ${getCodexMemoryPrompt()}
@@ -706,9 +714,9 @@ Hành động của người chơi: "${action}".
 ${JSON_STRUCTURE_INSTRUCTION}
 
 Yêu cầu:
-1. Tiếp diễn câu chuyện dựa trên hành động của người chơi và đúng với Quy Tắc AI Ưu Tiên.
+1. Tiếp diễn câu chuyện dựa trên hành động của người chơi với nhịp độ cẩn trọng, thực tế.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động ghi chép/cập nhật những thay đổi vào khối JSON cuối bài.`;
+3. Tự động ghi chép/cập nhật những thay đổi vào khối JSON cuối bài (chú ý trừ đúng số lượng tiêu hao vật phẩm và phân loại NPC).`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

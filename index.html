@@ -66,7 +66,6 @@
         .item-effect { font-size: 11px; color: var(--subtext-color); line-height: 1.3; word-wrap: break-word; }
         .item-unknown { color: #f85149 !important; font-style: italic; }
 
-        /* LOCATIONS & WEAPONS GRID STYLE */
         .loc-grid, .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
         .loc-card, .weapon-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
         .loc-info, .weapon-info { flex: 1; min-width: 0; }
@@ -274,7 +273,16 @@
                 <div class="label-title">TÊN & THÂN PHẬN MC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
-            <textarea id="mcName" style="min-height: 60px;" placeholder="VD: Hồng Đức - Luyện Khí Kỳ tầng 3 (Thô thông dược lý)"></textarea>
+            <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Hồng Đức (Đệ tử ngoại tông Thanh Vân Môn)"></textarea>
+        </div>
+
+        <!-- MỤC MỚI BỔ SUNG: CẢNH GIỚI / LEVEL MC -->
+        <div class="form-group">
+            <div class="input-header">
+                <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI (ĐỂ AI KHÔNG QUÊN)</div>
+                <button class="btn-aigen" onclick="aiGenField('mcLevel', 'Level hoặc Cảnh giới hiện tại của nhân vật chính')">✨ AI GEN</button>
+            </div>
+            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 3 (Sơ kỳ) / Level 15">
         </div>
 
         <div class="form-group">
@@ -317,7 +325,6 @@
         </div>
 
         <div id="npcContainer" class="npc-grid">
-            <!-- Thẻ NPC render động -->
         </div>
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
@@ -414,10 +421,11 @@
             }
         ];
 
+        // Cập nhật mảng lưu reset bao gồm mcLevel
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
-            'powerSystem', 'writingStyle', 'mcName', 'mcSkills', 'mcInventory', 
+            'powerSystem', 'writingStyle', 'mcName', 'mcLevel', 'mcSkills', 'mcInventory', 
             'npcArchive', 'locations', 'worldItems'
         ];
 
@@ -1007,11 +1015,13 @@
             }
         }
 
+        // Đã cập nhật đưa MC Level/Cảnh giới vào Codex memory prompt
         function getCodexMemoryPrompt() {
             let npcSummary = npcList.map(n => `- ${n.name} (${n.identity}): ${n.personality} [Điểm Hảo Cảm: ${n.affinity}/100]`).join('\n');
 
             return `
 [DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
+- 👤 MC LEVEL / CẢNH GIỚI HIỆN TẠI: ${document.getElementById('mcLevel').value || 'Chưa rõ'}
 - 🎒 TÚI ĐỒ / INVENTORY MC:
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
@@ -1042,6 +1052,11 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
                 if (jsonMatch && jsonMatch[1]) {
                     const codexData = JSON.parse(jsonMatch[1]);
+
+                    // Nếu AI trả về level/cảnh giới mới trong JSON thì tự động cập nhật lại ô mcLevel
+                    if(codexData.mcLevel !== undefined && codexData.mcLevel.trim() !== "") {
+                        document.getElementById('mcLevel').value = codexData.mcLevel;
+                    }
                     
                     if(codexData.mcInventoryList !== undefined && Array.isArray(codexData.mcInventoryList)) {
                         renderInventoryVisual(codexData.mcInventoryList);
@@ -1083,7 +1098,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
                     if(codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = codexData.npcArchive;
 
-                    log("⚡ Auto-updated Visual Inventory, NPCs, Locations, Weapons & Codex Memory successfully!");
+                    log("⚡ Auto-updated Visual Inventory, MC Level, NPCs, Locations, Weapons & Codex Memory successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     return formatSummaryBox(cleanText);
@@ -1095,11 +1110,12 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, NPCS, LOCATIONS, WEAPONS & CODEX BẮC BUỘC]:
+[QUY TẮC ĐỊNH DẠNG VISUAL INVENTORY, MC LEVEL, NPCS, LOCATIONS, WEAPONS & CODEX BẮC BUỘC]:
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
 2. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
+- "mcLevel": Cảnh giới/Level hiện tại của MC (Cập nhật khi có sự bứt phá hoặc tăng tiến).
 - "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji.
 - "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm từ 0 đến 100).
 - "locationsList": Mảng object địa danh ("name", "icon", "position", "danger", "accessRules").
@@ -1107,6 +1123,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
 \`\`\`json
 {
+  "mcLevel": "Luyện Khí Kỳ tầng 3",
   "mcInventoryList": [
     {
       "name": "Linh Thạch Hạ Phẩm",
@@ -1174,6 +1191,7 @@ Cấu hình game:
 - Cảnh Giới: ${document.getElementById('powerSystem').value}
 
 [MC]: ${document.getElementById('mcName').value}
+[MC LEVEL / CẢNH GIỚI]: ${document.getElementById('mcLevel').value}
 [KĨ NĂNG]: ${document.getElementById('mcSkills').value}
 
 ${getCodexMemoryPrompt()}
@@ -1213,7 +1231,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
 Yêu cầu:
 1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
 2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList" đầy đủ thông tin chi tiết. Nếu gặp bảo vật chưa biết, hãy để dấu ? và ghi rõ chờ cơ duyên xảo hợp.`;
+3. Tự động cập nhật danh sách "mcLevel", "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList" đầy đủ thông tin chi tiết. Nếu MC thăng cấp hoặc tiến giới, hãy đổi giá trị "mcLevel" tương ứng. Nếu gặp bảo vật chưa biết, hãy để dấu ? và ghi rõ chờ cơ duyên xảo hợp.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

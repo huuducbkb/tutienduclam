@@ -361,7 +361,7 @@
                 name: "Hồng Đức (Mẫu)",
                 identity: "Luyện Khí Tầng 3 - Sư huynh",
                 personality: "Trầm lặng, cẩn trọng, trọng tình nghĩa.",
-                avatar: "",
+                avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=HongDuc",
                 affinity: 60
             }
         ];
@@ -374,6 +374,11 @@
         ];
 
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
+
+        // Hàm tự tạo link avatar AI theo tên nhân vật
+        function generateAutoAvatar(name) {
+            return `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name || 'NPC')}`;
+        }
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -468,6 +473,10 @@
             let html = '';
             npcList.forEach((npc, index) => {
                 const affInfo = getAffinityInfo(npc.affinity);
+                // Nếu NPC chưa có avatar, tự tạo tự động bằng AI Avatar
+                if (!npc.avatar || npc.avatar.trim() === '') {
+                    npc.avatar = generateAutoAvatar(npc.name);
+                }
                 const hasAvatar = npc.avatar && npc.avatar.trim() !== '';
 
                 html += `
@@ -501,7 +510,7 @@
                             <span style="color:${affInfo.color};">${npc.affinity} / 100 (${affInfo.status})</span>
                         </div>
                         <div class="affinity-bar-bg">
-                            <div class="affinity-bar-fill" style="width: ${npc.affinity}%; background: ${affInfo.color};"></div>
+                            <div class="affinity-bar-fill" style="width: ${Math.max(0, Math.min(100, npc.affinity))}%; background: ${affInfo.color};"></div>
                         </div>
                         <div class="affinity-btns">
                             <div>
@@ -520,12 +529,13 @@
         }
 
         function addNewNpcCard() {
+            const newName = 'NPC Mới ' + (npcList.length + 1);
             npcList.push({
                 id: 'npc_' + Date.now(),
-                name: 'NPC Mới',
+                name: newName,
                 identity: 'Luyện Khí sơ kỳ',
                 personality: 'Chưa rõ tính cách.',
-                avatar: '',
+                avatar: generateAutoAvatar(newName),
                 affinity: 50
             });
             renderNpcs();
@@ -541,13 +551,17 @@
         function updateNpcField(index, field, value) {
             if(npcList[index]) {
                 npcList[index][field] = value;
+                if (field === 'name' && (!npcList[index].avatar || npcList[index].avatar.includes('dicebear'))) {
+                    npcList[index].avatar = generateAutoAvatar(value);
+                }
+                renderNpcs();
             }
         }
 
         function changeAffinity(index, delta) {
             if(npcList[index]) {
                 let val = (npcList[index].affinity || 0) + delta;
-                npcList[index].affinity = Math.min(100, Math.max(0, val));
+                npcList[index].affinity = Math.min(100, Math.max(-100, val));
                 renderNpcs();
             }
         }
@@ -556,7 +570,7 @@
             if(npcList[index]) {
                 npcList[index].avatar = '';
                 renderNpcs();
-                log(`Đã xóa ảnh NPC [${npcList[index].name}]`);
+                log(`Đã reset ảnh NPC [${npcList[index].name}]`);
             }
         }
 
@@ -900,13 +914,16 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                                 if(aiNpc.identity) exist.identity = aiNpc.identity;
                                 if(aiNpc.personality) exist.personality = aiNpc.personality;
                                 if(aiNpc.affinity !== undefined) exist.affinity = aiNpc.affinity;
+                                if(aiNpc.avatar) exist.avatar = aiNpc.avatar;
                             } else {
+                                // Tự động tạo Avatar AI nếu AI không trả về ảnh
+                                const autoAvatarUrl = aiNpc.avatar || generateAutoAvatar(aiNpc.name);
                                 npcList.push({
                                     id: 'npc_' + Date.now() + Math.random().toString(36).substr(2, 4),
                                     name: aiNpc.name,
                                     identity: aiNpc.identity || 'Luyện Khí sơ kỳ',
                                     personality: aiNpc.personality || 'Chưa rõ',
-                                    avatar: '',
+                                    avatar: autoAvatarUrl,
                                     affinity: aiNpc.affinity !== undefined ? aiNpc.affinity : 50
                                 });
                             }
@@ -982,7 +999,7 @@ Cấu hình game:
 - Mốc Thời Gian: ${document.getElementById('startTime').value}
 - Kịch Bản Mở Đầu: ${document.getElementById('startScript').value}
 - Quy Tắc Thế Giới: ${document.getElementById('worldRules').value}
-- Thể Loại & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
+- Thể Loaị & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
 - Cảnh Giới: ${document.getElementById('powerSystem').value}
 
 [MC]: ${document.getElementById('mcName').value}
@@ -1041,7 +1058,3 @@ Yêu cầu:
     </script>
 </body>
 </html>
-
-```
-
-Hãy dán toàn bộ đoạn code này vào file `index.html` trên GitHub để khôi phục lại giao diện hoàn chỉnh nhé!

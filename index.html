@@ -1061,7 +1061,7 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
-        // --- HÀM GỌI AI ĐÃ ĐƯỢC PHỤC HỒI CHUẨN ĐỊNH DẠNG INDEX CŨ ỔN ĐỊNH ---
+        // --- HÀM GỌI AI CẬP NHẬT MÔ HÌNH GEMINI MỚI ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1072,9 +1072,15 @@
 
             log("Gửi yêu cầu tới Gemini AI...");
             
-            // Endpoint gọi trực tiếp chuẩn v1beta
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
-            
+            // Danh sách mô hình theo thứ tự ưu tiên (Gemini 3.6 Flash / 3.5 Flash / 3.1 Flash-Lite / 2.5 Flash / 2.5 Flash-Lite)
+            const models = [
+                'gemini-3.6-flash',
+                'gemini-3.5-flash',
+                'gemini-3.1-flash-lite',
+                'gemini-2.5-flash',
+                'gemini-2.5-flash-lite'
+            ];
+
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
             const requestPayload = {
@@ -1087,41 +1093,46 @@
                 ]
             };
 
-            try {
-                let response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestPayload)
-                });
+            for (let i = 0; i < models.length; i++) {
+                const modelName = models[i];
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
                 
-                let data = await response.json();
-                
-                // Dự phòng trường hợp Model 2.5 bận -> Tự chuyển sang gemini-2.0-flash
-                if(data.error) {
-                    log("Chuyển sang Fallback Model (gemini-2.0-flash)...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
-                    const resFb = await fetch(fallbackUrl, {
+                try {
+                    log(`Đang gọi mô hình: ${modelName}...`);
+                    let response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(requestPayload)
                     });
-                    data = await resFb.json();
-                    if(data.error) throw new Error(data.error.message);
-                }
-                
-                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-                    throw new Error("Phản hồi từ AI không hợp lệ hoặc bị chặn.");
-                }
+                    
+                    let data = await response.json();
 
-                const aiReply = data.candidates[0].content.parts[0].text;
-                chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-                return aiReply;
-            } catch(e) {
-                chatHistory.pop();
-                log("LỖI: " + e.message);
-                alert("Lỗi gọi AI: " + e.message);
-                return null;
+                    if (data.error) {
+                        log(`Mô hình ${modelName} gặp lỗi: ${data.error.message || JSON.stringify(data.error)}`);
+                        if (i < models.length - 1) {
+                            log(`Thử chuyển sang mô hình tiếp theo...`);
+                            continue;
+                        } else {
+                            throw new Error(data.error.message || "Tất cả các mô hình đều không phản hồi.");
+                        }
+                    }
+
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        const aiReply = data.candidates[0].content.parts[0].text;
+                        chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+                        return aiReply;
+                    }
+                } catch (e) {
+                    if (i === models.length - 1) {
+                        chatHistory.pop();
+                        log("LỖI: " + e.message);
+                        alert("Lỗi gọi AI: " + e.message);
+                        return null;
+                    }
+                }
             }
+            chatHistory.pop();
+            return null;
         }
 
         async function aiGenField(fieldId, promptMsg) {

@@ -445,10 +445,10 @@
         let turnCounter = 0;
         let npcList = [];
 
-        // --- INDEXEDDB HELPER ---
+        // --- FIX INDEXEDDB HELPER (TĂNG VERSION NÊN 3 ĐỂ TRÁNH LỖI NOTFOUNDERROR) ---
         const DB_NAME = "HongDucTuTienDB";
         const STORE_NAME = "savegames";
-        const DB_VERSION = 2; 
+        const DB_VERSION = 3; 
 
         function openDatabase() {
             return new Promise((resolve, reject) => {
@@ -682,7 +682,7 @@
                             </div>
                         </div>
                     </div>
-                </div>`; // FIX: Thêm thẻ đóng div.npc-card bị thiếu
+                </div>`;
             });
             container.innerHTML = html;
         }
@@ -926,7 +926,6 @@
             grid.innerHTML = html;
         }
 
-        // --- HÀM TỰ ĐỘNG CHUYỂN DỮ LIỆU THÔ SANG GIAO DIỆN HÌNH ẢNH ---
         function parseRawToVisual(type) {
             try {
                 if(type === 'inventory') {
@@ -1044,7 +1043,6 @@
                 });
             }
 
-            // FIX: Cập nhật lại giao diện trực quan từ dữ liệu thô đã khôi phục
             parseRawToVisual('inventory');
             parseRawToVisual('location');
             parseRawToVisual('weapon');
@@ -1116,7 +1114,6 @@
                     restoreGameData(gameData);
                     log("Đã tự động nạp bản lưu từ IndexedDB.");
                 } else {
-                    // Cập nhật giao diện mặc định ban đầu
                     parseRawToVisual('inventory');
                     parseRawToVisual('location');
                     parseRawToVisual('weapon');
@@ -1150,6 +1147,7 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
+        // --- FIX HÀM GỌI GEMINI API CẬP NHẬT MODEL MỚI HOÀN TOÀN ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1159,6 +1157,8 @@
             }
 
             log("Sending request to AI...");
+            
+            // Dùng gemini-2.5-flash làm endpoint chính
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
@@ -1173,8 +1173,8 @@
                 
                 if(data.error) {
                     log("Fallback model API...");
-                    // FIX: Sử dụng gemini-1.5-flash làm fallback nếu 2.5 bị lỗi
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+                    // FIX: Sử dụng gemini-2.0-flash / gemini-1.5-flash-latest thay cho gemini-1.5-flash bị lỗi 404
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1284,7 +1284,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
 
-                    // FIX: Sửa gán đúng giá trị mcGameTime vào ô mcGameTime
                     if(codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") {
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }

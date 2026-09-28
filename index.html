@@ -402,14 +402,12 @@
 
         function openDB() {
             return new Promise((resolve, reject) => {
-                // Mở không truyền version để kiểm tra version hiện tại của DB trên thiết bị
                 const req = indexedDB.open(DB_NAME);
                 req.onsuccess = (e) => {
                     const db = e.target.result;
                     const currentVersion = db.version;
                     db.close();
 
-                    // Mở lại với phiên bản bằng hoặc cao hơn phiên bản hiện tại
                     const openReq = indexedDB.open(DB_NAME, currentVersion || 1);
                     openReq.onupgradeneeded = (evt) => {
                         const upgradeDb = evt.target.result;
@@ -1072,7 +1070,8 @@
             }
 
             log("Sending request to AI...");
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+            // Cập nhật Model chính mới nhất: gemini-2.0-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
@@ -1086,7 +1085,8 @@
                 
                 if(data.error) {
                     log("Fallback model API...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${key}`;
+                    // Cập nhật Fallback model chuẩn: gemini-1.5-flash
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

@@ -1061,7 +1061,7 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
-        // CƠ CHẾ DỰ PHÒNG TỰ ĐỘNG THỬ NHIỀU MODEL (FALLBACK STRATEGY)
+        // --- HÀM GỌI GEMINI API MỚI NHẤT & TỐI ƯU NHẤT ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1070,49 +1070,58 @@
                 return null; 
             }
 
-            // Danh sách các mô hình ưu tiên theo thứ tự từ mới nhất đến cũ
-            const modelsToTry = [
-                'gemini-1.5-flash',
-                'gemini-1.5-pro',
-                'gemini-1.0-pro'
-            ];
-
+            log("Sending request to AI (gemini-2.5-flash)...");
+            
+            // Cập nhật Model chính: gemini-2.5-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+            
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
-            for (let i = 0; i < modelsToTry.length; i++) {
-                const modelName = modelsToTry[i];
-                log(`Đang gọi AI [${modelName}]...`);
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
+            // Cấu hình Cấm kiểm duyệt để tránh gián đoạn trải nghiệm Roleplay Tu tiên
+            const requestPayload = {
+                contents: chatHistory,
+                safetySettings: [
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                ]
+            };
 
-                try {
-                    const response = await fetch(url, {
+            try {
+                let response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestPayload)
+                });
+                let data = await response.json();
+                
+                // Nếu Model chính lỗi, tự động chuyển sang Fallback Model: gemini-2.0-flash
+                if(data.error) {
+                    log("Switching to Fallback Model (gemini-2.0-flash)...");
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+                    const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: chatHistory })
+                        body: JSON.stringify(requestPayload)
                     });
-                    const data = await response.json();
-
-                    if (data.error) {
-                        log(`Mô hình ${modelName} báo lỗi: ${data.error.message || 'Lỗi không xác định'}. Đang chuyển model dự phòng...`);
-                        continue; // Thử model tiếp theo
-                    }
-
-                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                        const aiReply = data.candidates[0].content.parts[0].text;
-                        chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-                        log(`Thành công với model [${modelName}]!`);
-                        return aiReply;
-                    }
-                } catch (err) {
-                    log(`Kết nối tới ${modelName} thất bại: ${err.message}. Đang thử model khác...`);
+                    data = await resFb.json();
+                    if(data.error) throw new Error(data.error.message);
                 }
-            }
+                
+                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                    throw new Error("Phản hồi không hợp lệ từ AI.");
+                }
 
-            // Nếu chạy hết các model dự phòng mà đều thất bại
-            chatHistory.pop(); // Xóa prompt vừa thêm để giữ sạch lịch sử
-            log("Tất cả mô hình API đều không khả dụng. Vui lòng kiểm tra lại API Key hoặc mạng.");
-            alert("Lỗi gọi AI: Không thể kết nối tới bất kỳ mô hình Gemini nào. Vui lòng kiểm tra lại API Key!");
-            return null;
+                const aiReply = data.candidates[0].content.parts[0].text;
+                chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+                return aiReply;
+            } catch(e) {
+                chatHistory.pop();
+                log("ERROR: " + e.message);
+                alert("Lỗi gọi AI: " + e.message);
+                return null;
+            }
         }
 
         async function aiGenField(fieldId, promptMsg) {
@@ -1191,15 +1200,16 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
         function parseAndAutoUpdateCodex(fullResponseText) {
             try {
-                const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
+                // Hỗ trợ trích xuất JSON chuẩn xác ngay cả khi có khoảng trắng/Markdown
+                const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/i);
                 if (jsonMatch && jsonMatch[1]) {
-                    const codexData = JSON.parse(jsonMatch[1]);
+                    const codexData = JSON.parse(jsonMatch[1].trim());
 
-                    if(codexData.mcLevel !== undefined && codexData.mcLevel.trim() !== "") {
+                    if(codexData.mcLevel !== undefined && String(codexData.mcLevel).trim() !== "") {
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
 
-                    if(codexData.mcGameTime !== undefined && codexData.mcGameTime.trim() !== "") {
+                    if(codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") {
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }
 
@@ -1264,7 +1274,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
                     log("⚡ Auto-updated Codex successfully!");
 
-                    let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
+                    let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
                     let formatted = formatSummaryBox(cleanText);
                     return buildTurnHtml(formatted);
                 }
@@ -1385,7 +1395,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame();
             } else {
-                storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key hoặc nhật ký hệ thống!</div>';
+                storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key.</div>';
             }
         }
 

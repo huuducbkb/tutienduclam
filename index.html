@@ -399,7 +399,7 @@
         // IndexedDB Storage Manager - Đã sửa hoàn chỉnh lỗi NotFoundError
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
-        const DB_VERSION = 2; // Tăng version để luôn kích hoạt upgradeneeded nếu store chưa tồn tại
+        const DB_VERSION = 2;
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -482,8 +482,10 @@
 
         function log(msg) {
             const logBox = document.getElementById('sysLogs');
-            logBox.innerHTML += `<br>> ${msg}`;
-            logBox.scrollTop = logBox.scrollHeight;
+            if(logBox) {
+                logBox.innerHTML += `<br>> ${msg}`;
+                logBox.scrollTop = logBox.scrollHeight;
+            }
         }
 
         function playFemaleTTS(text, btnElement) {
@@ -621,7 +623,7 @@
                 const hasAvatar = npc.avatar && npc.avatar.trim() !== '';
 
                 html += `
-                <div class="npc-card" id="npc-card-${npc.id}">
+                <div class="npc-card" id="npc-card-${npc.id || index}">
                     <button style="position:absolute; top:8px; right:8px; background:none; border:none; color:var(--accent-red); cursor:pointer; font-size:14px;" onclick="removeNpc(${index})">✕</button>
                     <div class="npc-header">
                         <div class="avatar-box" style="width:70px; height:70px; border-color: ${affInfo.color};">
@@ -1054,7 +1056,6 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
-        // --- HÀM GỌI AI CẬP NHẬT MÔ HÌNH GEMINI MỚI ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1065,7 +1066,6 @@
 
             log("Gửi yêu cầu tới Gemini AI...");
             
-            // Danh sách mô hình theo thứ tự ưu tiên (Gemini 3.6 Flash / 3.5 Flash / 3.1 Flash-Lite / 2.5 Flash / 2.5 Flash-Lite)
             const models = [
                 'gemini-3.6-flash',
                 'gemini-3.5-flash',
@@ -1305,7 +1305,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 {
   "mcLevel": "Luyện Khí Kỳ tầng 2",
   "mcGameTime": "2 năm 0 tháng",
-  "mcSkills": "- Liệt Diễm Chưởng (Sơ cấp)\n- Ngự Phong Thuật",
+  "mcSkills": "- Liệt Diễm Chưởng (Sơ cấp)\\n- Ngự Phong Thuật",
   "mcInventoryList": [
     {
       "name": "Linh Thạch Hạ Phẩm",

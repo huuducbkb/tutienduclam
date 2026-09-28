@@ -396,7 +396,7 @@
     </div>
 
     <script>
-        // IndexedDB Storage Manager (Đã xử lý chống lỗi VersionError)
+        // IndexedDB Storage Manager
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
 
@@ -1070,8 +1070,8 @@
             }
 
             log("Sending request to AI...");
-            // Cập nhật Model chính mới nhất: gemini-2.0-flash
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+            // Model chính mới nhất: gemini-3.8-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
@@ -1085,8 +1085,8 @@
                 
                 if(data.error) {
                     log("Fallback model API...");
-                    // Cập nhật Fallback model chuẩn: gemini-1.5-flash
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+                    // Model Fallback: gemini-3.6-flash
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1343,97 +1343,84 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             chatHistory = [];
             turnHtmlHistory = [];
             turnCounter = 0;
-            storyBox.innerHTML = "🔄 Đang khởi tạo thế giới...";
-            log("Starting new game session...");
+            storyBox.innerHTML = '<div style="color: var(--accent-gold);">⚡ Đang khởi tạo thế giới AI RPG... Vui lòng chờ...</div>';
 
-            const systemPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
-${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt.'}
+            const systemPrompt = `
+Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game Text RPG Tu Tiên đỉnh cao mang tên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ'}".
 
-==================================================
-Cấu hình game:
-- Tên Trò Chơi: ${document.getElementById('gameTitle').value}
-- Độ Khó: ${document.getElementById('difficultySelect').value} (${document.getElementById('difficultyCustom').value})
-- Bối Cảnh: ${document.getElementById('worldContext').value}
-- Mốc Thời Gian: ${document.getElementById('startTime').value}
-- Kịch Bản Mở Đầu: ${document.getElementById('startScript').value}
-- Quy Tắc Thế Giới: ${document.getElementById('worldRules').value}
-- Thể Loại & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
-- Cảnh Giới: ${document.getElementById('powerSystem').value}
+[THÔNG TIN THẾ GIỚI]:
+- Quy tắc AI & Pacing: ${document.getElementById('aiRules').value}
+- Độ khó: ${document.getElementById('difficultySelect').value} (${document.getElementById('difficultyCustom').value})
+- Bối cảnh: ${document.getElementById('worldContext').value}
+- Mốc thời gian mở đầu: ${document.getElementById('startTime').value}
+- Kịch bản mở đầu: ${document.getElementById('startScript').value}
+- Quy tắc thế giới: ${document.getElementById('worldRules').value}
+- Quy tắc đặt tên: ${document.getElementById('namingRules').value}
+- Thể loại & Âm hưởng: ${document.getElementById('genre').value}
+- Hệ thống cảnh giới: ${document.getElementById('powerSystem').value}
+- Văn phong: ${document.getElementById('writingStyle').value}
 
-[NVC]: ${document.getElementById('mcName').value}
-[NVC LEVEL / CẢNH GIỚI]: ${document.getElementById('mcLevel').value}
-[TỔNG THỜI GIAN TRONG GAME]: ${document.getElementById('mcGameTime').value}
-[KĨ NĂNG & CÔNG PHÁP]: ${document.getElementById('mcSkills').value}
+[THÔNG TIN NHÂN VẬT CHÍNH (NVC)]:
+- Tên & Thân phận: ${document.getElementById('mcName').value}
+- Cảnh giới: ${document.getElementById('mcLevel').value}
+- Thời gian trong game: ${document.getElementById('mcGameTime').value}
+- Kỹ năng & Công pháp: ${document.getElementById('mcSkills').value}
+- Túi đồ ban đầu: ${document.getElementById('mcInventory').value}
 
 ${getCodexMemoryPrompt()}
+
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy dẫn chuyện đoạn mở đầu thật sinh động, giữ nhịp độ chậm rãi. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động và đính kèm khối JSON tự động cập nhật Codex!`;
+Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa người chơi bước vào câu chuyện theo đúng kịch bản mở đầu!
+`;
 
             const reply = await callGemini(systemPrompt);
-            if(reply) {
-                const cleanText = parseAndAutoUpdateCodex(reply);
-                storyBox.innerHTML = cleanText;
-                turnHtmlHistory.push(cleanText);
+            if (reply) {
+                const formattedHtml = parseAndAutoUpdateCodex(reply);
+                storyBox.innerHTML = formattedHtml;
+                turnHtmlHistory.push(storyBox.innerHTML);
+                await saveGame();
+            } else {
+                storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key.</div>';
             }
         }
 
         async function sendAction() {
+            const inputEl = document.getElementById('userInput');
+            const actionText = inputEl.value.trim();
+            if (!actionText) return;
+
             stopTTS();
-            const input = document.getElementById('userInput');
             const storyBox = document.getElementById('story-box');
-            const action = input.value.trim();
-            if(!action) return;
+            inputEl.value = '';
 
-            const previousHtml = storyBox.innerHTML;
-            
-            const actionId = `action-turn-${Date.now()}`;
-            const formattedActionHtml = `<div id="${actionId}" class="player-action-highlight">[HÀNH ĐỘNG CỦA BẠN]: ${action}</div>`;
-            storyBox.innerHTML += formattedActionHtml + `<div><i>[AI Đang XỬ LÝ...]</i></div>`;
-            input.value = '';
-            log("Player action: " + action);
+            const userHtml = `<span class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
+            storyBox.innerHTML += userHtml;
+            storyBox.scrollTop = storyBox.scrollHeight;
 
-            setTimeout(() => {
-                const newActionElem = document.getElementById(actionId);
-                if (newActionElem) {
-                    newActionElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                    storyBox.scrollTop = storyBox.scrollHeight;
-                }
-            }, 100);
-
-            const actionPrompt = `[QUY TẮC AI ƯU TIÊN CAO NHẤT - PACING CHUẨN PHÀM NHÂN TU TIÊN]:
-${document.getElementById('aiRules').value || 'Không có quy tắc đặc biệt.'}
+            const promptWithCodex = `
+[HÀNH ĐỘNG CỦA NGƯỜI CHƠI]: "${actionText}"
 
 ${getCodexMemoryPrompt()}
-Hành động của người chơi: "${action}".
 
 ${JSON_STRUCTURE_INSTRUCTION}
+`;
 
-Yêu cầu:
-1. Tiếp diễn câu chuyện dựa trên hành động người chơi.
-2. Thêm mục [TÓM TẮT]: ngắn gọn.
-3. Tự động cập nhật Codex JSON.`;
-
-            const reply = await callGemini(actionPrompt);
-            if(reply) {
-                const cleanText = parseAndAutoUpdateCodex(reply);
-                const updatedContent = previousHtml + formattedActionHtml + cleanText;
-                storyBox.innerHTML = updatedContent;
-                turnHtmlHistory.push(updatedContent);
-
-                setTimeout(() => {
-                    const actionElem = document.getElementById(actionId);
-                    if (actionElem) {
-                        actionElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    } else {
-                        storyBox.scrollTop = storyBox.scrollHeight;
-                    }
-                }, 100);
-            } else {
-                storyBox.innerHTML = previousHtml;
+            const reply = await callGemini(promptWithCodex);
+            if (reply) {
+                const formattedHtml = parseAndAutoUpdateCodex(reply);
+                storyBox.innerHTML += formattedHtml;
+                storyBox.scrollTop = storyBox.scrollHeight;
+                turnHtmlHistory.push(storyBox.innerHTML);
+                await saveGame();
             }
         }
+
+        document.getElementById('userInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendAction();
+            }
+        });
     </script>
 </body>
 </html>

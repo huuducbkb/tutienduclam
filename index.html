@@ -1,37 +1,3 @@
-Dưới đây là các lỗi chính trong file HTML/JS của bạn và mã nguồn đã được sửa chữa hoàn chỉnh, tối ưu hóa.
-
----
-
-### Các lỗi chính đã sửa:
-
-1. **Lỗi `InvalidStateError` do mở `readwrite` transaction trên Store chưa tạo:**
-* **Nguyên nhân:** Khi gọi `saveGame()` lần đầu, database chưa chắc đã kịp khởi tạo hoặc chưa có Object Store `savegames`.
-* **Sửa:** Đồng bộ hóa quá trình `openDatabase()`, đảm bảo `upgradeneeded` tự động tạo `savegames` store nếu chưa có trước khi gọi bất kỳ giao dịch read/write nào.
-
-
-2. **Lỗi `QuotaExceededError` (Tràn bộ nhớ IndexedDB/DOM):**
-* **Nguyên nhân:** Biến `turnHtmlHistory` nối chuỗi `storyBox.innerHTML` dồn dập qua từng lượt khiến kích thước dữ liệu phình to hàng chục MB, gây sập/đơ trình duyệt khi gọi `JSON.stringify()`.
-* **Sửa:** Giới hạn lưu lịch sử HTML (`turnHtmlHistory`) tối đa 20 lượt gần nhất để nhẹ bộ nhớ và không làm vỡ game.
-
-
-3. **Lỗi Parse JSON Codex thất bại từ AI Gemini:**
-* **Nguyên nhân:** AI Gemini thường trả về Markdown JSON có chứa khoảng trắng, xuống dòng, comment hoặc ký tự đặc biệt làm `JSON.parse` bị throw error ngầm.
-* **Sửa:** Bổ sung hàm dọn dẹp Regex làm sạch chuỗi JSON trước khi parse, thêm fallback log chi tiết để không làm dừng luồng chơi.
-
-
-4. **Lỗi gọi `callGemini` không tự cuộn trôi UI và TTS bị đè:**
-* **Nguyên nhân:** Trạng thái voice đọc TTS chưa ngắt triệt để khi người chơi bấm nút gửi hành động mới.
-* **Sửa:** Tự động gọi `stopTTS()` trước mỗi lượt gửi và tối ưu hóa cuộn trôi UI (`scrollIntoView`).
-
-
-
----
-
-### Mã nguồn hoàn chỉnh đã sửa lỗi:
-
-Bạn có thể copy toàn bộ đoạn mã dưới đây và dán đè vào file HTML của mình:
-
-```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>

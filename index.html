@@ -1096,10 +1096,10 @@
                 });
                 let data = await response.json();
                 
-                // Nếu Model chính lỗi, tự động chuyển sang Fallback Model: gemini-2.0-flash
+                // Nếu Model chính gặp lỗi, tự động chuyển sang Fallback Model: gemini-1.5-flash
                 if(data.error) {
-                    log("Switching to Fallback Model (gemini-2.0-flash)...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+                    log("Switching to Fallback Model (gemini-1.5-flash)...");
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

@@ -1061,7 +1061,7 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
-        // --- HÀM GỌI GEMINI API MỚI NHẤT & ĐÃ SỬA LỖI ---
+        // --- HÀM GỌI GEMINI API CẬP NHẬT CHÍNH XÁC C THEO GỢI Ý GOOGLE (GEMINI-3.8-FLASH) ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1070,14 +1070,13 @@
                 return null; 
             }
 
-            log("Sending request to AI (gemini-2.5-flash)...");
+            log("Sending request to AI (gemini-3.8-flash)...");
             
-            // Cập nhật Model chính: gemini-2.5-flash
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+            // Endpoint chính thức theo đúng thông báo lỗi gợi ý: models/gemini-3.8-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
-            // Cấu hình Cấm kiểm duyệt để tránh gián đoạn trải nghiệm Roleplay Tu tiên
             const requestPayload = {
                 contents: chatHistory,
                 safetySettings: [
@@ -1096,17 +1095,8 @@
                 });
                 let data = await response.json();
                 
-                // Dự phòng trường hợp Model chính bận hoặc gặp lỗi -> chuyển sang gemini-2.0-flash
                 if(data.error) {
-                    log("Switching to Fallback Model (gemini-2.0-flash)...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
-                    const resFb = await fetch(fallbackUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestPayload)
-                    });
-                    data = await resFb.json();
-                    if(data.error) throw new Error(data.error.message);
+                    throw new Error(data.error.message);
                 }
                 
                 if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
@@ -1200,7 +1190,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
         function parseAndAutoUpdateCodex(fullResponseText) {
             try {
-                // Hỗ trợ trích xuất JSON chuẩn xác ngay cả khi có khoảng trắng/Markdown
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/i);
                 if (jsonMatch && jsonMatch[1]) {
                     const codexData = JSON.parse(jsonMatch[1].trim());

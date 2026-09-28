@@ -282,7 +282,7 @@
                 <div class="label-title">TÊN & THÂN PHẬN NVC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
-            <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Nguyễn Hữu Đức (Đệ tử ngoại tông)"></textarea>
+            <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Nguyễn Hữu Đức (Đệ tử ngoại tông)">Nguyễn Hữu Đức (Đệ tử ngoại tông)</textarea>
         </div>
 
         <div class="form-group">
@@ -290,7 +290,7 @@
                 <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcLevel', 'Level hoặc Cảnh giới hiện tại của nhân vật chính')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 1">
+            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 1" value="Luyện Khí Kỳ tầng 1">
         </div>
 
         <div class="form-group">
@@ -298,7 +298,7 @@
                 <div class="label-title" style="color: #388bfd;">⏳ TỔNG THỜI GIAN TU LUYỆN / TRONG GAME (KHÔNG PHẢI TUỔI)</div>
                 <button class="btn-aigen" onclick="aiGenField('mcGameTime', 'Tổng thời gian bế quan/tu luyện đã trôi qua trong game')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 0 năm 0 tháng">
+            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 0 năm 0 tháng" value="0 năm 0 tháng">
             <div class="label-desc">💡 AI căn cứ vào đây để tính thời hạn tu luyện/bế quan hợp lý.</div>
         </div>
 
@@ -307,7 +307,7 @@
                 <div class="label-title" style="color: var(--accent-purple);">🔥 KĨ NĂNG ĐÃ HỌC & CÔNG PHÁP</div>
                 <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Danh sách kỹ năng đã học kèm theo tên nâng cấp theo cảnh giới')">✨ AI GEN</button>
             </div>
-            <textarea id="mcSkills" placeholder="VD: - Trường Xuân Công (Tầng 1)"></textarea>
+            <textarea id="mcSkills" placeholder="VD: - Trường Xuân Công (Tầng 1)">- Trường Xuân Công (Tầng 1)</textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
@@ -330,7 +330,15 @@
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA:</div>
-            <textarea id="mcInventory" style="min-height: 80px; font-size:12px; color:#8b949e;" placeholder="Dữ liệu thô của túi đồ..."></textarea>
+            <textarea id="mcInventory" style="min-height: 80px; font-size:12px; color:#8b949e;" placeholder="Dữ liệu thô của túi đồ..." onchange="parseRawToVisual('inventory')">[
+  {
+    "name": "Linh Thạch Hạ Phẩm",
+    "icon": "💎",
+    "quantity": 5,
+    "quality": "Hạ Phẩm",
+    "effect": "Dùng để giao dịch hoặc thu nạp linh khí."
+  }
+]</textarea>
         </div>
     </div>
 
@@ -371,7 +379,16 @@
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA ĐỊA DANH:</div>
-            <textarea id="locations" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô địa danh..."></textarea>
+            <textarea id="locations" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô địa danh..." onchange="parseRawToVisual('location')">[
+  {
+    "name": "Sơn Môn Ngoại Tông",
+    "icon": "🏔️",
+    "position": "Chân núi",
+    "danger": "Thấp",
+    "accessRules": "Tự do",
+    "events": "Nơi nhập môn tu tiên."
+  }
+]</textarea>
         </div>
     </div>
 
@@ -393,7 +410,14 @@
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA PHÁP BẢO:</div>
-            <textarea id="worldItems" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô pháp bảo..."></textarea>
+            <textarea id="worldItems" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô pháp bảo..." onchange="parseRawToVisual('weapon')">[
+  {
+    "name": "Pháp Khí Sơ Cấp",
+    "icon": "🗡️",
+    "rank": "Hạ Phẩm",
+    "usage": "Phòng thân cơ bản."
+  }
+]</textarea>
         </div>
     </div>
 
@@ -424,7 +448,7 @@
         // --- INDEXEDDB HELPER ---
         const DB_NAME = "HongDucTuTienDB";
         const STORE_NAME = "savegames";
-        const DB_VERSION = 2; // Tăng version nâng cấp DB an toàn
+        const DB_VERSION = 2; 
 
         function openDatabase() {
             return new Promise((resolve, reject) => {
@@ -462,7 +486,7 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             
-            const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(tabId));
             if(btn) btn.classList.add('active');
         }
 
@@ -658,7 +682,7 @@
                             </div>
                         </div>
                     </div>
-                </div>`;
+                </div>`; // FIX: Thêm thẻ đóng div.npc-card bị thiếu
             });
             container.innerHTML = html;
         }
@@ -902,20 +926,34 @@
             grid.innerHTML = html;
         }
 
+        // --- HÀM TỰ ĐỘNG CHUYỂN DỮ LIỆU THÔ SANG GIAO DIỆN HÌNH ẢNH ---
+        function parseRawToVisual(type) {
+            try {
+                if(type === 'inventory') {
+                    const raw = document.getElementById('mcInventory').value;
+                    if(raw.trim()) renderInventoryVisual(JSON.parse(raw));
+                } else if(type === 'location') {
+                    const raw = document.getElementById('locations').value;
+                    if(raw.trim()) renderLocationsVisual(JSON.parse(raw));
+                } else if(type === 'weapon') {
+                    const raw = document.getElementById('worldItems').value;
+                    if(raw.trim()) renderWeaponsVisual(JSON.parse(raw));
+                }
+            } catch(e) {
+                console.log("Sửa dữ liệu thô chưa đúng định dạng JSON.");
+            }
+        }
+
         // --- CÁC HÀM LƯU / TẢI GAME SỬ DỤNG INDEXEDDB ---
         async function saveGame() {
-            // Giới hạn lịch sử lưu tối đa 20 lượt gần nhất để tránh ngốn quá nhiều bộ nhớ IndexedDB
             const maxTurnSave = 20;
             const trimmedTurnHtmlHistory = turnHtmlHistory.slice(-maxTurnSave);
 
             const gameData = {
-                chatHistory: chatHistory.slice(-40), // Giữ tối đa 40 câu thoại gần nhất
+                chatHistory: chatHistory.slice(-40),
                 turnHtmlHistory: trimmedTurnHtmlHistory,
                 turnCounter: turnCounter,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
-                inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
-                locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
-                weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML,
                 mcAvatarBase64: mcAvatarBase64,
                 npcList: npcList,
                 inputs: {}
@@ -991,15 +1029,6 @@
             turnCounter = gameData.turnCounter || 0;
             document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
             
-            if(gameData.inventoryVisualHTML) {
-                document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
-            }
-            if(gameData.locVisualHTML) {
-                document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
-            }
-            if(gameData.weaponVisualHTML) {
-                document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
-            }
             if(gameData.mcAvatarBase64) {
                 setMcAvatarImage(gameData.mcAvatarBase64);
             }
@@ -1014,6 +1043,11 @@
                     if(el) el.value = gameData.inputs[id];
                 });
             }
+
+            // FIX: Cập nhật lại giao diện trực quan từ dữ liệu thô đã khôi phục
+            parseRawToVisual('inventory');
+            parseRawToVisual('location');
+            parseRawToVisual('weapon');
         }
 
         function exportSaveFile() {
@@ -1081,9 +1115,17 @@
                 if(gameData) {
                     restoreGameData(gameData);
                     log("Đã tự động nạp bản lưu từ IndexedDB.");
+                } else {
+                    // Cập nhật giao diện mặc định ban đầu
+                    parseRawToVisual('inventory');
+                    parseRawToVisual('location');
+                    parseRawToVisual('weapon');
                 }
             } catch (e) {
                 log("Chưa có bản lưu trong IndexedDB.");
+                parseRawToVisual('inventory');
+                parseRawToVisual('location');
+                parseRawToVisual('weapon');
             }
             renderNpcs();
         });
@@ -1131,7 +1173,8 @@
                 
                 if(data.error) {
                     log("Fallback model API...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+                    // FIX: Sử dụng gemini-1.5-flash làm fallback nếu 2.5 bị lỗi
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1177,7 +1220,7 @@
 [DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI CỦA NVC]:
 - 👤 CẢNH GIỚI HIỆN TẠI: ${document.getElementById('mcLevel').value || 'Chưa rõ'}
 - ⏳ TỔNG THỜI GIAN TRONG GAME (BẾ QUAN/TU LUYỆN): ${document.getElementById('mcGameTime').value || '0 năm'}
-- 🔥 KỸ NĂNG & CÔNG PHÁP ĐÃ HỌC: 
+- 🔥 KĨ NĂNG & CÔNG PHÁP ĐÃ HỌC: 
 ${document.getElementById('mcSkills').value || 'Chưa có'}
 
 - 🎒 TÚI ĐỒ / INVENTORY NVC:
@@ -1234,7 +1277,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             try {
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
                 if (jsonMatch && jsonMatch[1]) {
-                    // Dọn dẹp ký tự không hợp lệ trước khi parse
                     let cleanJsonStr = jsonMatch[1].trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
                     const codexData = JSON.parse(cleanJsonStr);
 
@@ -1242,6 +1284,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
 
+                    // FIX: Sửa gán đúng giá trị mcGameTime vào ô mcGameTime
                     if(codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") {
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }
@@ -1319,7 +1362,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG TÍNH THỜI GIAN TU LUYỆN, KỸ NĂNG NVC VÀ CODEX BẮC BUỘC]:
+[QUY TẮC ĐỊNH DẠNG TÍNH THỜI GIAN TU LUYỆN, KĨ NĂNG NVC VÀ CODEX BẮC BUỘC]:
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
@@ -1493,5 +1536,3 @@ Yêu cầu:
     </script>
 </body>
 </html>
-
-```

@@ -30,7 +30,7 @@
         .restart-btn { background: var(--accent-green); border-color: #388e3c; }
         .restart-btn:hover { background: #2e7d32; }
 
-        .sidebar { position: fixed; top: 0; left: -280px; width: 270px; height: 100%; background: var(--panel-bg); border-right: 1px solid var(--border-color); transition: 0.3s; z-index: 100; padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .sidebar { position: fixed; top: 0; left: -280px; width: 270px; height: 100%; background: var(--panel-bg); border-right: 1px solid var(--border-color); transition: 0.3s; z-index: 100; padding: 15px; overflow-y: auto; }
         .sidebar.active { left: 0; }
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 16px; font-weight: bold; }
         .sidebar-item { display: block; width: 100%; padding: 10px 12px; background: #21262d; border: 1px solid var(--border-color); color: #fff; text-align: left; border-radius: 6px; margin-bottom: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
@@ -99,7 +99,7 @@
         .btn-send { background: var(--accent-purple); }
         .btn-undo { background: #30363d; color: #f0f6fc; }
 
-        #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+        #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
         .player-action-highlight { color: #ff5555; font-weight: bold; background: rgba(255, 85, 85, 0.12); padding: 6px 10px; border-left: 4px solid #ff5555; border-radius: 4px; margin: 12px 0; display: block; }
         .summary-box { background: rgba(210, 153, 34, 0.1); border: 1px solid var(--accent-gold); border-left: 4px solid var(--accent-gold); color: #f0e6d2; padding: 10px 12px; border-radius: 6px; margin: 12px 0; font-size: 13px; line-height: 1.5; }
         .summary-title { color: var(--accent-gold); font-weight: bold; text-transform: uppercase; font-size: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
@@ -108,7 +108,7 @@
         .btn-tts { background: #238636; border: 1px solid var(--border-color); color: #fff; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; }
         .btn-tts-stop { background: #da3633; }
 
-        .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; -webkit-overflow-scrolling: touch; }
+        .log-box { background: #000; color: #7cb342; font-family: monospace; font-size: 11px; padding: 8px; border-radius: 6px; height: 80px; overflow-y: auto; margin-top: 10px; }
         .section-tag { background: #21262d; border-left: 3px solid var(--accent-gold); padding: 4px 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -396,43 +396,31 @@
     </div>
 
     <script>
-        // IndexedDB Storage Manager - Tự động sửa lỗi VersionError trên Safari / Laptop
+        // IndexedDB Storage Manager (Đã xử lý chống lỗi VersionError)
         const DB_NAME = 'HongDucTuTienDB';
-        const DB_VERSION = 10; // Đặt version đủ lớn để đè bản cũ
         const STORE_NAME = 'GameSaves';
 
         function openDB() {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                
-                request.onupgradeneeded = (e) => {
+                // Mở không truyền version để kiểm tra version hiện tại của DB trên thiết bị
+                const req = indexedDB.open(DB_NAME);
+                req.onsuccess = (e) => {
                     const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
+                    const currentVersion = db.version;
+                    db.close();
+
+                    // Mở lại với phiên bản bằng hoặc cao hơn phiên bản hiện tại
+                    const openReq = indexedDB.open(DB_NAME, currentVersion || 1);
+                    openReq.onupgradeneeded = (evt) => {
+                        const upgradeDb = evt.target.result;
+                        if (!upgradeDb.objectStoreNames.contains(STORE_NAME)) {
+                            upgradeDb.createObjectStore(STORE_NAME);
+                        }
+                    };
+                    openReq.onsuccess = (evt) => resolve(evt.target.result);
+                    openReq.onerror = (evt) => reject("Lỗi IndexedDB: " + evt.target.error);
                 };
-                
-                request.onsuccess = (e) => resolve(e.target.result);
-                
-                request.onerror = (e) => {
-                    // Nếu gặp lỗi VersionError (đặc biệt trên Safari iOS)
-                    if (request.error && request.error.name === 'VersionError') {
-                        console.warn("Phát hiện VersionError, tiến hành xóa DB cũ và khởi tạo lại...");
-                        const deleteReq = indexedDB.deleteDatabase(DB_NAME);
-                        deleteReq.onsuccess = () => {
-                            // Mở lại DB mới tinh sau khi xóa thành công
-                            const reOpen = indexedDB.open(DB_NAME, 1);
-                            reOpen.onupgradeneeded = (evt) => {
-                                evt.target.result.createObjectStore(STORE_NAME);
-                            };
-                            reOpen.onsuccess = (evt) => resolve(evt.target.result);
-                            reOpen.onerror = (evtErr) => reject("Lỗi mở lại DB: " + evtErr.target.error);
-                        };
-                        deleteReq.onerror = () => reject("Không thể xóa DB cũ bị xung đột phiên bản.");
-                    } else {
-                        reject("Lỗi IndexedDB: " + e.target.error);
-                    }
-                };
+                req.onerror = (e) => reject("Lỗi mở DB: " + e.target.error);
             });
         }
 

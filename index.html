@@ -1061,6 +1061,7 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
+        // CƠ CHẾ DỰ PHÒNG TỰ ĐỘNG THỬ NHIỀU MODEL (FALLBACK STRATEGY)
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1069,46 +1070,49 @@
                 return null; 
             }
 
-            log("Sending request to AI...");
-            // Model chính: gemini-2.5-flash
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
-            
+            // Danh sách các mô hình ưu tiên theo thứ tự từ mới nhất đến cũ
+            const modelsToTry = [
+                'gemini-1.5-flash',
+                'gemini-1.5-pro',
+                'gemini-1.0-pro'
+            ];
+
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: chatHistory })
-                });
-                const data = await response.json();
-                
-                if(data.error) {
-                    log("Fallback model API...");
-                    // Model Fallback: gemini-2.0-flash
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
-                    const resFb = await fetch(fallbackUrl, {
+            for (let i = 0; i < modelsToTry.length; i++) {
+                const modelName = modelsToTry[i];
+                log(`Đang gọi AI [${modelName}]...`);
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
+
+                try {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: chatHistory })
                     });
-                    const dataFb = await resFb.json();
-                    if(dataFb.error) throw new Error(dataFb.error.message);
-                    
-                    const aiReply = dataFb.candidates[0].content.parts[0].text;
-                    chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-                    return aiReply;
+                    const data = await response.json();
+
+                    if (data.error) {
+                        log(`Mô hình ${modelName} báo lỗi: ${data.error.message || 'Lỗi không xác định'}. Đang chuyển model dự phòng...`);
+                        continue; // Thử model tiếp theo
+                    }
+
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        const aiReply = data.candidates[0].content.parts[0].text;
+                        chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+                        log(`Thành công với model [${modelName}]!`);
+                        return aiReply;
+                    }
+                } catch (err) {
+                    log(`Kết nối tới ${modelName} thất bại: ${err.message}. Đang thử model khác...`);
                 }
-                
-                const aiReply = data.candidates[0].content.parts[0].text;
-                chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-                return aiReply;
-            } catch(e) {
-                chatHistory.pop();
-                log("ERROR: " + e.message);
-                alert("Lỗi gọi AI: " + e.message);
-                return null;
             }
+
+            // Nếu chạy hết các model dự phòng mà đều thất bại
+            chatHistory.pop(); // Xóa prompt vừa thêm để giữ sạch lịch sử
+            log("Tất cả mô hình API đều không khả dụng. Vui lòng kiểm tra lại API Key hoặc mạng.");
+            alert("Lỗi gọi AI: Không thể kết nối tới bất kỳ mô hình Gemini nào. Vui lòng kiểm tra lại API Key!");
+            return null;
         }
 
         async function aiGenField(fieldId, promptMsg) {
@@ -1381,7 +1385,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame();
             } else {
-                storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key.</div>';
+                storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key hoặc nhật ký hệ thống!</div>';
             }
         }
 

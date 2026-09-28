@@ -237,7 +237,7 @@
                 <div class="label-title">THỂ LOẠI & ÂM HƯỞNG</div>
                 <button class="btn-aigen" onclick="aiGenField('genre', 'Thể loại chính và âm hưởng không khí tác phẩm')">✨ AI GEN</button>
             </div>
-            <textarea id="genre" placeholder="Thể loại và âm hưởng...">Tiên hiệp, Phàm nhân lưu, Cẩn trọng, Trí tuệ</textarea>
+            <textarea id="genre" placeholder="Thể loại và âm hưởng..."></textarea>
         </div>
 
         <div class="form-group">
@@ -245,7 +245,7 @@
                 <div class="label-title">HỆ THỐNG SỨC MẠNH / CẢNH GIỚI</div>
                 <button class="btn-aigen" onclick="aiGenField('powerSystem', 'Hệ thống cảnh giới sức mạnh chi tiết')">✨ AI GEN</button>
             </div>
-            <textarea id="powerSystem" placeholder="Chi tiết các bậc năng lực, rank, cảnh giới...">Luyện Khí, Trúc Cơ, Kim Đan, Nguyên Anh, Hóa Thần...</textarea>
+            <textarea id="powerSystem" placeholder="Chi tiết các bậc năng lực, rank, cảnh giới..."></textarea>
         </div>
 
         <div class="form-group">
@@ -253,7 +253,7 @@
                 <div class="label-title">VĂN PHONG & NGÔI KỂ</div>
                 <button class="btn-aigen" onclick="aiGenField('writingStyle', 'Định hướng văn phong miêu tả và ngôi kể')">✨ AI GEN</button>
             </div>
-            <textarea id="writingStyle" placeholder="Văn phong miêu tả trần thuật...">Ngôi thứ ba khách quan, chi tiết, chậm rãi, sát cốt truyện Phàm Nhân.</textarea>
+            <textarea id="writingStyle" placeholder="Văn phong miêu tả trần thuật..."></textarea>
         </div>
     </div>
 
@@ -282,7 +282,7 @@
                 <div class="label-title">TÊN & THÂN PHẬN NVC</div>
                 <button class="btn-aigen" onclick="aiGenField('mcName', 'Tên và thân phận nhân vật chính')">✨ AI GEN</button>
             </div>
-            <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Nguyễn Hữu Đức (Đệ tử ngoại tông)">Nguyễn Hữu Đức (Đệ tử ngoại tông)</textarea>
+            <textarea id="mcName" style="min-height: 50px;" placeholder="VD: Hồng Đức (Đệ tử ngoại tông Thanh Vân Môn)"></textarea>
         </div>
 
         <div class="form-group">
@@ -290,7 +290,7 @@
                 <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcLevel', 'Level hoặc Cảnh giới hiện tại của nhân vật chính')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 1" value="Luyện Khí Kỳ tầng 1">
+            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 4 (Sơ kỳ)">
         </div>
 
         <div class="form-group">
@@ -298,7 +298,7 @@
                 <div class="label-title" style="color: #388bfd;">⏳ TỔNG THỜI GIAN TU LUYỆN / TRONG GAME (KHÔNG PHẢI TUỔI)</div>
                 <button class="btn-aigen" onclick="aiGenField('mcGameTime', 'Tổng thời gian bế quan/tu luyện đã trôi qua trong game')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 0 năm 0 tháng" value="0 năm 0 tháng">
+            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 0 năm 3 tháng (Mới bước vào con đường tu tiên)">
             <div class="label-desc">💡 AI căn cứ vào đây để tính thời hạn tu luyện/bế quan hợp lý.</div>
         </div>
 
@@ -307,7 +307,9 @@
                 <div class="label-title" style="color: var(--accent-purple);">🔥 KĨ NĂNG ĐÃ HỌC & CÔNG PHÁP</div>
                 <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Danh sách kỹ năng đã học kèm theo tên nâng cấp theo cảnh giới')">✨ AI GEN</button>
             </div>
-            <textarea id="mcSkills" placeholder="VD: - Trường Xuân Công (Tầng 1)">- Trường Xuân Công (Tầng 1)</textarea>
+            <textarea id="mcSkills" placeholder="VD: 
+- Liệt Diễm Chưởng (Sơ cấp - Luyện Khí Kỳ)
+- Ngự Phong Thuật (Vi thành)"></textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
@@ -330,15 +332,7 @@
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA:</div>
-            <textarea id="mcInventory" style="min-height: 80px; font-size:12px; color:#8b949e;" placeholder="Dữ liệu thô của túi đồ..." onchange="parseRawToVisual('inventory')">[
-  {
-    "name": "Linh Thạch Hạ Phẩm",
-    "icon": "💎",
-    "quantity": 5,
-    "quality": "Hạ Phẩm",
-    "effect": "Dùng để giao dịch hoặc thu nạp linh khí."
-  }
-]</textarea>
+            <textarea id="mcInventory" style="min-height: 80px; font-size:12px; color:#8b949e;" placeholder="Dữ liệu thô của túi đồ..."></textarea>
         </div>
     </div>
 
@@ -349,8 +343,7 @@
             <button class="btn-aigen" style="background: var(--accent-green);" onclick="addNewNpcCard()">➕ THÊM NPC MỚI</button>
         </div>
 
-        <div id="npcContainer" class="npc-grid">
-        </div>
+        <div id="npcContainer" class="npc-grid"></div>
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
         <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ)</div>
@@ -362,62 +355,26 @@
     <!-- TAB 4: LOCATIONS -->
     <div id="loc" class="tab-content">
         <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH & SỰ KIỆN ĐÃ TRẢI QUA (VISUAL)</div>
-        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua kèm theo các bí cảnh, sự kiện đã tham gia.</div>
+        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua kèm theo bí cảnh và sự kiện.</div>
         
-        <div id="locVisualGrid" class="loc-grid">
-            <div class="loc-card">
-                <div class="item-icon-box">🏔️</div>
-                <div class="loc-info">
-                    <div class="loc-name">Sơn Môn Ngoại Tông</div>
-                    <span class="loc-badge loc-danger-low">Nguy hiểm: Thấp</span>
-                    <div class="loc-detail-text">📍 Vị trí: Chân núi</div>
-                    <div class="loc-detail-text">🚪 Điều kiện vào: Tự do</div>
-                    <div class="loc-events-box">📜 <b>Sự kiện / Bí cảnh đã qua:</b> Nơi nhập môn tu tiên.</div>
-                </div>
-            </div>
-        </div>
+        <div id="locVisualGrid" class="loc-grid"></div>
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA ĐỊA DANH:</div>
-            <textarea id="locations" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô địa danh..." onchange="parseRawToVisual('location')">[
-  {
-    "name": "Sơn Môn Ngoại Tông",
-    "icon": "🏔️",
-    "position": "Chân núi",
-    "danger": "Thấp",
-    "accessRules": "Tự do",
-    "events": "Nơi nhập môn tu tiên."
-  }
-]</textarea>
+            <textarea id="locations" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô địa danh..."></textarea>
         </div>
     </div>
 
     <!-- TAB 5: ITEMS / WEAPONS -->
     <div id="items" class="tab-content">
         <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (VISUAL)</div>
-        <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo kèm cấp bậc và khả năng sử dụng.</div>
+        <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo.</div>
         
-        <div id="weaponVisualGrid" class="weapon-grid">
-            <div class="weapon-card">
-                <div class="item-icon-box">🗡️</div>
-                <div class="weapon-info">
-                    <div class="weapon-name">Pháp Khí Sơ Cấp</div>
-                    <span class="loc-badge loc-danger-low">Cấp bậc: Hạ Phẩm</span>
-                    <div class="loc-detail-text">🛠️ Khả năng sử dụng: Phòng thân cơ bản.</div>
-                </div>
-            </div>
-        </div>
+        <div id="weaponVisualGrid" class="weapon-grid"></div>
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA PHÁP BẢO:</div>
-            <textarea id="worldItems" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô pháp bảo..." onchange="parseRawToVisual('weapon')">[
-  {
-    "name": "Pháp Khí Sơ Cấp",
-    "icon": "🗡️",
-    "rank": "Hạ Phẩm",
-    "usage": "Phòng thân cơ bản."
-  }
-]</textarea>
+            <textarea id="worldItems" style="min-height: 120px; font-size:12px; color:#8b949e;" placeholder="Tự động ghi chép dữ liệu thô pháp bảo..."></textarea>
         </div>
     </div>
 
@@ -435,34 +392,67 @@
         </div>
 
         <div class="label-title">SYSTEM LOGS</div>
-        <div id="sysLogs" class="log-box">> System initialized with IndexedDB support... Ready.</div>
+        <div id="sysLogs" class="log-box">> System initialized... Ready.</div>
     </div>
 
     <script>
+        // IndexedDB Storage Manager
+        const DB_NAME = 'HongDucTuTienDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'GameSaves';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject("Lỗi IndexedDB: " + e.target.error);
+            });
+        }
+
+        async function saveToIDB(key, value) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.put(value, key);
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject("Lỗi lưu IDB: " + req.error);
+            });
+        }
+
+        async function getFromIDB(key) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject("Lỗi tải IDB: " + req.error);
+            });
+        }
+
+        async function deleteFromIDB(key) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.delete(key);
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject("Lỗi xóa IDB: " + req.error);
+            });
+        }
+
         let chatHistory = [];
         let turnHtmlHistory = [];
         let mcAvatarBase64 = "";
         let turnCounter = 0;
         let npcList = [];
-
-        // --- FIX INDEXEDDB HELPER (TĂNG VERSION NÊN 3 ĐỂ TRÁNH LỖI NOTFOUNDERROR) ---
-        const DB_NAME = "HongDucTuTienDB";
-        const STORE_NAME = "savegames";
-        const DB_VERSION = 3; 
-
-        function openDatabase() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                request.onerror = (event) => reject("Lỗi kết nối IndexedDB: " + event.target.error);
-                request.onsuccess = (event) => resolve(event.target.result);
-                request.upgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-            });
-        }
 
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
@@ -486,16 +476,14 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             
-            const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(tabId));
+            const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
             if(btn) btn.classList.add('active');
         }
 
         function log(msg) {
             const logBox = document.getElementById('sysLogs');
-            if(logBox) {
-                logBox.innerHTML += `<br>> ${msg}`;
-                logBox.scrollTop = logBox.scrollHeight;
-            }
+            logBox.innerHTML += `<br>> ${msg}`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
         function playFemaleTTS(text, btnElement) {
@@ -553,12 +541,6 @@
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = function() {
-                window.speechSynthesis.getVoices();
-            };
         }
 
         function setMcAvatarImage(src) {
@@ -845,48 +827,6 @@
             grid.innerHTML = html;
         }
 
-        async function resetAllFields() {
-            if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?")) return;
-
-            fieldsToReset.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
-            });
-
-            stopTTS();
-            chatHistory = [];
-            turnHtmlHistory = [];
-            npcList = [];
-            turnCounter = 0;
-            removeMcAvatar();
-            renderNpcs();
-
-            document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "⚡ KHỞI TẠO GAME" ở góc trên bên phải!';
-            document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
-            document.getElementById('locVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
-            document.getElementById('weaponVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có pháp bảo nào được ghi nhận...</div>';
-            
-            try {
-                const db = await openDatabase();
-                const transaction = db.transaction(STORE_NAME, "readwrite");
-                const store = transaction.objectStore(STORE_NAME);
-                await new Promise((resolve, reject) => {
-                    const req = store.delete("current_save");
-                    req.onsuccess = () => resolve();
-                    req.onerror = (e) => reject(e.target.error);
-                });
-            } catch(e) {
-                console.error(e);
-            }
-
-            localStorage.removeItem('HONDUC_TU_TIEN_SAVE');
-
-            log("Tất cả cấu hình và bản lưu IndexedDB đã được Reset.");
-            alert("🧹 Đã làm sạch toàn bộ cấu hình và dữ liệu game!");
-            toggleSidebar();
-            openTab('world');
-        }
-
         function renderInventoryVisual(itemsArray) {
             const grid = document.getElementById('inventoryVisualGrid');
             if(!itemsArray || !Array.isArray(itemsArray) || itemsArray.length === 0) {
@@ -926,33 +866,44 @@
             grid.innerHTML = html;
         }
 
-        function parseRawToVisual(type) {
-            try {
-                if(type === 'inventory') {
-                    const raw = document.getElementById('mcInventory').value;
-                    if(raw.trim()) renderInventoryVisual(JSON.parse(raw));
-                } else if(type === 'location') {
-                    const raw = document.getElementById('locations').value;
-                    if(raw.trim()) renderLocationsVisual(JSON.parse(raw));
-                } else if(type === 'weapon') {
-                    const raw = document.getElementById('worldItems').value;
-                    if(raw.trim()) renderWeaponsVisual(JSON.parse(raw));
-                }
-            } catch(e) {
-                console.log("Sửa dữ liệu thô chưa đúng định dạng JSON.");
-            }
+        async function resetAllFields() {
+            if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ thông tin cấu hình và dữ liệu game không?")) return;
+
+            fieldsToReset.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            stopTTS();
+            chatHistory = [];
+            turnHtmlHistory = [];
+            npcList = [];
+            turnCounter = 0;
+            removeMcAvatar();
+            renderNpcs();
+
+            document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "⚡ KHỞI TẠO GAME" ở góc trên bên phải!';
+            document.getElementById('inventoryVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Túi đồ trống...</div>';
+            document.getElementById('locVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
+            document.getElementById('weaponVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có pháp bảo nào được ghi nhận...</div>';
+            
+            await deleteFromIDB('HONDUC_TU_TIEN_SAVE');
+
+            log("Tất cả cấu hình và bản lưu IndexedDB đã được Reset.");
+            alert("🧹 Đã làm sạch toàn bộ cấu hình!");
+            toggleSidebar();
+            openTab('world');
         }
 
-        // --- CÁC HÀM LƯU / TẢI GAME SỬ DỤNG INDEXEDDB ---
         async function saveGame() {
-            const maxTurnSave = 20;
-            const trimmedTurnHtmlHistory = turnHtmlHistory.slice(-maxTurnSave);
-
             const gameData = {
-                chatHistory: chatHistory.slice(-40),
-                turnHtmlHistory: trimmedTurnHtmlHistory,
+                chatHistory: chatHistory,
+                turnHtmlHistory: turnHtmlHistory,
                 turnCounter: turnCounter,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
+                inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
+                locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
+                weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML,
                 mcAvatarBase64: mcAvatarBase64,
                 npcList: npcList,
                 inputs: {}
@@ -964,107 +915,71 @@
             });
 
             try {
-                const db = await openDatabase();
-                const transaction = db.transaction(STORE_NAME, "readwrite");
-                const store = transaction.objectStore(STORE_NAME);
-                
-                await new Promise((resolve, reject) => {
-                    const req = store.put(gameData, "current_save");
-                    req.onsuccess = () => resolve();
-                    req.onerror = (e) => reject(e.target.error);
-                });
-
+                await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData);
                 log("Game state saved to IndexedDB.");
-                alert("💾 Đã lưu game thành công vào IndexedDB!");
+                alert("💾 Đã lưu game thành công (IndexedDB - Không giới hạn dung lượng)!");
                 toggleSidebar();
             } catch (e) {
-                alert("Lỗi lưu game IndexedDB: " + e);
+                alert("Lỗi lưu IndexedDB: " + e);
             }
         }
 
         async function loadGame() {
             try {
-                const db = await openDatabase();
-                const transaction = db.transaction(STORE_NAME, "readonly");
-                const store = transaction.objectStore(STORE_NAME);
-                
-                const gameData = await new Promise((resolve, reject) => {
-                    const req = store.get("current_save");
-                    req.onsuccess = (e) => resolve(e.target.result);
-                    req.onerror = (e) => reject(e.target.error);
-                });
-
+                const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
                 if(!gameData) {
-                    const oldRaw = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
-                    if(!oldRaw) {
-                        alert("⚠️ Chưa tìm thấy bản lưu nào trong hệ thống!");
-                        return;
-                    }
-                    loadGameFromLocalStorageData(JSON.parse(oldRaw));
+                    alert("⚠️ Chưa có bản lưu nào trong IndexedDB!");
                     return;
                 }
 
-                restoreGameData(gameData);
+                chatHistory = gameData.chatHistory || [];
+                turnHtmlHistory = gameData.turnHtmlHistory || [];
+                turnCounter = gameData.turnCounter || 0;
+                document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
+                
+                if(gameData.inventoryVisualHTML) {
+                    document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
+                }
+                if(gameData.locVisualHTML) {
+                    document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
+                }
+                if(gameData.weaponVisualHTML) {
+                    document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
+                }
+                if(gameData.mcAvatarBase64) {
+                    setMcAvatarImage(gameData.mcAvatarBase64);
+                }
+                if(gameData.npcList) {
+                    npcList = gameData.npcList;
+                    renderNpcs();
+                }
+
+                if(gameData.inputs) {
+                    Object.keys(gameData.inputs).forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el) el.value = gameData.inputs[id];
+                    });
+                }
+
                 log("Game state restored from IndexedDB.");
-                alert("📂 Khôi phục thành công tiến trình tu tiên từ IndexedDB!");
+                alert("📂 Khôi phục thành công bản lưu từ IndexedDB!");
                 toggleSidebar();
                 openTab('play');
             } catch(e) {
-                alert("Lỗi tải game: " + e);
+                alert("Lỗi khôi phục: " + e);
             }
         }
 
-        function loadGameFromLocalStorageData(gameData) {
-            restoreGameData(gameData);
-            log("Game state restored from legacy LocalStorage fallback.");
-            alert("📂 Khôi phục thành công từ bản lưu cũ!");
-            toggleSidebar();
-            openTab('play');
-        }
-
-        function restoreGameData(gameData) {
-            chatHistory = gameData.chatHistory || [];
-            turnHtmlHistory = gameData.turnHtmlHistory || [];
-            turnCounter = gameData.turnCounter || 0;
-            document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
-            
-            if(gameData.mcAvatarBase64) {
-                setMcAvatarImage(gameData.mcAvatarBase64);
-            }
-            if(gameData.npcList) {
-                npcList = gameData.npcList;
-                renderNpcs();
-            }
-
-            if(gameData.inputs) {
-                Object.keys(gameData.inputs).forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.value = gameData.inputs[id];
-                });
-            }
-
-            parseRawToVisual('inventory');
-            parseRawToVisual('location');
-            parseRawToVisual('weapon');
-        }
-
-        function exportSaveFile() {
-            saveGame();
-            openDatabase().then(db => {
-                const transaction = db.transaction(STORE_NAME, "readonly");
-                const store = transaction.objectStore(STORE_NAME);
-                const req = store.get("current_save");
-                req.onsuccess = (e) => {
-                    const gameData = e.target.result;
-                    if (!gameData) return;
-                    const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(blob);
-                    a.download = "hongduc_tutien_save.json";
-                    a.click();
-                    log("Xuất file save thành công.");
-                };
-            });
+        async function exportSaveFile() {
+            await saveGame();
+            const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
+            if (!gameData) return;
+            const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "hongduc_tutien_save.json";
+            a.click();
+            log("Xuất file save thành công.");
         }
 
         function importSaveFile() {
@@ -1078,22 +993,12 @@
             const reader = new FileReader();
             reader.onload = async function(e) {
                 try {
-                    const content = e.target.result;
-                    const gameData = JSON.parse(content);
-                    
-                    const db = await openDatabase();
-                    const transaction = db.transaction(STORE_NAME, "readwrite");
-                    const store = transaction.objectStore(STORE_NAME);
-                    await new Promise((resolve, reject) => {
-                        const req = store.put(gameData, "current_save");
-                        req.onsuccess = () => resolve();
-                        req.onerror = (err) => reject(err.target.error);
-                    });
-
-                    restoreGameData(gameData);
-                    alert("📥 Nhập file save và lưu vào IndexedDB thành công!");
+                    const content = JSON.parse(e.target.result);
+                    await saveToIDB('HONDUC_TU_TIEN_SAVE', content);
+                    await loadGame();
+                    alert("📥 Nhập file save thành công!");
                 } catch (err) {
-                    alert("❌ File save không hợp lệ: " + err);
+                    alert("❌ File save không hợp lệ!");
                 }
             };
             reader.readAsText(file);
@@ -1101,29 +1006,31 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             try {
-                const db = await openDatabase();
-                const transaction = db.transaction(STORE_NAME, "readonly");
-                const store = transaction.objectStore(STORE_NAME);
-                const gameData = await new Promise((resolve) => {
-                    const req = store.get("current_save");
-                    req.onsuccess = (e) => resolve(e.target.result);
-                    req.onerror = () => resolve(null);
-                });
-
+                const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
                 if(gameData) {
-                    restoreGameData(gameData);
-                    log("Đã tự động nạp bản lưu từ IndexedDB.");
-                } else {
-                    parseRawToVisual('inventory');
-                    parseRawToVisual('location');
-                    parseRawToVisual('weapon');
+                    if(gameData.inputs) {
+                        Object.keys(gameData.inputs).forEach(id => {
+                            const el = document.getElementById(id);
+                            if(el) el.value = gameData.inputs[id];
+                        });
+                    }
+                    if(gameData.mcAvatarBase64) {
+                        setMcAvatarImage(gameData.mcAvatarBase64);
+                    }
+                    if(gameData.inventoryVisualHTML) {
+                        document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
+                    }
+                    if(gameData.locVisualHTML) {
+                        document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
+                    }
+                    if(gameData.weaponVisualHTML) {
+                        document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
+                    }
+                    if(gameData.npcList) {
+                        npcList = gameData.npcList;
+                    }
                 }
-            } catch (e) {
-                log("Chưa có bản lưu trong IndexedDB.");
-                parseRawToVisual('inventory');
-                parseRawToVisual('location');
-                parseRawToVisual('weapon');
-            }
+            } catch(e){}
             renderNpcs();
         });
 
@@ -1147,7 +1054,6 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
-        // --- FIX HÀM GỌI GEMINI API CẬP NHẬT MODEL MỚI HOÀN TOÀN ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1157,8 +1063,6 @@
             }
 
             log("Sending request to AI...");
-            
-            // Dùng gemini-2.5-flash làm endpoint chính
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
@@ -1173,8 +1077,7 @@
                 
                 if(data.error) {
                     log("Fallback model API...");
-                    // FIX: Sử dụng gemini-2.0-flash / gemini-1.5-flash-latest thay cho gemini-1.5-flash bị lỗi 404
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1232,7 +1135,7 @@ ${npcSummary || 'Chưa có'}
 - 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - DẠNG CHỮ):
 ${document.getElementById('npcArchive').value || 'Chưa có'}
 
-- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN TƯƠNG TỨC (LƯU LẠI TOÀN BỘ, KHÔNG ĐƯỢC XÓA ĐỊA DANH CŨ):
+- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN TƯƠNG TỨC:
 ${document.getElementById('locations').value || 'Chưa có'}
 
 - ⚔️ PHÁP BẢO & BẢO VẬT THẾ GIỚI:
@@ -1277,14 +1180,13 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             try {
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
                 if (jsonMatch && jsonMatch[1]) {
-                    let cleanJsonStr = jsonMatch[1].trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
-                    const codexData = JSON.parse(cleanJsonStr);
+                    const codexData = JSON.parse(jsonMatch[1]);
 
-                    if(codexData.mcLevel !== undefined && String(codexData.mcLevel).trim() !== "") {
+                    if(codexData.mcLevel !== undefined && codexData.mcLevel.trim() !== "") {
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
 
-                    if(codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") {
+                    if(codexData.mcGameTime !== undefined && codexData.mcGameTime.trim() !== "") {
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }
 
@@ -1347,7 +1249,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         }
                     }
 
-                    log("⚡ Auto-updated NVC Level, Game Time, Skills, Visual Inventory, NPCs, Locations & Weapons successfully!");
+                    log("⚡ Auto-updated Codex successfully!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/, '').trim();
                     let formatted = formatSummaryBox(cleanText);
@@ -1365,26 +1267,19 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
-2. QUY TẮC BẮC BUỘC VỀ THỜI GIAN VÀ KỸ NĂNG NVC:
+2. QUY TẮC BẮC BUỘC VỀ THỜI GIAN VÀ KĨ NĂNG NVC:
 - Tính mốc "mcGameTime" là tổng thời gian NVC tu luyện/chơi game từ lúc bắt đầu (Không phải tuổi tác).
 - Dùng "mcGameTime" làm căn cứ sắp xếp thời gian bế quan/đột phá chuẩn tu tiên.
-- QUY TẮC NÂNG CẤP TÊN KỸ NĂNG ("mcSkills"): Khi NVC đột phá tăng 1 Đại Cảnh Giới, hãy tự động đổi tên nâng cấp các chiêu thức đã học.
+- QUY TẮC NÂNG CẤP TÊN KĨ NĂNG ("mcSkills"): Khi NVC đột phá tăng 1 Đại Cảnh Giới, tự động đổi tên nâng cấp chiêu thức.
 
 3. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
-- "mcLevel": Cảnh giới hiện tại của NVC.
-- "mcGameTime": Chuỗi tổng thời gian tu luyện từ lúc chơi game.
-- "mcSkills": Chuỗi hoặc mảng danh sách kỹ năng đã được cập nhật/nâng cấp tên chiêu thức.
-- "mcInventoryList": Mảng object hiển thị vật phẩm kèm emoji (Lưu ý xóa vật phẩm nếu số lượng = 0).
-- "npcActiveList": Mảng object NPC còn sống kèm "affinity" (điểm hảo cảm 0-100).
-- "locationsList": Mảng object địa danh tích lũy toàn bộ.
-- "weaponsList": Mảng object pháp bảo/bảo vật.
-- "npcArchive": CHUỖI VĂN BẢN THUẦN (String) liệt kê danh sách NPC đã chết/lịch sử.
+- "mcLevel", "mcGameTime", "mcSkills", "mcInventoryList", "npcActiveList", "locationsList", "weaponsList", "npcArchive".
 
 \`\`\`json
 {
   "mcLevel": "Luyện Khí Kỳ tầng 2",
   "mcGameTime": "2 năm 0 tháng",
-  "mcSkills": "- Trường Xuân Công (Tầng 2)",
+  "mcSkills": "- Liệt Diễm Chưởng (Sơ cấp)\n- Ngự Phong Thuật",
   "mcInventoryList": [
     {
       "name": "Linh Thạch Hạ Phẩm",
@@ -1396,31 +1291,31 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
   ],
   "npcActiveList": [
     {
-      "name": "Sư Huynh",
-      "identity": "Luyện Khí trung kỳ",
-      "personality": "Thân thiện",
-      "affinity": 60
+      "name": "Hồng Đức",
+      "identity": "Trúc Cơ sơ kỳ",
+      "personality": "Lạnh lùng, chu đáo",
+      "affinity": 65
     }
   ],
   "locationsList": [
     {
-      "name": "Sơn Môn Ngoại Tông",
+      "name": "Huyền Thất Môn",
       "icon": "🏔️",
-      "position": "Chân núi",
-      "danger": "Thấp",
-      "accessRules": "Tự do",
-      "events": "Nơi nhập môn."
+      "position": "Phía Bắc Sơn Điền",
+      "danger": "Trung Bình",
+      "accessRules": "Cần đệ tử lệnh.",
+      "events": "Bế quan 2 năm đột phá thành công Luyện Khí tầng 2."
     }
   ],
   "weaponsList": [
     {
-      "name": "Pháp Khí Sơ Cấp",
+      "name": "Thanh Lược Kiếm",
       "icon": "🗡️",
-      "rank": "Hạ Phẩm",
-      "usage": "Phòng thân cơ bản."
+      "rank": "Hạ Phẩm Pháp Khí",
+      "usage": "Ngự kiếm phi hành hoặc công kích tầm xa sơ cấp."
     }
   ],
-  "npcArchive": ""
+  "npcArchive": "- Ma tu mặt sẹo: Đã bị tiêu diệt."
 }
 \`\`\`
 `;
@@ -1453,7 +1348,7 @@ Cấu hình game:
 - Mốc Thời Gian: ${document.getElementById('startTime').value}
 - Kịch Bản Mở Đầu: ${document.getElementById('startScript').value}
 - Quy Tắc Thế Giới: ${document.getElementById('worldRules').value}
-- Thể Loaị & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
+- Thể Loại & Văn Phong: ${document.getElementById('genre').value} / ${document.getElementById('writingStyle').value}
 - Cảnh Giới: ${document.getElementById('powerSystem').value}
 
 [NVC]: ${document.getElementById('mcName').value}
@@ -1464,7 +1359,7 @@ Cấu hình game:
 ${getCodexMemoryPrompt()}
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy dẫn chuyện đoạn mở đầu thật sinh động, giữ nhịp độ chậm rãi, nguy hiểm rình rập. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động có đánh số và đính kèm khối JSON tự động cập nhật Codex!`;
+Hãy dẫn chuyện đoạn mở đầu thật sinh động, giữ nhịp độ chậm rãi. Cuối bài tạo mục [TÓM TẮT]: ngắn gọn, sau đó đưa ra 3-4 lựa chọn hành động và đính kèm khối JSON tự động cập nhật Codex!`;
 
             const reply = await callGemini(systemPrompt);
             if(reply) {
@@ -1507,11 +1402,9 @@ Hành động của người chơi: "${action}".
 ${JSON_STRUCTURE_INSTRUCTION}
 
 Yêu cầu:
-1. Tiếp diễn câu chuyện dựa trên hành động của người chơi.
-2. Thêm mục [TÓM TẮT]: ngắn gọn tình huống trước khi đưa ra các lựa chọn.
-3. Tự động cập nhật danh sách "mcLevel", "mcGameTime", "mcSkills", "mcInventoryList", "npcActiveList", "locationsList" và "weaponsList".
-4. Nếu NVC sử dụng vật phẩm/đan dược trong quá trình tu luyện hay chiến đấu, HÃY TRỪ HOẶC XÓA KHỎI "mcInventoryList" nếu đã dùng hết!
-5. npcArchive PHẢI là dạng chuỗi văn bản (String)!`;
+1. Tiếp diễn câu chuyện dựa trên hành động người chơi.
+2. Thêm mục [TÓM TẮT]: ngắn gọn.
+3. Tự động cập nhật Codex JSON.`;
 
             const reply = await callGemini(actionPrompt);
             if(reply) {

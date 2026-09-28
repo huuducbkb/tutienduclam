@@ -1061,7 +1061,7 @@
             alert("↩ Đã quay lại lượt trước!");
         }
 
-        // --- HÀM GỌI GEMINI API CẬP NHẬT CHÍNH XÁC C THEO GỢI Ý GOOGLE (GEMINI-3.8-FLASH) ---
+        // --- HÀM GỌI AI ĐÃ ĐƯỢC PHỤC HỒI CHUẨN ĐỊNH DẠNG INDEX CŨ ỔN ĐỊNH ---
         async function callGemini(promptText) {
             const key = document.getElementById('apiKey').value.trim();
             if(!key) { 
@@ -1070,10 +1070,10 @@
                 return null; 
             }
 
-            log("Sending request to AI (gemini-3.8-flash)...");
+            log("Gửi yêu cầu tới Gemini AI...");
             
-            // Endpoint chính thức theo đúng thông báo lỗi gợi ý: models/gemini-3.8-flash
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${key}`;
+            // Endpoint gọi trực tiếp chuẩn v1beta
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
             
             chatHistory.push({ role: "user", parts: [{ text: promptText }] });
 
@@ -1093,14 +1093,24 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestPayload)
                 });
+                
                 let data = await response.json();
                 
+                // Dự phòng trường hợp Model 2.5 bận -> Tự chuyển sang gemini-2.0-flash
                 if(data.error) {
-                    throw new Error(data.error.message);
+                    log("Chuyển sang Fallback Model (gemini-2.0-flash)...");
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+                    const resFb = await fetch(fallbackUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestPayload)
+                    });
+                    data = await resFb.json();
+                    if(data.error) throw new Error(data.error.message);
                 }
                 
                 if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-                    throw new Error("Phản hồi không hợp lệ từ AI.");
+                    throw new Error("Phản hồi từ AI không hợp lệ hoặc bị chặn.");
                 }
 
                 const aiReply = data.candidates[0].content.parts[0].text;
@@ -1108,7 +1118,7 @@
                 return aiReply;
             } catch(e) {
                 chatHistory.pop();
-                log("ERROR: " + e.message);
+                log("LỖI: " + e.message);
                 alert("Lỗi gọi AI: " + e.message);
                 return null;
             }
@@ -1261,14 +1271,14 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         }
                     }
 
-                    log("⚡ Auto-updated Codex successfully!");
+                    log("⚡ Cập nhật tự động Codex thành công!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
                     let formatted = formatSummaryBox(cleanText);
                     return buildTurnHtml(formatted);
                 }
             } catch(e) {
-                log("Parse Codex JSON info error: " + e.message);
+                log("Lỗi Parse Codex JSON: " + e.message);
             }
             let formatted = formatSummaryBox(fullResponseText);
             return buildTurnHtml(formatted);

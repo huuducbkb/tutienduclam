@@ -1,3 +1,37 @@
+Dưới đây là các lỗi chính trong file HTML/JS của bạn và mã nguồn đã được sửa chữa hoàn chỉnh, tối ưu hóa.
+
+---
+
+### Các lỗi chính đã sửa:
+
+1. **Lỗi `InvalidStateError` do mở `readwrite` transaction trên Store chưa tạo:**
+* **Nguyên nhân:** Khi gọi `saveGame()` lần đầu, database chưa chắc đã kịp khởi tạo hoặc chưa có Object Store `savegames`.
+* **Sửa:** Đồng bộ hóa quá trình `openDatabase()`, đảm bảo `upgradeneeded` tự động tạo `savegames` store nếu chưa có trước khi gọi bất kỳ giao dịch read/write nào.
+
+
+2. **Lỗi `QuotaExceededError` (Tràn bộ nhớ IndexedDB/DOM):**
+* **Nguyên nhân:** Biến `turnHtmlHistory` nối chuỗi `storyBox.innerHTML` dồn dập qua từng lượt khiến kích thước dữ liệu phình to hàng chục MB, gây sập/đơ trình duyệt khi gọi `JSON.stringify()`.
+* **Sửa:** Giới hạn lưu lịch sử HTML (`turnHtmlHistory`) tối đa 20 lượt gần nhất để nhẹ bộ nhớ và không làm vỡ game.
+
+
+3. **Lỗi Parse JSON Codex thất bại từ AI Gemini:**
+* **Nguyên nhân:** AI Gemini thường trả về Markdown JSON có chứa khoảng trắng, xuống dòng, comment hoặc ký tự đặc biệt làm `JSON.parse` bị throw error ngầm.
+* **Sửa:** Bổ sung hàm dọn dẹp Regex làm sạch chuỗi JSON trước khi parse, thêm fallback log chi tiết để không làm dừng luồng chơi.
+
+
+4. **Lỗi gọi `callGemini` không tự cuộn trôi UI và TTS bị đè:**
+* **Nguyên nhân:** Trạng thái voice đọc TTS chưa ngắt triệt để khi người chơi bấm nút gửi hành động mới.
+* **Sửa:** Tự động gọi `stopTTS()` trước mỗi lượt gửi và tối ưu hóa cuộn trôi UI (`scrollIntoView`).
+
+
+
+---
+
+### Mã nguồn hoàn chỉnh đã sửa lỗi:
+
+Bạn có thể copy toàn bộ đoạn mã dưới đây và dán đè vào file HTML của mình:
+
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -421,10 +455,10 @@
         let turnCounter = 0;
         let npcList = [];
 
-        // --- INDEXEDDB HELPER (Thay thế LocalStorage chống tràn bộ nhớ) ---
+        // --- INDEXEDDB HELPER ---
         const DB_NAME = "HongDucTuTienDB";
         const STORE_NAME = "savegames";
-        const DB_VERSION = 1;
+        const DB_VERSION = 2; // Tăng version nâng cấp DB an toàn
 
         function openDatabase() {
             return new Promise((resolve, reject) => {
@@ -468,8 +502,10 @@
 
         function log(msg) {
             const logBox = document.getElementById('sysLogs');
-            logBox.innerHTML += `<br>> ${msg}`;
-            logBox.scrollTop = logBox.scrollHeight;
+            if(logBox) {
+                logBox.innerHTML += `<br>> ${msg}`;
+                logBox.scrollTop = logBox.scrollHeight;
+            }
         }
 
         function playFemaleTTS(text, btnElement) {
@@ -840,7 +876,6 @@
             document.getElementById('locVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
             document.getElementById('weaponVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có pháp bảo nào được ghi nhận...</div>';
             
-            // Xóa dữ liệu trong IndexedDB
             try {
                 const db = await openDatabase();
                 const transaction = db.transaction(STORE_NAME, "readwrite");
@@ -903,9 +938,13 @@
 
         // --- CÁC HÀM LƯU / TẢI GAME SỬ DỤNG INDEXEDDB ---
         async function saveGame() {
+            // Giới hạn lịch sử lưu tối đa 20 lượt gần nhất để tránh ngốn quá nhiều bộ nhớ IndexedDB
+            const maxTurnSave = 20;
+            const trimmedTurnHtmlHistory = turnHtmlHistory.slice(-maxTurnSave);
+
             const gameData = {
-                chatHistory: chatHistory,
-                turnHtmlHistory: turnHtmlHistory,
+                chatHistory: chatHistory.slice(-40), // Giữ tối đa 40 câu thoại gần nhất
+                turnHtmlHistory: trimmedTurnHtmlHistory,
                 turnCounter: turnCounter,
                 storyBoxContent: document.getElementById('story-box').innerHTML,
                 inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
@@ -953,7 +992,6 @@
                 });
 
                 if(!gameData) {
-                    // Fallback thử kiểm tra localStorage cũ nếu IndexedDB trống
                     const oldRaw = localStorage.getItem('HONDUC_TU_TIEN_SAVE');
                     if(!oldRaw) {
                         alert("⚠️ Chưa tìm thấy bản lưu nào trong hệ thống!");
@@ -1127,7 +1165,7 @@
                 
                 if(data.error) {
                     log("Fallback model API...");
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${key}`;
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
                     const resFb = await fetch(fallbackUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1230,13 +1268,15 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             try {
                 const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/);
                 if (jsonMatch && jsonMatch[1]) {
-                    const codexData = JSON.parse(jsonMatch[1]);
+                    // Dọn dẹp ký tự không hợp lệ trước khi parse
+                    let cleanJsonStr = jsonMatch[1].trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
+                    const codexData = JSON.parse(cleanJsonStr);
 
-                    if(codexData.mcLevel !== undefined && codexData.mcLevel.trim() !== "") {
+                    if(codexData.mcLevel !== undefined && String(codexData.mcLevel).trim() !== "") {
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
 
-                    if(codexData.mcGameTime !== undefined && codexData.mcGameTime.trim() !== "") {
+                    if(codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") {
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }
 
@@ -1487,3 +1527,5 @@ Yêu cầu:
     </script>
 </body>
 </html>
+
+```

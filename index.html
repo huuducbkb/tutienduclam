@@ -1397,7 +1397,12 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             if (reply) {
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML = formattedHtml;
-                storyBox.scrollTop = storyBox.scrollHeight;
+                
+                // Tự động cuộn mượt mà xuống vị trí mới
+                setTimeout(() => {
+                    storyBox.scrollTo({ top: storyBox.scrollHeight, behavior: 'smooth' });
+                }, 100);
+
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);
             } else {
@@ -1416,7 +1421,11 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
 
             const userHtml = `<span class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
             storyBox.innerHTML += userHtml;
-            storyBox.scrollTop = storyBox.scrollHeight;
+            
+            // Cuộn ngay khi gửi hành động
+            setTimeout(() => {
+                storyBox.scrollTo({ top: storyBox.scrollHeight, behavior: 'smooth' });
+            }, 50);
 
             const promptWithCodex = `
 [HÀNH ĐỘNG CỦA NGƯỜI CHƠI]: "${actionText}"
@@ -1430,7 +1439,12 @@ ${JSON_STRUCTURE_INSTRUCTION}
             if (reply) {
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML += formattedHtml;
-                storyBox.scrollTop = storyBox.scrollHeight;
+                
+                // Cuộn mượt mà xuống kết quả phản hồi của AI
+                setTimeout(() => {
+                    storyBox.scrollTo({ top: storyBox.scrollHeight, behavior: 'smooth' });
+                }, 100);
+
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);
             }

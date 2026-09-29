@@ -169,7 +169,8 @@
 2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng trong mcInventoryList. Đã dùng hết thì xóa khỏi túi đồ.
 3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT dưới dạng văn bản mô tả (không dùng object).
 4. Lưu giữ toàn bộ các ĐỊA DANH đã đi qua (không xóa bỏ địa danh cũ) kèm theo các SỰ KIỆN / BÍ CẢNH đã trải qua tại đó để làm cơ sở xây dựng bản đồ game.
-5. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
+5. Cứ sau mỗi 3 lượt chơi, tự động quét lại toàn bộ cốt truyện và trạng thái để đảm bảo tính logic xuyên suốt.
+6. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
 
         <div class="form-group">
@@ -920,8 +921,8 @@
                 log("Game state saved to IndexedDB.");
                 if (isManual) {
                     alert("💾 Đã lưu game thành công (IndexedDB - Không giới hạn dung lượng)!");
+                    toggleSidebar();
                 }
-                toggleSidebar();
             } catch (e) {
                 alert("Lỗi lưu IndexedDB: " + e);
             }
@@ -1276,7 +1277,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         }
                     }
 
-                    log("⚡ Cập nhật tự động Codex thành công!");
+                    log("> Cập nhật tự động Codex thành công!");
 
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
                     let formatted = formatSummaryBox(cleanText);
@@ -1396,6 +1397,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             if (reply) {
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML = formattedHtml;
+                storyBox.scrollTop = storyBox.scrollHeight;
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);
             } else {

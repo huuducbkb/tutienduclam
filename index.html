@@ -134,7 +134,7 @@
         </div>
         <hr style="border-color: var(--border-color); margin: 12px 0;">
         <div class="label-title" style="margin-bottom:8px;">QUẢN LÝ TIẾN TRÌNH (INDEXEDDB)</div>
-        <button class="sidebar-item" style="background: var(--accent-green);" onclick="saveGame()">💾 Lưu Game (IndexedDB)</button>
+        <button class="sidebar-item" style="background: var(--accent-green);" onclick="saveGame(true)">💾 Lưu Game (IndexedDB)</button>
         <button class="sidebar-item" style="background: var(--accent-blue);" onclick="loadGame()">📂 Tải Game (IndexedDB)</button>
         
         <hr style="border-color: var(--border-color); margin: 10px 0;">
@@ -396,7 +396,6 @@
     </div>
 
     <script>
-        // IndexedDB Storage Manager - Đã sửa hoàn chỉnh lỗi NotFoundError
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
         const DB_VERSION = 2;
@@ -897,7 +896,7 @@
             openTab('world');
         }
 
-        async function saveGame() {
+        async function saveGame(isManual = false) {
             const gameData = {
                 chatHistory: chatHistory,
                 turnHtmlHistory: turnHtmlHistory,
@@ -919,7 +918,9 @@
             try {
                 await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData);
                 log("Game state saved to IndexedDB.");
-                alert("💾 Đã lưu game thành công (IndexedDB - Không giới hạn dung lượng)!");
+                if (isManual) {
+                    alert("💾 Đã lưu game thành công (IndexedDB - Không giới hạn dung lượng)!");
+                }
                 toggleSidebar();
             } catch (e) {
                 alert("Lỗi lưu IndexedDB: " + e);
@@ -973,7 +974,7 @@
         }
 
         async function exportSaveFile() {
-            await saveGame();
+            await saveGame(true);
             const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
             if (!gameData) return;
             const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
@@ -1396,7 +1397,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML = formattedHtml;
                 turnHtmlHistory.push(storyBox.innerHTML);
-                await saveGame();
+                await saveGame(false);
             } else {
                 storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key.</div>';
             }
@@ -1429,7 +1430,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
                 storyBox.innerHTML += formattedHtml;
                 storyBox.scrollTop = storyBox.scrollHeight;
                 turnHtmlHistory.push(storyBox.innerHTML);
-                await saveGame();
+                await saveGame(false);
             }
         }
 

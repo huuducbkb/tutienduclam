@@ -1397,12 +1397,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             if (reply) {
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML = formattedHtml;
-                
-                // Tự động cuộn mượt mà xuống vị trí mới
-                setTimeout(() => {
-                    storyBox.scrollTo({ top: storyBox.scrollHeight, behavior: 'smooth' });
-                }, 100);
-
+                storyBox.scrollTop = 0; // Cuộn lên đầu khi khởi tạo
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);
             } else {
@@ -1419,12 +1414,17 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             const storyBox = document.getElementById('story-box');
             inputEl.value = '';
 
-            const userHtml = `<span class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
+            // Tạo id riêng cho dòng hành động này để scroll tới chính xác
+            const actionId = 'action_' + Date.now();
+            const userHtml = `<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
             storyBox.innerHTML += userHtml;
-            
-            // Cuộn ngay khi gửi hành động
+
+            // Cuộn màn hình đến đúng dòng hành động của người chơi
             setTimeout(() => {
-                storyBox.scrollTo({ top: storyBox.scrollHeight, behavior: 'smooth' });
+                const actionEl = document.getElementById(actionId);
+                if (actionEl) {
+                    actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }, 50);
 
             const promptWithCodex = `
@@ -1440,9 +1440,12 @@ ${JSON_STRUCTURE_INSTRUCTION}
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML += formattedHtml;
                 
-                // Cuộn mượt mà xuống kết quả phản hồi của AI
+                // Sau khi AI trả lời xong, cuộn màn hình lên lại đầu dòng hành động vừa gửi để người chơi bắt đầu đọc từ đó
                 setTimeout(() => {
-                    storyBox.scrollTo({ top: storyBox.scrollHeight, behavior: 'smooth' });
+                    const actionEl = document.getElementById(actionId);
+                    if (actionEl) {
+                        actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }, 100);
 
                 turnHtmlHistory.push(storyBox.innerHTML);

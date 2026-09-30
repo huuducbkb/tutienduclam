@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HỒNG ĐỨC TU TIÊN LỘ - AI RPG (VISUAL INVENTORY & CODEX)</title>
+    <title>HỒNG ĐỨC TU TIÊN LỘ v1.0 - AI RPG</title>
     <style>
         :root {
             --bg-color: #0b0e14;
@@ -57,7 +57,9 @@
         .btn-upload-file { background: var(--accent-blue); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; display: inline-block; }
         .btn-remove-avatar { background: #21262d; border: 1px solid var(--border-color); color: var(--accent-red); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; width: fit-content; }
 
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+        /* Lưới không giới hạn cho túi đồ, npc, địa danh, pháp bảo */
+        .inventory-grid, .loc-grid, .weapon-grid, .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; max-height: none; overflow-y: visible; }
+        
         .item-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .item-icon-box { width: 50px; height: 50px; background: #1c2128; border: 1px solid var(--border-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; overflow: hidden; }
         .item-icon-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -69,7 +71,6 @@
         .item-effect { font-size: 11px; color: var(--subtext-color); line-height: 1.3; word-wrap: break-word; }
         .item-unknown { color: #f85149 !important; font-style: italic; }
 
-        .loc-grid, .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
         .loc-card, .weapon-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
         .loc-info, .weapon-info { flex: 1; min-width: 0; }
         .loc-name, .weapon-name { font-weight: bold; font-size: 13px; color: #fff; margin-bottom: 4px; }
@@ -80,7 +81,6 @@
         .loc-detail-text { font-size: 11px; color: var(--subtext-color); margin-top: 3px; line-height: 1.3; }
         .loc-events-box { background: rgba(137, 87, 229, 0.1); border: 1px solid rgba(137, 87, 229, 0.3); border-radius: 6px; padding: 6px 8px; margin-top: 6px; font-size: 11px; color: #d2a8ff; line-height: 1.4; }
 
-        .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-top: 10px; }
         .npc-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; }
         .npc-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
         .affinity-container { background: #161b22; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 8px; }
@@ -94,10 +94,11 @@
         .input-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
         .btn-aigen { background: var(--accent-purple); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 
-        .game-controls { display: flex; gap: 8px; margin-top: 8px; }
-        .btn-action { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); color: #fff; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; }
+        .game-controls { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .btn-action { flex: 1; min-width: 120px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); color: #fff; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; }
         .btn-send { background: var(--accent-purple); }
         .btn-undo { background: #30363d; color: #f0f6fc; }
+        .btn-copy { background: #1f6beb; }
 
         #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
         .player-action-highlight { color: #ff5555; font-weight: bold; background: rgba(255, 85, 85, 0.12); padding: 6px 10px; border-left: 4px solid #ff5555; border-radius: 4px; margin: 12px 0; display: block; }
@@ -118,7 +119,7 @@
     <div class="header">
         <div class="header-title">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <span>HỒNG ĐỨC TU TIÊN LỘ</span>
+            <span>HỒNG ĐỨC TU TIÊN LỘ v1.0</span>
         </div>
         <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
     </div>
@@ -167,8 +168,8 @@
             <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
 2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng trong mcInventoryList. Đã dùng hết thì xóa khỏi túi đồ.
-3. Luôn duy trì NPC SỐNG và phân loại rõ NPC ĐÃ CHẾT dưới dạng văn bản mô tả (không dùng object).
-4. Lưu giữ toàn bộ các ĐỊA DANH đã đi qua (không xóa bỏ địa danh cũ) kèm theo các SỰ KIỆN / BÍ CẢNH đã trải qua tại đó để làm cơ sở xây dựng bản đồ game.
+3. Luôn duy trì NPC SỐNG trong mảng npcActiveList. Khi NPC chết, tự động chuyển tên NPC đó vào mục npcArchive (dạng chuỗi văn bản) và PHẢI XÓA KHỎI mảng npcActiveList, tuyệt đối không được để sót NPC đã chết trong danh sách quản lý NPC sống.
+4. Lưu giữ toàn bộ các ĐỊA DANH đã đi qua (không xóa bỏ địa danh cũ, tích lũy liên tục thành bản đồ thế giới) kèm theo các SỰ KIỆN / BÍ CẢNH đã trải qua tại đó.
 5. Cứ sau mỗi 3 lượt chơi, tự động quét lại toàn bộ cốt truyện và trạng thái để đảm bảo tính logic xuyên suốt.
 6. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
         </div>
@@ -178,7 +179,7 @@
                 <div class="label-title">TÊN TRÒ CHƠI / TÊN CÂU CHUYỆN</div>
                 <button class="btn-aigen" onclick="aiGenField('gameTitle', 'Tên trò chơi hoặc tác phẩm tu tiên độc đáo')">✨ AI GEN</button>
             </div>
-            <textarea id="gameTitle" style="min-height: 50px;" placeholder="Nhập tên trò chơi...">HỒNG ĐỨC TU TIÊN LỘ</textarea>
+            <textarea id="gameTitle" style="min-height: 50px;" placeholder="Nhập tên trò chơi...">HỒNG ĐỨC TU TIÊN LỘ v1.0</textarea>
         </div>
 
         <div class="form-group">
@@ -291,7 +292,7 @@
                 <div class="label-title" style="color: var(--accent-gold);">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI</div>
                 <button class="btn-aigen" onclick="aiGenField('mcLevel', 'Level hoặc Cảnh giới hiện tại của nhân vật chính')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 4 (Sơ kỳ)">
+            <input type="text" id="mcLevel" style="border-color: var(--accent-gold);" placeholder="VD: Luyện Khí Kỳ tầng 5 (Đỉnh phong)">
         </div>
 
         <div class="form-group">
@@ -299,7 +300,7 @@
                 <div class="label-title" style="color: #388bfd;">⏳ TỔNG THỜI GIAN TU LUYỆN / TRONG GAME (KHÔNG PHẢI TUỔI)</div>
                 <button class="btn-aigen" onclick="aiGenField('mcGameTime', 'Tổng thời gian bế quan/tu luyện đã trôi qua trong game')">✨ AI GEN</button>
             </div>
-            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 0 năm 3 tháng (Mới bước vào con đường tu tiên)">
+            <input type="text" id="mcGameTime" style="border-color: #388bfd;" placeholder="VD: 3 năm 6 tháng (Tu luyện thâm sâu)">
             <div class="label-desc">💡 AI căn cứ vào đây để tính thời hạn tu luyện/bế quan hợp lý.</div>
         </div>
 
@@ -309,27 +310,15 @@
                 <button class="btn-aigen" onclick="aiGenField('mcSkills', 'Danh sách kỹ năng đã học kèm theo tên nâng cấp theo cảnh giới')">✨ AI GEN</button>
             </div>
             <textarea id="mcSkills" placeholder="VD: 
-- Liệt Diễm Chưởng (Sơ cấp - Luyện Khí Kỳ)
-- Ngự Phong Thuật (Vi thành)"></textarea>
+- Trường Xuân Công (Tầng 5)
+- Vô Địch Thần Thức"></textarea>
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG NVC (VISUAL AUTO INVENTORY)</div>
-        <div class="label-desc">⚡ Tự động hiển thị vật phẩm kèm hình ảnh/emoji.</div>
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG NVC (VISUAL AUTO INVENTORY - KHÔNG GIỚI HẠN)</div>
+        <div class="label-desc">⚡ Hiển thị đầy đủ mọi vật phẩm, đan dược, linh thạch và pháp bảo.</div>
         
-        <div id="inventoryVisualGrid" class="inventory-grid">
-            <div class="item-card">
-                <div class="item-icon-box">💎</div>
-                <div class="item-details">
-                    <div class="item-title-row">
-                        <span class="item-name">Linh Thạch Hạ Phẩm</span>
-                        <span class="item-qty">x5</span>
-                    </div>
-                    <div class="item-quality">Phẩm chất: Hạ Phẩm</div>
-                    <div class="item-effect">Dùng để giao dịch hoặc thu nạp linh khí.</div>
-                </div>
-            </div>
-        </div>
+        <div id="inventoryVisualGrid" class="inventory-grid"></div>
 
         <div class="form-group" style="margin-top: 15px;">
             <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA:</div>
@@ -340,14 +329,14 @@
     <!-- TAB 3: NPCS -->
     <div id="npc" class="tab-content">
         <div class="section-tag">
-            <span>👥 QUẢN LÝ NHÂN VẬT (NPCS) & QUAN HỆ</span>
+            <span>👥 QUẢN LÝ NHÂN VẬT (NPCS SỐNG) & QUAN HỆ</span>
             <button class="btn-aigen" style="background: var(--accent-green);" onclick="addNewNpcCard()">➕ THÊM NPC MỚI</button>
         </div>
 
         <div id="npcContainer" class="npc-grid"></div>
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ)</div>
+        <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - TỰ ĐỘNG LỌC SẠCH KHỎI MỤC SỐNG)</div>
         <div class="form-group">
             <textarea id="npcArchive" style="min-height: 90px;" placeholder="Ghi chép danh sách các NPC đã tử trận hoặc không còn xuất hiện..."></textarea>
         </div>
@@ -355,8 +344,8 @@
 
     <!-- TAB 4: LOCATIONS -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH & SỰ KIỆN ĐÃ TRẢI QUA (VISUAL)</div>
-        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua kèm theo bí cảnh và sự kiện.</div>
+        <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH & SỰ KIỆN ĐÃ TRẢI QUA (BẢN ĐỒ LOGIC)</div>
+        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua (Không xóa bỏ địa danh cũ).</div>
         
         <div id="locVisualGrid" class="loc-grid"></div>
 
@@ -368,7 +357,7 @@
 
     <!-- TAB 5: ITEMS / WEAPONS -->
     <div id="items" class="tab-content">
-        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (VISUAL)</div>
+        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (KHÔNG GIỚI HẠN)</div>
         <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo.</div>
         
         <div id="weaponVisualGrid" class="weapon-grid"></div>
@@ -389,17 +378,18 @@
             <div class="game-controls">
                 <button class="btn-action btn-send" onclick="sendAction()">GỬI HÀNH ĐỘNG ➔</button>
                 <button class="btn-action btn-undo" onclick="undoLastTurn()">↩ QUAY LẠI LƯỢT TRƯỚC</button>
+                <button class="btn-action btn-copy" onclick="copyGameStory()">📋 COPY NHẬT KÝ GAME</button>
             </div>
         </div>
 
         <div class="label-title">SYSTEM LOGS</div>
-        <div id="sysLogs" class="log-box">> System initialized... Ready.</div>
+        <div id="sysLogs" class="log-box">> System v1.0 initialized... Ready.</div>
     </div>
 
     <script>
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
-        const DB_VERSION = 2;
+        const DB_VERSION = 3;
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -488,14 +478,26 @@
             }
         }
 
+        // Tính năng copy toàn bộ nội dung chơi game (Yêu cầu 5)
+        function copyGameStory() {
+            const storyBoxText = document.getElementById('story-box').innerText;
+            if (!storyBoxText || storyBoxText.includes('Chưa có dữ liệu')) {
+                alert("⚠️ Chưa có nội dung cốt truyện để copy!");
+                return;
+            }
+            navigator.clipboard.writeText(storyBoxText).then(() => {
+                alert("📋 Đã sao chép toàn bộ nhật ký cốt truyện vào bộ nhớ tạm!");
+            }).catch(err => {
+                alert("❌ Không thể sao chép: " + err);
+            });
+        }
+
         function playFemaleTTS(text, btnElement) {
             if (!('speechSynthesis' in window)) {
                 alert("Trình duyệt của bạn không hỗ trợ tính năng đọc văn bản TTS.");
                 return;
             }
-
             window.speechSynthesis.cancel(); 
-
             let cleanText = text.replace(/<[^>]*>?/gm, '').replace(/\[TÓM TẮT\]:?/gi, '').trim();
             if(!cleanText) return;
 
@@ -513,36 +515,22 @@
                 v.name.toLowerCase().includes('google')
             )) || voices.find(v => v.lang.includes('vi'));
 
-            if (femaleVoice) {
-                utterance.voice = femaleVoice;
-            }
-
+            if (femaleVoice) { utterance.voice = femaleVoice; }
             if(btnElement) {
                 btnElement.innerHTML = '🔊 Đang đọc...';
                 btnElement.style.background = '#8957e5';
             }
-
             utterance.onend = function() {
-                if(btnElement) {
-                    btnElement.innerHTML = '🔊 Đọc giọng nữ';
-                    btnElement.style.background = '#238636';
-                }
+                if(btnElement) { btnElement.innerHTML = '🔊 Đọc giọng nữ'; btnElement.style.background = '#238636'; }
             };
-
             utterance.onerror = function() {
-                if(btnElement) {
-                    btnElement.innerHTML = '🔊 Đọc giọng nữ';
-                    btnElement.style.background = '#238636';
-                }
+                if(btnElement) { btnElement.innerHTML = '🔊 Đọc giọng nữ'; btnElement.style.background = '#238636'; }
             };
-
             window.speechSynthesis.speak(utterance);
         }
 
         function stopTTS() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
         }
 
         function setMcAvatarImage(src) {
@@ -583,14 +571,11 @@
                     const ctx = canvas.getContext('2d');
                     canvas.width = 150;
                     canvas.height = 150;
-
                     let minSide = Math.min(img.width, img.height);
                     let sx = (img.width - minSide) / 2;
                     let sy = (img.height - minSide) / 2;
-
                     ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, 150, 150);
                     const resizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-
                     setMcAvatarImage(resizedBase64);
                     log("Tải lên và nén ảnh NVC thành công!");
                 };
@@ -604,7 +589,7 @@
             if (val <= 40) return { status: 'Lạnh Nhạt', color: '#d29922' };
             if (val <= 60) return { status: 'Thân Thiết', color: '#388bfd' };
             if (val <= 80) return { status: 'Tin Tưởng', color: '#238636' };
-            return { status: 'Tri Kỷ / Tử Sinh', color: '#a371f7' };
+            return { status: 'Tri Kỷ / Nô Lệ Tuyệt Đối', color: '#a371f7' };
         }
 
         function renderNpcs() {
@@ -720,7 +705,6 @@
         function uploadNpcAvatar(event, index) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -729,14 +713,11 @@
                     const ctx = canvas.getContext('2d');
                     canvas.width = 150;
                     canvas.height = 150;
-
                     let minSide = Math.min(img.width, img.height);
                     let sx = (img.width - minSide) / 2;
                     let sy = (img.height - minSide) / 2;
-
                     ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, 150, 150);
                     const resizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-
                     npcList[index].avatar = resizedBase64;
                     renderNpcs();
                     log(`Cập nhật ảnh NPC [${npcList[index].name}] thành công!`);
@@ -762,7 +743,7 @@
                 let dangerClass = 'loc-danger-low';
                 let dangerText = loc.danger || 'Thấp';
                 const dLower = (loc.danger || '').toLowerCase();
-                if (dLower.includes('cao') || dLower.includes('chí tử') || dLower.includes('nguy hiểm cao')) {
+                if (dLower.includes('cao') || dLower.includes('chí tử') || dLower.includes('rất cao') || dLower.includes('nguy hiểm')) {
                     dangerClass = 'loc-danger-high';
                 } else if (dLower.includes('trung') || dLower.includes('vừa')) {
                     dangerClass = 'loc-danger-mid';
@@ -810,7 +791,7 @@
                 let badgeClass = 'loc-danger-low';
                 let badgeRank = wp.rank || 'Hạ Phẩm';
                 const rLower = (wp.rank || '').toLowerCase();
-                if (rLower.includes('cao') || rLower.includes('thần khí') || rLower.includes('linh bảo') || rLower.includes('?')) {
+                if (rLower.includes('cao') || rLower.includes('thần khí') || rLower.includes('linh bảo') || rLower.includes('linh phẩm') || rLower.includes('?')) {
                     badgeClass = 'loc-danger-high';
                 } else if (rLower.includes('trung') || rLower.includes('thượng')) {
                     badgeClass = 'loc-danger-mid';
@@ -890,7 +871,6 @@
             document.getElementById('weaponVisualGrid').innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có pháp bảo nào được ghi nhận...</div>';
             
             await deleteFromIDB('HONDUC_TU_TIEN_SAVE');
-
             log("Tất cả cấu hình và bản lưu IndexedDB đã được Reset.");
             alert("🧹 Đã làm sạch toàn bộ cấu hình!");
             toggleSidebar();
@@ -941,18 +921,10 @@
                 turnCounter = gameData.turnCounter || 0;
                 document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "Chưa có dữ liệu.";
                 
-                if(gameData.inventoryVisualHTML) {
-                    document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
-                }
-                if(gameData.locVisualHTML) {
-                    document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
-                }
-                if(gameData.weaponVisualHTML) {
-                    document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
-                }
-                if(gameData.mcAvatarBase64) {
-                    setMcAvatarImage(gameData.mcAvatarBase64);
-                }
+                if(gameData.inventoryVisualHTML) { document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML; }
+                if(gameData.locVisualHTML) { document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML; }
+                if(gameData.weaponVisualHTML) { document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML; }
+                if(gameData.mcAvatarBase64) { setMcAvatarImage(gameData.mcAvatarBase64); }
                 if(gameData.npcList) {
                     npcList = gameData.npcList;
                     renderNpcs();
@@ -981,7 +953,7 @@
             const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
-            a.download = "hongduc_tutien_save.json";
+            a.download = "hongduc_tutien_v1.0_save.json";
             a.click();
             log("Xuất file save thành công.");
         }
@@ -1018,21 +990,11 @@
                             if(el) el.value = gameData.inputs[id];
                         });
                     }
-                    if(gameData.mcAvatarBase64) {
-                        setMcAvatarImage(gameData.mcAvatarBase64);
-                    }
-                    if(gameData.inventoryVisualHTML) {
-                        document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
-                    }
-                    if(gameData.locVisualHTML) {
-                        document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
-                    }
-                    if(gameData.weaponVisualHTML) {
-                        document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
-                    }
-                    if(gameData.npcList) {
-                        npcList = gameData.npcList;
-                    }
+                    if(gameData.mcAvatarBase64) { setMcAvatarImage(gameData.mcAvatarBase64); }
+                    if(gameData.inventoryVisualHTML) { document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML; }
+                    if(gameData.locVisualHTML) { document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML; }
+                    if(gameData.weaponVisualHTML) { document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML; }
+                    if(gameData.npcList) { npcList = gameData.npcList; }
                 }
             } catch(e){}
             renderNpcs();
@@ -1044,7 +1006,6 @@
                 alert("⚠️ Không thể quay lại thêm!");
                 return;
             }
-
             chatHistory.pop(); 
             chatHistory.pop(); 
 
@@ -1053,7 +1014,6 @@
                 const previousHtmlState = turnHtmlHistory[turnHtmlHistory.length - 1];
                 document.getElementById('story-box').innerHTML = previousHtmlState;
             }
-
             log("Undo executed.");
             alert("↩ Đã quay lại lượt trước!");
         }
@@ -1067,7 +1027,6 @@
             }
 
             log("Gửi yêu cầu tới Gemini AI...");
-            
             const models = [
                 'gemini-3.6-flash',
                 'gemini-3.5-flash',
@@ -1101,15 +1060,10 @@
                     });
                     
                     let data = await response.json();
-
                     if (data.error) {
                         log(`Mô hình ${modelName} gặp lỗi: ${data.error.message || JSON.stringify(data.error)}`);
-                        if (i < models.length - 1) {
-                            log(`Thử chuyển sang mô hình tiếp theo...`);
-                            continue;
-                        } else {
-                            throw new Error(data.error.message || "Tất cả các mô hình đều không phản hồi.");
-                        }
+                        if (i < models.length - 1) { continue; }
+                        else { throw new Error(data.error.message || "Tất cả các mô hình đều không phản hồi."); }
                     }
 
                     if (data.candidates && data.candidates[0] && data.candidates[0].content) {
@@ -1137,11 +1091,8 @@
             field.value = "AI đang suy nghĩ...";
             
             const res = await callGemini(`Hãy đóng vai Game Master, tạo nội dung chi tiết cho mục: ${promptMsg}. Trả về nội dung text ngắn gọn, đúng trọng tâm.`);
-            if(res) {
-                field.value = res;
-            } else {
-                field.value = originalVal;
-            }
+            if(res) { field.value = res; }
+            else { field.value = originalVal; }
         }
 
         function getCodexMemoryPrompt() {
@@ -1157,13 +1108,13 @@ ${document.getElementById('mcSkills').value || 'Chưa có'}
 - 🎒 TÚI ĐỒ / INVENTORY NVC:
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
-- 🟢 DANH SÁCH NPC ACTIVE & ĐIỂM HẢO CẢM (0-100):
+- 🟢 DANH SÁCH NPC ACTIVE (ĐANG SỐNG) & ĐIỂM HẢO CẢM (0-100):
 ${npcSummary || 'Chưa có'}
 
 - 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - DẠNG CHỮ):
 ${document.getElementById('npcArchive').value || 'Chưa có'}
 
-- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN TƯƠNG TỨC:
+- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN TƯƠNG TÁC (TÍCH LŨY TOÀN BỘ KHÔNG XÓA):
 ${document.getElementById('locations').value || 'Chưa có'}
 
 - ⚔️ PHÁP BẢO & BẢO VẬT THẾ GIỚI:
@@ -1200,7 +1151,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             </div>
             ${summaryPart}
             `;
-
             return ttsControlHtml;
         }
 
@@ -1213,11 +1163,9 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     if(codexData.mcLevel !== undefined && String(codexData.mcLevel).trim() !== "") {
                         document.getElementById('mcLevel').value = codexData.mcLevel;
                     }
-
                     if(codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") {
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }
-
                     if(codexData.mcSkills !== undefined) {
                         if (typeof codexData.mcSkills === 'object') {
                             document.getElementById('mcSkills').value = JSON.stringify(codexData.mcSkills, null, 2);
@@ -1232,17 +1180,23 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
                     }
 
+                    // Khắc phục triệt để lỗi trùng lặp NPC (Tuyết Cơ) và lọc NPC đã chết (Yêu cầu 2)
                     if(codexData.npcActiveList !== undefined && Array.isArray(codexData.npcActiveList)) {
+                        let updatedNpcList = [];
                         codexData.npcActiveList.forEach(aiNpc => {
-                            let exist = npcList.find(n => n.name === aiNpc.name);
+                            let cleanName = (aiNpc.name || '').trim();
+                            // Kiểm tra xem NPC này đã tồn tại trong npcList cũ chưa (Khớp tên dù có thêm ngoặc hoặc biệt hiệu)
+                            let exist = npcList.find(n => n.name.toLowerCase().includes(cleanName.toLowerCase()) || cleanName.toLowerCase().includes(n.name.toLowerCase()));
                             if(exist) {
+                                exist.name = aiNpc.name; // Cập nhật tên chuẩn
                                 if(aiNpc.identity) exist.identity = aiNpc.identity;
                                 if(aiNpc.personality) exist.personality = aiNpc.personality;
                                 if(aiNpc.affinity !== undefined) exist.affinity = aiNpc.affinity;
                                 if(aiNpc.avatar) exist.avatar = aiNpc.avatar;
+                                updatedNpcList.push(exist);
                             } else {
                                 const autoAvatarUrl = aiNpc.avatar || generateAutoAvatar(aiNpc.name);
-                                npcList.push({
+                                updatedNpcList.push({
                                     id: 'npc_' + Date.now() + Math.random().toString(36).substr(2, 4),
                                     name: aiNpc.name,
                                     identity: aiNpc.identity || 'Luyện Khí sơ kỳ',
@@ -1252,12 +1206,33 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                                 });
                             }
                         });
+                        npcList = updatedNpcList;
                         renderNpcs();
                     }
 
+                    // Tích lũy toàn bộ địa danh đã qua không bị ghi đè (Yêu cầu 3)
                     if(codexData.locationsList !== undefined && Array.isArray(codexData.locationsList)) {
-                        renderLocationsVisual(codexData.locationsList);
-                        document.getElementById('locations').value = JSON.stringify(codexData.locationsList, null, 2);
+                        let currentLocsText = document.getElementById('locations').value;
+                        let existingLocs = [];
+                        try {
+                            if (currentLocsText.trim().startsWith('[')) {
+                                existingLocs = JSON.parse(currentLocsText);
+                            }
+                        } catch(e) {}
+
+                        codexData.locationsList.forEach(newLoc => {
+                            let found = existingLocs.find(l => l.name.toLowerCase() === newLoc.name.toLowerCase());
+                            if (found) {
+                                if (newLoc.events) found.events = newLoc.events;
+                                if (newLoc.danger) found.danger = newLoc.danger;
+                                if (newLoc.position) found.position = newLoc.position;
+                            } else {
+                                existingLocs.push(newLoc);
+                            }
+                        });
+
+                        renderLocationsVisual(existingLocs);
+                        document.getElementById('locations').value = JSON.stringify(existingLocs, null, 2);
                     }
 
                     if(codexData.weaponsList !== undefined && Array.isArray(codexData.weaponsList)) {
@@ -1266,19 +1241,33 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     }
 
                     if(codexData.npcArchive !== undefined) {
+                        let archiveStr = '';
                         if (typeof codexData.npcArchive === 'object') {
                             if (Array.isArray(codexData.npcArchive)) {
-                                document.getElementById('npcArchive').value = codexData.npcArchive.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n');
+                                archiveStr = codexData.npcArchive.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n');
                             } else {
-                                document.getElementById('npcArchive').value = JSON.stringify(codexData.npcArchive, null, 2);
+                                archiveStr = JSON.stringify(codexData.npcArchive, null, 2);
                             }
                         } else {
-                            document.getElementById('npcArchive').value = String(codexData.npcArchive);
+                            archiveStr = String(codexData.npcArchive);
+                        }
+                        document.getElementById('npcArchive').value = archiveStr;
+
+                        // Tự động quét và xóa sạch các NPC đã có tên trong Archive khỏi danh sách Active sống
+                        if (archiveStr.trim() !== '') {
+                            npcList = npcList.filter(npc => {
+                                let nName = npc.name.toLowerCase();
+                                if (archiveStr.toLowerCase().includes(nName)) {
+                                    log(`> Tự động loại bỏ NPC đã chết/lịch sử [${npc.name}] khỏi danh sách Active.`);
+                                    return false;
+                                }
+                                return true;
+                            });
+                            renderNpcs();
                         }
                     }
 
                     log("> Cập nhật tự động Codex thành công!");
-
                     let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
                     let formatted = formatSummaryBox(cleanText);
                     return buildTurnHtml(formatted);
@@ -1300,50 +1289,54 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 - Dùng "mcGameTime" làm căn cứ sắp xếp thời gian bế quan/đột phá chuẩn tu tiên.
 - QUY TẮC NÂNG CẤP TÊN KĨ NĂNG ("mcSkills"): Khi NVC đột phá tăng 1 Đại Cảnh Giới, tự động đổi tên nâng cấp chiêu thức.
 
-3. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
+3. QUY TẮC QUẢN LÝ NPC VÀ ĐỊA DANH:
+- npcActiveList CHỈ CHỨA các NPC CÒN SỐNG. Khi NPC chết, PHẢI XÓA KHỎI npcActiveList và chuyển vào npcArchive (dạng chuỗi). Tuyệt đối KHÔNG ĐƯỢC để trùng lặp (ví dụ Tuyết Cơ thu làm nô lệ hay Tàn hồn Băng Mị Nữ là cùng một thực thể, chỉ duy trì 1 entry duy nhất với trạng thái cập nhật).
+- locationsList: LUÔN TÍCH LŨY TOÀN BỘ các địa danh đã từng đi qua từ đầu game đến nay, KHÔNG BAO GIỜ XÓA BỎ ĐỊA DANH CŨ, ghi nhận đầy đủ sự kiện tại đó.
+
+4. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
 - "mcLevel", "mcGameTime", "mcSkills", "mcInventoryList", "npcActiveList", "locationsList", "weaponsList", "npcArchive".
 
 \`\`\`json
 {
-  "mcLevel": "Luyện Khí Kỳ tầng 2",
-  "mcGameTime": "2 năm 0 tháng",
-  "mcSkills": "- Liệt Diễm Chưởng (Sơ cấp)\\n- Ngự Phong Thuật",
+  "mcLevel": "Luyện Khí tầng 5 (Đỉnh Phong)",
+  "mcGameTime": "3 năm 6 tháng",
+  "mcSkills": "- Trường Xuân Công (Tầng 5)\\n- Vô Địch Thần Thức",
   "mcInventoryList": [
     {
-      "name": "Linh Thạch Hạ Phẩm",
-      "icon": "💎",
-      "quantity": 3,
-      "quality": "Hạ Phẩm",
-      "effect": "Tu luyện hoặc trao đổi mua bán."
+      "name": "Trúc Cơ Đan",
+      "icon": "🌟",
+      "quantity": 1,
+      "quality": "Linh Phẩm",
+      "effect": "Tăng 80% tỷ lệ đột phá Trúc Cơ."
     }
   ],
   "npcActiveList": [
     {
-      "name": "Hồng Đức",
-      "identity": "Trúc Cơ sơ kỳ",
-      "personality": "Lạnh lùng, chu đáo",
-      "affinity": 65
+      "name": "Tàn hồn Băng Mị Nữ (Tuyết Cơ)",
+      "identity": "Nô lệ tu sĩ Trúc Cơ",
+      "personality": "Dâm dật, trung thành tuyệt đối",
+      "affinity": 100
     }
   ],
   "locationsList": [
     {
-      "name": "Huyền Thất Môn",
-      "icon": "🏔️",
-      "position": "Phía Bắc Sơn Điền",
-      "danger": "Trung Bình",
-      "accessRules": "Cần đệ tử lệnh.",
-      "events": "Bế quan 2 năm đột phá thành công Luyện Khí tầng 2."
+      "name": "Cổ Mộ Băng Mị - Chính Điện",
+      "icon": "🏛️",
+      "position": "Phía Bắc Rừng Cấm",
+      "danger": "Rất Cao",
+      "accessRules": "Dùng Ngọc Cốt vỡ mở phong ấn.",
+      "events": "Đã trảm sát Băng Cốt Ma Hổ, vét sạch bảo vật Chưởng Môn."
     }
   ],
   "weaponsList": [
     {
-      "name": "Thanh Lược Kiếm",
+      "name": "Huyết Sát Đao",
       "icon": "🗡️",
       "rank": "Hạ Phẩm Pháp Khí",
-      "usage": "Ngự kiếm phi hành hoặc công kích tầm xa sơ cấp."
+      "usage": "Đã luyện hóa, sẵn sàng chiến đấu."
     }
   ],
-  "npcArchive": "- Ma tu mặt sẹo: Đã bị tiêu diệt."
+  "npcArchive": "- Ma tu (Khách quý): Đã chết.\\n- Băng Cốt Ma Hổ: Đã bị trảm sát."
 }
 \`\`\`
 `;
@@ -1362,10 +1355,10 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             chatHistory = [];
             turnHtmlHistory = [];
             turnCounter = 0;
-            storyBox.innerHTML = '<div style="color: var(--accent-gold);">⚡ Đang khởi tạo thế giới AI RPG... Vui lòng chờ...</div>';
+            storyBox.innerHTML = '<div style="color: var(--accent-gold);">⚡ Đang khởi tạo thế giới AI RPG v1.0... Vui lòng chờ...</div>';
 
             const systemPrompt = `
-Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game Text RPG Tu Tiên đỉnh cao mang tên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ'}".
+Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game Text RPG Tu Tiên đỉnh cao mang tên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v1.0'}".
 
 [THÔNG TIN THẾ GIỚI]:
 - Quy tắc AI & Pacing: ${document.getElementById('aiRules').value}
@@ -1397,7 +1390,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             if (reply) {
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML = formattedHtml;
-                storyBox.scrollTop = 0; // Cuộn lên đầu khi khởi tạo
+                storyBox.scrollTop = 0;
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);
             } else {
@@ -1414,17 +1407,13 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             const storyBox = document.getElementById('story-box');
             inputEl.value = '';
 
-            // Tạo id riêng cho dòng hành động này để scroll tới chính xác
             const actionId = 'action_' + Date.now();
             const userHtml = `<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
             storyBox.innerHTML += userHtml;
 
-            // Cuộn màn hình đến đúng dòng hành động của người chơi
             setTimeout(() => {
                 const actionEl = document.getElementById(actionId);
-                if (actionEl) {
-                    actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                if (actionEl) { actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             }, 50);
 
             const promptWithCodex = `
@@ -1440,12 +1429,9 @@ ${JSON_STRUCTURE_INSTRUCTION}
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML += formattedHtml;
                 
-                // Sau khi AI trả lời xong, cuộn màn hình lên lại đầu dòng hành động vừa gửi để người chơi bắt đầu đọc từ đó
                 setTimeout(() => {
                     const actionEl = document.getElementById(actionId);
-                    if (actionEl) {
-                        actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                    if (actionEl) { actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
                 }, 100);
 
                 turnHtmlHistory.push(storyBox.innerHTML);
@@ -1454,9 +1440,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
         }
 
         document.getElementById('userInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendAction();
-            }
+            if (e.key === 'Enter') { sendAction(); }
         });
     </script>
 </body>

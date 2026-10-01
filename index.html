@@ -57,8 +57,7 @@
         .btn-upload-file { background: var(--accent-blue); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; display: inline-block; }
         .btn-remove-avatar { background: #21262d; border: 1px solid var(--border-color); color: var(--accent-red); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; width: fit-content; }
 
-        /* Lưới không giới hạn cho túi đồ, npc, địa danh, pháp bảo */
-        .inventory-grid, .loc-grid, .weapon-grid, .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; max-height: none; overflow-y: visible; }
+        .inventory-grid, .loc-grid, .weapon-grid, .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; max-height: none; overflow-y: visible; }
         
         .item-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .item-icon-box { width: 50px; height: 50px; background: #1c2128; border: 1px solid var(--border-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; overflow: hidden; }
@@ -168,10 +167,8 @@
             <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
 2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng trong mcInventoryList. Đã dùng hết thì xóa khỏi túi đồ.
-3. Luôn duy trì NPC SỐNG trong mảng npcActiveList. Khi NPC chết, tự động chuyển tên NPC đó vào mục npcArchive (dạng chuỗi văn bản) và PHẢI XÓA KHỎI mảng npcActiveList, tuyệt đối không được để sót NPC đã chết trong danh sách quản lý NPC sống.
-4. Lưu giữ toàn bộ các ĐỊA DANH đã đi qua (không xóa bỏ địa danh cũ, tích lũy liên tục thành bản đồ thế giới) kèm theo các SỰ KIỆN / BÍ CẢNH đã trải qua tại đó.
-5. Cứ sau mỗi 3 lượt chơi, tự động quét lại toàn bộ cốt truyện và trạng thái để đảm bảo tính logic xuyên suốt.
-6. Luôn đưa ra 3-4 lựa chọn hợp lý cuối bài."></textarea>
+3. Luôn duy trì NPC SỐNG trong mảng npcActiveList. Khi NPC chết, tự động chuyển tên NPC đó vào mục npcArchive (dạng chuỗi văn bản) và PHẢI XÓA KHỎI mảng npcActiveList.
+4. Tuân thủ tuyệt đối [QUY TẮC RIÊNG CỦA TỪNG NPC] được cài đặt trong bảng thông tin NPC."></textarea>
         </div>
 
         <div class="form-group">
@@ -315,7 +312,7 @@
         </div>
         
         <hr style="border-color: var(--border-color); margin: 15px 0;">
-        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG NVC (VISUAL AUTO INVENTORY - KHÔNG GIỚI HẠN)</div>
+        <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG NVC (VISUAL AUTO INVENTORY)</div>
         <div class="label-desc">⚡ Hiển thị đầy đủ mọi vật phẩm, đan dược, linh thạch và pháp bảo.</div>
         
         <div id="inventoryVisualGrid" class="inventory-grid"></div>
@@ -357,7 +354,7 @@
 
     <!-- TAB 5: ITEMS / WEAPONS -->
     <div id="items" class="tab-content">
-        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI (KHÔNG GIỚI HẠN)</div>
+        <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI</div>
         <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật, bí bảo.</div>
         
         <div id="weaponVisualGrid" class="weapon-grid"></div>
@@ -478,7 +475,6 @@
             }
         }
 
-        // Tính năng copy toàn bộ nội dung chơi game (Yêu cầu 5)
         function copyGameStory() {
             const storyBoxText = document.getElementById('story-box').innerText;
             if (!storyBoxText || storyBoxText.includes('Chưa có dữ liệu')) {
@@ -589,9 +585,10 @@
             if (val <= 40) return { status: 'Lạnh Nhạt', color: '#d29922' };
             if (val <= 60) return { status: 'Thân Thiết', color: '#388bfd' };
             if (val <= 80) return { status: 'Tin Tưởng', color: '#238636' };
-            return { status: 'Tri Kỷ / Nô Lệ Tuyệt Đối', color: '#a371f7' };
+            return { status: 'Tri Kỷ / Tuyệt Đối', color: '#a371f7' };
         }
 
+        // RENDER GIAO DIỆN NHÂN VẬT (NPC) CÓ THÊM MỤC "QUY TẮC AI ĐỐI VỚI NPC"
         function renderNpcs() {
             const container = document.getElementById('npcContainer');
             if(!npcList || npcList.length === 0) {
@@ -628,8 +625,15 @@
                         ${hasAvatar ? `<button class="btn-remove-avatar" style="padding: 3px 6px; font-size: 10px;" onclick="removeNpcAvatar(${index})">✕ Xóa ảnh</button>` : ''}
                     </div>
 
+                    <div class="form-group" style="margin-bottom:6px;">
+                        <div style="font-size:10px; color:var(--subtext-color); margin-bottom:2px;">📝 Tính cách & Mô tả:</div>
+                        <textarea style="min-height:45px; font-size:11px; padding:6px;" placeholder="Tính cách, mối quan hệ..." onchange="updateNpcField(${index}, 'personality', this.value)">${npc.personality || ''}</textarea>
+                    </div>
+
+                    <!-- MỤC THÊM MỚI: QUY TẮC AI ĐỐI VỚI RIÊNG NPC NÀY -->
                     <div class="form-group" style="margin-bottom:8px;">
-                        <textarea style="min-height:50px; font-size:12px; padding:6px;" placeholder="Tính cách, mối quan hệ..." onchange="updateNpcField(${index}, 'personality', this.value)">${npc.personality || ''}</textarea>
+                        <div style="font-size:10px; color:var(--accent-gold); font-weight:bold; margin-bottom:2px;">⚙️ QUY TẮC AI ĐỐI VỚI NPC NÀY:</div>
+                        <textarea style="min-height:50px; font-size:11px; padding:6px; border-color: rgba(210, 153, 34, 0.4);" placeholder="Ví dụ: Luôn mặc đồ kín đáo; trung thành tuyệt đối; không bao giờ lặp từ..." onchange="updateNpcField(${index}, 'npcRules', this.value)">${npc.npcRules || ''}</textarea>
                     </div>
 
                     <div class="affinity-container">
@@ -663,6 +667,7 @@
                 name: newName,
                 identity: 'Luyện Khí sơ kỳ',
                 personality: 'Chưa rõ tính cách.',
+                npcRules: 'Tuân thủ đúng thiết lập nhân vật.',
                 avatar: generateAutoAvatar(newName),
                 affinity: 50
             });
@@ -783,27 +788,22 @@
                 const iconContent = isImage ? `<img src="${icon}" alt="${wp.name}">` : icon;
 
                 const isUnknown = (wp.rank && wp.rank.includes('?')) || (wp.usage && wp.usage.includes('Chờ cơ duyên'));
-                const cardStyle = isUnknown ? 'border-color: #7d2828;' : '';
-                const iconStyle = isUnknown ? 'color: #f85149; font-weight:bold;' : '';
-                const nameStyle = isUnknown ? 'color: #f85149;' : '';
-                const usageStyle = isUnknown ? 'color: #f85149; font-style: italic;' : '';
-                
                 let badgeClass = 'loc-danger-low';
                 let badgeRank = wp.rank || 'Hạ Phẩm';
                 const rLower = (wp.rank || '').toLowerCase();
-                if (rLower.includes('cao') || rLower.includes('thần khí') || rLower.includes('linh bảo') || rLower.includes('linh phẩm') || rLower.includes('?')) {
+                if (rLower.includes('cao') || rLower.includes('thần khí') || rLower.includes('linh bảo') || rLower.includes('?')) {
                     badgeClass = 'loc-danger-high';
                 } else if (rLower.includes('trung') || rLower.includes('thượng')) {
                     badgeClass = 'loc-danger-mid';
                 }
 
                 html += `
-                <div class="weapon-card" style="${cardStyle}">
-                    <div class="item-icon-box" style="${iconStyle}">${iconContent}</div>
+                <div class="weapon-card">
+                    <div class="item-icon-box">${iconContent}</div>
                     <div class="weapon-info">
-                        <div class="weapon-name" style="${nameStyle}">${wp.name || 'Pháp bảo lạ'}</div>
+                        <div class="weapon-name">${wp.name || 'Pháp bảo lạ'}</div>
                         <span class="loc-badge ${badgeClass}">Cấp bậc: ${badgeRank}</span>
-                        <div class="loc-detail-text" style="${usageStyle}">🛠️ Khả năng sử dụng: ${wp.usage || 'Chưa rõ công dụng. Chờ cơ duyên xảo hợp để biết.'}</div>
+                        <div class="loc-detail-text">🛠️ Khả năng sử dụng: ${wp.usage || 'Chưa rõ công dụng.'}</div>
                     </div>
                 </div>`;
             });
@@ -900,7 +900,7 @@
                 await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData);
                 log("Game state saved to IndexedDB.");
                 if (isManual) {
-                    alert("💾 Đã lưu game thành công (IndexedDB - Không giới hạn dung lượng)!");
+                    alert("💾 Đã lưu game thành công (IndexedDB)!");
                     toggleSidebar();
                 }
             } catch (e) {
@@ -938,7 +938,7 @@
                 }
 
                 log("Game state restored from IndexedDB.");
-                alert("📂 Khôi phục thành công bản lưu từ IndexedDB!");
+                alert("📂 Khôi phục thành công bản lưu!");
                 toggleSidebar();
                 openTab('play');
             } catch(e) {
@@ -1095,29 +1095,30 @@
             else { field.value = originalVal; }
         }
 
+        // TÍCH HỢP "npcRules" VÀO HỆ THỐNG GỬI CODEX CHO AI
         function getCodexMemoryPrompt() {
-            let npcSummary = npcList.map(n => `- ${n.name} (${n.identity}): ${n.personality} [Điểm Hảo Cảm: ${n.affinity}/100]`).join('\n');
+            let npcSummary = npcList.map(n => `- Tên: ${n.name} | Thân phận: ${n.identity} | Tính cách: ${n.personality} | [QUY TẮC RIÊNG CỦA AI ĐỐI VỚI NPC NÀY: ${n.npcRules || 'Không có'}] | Hảo cảm: ${n.affinity}/100`).join('\n');
 
             return `
-[DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI CỦA NVC]:
+[DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI CỦA NVC & NPC]:
 - 👤 CẢNH GIỚI HIỆN TẠI: ${document.getElementById('mcLevel').value || 'Chưa rõ'}
-- ⏳ TỔNG THỜI GIAN TRONG GAME (BẾ QUAN/TU LUYỆN): ${document.getElementById('mcGameTime').value || '0 năm'}
-- 🔥 KĨ NĂNG & CÔNG PHÁP ĐÃ HỌC: 
+- ⏳ TỔNG THỜI GIAN TRONG GAME: ${document.getElementById('mcGameTime').value || '0 năm'}
+- 🔥 KĨ NĂNG & CÔNG PHÁP: 
 ${document.getElementById('mcSkills').value || 'Chưa có'}
 
 - 🎒 TÚI ĐỒ / INVENTORY NVC:
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
-- 🟢 DANH SÁCH NPC ACTIVE (ĐANG SỐNG) & ĐIỂM HẢO CẢM (0-100):
+- 🟢 DANH SÁCH NPC ACTIVE (ĐANG SỐNG) & QUY TẮC ĐẶC BIỆT CỦA TỪNG NPC:
 ${npcSummary || 'Chưa có'}
 
-- 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - DẠNG CHỮ):
+- 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ):
 ${document.getElementById('npcArchive').value || 'Chưa có'}
 
-- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN TƯƠNG TÁC (TÍCH LŨY TOÀN BỘ KHÔNG XÓA):
+- 📍 ĐỊA DANH ĐÃ QUA & SỰ KIỆN:
 ${document.getElementById('locations').value || 'Chưa có'}
 
-- ⚔️ PHÁP BẢO & BẢO VẬT THẾ GIỚI:
+- ⚔️ PHÁP BẢO & BẢO VẬT:
 ${document.getElementById('worldItems').value || 'Chưa có'}
 ==================================================
 `;
@@ -1167,11 +1168,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('mcGameTime').value = codexData.mcGameTime;
                     }
                     if(codexData.mcSkills !== undefined) {
-                        if (typeof codexData.mcSkills === 'object') {
-                            document.getElementById('mcSkills').value = JSON.stringify(codexData.mcSkills, null, 2);
-                        } else {
-                            document.getElementById('mcSkills').value = String(codexData.mcSkills);
-                        }
+                        document.getElementById('mcSkills').value = typeof codexData.mcSkills === 'object' ? JSON.stringify(codexData.mcSkills, null, 2) : String(codexData.mcSkills);
                     }
                     
                     if(codexData.mcInventoryList !== undefined && Array.isArray(codexData.mcInventoryList)) {
@@ -1180,28 +1177,28 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
                     }
 
-                    // Khắc phục triệt để lỗi trùng lặp NPC (Tuyết Cơ) và lọc NPC đã chết (Yêu cầu 2)
+                    // ĐỒNG BỘ DANH SÁCH NPC VÀ GIỮ LẠI "npcRules" CỦA NGƯỜI CHƠI
                     if(codexData.npcActiveList !== undefined && Array.isArray(codexData.npcActiveList)) {
                         let updatedNpcList = [];
                         codexData.npcActiveList.forEach(aiNpc => {
                             let cleanName = (aiNpc.name || '').trim();
-                            // Kiểm tra xem NPC này đã tồn tại trong npcList cũ chưa (Khớp tên dù có thêm ngoặc hoặc biệt hiệu)
                             let exist = npcList.find(n => n.name.toLowerCase().includes(cleanName.toLowerCase()) || cleanName.toLowerCase().includes(n.name.toLowerCase()));
                             if(exist) {
-                                exist.name = aiNpc.name; // Cập nhật tên chuẩn
+                                exist.name = aiNpc.name;
                                 if(aiNpc.identity) exist.identity = aiNpc.identity;
                                 if(aiNpc.personality) exist.personality = aiNpc.personality;
                                 if(aiNpc.affinity !== undefined) exist.affinity = aiNpc.affinity;
                                 if(aiNpc.avatar) exist.avatar = aiNpc.avatar;
+                                // Giữ nguyên npcRules cũ do người chơi tự cấu hình
                                 updatedNpcList.push(exist);
                             } else {
-                                const autoAvatarUrl = aiNpc.avatar || generateAutoAvatar(aiNpc.name);
                                 updatedNpcList.push({
                                     id: 'npc_' + Date.now() + Math.random().toString(36).substr(2, 4),
                                     name: aiNpc.name,
                                     identity: aiNpc.identity || 'Luyện Khí sơ kỳ',
                                     personality: aiNpc.personality || 'Chưa rõ',
-                                    avatar: autoAvatarUrl,
+                                    npcRules: aiNpc.npcRules || 'Tuân thủ đúng thiết lập nhân vật.',
+                                    avatar: aiNpc.avatar || generateAutoAvatar(aiNpc.name),
                                     affinity: aiNpc.affinity !== undefined ? aiNpc.affinity : 50
                                 });
                             }
@@ -1210,15 +1207,10 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         renderNpcs();
                     }
 
-                    // Tích lũy toàn bộ địa danh đã qua không bị ghi đè (Yêu cầu 3)
                     if(codexData.locationsList !== undefined && Array.isArray(codexData.locationsList)) {
                         let currentLocsText = document.getElementById('locations').value;
                         let existingLocs = [];
-                        try {
-                            if (currentLocsText.trim().startsWith('[')) {
-                                existingLocs = JSON.parse(currentLocsText);
-                            }
-                        } catch(e) {}
+                        try { if (currentLocsText.trim().startsWith('[')) existingLocs = JSON.parse(currentLocsText); } catch(e) {}
 
                         codexData.locationsList.forEach(newLoc => {
                             let found = existingLocs.find(l => l.name.toLowerCase() === newLoc.name.toLowerCase());
@@ -1241,28 +1233,11 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     }
 
                     if(codexData.npcArchive !== undefined) {
-                        let archiveStr = '';
-                        if (typeof codexData.npcArchive === 'object') {
-                            if (Array.isArray(codexData.npcArchive)) {
-                                archiveStr = codexData.npcArchive.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n');
-                            } else {
-                                archiveStr = JSON.stringify(codexData.npcArchive, null, 2);
-                            }
-                        } else {
-                            archiveStr = String(codexData.npcArchive);
-                        }
+                        let archiveStr = typeof codexData.npcArchive === 'object' ? (Array.isArray(codexData.npcArchive) ? codexData.npcArchive.join('\n') : JSON.stringify(codexData.npcArchive, null, 2)) : String(codexData.npcArchive);
                         document.getElementById('npcArchive').value = archiveStr;
 
-                        // Tự động quét và xóa sạch các NPC đã có tên trong Archive khỏi danh sách Active sống
                         if (archiveStr.trim() !== '') {
-                            npcList = npcList.filter(npc => {
-                                let nName = npc.name.toLowerCase();
-                                if (archiveStr.toLowerCase().includes(nName)) {
-                                    log(`> Tự động loại bỏ NPC đã chết/lịch sử [${npc.name}] khỏi danh sách Active.`);
-                                    return false;
-                                }
-                                return true;
-                            });
+                            npcList = npcList.filter(npc => !archiveStr.toLowerCase().includes(npc.name.toLowerCase()));
                             renderNpcs();
                         }
                     }
@@ -1280,70 +1255,59 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC ĐỊNH DẠNG TÍNH THỜI GIAN TU LUYỆN, KĨ NĂNG NVC VÀ CODEX BẮC BUỘC]:
-1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn hành động, HÃY LUÔN THÊM MỘT MỤC TÓM TẮT:
+[QUY TẮC ĐỊNH DẠNG VÀ CẬP NHẬT CODEX]:
+1. Sau khi dẫn chuyện, trước khi đưa ra các lựa chọn, bắt buộc kèm theo mục tóm tắt:
 [TÓM TẮT]: (Tóm tắt ngắn gọn tình thế hiện tại).
 
-2. QUY TẮC BẮC BUỘC VỀ THỜI GIAN VÀ KĨ NĂNG NVC:
-- Tính mốc "mcGameTime" là tổng thời gian NVC tu luyện/chơi game từ lúc bắt đầu (Không phải tuổi tác).
-- Dùng "mcGameTime" làm căn cứ sắp xếp thời gian bế quan/đột phá chuẩn tu tiên.
-- QUY TẮC NÂNG CẤP TÊN KĨ NĂNG ("mcSkills"): Khi NVC đột phá tăng 1 Đại Cảnh Giới, tự động đổi tên nâng cấp chiêu thức.
+2. QUY TẮC TUÂN THỦ NPC: AI Game Master PHẢI ĐỌC VÀ TUÂN THỦ TUYỆT ĐỐI phần [QUY TẮC RIÊNG CỦA AI ĐỐI VỚI NPC NÀY] đã được thiết lập sẵn trong danh sách NPC Active cho từng nhân vật cụ thể.
 
-3. QUY TẮC QUẢN LÝ NPC VÀ ĐỊA DANH:
-- npcActiveList CHỈ CHỨA các NPC CÒN SỐNG. Khi NPC chết, PHẢI XÓA KHỎI npcActiveList và chuyển vào npcArchive (dạng chuỗi). Tuyệt đối KHÔNG ĐƯỢC để trùng lặp (ví dụ Tuyết Cơ thu làm nô lệ hay Tàn hồn Băng Mị Nữ là cùng một thực thể, chỉ duy trì 1 entry duy nhất với trạng thái cập nhật).
-- locationsList: LUÔN TÍCH LŨY TOÀN BỘ các địa danh đã từng đi qua từ đầu game đến nay, KHÔNG BAO GIỜ XÓA BỎ ĐỊA DANH CŨ, ghi nhận đầy đủ sự kiện tại đó.
-
-4. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
-- "mcLevel", "mcGameTime", "mcSkills", "mcInventoryList", "npcActiveList", "locationsList", "weaponsList", "npcArchive".
-
+3. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:
 \`\`\`json
 {
   "mcLevel": "Luyện Khí tầng 5 (Đỉnh Phong)",
   "mcGameTime": "3 năm 6 tháng",
-  "mcSkills": "- Trường Xuân Công (Tầng 5)\\n- Vô Địch Thần Thức",
+  "mcSkills": "- Trường Xuân Công (Tầng 5)",
   "mcInventoryList": [
     {
       "name": "Trúc Cơ Đan",
       "icon": "🌟",
       "quantity": 1,
       "quality": "Linh Phẩm",
-      "effect": "Tăng 80% tỷ lệ đột phá Trúc Cơ."
+      "effect": "Tăng tỷ lệ đột phá."
     }
   ],
   "npcActiveList": [
     {
-      "name": "Tàn hồn Băng Mị Nữ (Tuyết Cơ)",
-      "identity": "Nô lệ tu sĩ Trúc Cơ",
-      "personality": "Dâm dật, trung thành tuyệt đối",
+      "name": "Tuyết Cơ",
+      "identity": "Nô lệ tu sĩ",
+      "personality": "Trung thành",
       "affinity": 100
     }
   ],
   "locationsList": [
     {
-      "name": "Cổ Mộ Băng Mị - Chính Điện",
+      "name": "Cổ Mộ Băng Mị",
       "icon": "🏛️",
-      "position": "Phía Bắc Rừng Cấm",
-      "danger": "Rất Cao",
-      "accessRules": "Dùng Ngọc Cốt vỡ mở phong ấn.",
-      "events": "Đã trảm sát Băng Cốt Ma Hổ, vét sạch bảo vật Chưởng Môn."
+      "position": "Phía Bắc",
+      "danger": "Cao",
+      "events": "Đã khám phá."
     }
   ],
   "weaponsList": [
     {
       "name": "Huyết Sát Đao",
       "icon": "🗡️",
-      "rank": "Hạ Phẩm Pháp Khí",
-      "usage": "Đã luyện hóa, sẵn sàng chiến đấu."
+      "rank": "Hạ Phẩm",
+      "usage": "Đã luyện hóa."
     }
   ],
-  "npcArchive": "- Ma tu (Khách quý): Đã chết.\\n- Băng Cốt Ma Hổ: Đã bị trảm sát."
+  "npcArchive": ""
 }
 \`\`\`
 `;
 
         function confirmAndStartGame() {
-            const confirmReset = confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa tiến trình cũ và KHỞI TẠO GAME MỚI không?");
-            if (confirmReset) {
+            if (confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa tiến trình cũ và KHỞI TẠO GAME MỚI không?")) {
                 openTab('play');
                 startGame();
             }
@@ -1358,7 +1322,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             storyBox.innerHTML = '<div style="color: var(--accent-gold);">⚡ Đang khởi tạo thế giới AI RPG v1.0... Vui lòng chờ...</div>';
 
             const systemPrompt = `
-Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game Text RPG Tu Tiên đỉnh cao mang tên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v1.0'}".
+Hãy đóng vai một Game Master chuyên nghiệp điều hành tựa game Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v1.0'}".
 
 [THÔNG TIN THẾ GIỚI]:
 - Quy tắc AI & Pacing: ${document.getElementById('aiRules').value}
@@ -1367,7 +1331,6 @@ Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game
 - Mốc thời gian mở đầu: ${document.getElementById('startTime').value}
 - Kịch bản mở đầu: ${document.getElementById('startScript').value}
 - Quy tắc thế giới: ${document.getElementById('worldRules').value}
-- Quy tắc đặt tên: ${document.getElementById('namingRules').value}
 - Thể loại & Âm hưởng: ${document.getElementById('genre').value}
 - Hệ thống cảnh giới: ${document.getElementById('powerSystem').value}
 - Văn phong: ${document.getElementById('writingStyle').value}
@@ -1376,14 +1339,14 @@ Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game
 - Tên & Thân phận: ${document.getElementById('mcName').value}
 - Cảnh giới: ${document.getElementById('mcLevel').value}
 - Thời gian trong game: ${document.getElementById('mcGameTime').value}
-- Kỹ năng & Công pháp: ${document.getElementById('mcSkills').value}
-- Túi đồ ban đầu: ${document.getElementById('mcInventory').value}
+- Kỹ năng: ${document.getElementById('mcSkills').value}
+- Túi đồ: ${document.getElementById('mcInventory').value}
 
 ${getCodexMemoryPrompt()}
 
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa người chơi bước vào câu chuyện theo đúng kịch bản mở đầu!
+Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút theo đúng kịch bản!
 `;
 
             const reply = await callGemini(systemPrompt);

@@ -1449,7 +1449,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
   "locationsList": [
     {
       "name": "Phượng Mộc Thành",
-      "icon": "🏛️",
+      "icon": "🏛️️",
       "position": "Cổng Ngoại Thành",
       "danger": "Trung Bình",
       "desc": "Thành trì giao thương sầm uất."
@@ -1546,10 +1546,12 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             const userHtml = `<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
             storyBox.innerHTML += userHtml;
 
-            // Đã khôi phục tính năng trượt màn hình mượt mà tới mục bôi đỏ của hành động vừa gửi
+            // Tự động cuộn mượt mà màn hình đến đúng vị trí thẻ đỏ của hành động vừa gửi
             setTimeout(() => {
                 const actionEl = document.getElementById(actionId);
-                if (actionEl) { actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                if (actionEl) { 
+                    actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+                }
             }, 50);
 
             const promptWithCodex = `
@@ -1564,10 +1566,6 @@ ${JSON_STRUCTURE_INSTRUCTION}
             if (reply) {
                 const formattedHtml = parseAndAutoUpdateCodex(reply);
                 storyBox.innerHTML += formattedHtml;
-                
-                setTimeout(() => {
-                    jumpToBottom();
-                }, 100);
 
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);

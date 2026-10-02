@@ -158,6 +158,34 @@
 
     <!-- TAB 1: WORLD -->
     <div id="world" class="tab-content active">
+        <!-- BỔ SUNG MỤC 1: QUI TẮC TỐI CAO BẮT BUỘC BÁM SÁT MÔ TUÝP TRUYỆN -->
+        <div class="form-group" style="background: #1c150c; padding: 10px; border-radius: 6px; border: 1px solid #b8860b;">
+            <div class="input-header">
+                <div>
+                    <div class="label-title" style="color: var(--accent-gold);">👑 QUI TẮC TỐI CAO (BẮT BUỘC BÁM SÁT MÔ TUÝP TRUYỆN)</div>
+                    <div class="label-desc">Quy tắc ưu tiên số 1: AI trong game căn cứ vào đây để lập ra các quy tắc phụ trợ và duy trì tuyệt đối mô tuýp (Ví dụ: Phàm Nhân Tu Tiên thì tuyệt đối không xuất hiện thể loại/yếu tố khác).</div>
+                </div>
+                <button class="btn-aigen" style="background: var(--accent-gold); color: #000;" onclick="aiGenField('supremeMotifRule', 'Chỉ thị bắt buộc mô tuýp truyện gốc, tuyệt đối không pha tạp thể loại khác')">✨ AI GEN</button>
+            </div>
+            <textarea id="supremeMotifRule" style="border-color: #b8860b; min-height: 90px;" placeholder="Ví dụ: 
+- Mô tuýp truyện cốt lõi: Phàm Nhân Tu Tiên chính tông.
+- Tuyệt đối không xuất hiện các yếu tố khoa học viễn tưởng, hệ thống nhiệm vụ hiện đại hay thể loại khác trái ngược với thế giới tu tiên truyền thống."></textarea>
+        </div>
+
+        <!-- BỔ SUNG MỤC 2: QUI TẮC 18+ (ƯU TIÊN THỨ HAI) -->
+        <div class="form-group" style="background: #1c0e12; padding: 10px; border-radius: 6px; border: 1px solid #a83250;">
+            <div class="input-header">
+                <div>
+                    <div class="label-title" style="color: #ff5577;">🔥 QUI TẮC 18+ (ƯU TIÊN THỨ HAI)</div>
+                    <div class="label-desc">Quy tắc ưu tiên số 2: Chi phối các yếu tố nhạy cảm, tình ái, song tu, sắc hiệp hoặc NSFW trong game.</div>
+                </div>
+                <button class="btn-aigen" style="background: #a83250;" onclick="aiGenField('rule18Plus', 'Quy tắc xử lý nội dung 18+, tình ái, song tu, sắc hiệp chi tiết trong game')">✨ AI GEN</button>
+            </div>
+            <textarea id="rule18Plus" style="border-color: #a83250; min-height: 90px;" placeholder="Ví dụ: 
+- Cho phép khai thác chi tiết các tình huống sắc hiệp, song tu, tâm lý nhân vật nhạy cảm, quan hệ tình ái khi có tương tác phù hợp.
+- Miêu tả chân thực, táo bạo nhưng vẫn gắn kết chặt chẽ với cốt truyện tu tiên."></textarea>
+        </div>
+
         <div class="form-group" style="background: #1c1012; padding: 10px; border-radius: 6px; border: 1px solid #7d2828;">
             <div class="input-header">
                 <div>
@@ -405,7 +433,7 @@
     <script>
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
-        const DB_VERSION = 10;
+        const DB_VERSION = 11; // Nâng version để cập nhật IndexedDB nếu cần
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -462,7 +490,7 @@
         let eventList = [];
 
         const fieldsToReset = [
-            'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
+            'supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcLevel', 'mcGameTime', 'mcSkills', 'mcInventory', 
             'npcArchive', 'locations', 'gameEvents', 'worldItems'
@@ -663,7 +691,7 @@
 
                     <div class="affinity-container">
                         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold;">
-                            <span>❤️️ Điểm Hảo Cảm:</span>
+                            <span>❤ Điểm Hảo Cảm:</span>
                             <span style="color:${affInfo.color};">${npc.affinity} / 100 (${affInfo.status})</span>
                         </div>
                         <div class="affinity-bar-bg">
@@ -816,7 +844,7 @@
                         <textarea style="min-height:50px; font-size:11px; padding:6px;" placeholder="Nội dung sự kiện..." onchange="updateEventField(${index}, 'events', this.value)">${ev.events || ''}</textarea>
                     </div>
                     <div class="form-group" style="margin-bottom:0;">
-                        <div style="font-size:10px; color:var(--accent-gold); font-weight:bold;">⚙️ QUY TẮC AI CHO SỰ KIỆN NÀY:</div>
+                        <div style="font-size:10px; color:var(--accent-gold); font-weight:bold;">⚙️️ QUY TẮC AI CHO SỰ KIỆN NÀY:</div>
                         <textarea style="min-height:50px; font-size:11px; padding:6px;" placeholder="Nhập quy tắc AI chi phối sự kiện..." onchange="updateEventField(${index}, 'aiRules', this.value)">${ev.aiRules || ''}</textarea>
                     </div>
                 </div>`;
@@ -1494,6 +1522,12 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
             const systemPrompt = `
 Hãy đóng vai một Game Master (GM) chuyên nghiệp điều hành tựa game Text RPG Tu Tiên đỉnh cao mang tên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v1.1'}".
 
+[QUI TẮC TỐI CAO BẮT BUỘC BÁM SÁT MÔ TUÝP TRUYỆN]:
+${document.getElementById('supremeMotifRule').value}
+
+[QUI TẮC 18+ (ƯU TIÊN THỨ HAI)]:
+${document.getElementById('rule18Plus').value}
+
 [THÔNG TIN THẾ GIỚI]:
 - Quy tắc AI & Pacing: ${document.getElementById('aiRules').value}
 - Độ khó: ${document.getElementById('difficultySelect').value} (${document.getElementById('difficultyCustom').value})
@@ -1517,7 +1551,7 @@ ${getCodexMemoryPrompt()}
 
 ${JSON_STRUCTURE_INSTRUCTION}
 
-Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa người chơi bước vào câu chuyện theo đúng kịch bản mở đầu!
+Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa người chơi bước vào câu chuyện theo đúng kịch bản mở đầu và tuân thủ tuyệt đối các quy tắc tối cao trên!
 `;
 
             const reply = await callGemini(systemPrompt);
@@ -1545,7 +1579,6 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             const userHtml = `<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
             storyBox.innerHTML += userHtml;
 
-            // Tự động cuộn mượt mà màn hình đến đúng vị trí thẻ đỏ của hành động vừa gửi
             setTimeout(() => {
                 const actionEl = document.getElementById(actionId);
                 if (actionEl) { 
@@ -1555,6 +1588,12 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
 
             const promptWithCodex = `
 [HÀNH ĐỘNG CỦA NGƯỜI CHƠI]: "${actionText}"
+
+[QUI TẮC TỐI CAO BẮT BUỘC BÁM SÁT MÔ TUÝP TRUYỆN]:
+${document.getElementById('supremeMotifRule').value}
+
+[QUI TẮC 18+ (ƯU TIÊN THỨ HAI)]:
+${document.getElementById('rule18Plus').value}
 
 ${getCodexMemoryPrompt()}
 

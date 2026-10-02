@@ -35,9 +35,9 @@
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 16px; font-weight: bold; }
         .sidebar-item { display: block; width: 100%; padding: 10px 12px; background: #21262d; border: 1px solid var(--border-color); color: #fff; text-align: left; border-radius: 6px; margin-bottom: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-        /* SỬA LỖI TAB BỊ ĐÈ: Cho phép cuộn trái/phải mượt mà */
+        /* Thanh Tab cuộn trái/phải mượt mà */
         .tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; background: var(--panel-bg); padding: 6px; border-radius: 8px; -webkit-overflow-scrolling: touch; white-space: nowrap; }
-        .tab-btn { flex: 0 0 auto; min-width: 75px; padding: 8px 10px; border: none; background: transparent; color: var(--subtext-color); font-weight: bold; border-radius: 6px; font-size: 12px; cursor: pointer; text-align: center; }
+        .tab-btn { flex: 0 0 auto; min-width: 65px; padding: 8px 10px; border: none; background: transparent; color: var(--subtext-color); font-weight: bold; border-radius: 6px; font-size: 12px; cursor: pointer; text-align: center; }
         .tab-btn.active { background: var(--input-bg); color: var(--accent-blue); border: 1px solid var(--border-color); }
 
         .tab-content { display: none; background: var(--panel-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; }
@@ -58,7 +58,7 @@
         .btn-upload-file { background: var(--accent-blue); border: none; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; display: inline-block; }
         .btn-remove-avatar { background: #21262d; border: 1px solid var(--border-color); color: var(--accent-red); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; width: fit-content; }
 
-        .inventory-grid, .loc-grid, .weapon-grid, .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; }
+        .inventory-grid, .loc-grid, .event-grid, .weapon-grid, .npc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; }
         
         .item-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .item-icon-box { width: 50px; height: 50px; background: #1c2128; border: 1px solid var(--border-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; overflow: hidden; }
@@ -70,9 +70,9 @@
         .item-quality { font-size: 11px; color: var(--accent-gold); margin-bottom: 4px; font-weight: 600; }
         .item-effect { font-size: 11px; color: var(--subtext-color); line-height: 1.3; word-wrap: break-word; }
 
-        .loc-card, .weapon-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
-        .loc-info, .weapon-info { flex: 1; min-width: 0; }
-        .loc-name, .weapon-name { font-weight: bold; font-size: 13px; color: #fff; margin-bottom: 4px; }
+        .loc-card, .event-card, .weapon-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; display: flex; gap: 12px; align-items: flex-start; }
+        .loc-info, .event-info, .weapon-info { flex: 1; min-width: 0; }
+        .loc-name, .event-name, .weapon-name { font-weight: bold; font-size: 13px; color: #fff; margin-bottom: 4px; }
         .loc-badge { display: inline-block; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; }
         .loc-danger-low { background: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid #238636; }
         .loc-danger-mid { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #d29922; }
@@ -94,11 +94,11 @@
         .btn-aigen { background: var(--accent-purple); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 
         .game-controls { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-        .btn-action { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); color: #fff; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; }
+        .btn-action { flex: 1; min-width: 90px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); color: #fff; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; }
         .btn-send { background: var(--accent-purple); }
         .btn-undo { background: #30363d; color: #f0f6fc; }
         .btn-copy { background: #1f6beb; }
-        .btn-bottom { background: var(--accent-gold); color: #000; } /* Nút nhảy xuống cuối */
+        .btn-bottom { background: var(--accent-gold); color: #000; }
 
         #story-box { background: var(--input-bg); height: 450px; overflow-y: auto; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); white-space: pre-wrap; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
         .player-action-highlight { color: #ff5555; font-weight: bold; background: rgba(255, 85, 85, 0.12); padding: 6px 10px; border-left: 4px solid #ff5555; border-radius: 4px; margin: 12px 0; display: block; }
@@ -146,12 +146,13 @@
         <button class="sidebar-item" style="background: var(--accent-red); margin-top: 15px;" onclick="resetAllFields()">🧹 RESET TẤT CẢ CẤU HÌNH</button>
     </div>
 
-    <!-- CÁC TAB ĐÃ ĐƯỢC THÊM MỤC SỰ KIỆN & BÍ CẢNH -->
+    <!-- TÁCH BIỆT TAB ĐỊA DANH VÀ TAB SỰ KIỆN & BÍ CẢNH -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 NVC</button>
         <button class="tab-btn" onclick="openTab('npc')">👥 NPCs</button>
-        <button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh & Sự Kiện</button>
+        <button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh</button>
+        <button class="tab-btn" onclick="openTab('events')">📜 Sự Kiện & Bí Cảnh</button>
         <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
         <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
     </div>
@@ -169,8 +170,8 @@
             <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG.
 2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng.
-3. Luôn duy trì NPC SỐNG trong mảng npcActiveList, khi chết chuyển vào npcArchive.
-4. Tuân thủ tuyệt đối [QUY TẮC RIÊNG CỦA TỪNG NPC] và [QUY TẮC RIÊNG CHO SỰ KIỆN]."></textarea>
+3. Luôn duy trì NPC SỐNG và tuân thủ [QUY TẮC AI CHO NPC].
+4. Duy trì các Sự Kiện & Bí Cảnh và tuân thủ [QUY TẮC AI CHO SỰ KIỆN]."></textarea>
         </div>
 
         <div class="form-group">
@@ -335,20 +336,36 @@
         </div>
     </div>
 
-    <!-- TAB 4: LOCATIONS & EVENTS (CÓ ĐỦ THÔNG TIN SỰ KIỆN, BÍ CẢNH, QUY TẮC AI) -->
+    <!-- TAB 4: ĐỊA DANH (RIÊNG BIỆT) -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: ĐỊA DANH, SỰ KIỆN & BÍ CẢNH (KHÔNG XÓA KHI QUA LƯỢT)</div>
-        <div class="label-desc">⚡ Ghi chú thời gian, nội dung sự kiện, điều kiện tham gia, vị trí và quy tắc AI sự kiện.</div>
+        <div class="section-tag">📍 CODEX: ĐỊA DANH (KHÔNG XÓA KHI QUA LƯỢT)</div>
+        <div class="label-desc">⚡ Lưu trữ toàn bộ các vùng đất, thành trì, tông môn từng đi qua.</div>
         
         <div id="locVisualGrid" class="loc-grid"></div>
 
         <div class="form-group" style="margin-top: 15px;">
-            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA ĐỊA DANH & SỰ KIỆN:</div>
+            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA ĐỊA DANH:</div>
             <textarea id="locations" style="min-height: 120px; font-size:12px; color:#8b949e;"></textarea>
         </div>
     </div>
 
-    <!-- TAB 5: ITEMS / WEAPONS -->
+    <!-- TAB 5: SỰ KIỆN & BÍ CẢNH (CÓ QUY TẮC AI RIÊNG CHO TỪNG SỰ KIỆN) -->
+    <div id="events" class="tab-content">
+        <div class="section-tag">
+            <span>📜 CODEX: SỰ KIỆN & BÍ CẢNH</span>
+            <button class="btn-aigen" style="background: var(--accent-green);" onclick="addNewEventCard()">➕ THÊM SỰ KIỆN MỚI</button>
+        </div>
+        <div class="label-desc">⚡ Ghi chú thời gian, nội dung, điều kiện tham gia và <b>Quy tắc AI chi phối sự kiện</b>.</div>
+        
+        <div id="eventVisualGrid" class="event-grid"></div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <div class="label-title" style="font-size:11px; color: var(--subtext-color);">RAW DATA SỰ KIỆN & BÍ CẢNH:</div>
+            <textarea id="gameEvents" style="min-height: 120px; font-size:12px; color:#8b949e;"></textarea>
+        </div>
+    </div>
+
+    <!-- TAB 6: PHÁP BẢO -->
     <div id="items" class="tab-content">
         <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT THẾ GIỚI</div>
         <div id="weaponVisualGrid" class="weapon-grid"></div>
@@ -359,7 +376,7 @@
         </div>
     </div>
 
-    <!-- TAB 6: PLAY (TÍCH HỢP NÚT NHẢY XUỐNG CUỐI TRANG) -->
+    <!-- TAB 7: GAME -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "⚡ KHỞI TẠO GAME" ở góc trên bên phải!</div>
 
@@ -367,7 +384,7 @@
             <input type="text" id="userInput" placeholder="Nhập lựa chọn (1,2,3...) hoặc hành động tự do...">
             
             <div class="game-controls">
-                <button class="btn-action btn-send" onclick="sendAction()">GỬI HÀNH ĐỘNG ➔</button>
+                <button class="btn-action btn-send" onclick="sendAction()">GỬI ➔</button>
                 <button class="btn-action btn-undo" onclick="undoLastTurn()">↩ QUAY LẠI</button>
                 <button class="btn-action btn-bottom" onclick="jumpToBottom()">↓ XUỐNG CUỐI</button>
                 <button class="btn-action btn-copy" onclick="copyGameStory()">📋 COPY</button>
@@ -381,7 +398,7 @@
     <script>
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
-        const DB_VERSION = 4;
+        const DB_VERSION = 5;
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -435,12 +452,13 @@
         let mcAvatarBase64 = "";
         let turnCounter = 0;
         let npcList = [];
+        let eventList = [];
 
         const fieldsToReset = [
             'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 
             'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 
             'powerSystem', 'writingStyle', 'mcName', 'mcLevel', 'mcGameTime', 'mcSkills', 'mcInventory', 
-            'npcArchive', 'locations', 'worldItems'
+            'npcArchive', 'locations', 'gameEvents', 'worldItems'
         ];
 
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
@@ -470,7 +488,6 @@
             }
         }
 
-        // HÀM NHẢY THẲNG XUỐNG CUỐI TRANG NHẬT KÝ GAME
         function jumpToBottom() {
             const storyBox = document.getElementById('story-box');
             if(storyBox) {
@@ -628,11 +645,11 @@
             }
         }
 
-        // RENDER ĐỊA DANH & SỰ KIỆN KHÔNG BỊ XÓA KHI QUA LƯỢT
+        // RENDER ĐỊA DANH (RIÊNG BIỆT)
         function renderLocationsVisual(locArray) {
             const grid = document.getElementById('locVisualGrid');
             if(!locArray || !Array.isArray(locArray) || locArray.length === 0) {
-                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh hoặc sự kiện nào được ghi nhận...</div>';
+                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có địa danh nào được ghi nhận...</div>';
                 return;
             }
 
@@ -648,19 +665,71 @@
                 <div class="loc-card">
                     <div class="item-icon-box">${icon}</div>
                     <div class="loc-info">
-                        <div class="loc-name">${loc.name || 'Địa danh / Bí cảnh vô danh'}</div>
+                        <div class="loc-name">${loc.name || 'Địa danh vô danh'}</div>
                         <span class="loc-badge ${dangerClass}">Mức độ: ${loc.danger || 'Thấp'}</span>
                         <div class="loc-detail-text">📍 <b>Vị trí:</b> ${loc.position || 'Chưa rõ'}</div>
-                        <div class="loc-detail-text">🚪 <b>Điều kiện tham gia:</b> ${loc.accessRules || 'Tự do'}</div>
-                        <div class="loc-events-box">
-                            ⌛ <b>Thời gian:</b> ${loc.timeNote || 'Không thời hạn'}<br>
-                            📜 <b>Nội dung sự kiện / Bí cảnh:</b> ${loc.events || 'Đang cập nhật...'}<br>
-                            ⚙️ <b>Quy tắc AI sự kiện:</b> ${loc.aiRules || 'Mặc định'}
-                        </div>
+                        <div class="loc-detail-text">🚪 <b>Đặc điểm / Khí vận:</b> ${loc.desc || 'Bình thường'}</div>
                     </div>
                 </div>`;
             });
             grid.innerHTML = html;
+        }
+
+        // RENDER SỰ KIỆN & BÍ CẢNH (CÓ QUY TẮC AI RIÊNG CHO TỪNG SỰ KIỆN)
+        function renderEventsVisual() {
+            const grid = document.getElementById('eventVisualGrid');
+            if(!eventList || eventList.length === 0) {
+                grid.innerHTML = '<div style="color:var(--subtext-color); font-style:italic;">Chưa có sự kiện hoặc bí cảnh nào.</div>';
+                return;
+            }
+
+            let html = '';
+            eventList.forEach((ev, index) => {
+                html += `
+                <div class="event-card" style="display:block;">
+                    <button style="position:absolute; top:8px; right:8px; background:none; border:none; color:var(--accent-red); cursor:pointer;" onclick="removeEventCard(${index})">✕</button>
+                    <div style="margin-bottom:6px;">
+                        <input type="text" value="${ev.name || ''}" style="font-weight:bold; padding:4px;" placeholder="Tên sự kiện / Bí cảnh..." onchange="updateEventField(${index}, 'name', this.value)">
+                    </div>
+                    <div style="display:flex; gap:6px; margin-bottom:6px;">
+                        <input type="text" value="${ev.timeNote || ''}" style="font-size:11px; padding:4px; flex:1;" placeholder="Thời gian..." onchange="updateEventField(${index}, 'timeNote', this.value)">
+                        <input type="text" value="${ev.accessRules || ''}" style="font-size:11px; padding:4px; flex:1;" placeholder="Điều kiện tham gia..." onchange="updateEventField(${index}, 'accessRules', this.value)">
+                    </div>
+                    <div class="form-group" style="margin-bottom:6px;">
+                        <textarea style="min-height:50px; font-size:11px; padding:6px;" placeholder="Nội dung sự kiện..." onchange="updateEventField(${index}, 'events', this.value)">${ev.events || ''}</textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <div style="font-size:10px; color:var(--accent-gold); font-weight:bold;">⚙️ QUY TẮC AI CHO SỰ KIỆN NÀY:</div>
+                        <textarea style="min-height:50px; font-size:11px; padding:6px;" placeholder="Nhập quy tắc AI..." onchange="updateEventField(${index}, 'aiRules', this.value)">${ev.aiRules || ''}</textarea>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function addNewEventCard() {
+            eventList.push({ name: 'Sự Kiện Mới', timeNote: 'Không thời hạn', accessRules: 'Tự do', events: 'Nội dung...', aiRules: 'Tuân thủ cốt truyện.' });
+            renderEventsVisual();
+            syncEventsToTextarea();
+        }
+
+        function removeEventCard(index) {
+            if(confirm("Xóa sự kiện này?")) {
+                eventList.splice(index, 1);
+                renderEventsVisual();
+                syncEventsToTextarea();
+            }
+        }
+
+        function updateEventField(index, field, value) {
+            if(eventList[index]) {
+                eventList[index][field] = value;
+                syncEventsToTextarea();
+            }
+        }
+
+        function syncEventsToTextarea() {
+            document.getElementById('gameEvents').value = JSON.stringify(eventList, null, 2);
         }
 
         function renderWeaponsVisual(weaponArray) {
@@ -711,8 +780,8 @@
         async function resetAllFields() {
             if (!confirm("⚠️ Bạn có chắc chắn muốn xóa sạch toàn bộ dữ liệu game không?")) return;
             fieldsToReset.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-            stopTTS(); chatHistory = []; turnHtmlHistory = []; npcList = []; turnCounter = 0;
-            removeMcAvatar(); renderNpcs();
+            stopTTS(); chatHistory = []; turnHtmlHistory = []; npcList = []; eventList = []; turnCounter = 0;
+            removeMcAvatar(); renderNpcs(); renderEventsVisual();
             document.getElementById('story-box').innerHTML = 'Chưa có dữ liệu. Hãy khởi tạo game mới!';
             await deleteFromIDB('HONDUC_TU_TIEN_SAVE');
             alert("🧹 Đã làm sạch toàn bộ cấu hình!");
@@ -725,8 +794,9 @@
                 storyBoxContent: document.getElementById('story-box').innerHTML,
                 inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
                 locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
+                eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML,
                 weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML,
-                mcAvatarBase64, npcList, inputs: {}
+                mcAvatarBase64, npcList, eventList, inputs: {}
             };
             inputIds.forEach(id => { const el = document.getElementById(id); if(el) gameData.inputs[id] = el.value; });
             try {
@@ -745,9 +815,11 @@
                 document.getElementById('story-box').innerHTML = gameData.storyBoxContent || "";
                 if(gameData.inventoryVisualHTML) document.getElementById('inventoryVisualGrid').innerHTML = gameData.inventoryVisualHTML;
                 if(gameData.locVisualHTML) document.getElementById('locVisualGrid').innerHTML = gameData.locVisualHTML;
+                if(gameData.eventVisualHTML) document.getElementById('eventVisualGrid').innerHTML = gameData.eventVisualHTML;
                 if(gameData.weaponVisualHTML) document.getElementById('weaponVisualGrid').innerHTML = gameData.weaponVisualHTML;
                 if(gameData.mcAvatarBase64) setMcAvatarImage(gameData.mcAvatarBase64);
                 if(gameData.npcList) { npcList = gameData.npcList; renderNpcs(); }
+                if(gameData.eventList) { eventList = gameData.eventList; renderEventsVisual(); }
                 if(gameData.inputs) { Object.keys(gameData.inputs).forEach(id => { const el = document.getElementById(id); if(el) el.value = gameData.inputs[id]; }); }
                 alert("📂 Tải game thành công!"); toggleSidebar(); openTab('play');
             } catch(e) { alert("Lỗi tải game: " + e); }
@@ -785,9 +857,11 @@
                     Object.keys(gameData.inputs).forEach(id => { const el = document.getElementById(id); if(el) el.value = gameData.inputs[id]; });
                     if(gameData.mcAvatarBase64) setMcAvatarImage(gameData.mcAvatarBase64);
                     if(gameData.npcList) npcList = gameData.npcList;
+                    if(gameData.eventList) eventList = gameData.eventList;
                 }
             } catch(e){}
             renderNpcs();
+            renderEventsVisual();
         });
 
         function undoLastTurn() {
@@ -834,14 +908,17 @@
         }
 
         function getCodexMemoryPrompt() {
-            let npcSummary = npcList.map(n => `- Tên: ${n.name} | Thân phận: ${n.identity} | [QUY TẮC AI CHO NPC: ${n.npcRules || 'Không'}]`).join('\n');
+            let npcSummary = npcList.map(n => `- Tên: ${n.name} | Thân phận: ${n.identity} | [QUY TẮC AI: ${n.npcRules || 'Không'}]`).join('\n');
+            let eventSummary = eventList.map(ev => `- Sự kiện: ${ev.name} | Thời gian: ${ev.timeNote} | Nội dung: ${ev.events} | [QUY TẮC AI SỰ KIỆN: ${ev.aiRules || 'Không'}]`).join('\n');
+
             return `
 [DỮ LIỆU CODEX TRẠNG THÁI HIỆN TẠI]:
 - CẢNH GIỚI: ${document.getElementById('mcLevel').value}
 - THỜI GIAN TRONG GAME: ${document.getElementById('mcGameTime').value}
 - TÚI ĐỒ: ${document.getElementById('mcInventory').value}
 - NPC ACTIVE: ${npcSummary}
-- ĐỊA DANH & SỰ KIỆN ĐÃ GHI NHẬN (KHÔNG ĐƯỢC XÓA): ${document.getElementById('locations').value}
+- ĐỊA DANH (KHÔNG XÓA): ${document.getElementById('locations').value}
+- SỰ KIỆN & BÍ CẢNH (KÈM QUY TẮC AI RIÊNG): ${eventSummary}
 ==================================================
 `;
         }
@@ -879,24 +956,40 @@
                         document.getElementById('mcInventory').value = JSON.stringify(codexData.mcInventoryList, null, 2);
                     }
 
-                    // ĐỒNG BỘ ĐỊA DANH & SỰ KIỆN (BẢO TOÀN DỮ LIỆU CŨ, KHÔNG XÓA KHI QUA LƯỢT)
+                    // Đồng bộ địa danh (Không xóa cũ)
                     if(codexData.locationsList && Array.isArray(codexData.locationsList)) {
                         let existingLocs = [];
                         try { existingLocs = JSON.parse(document.getElementById('locations').value || '[]'); } catch(e){}
 
                         codexData.locationsList.forEach(newLoc => {
                             let found = existingLocs.find(l => l.name.toLowerCase() === newLoc.name.toLowerCase());
-                            if (found) {
-                                found.events = newLoc.events || found.events;
-                                found.timeNote = newLoc.timeNote || found.timeNote;
-                                found.accessRules = newLoc.accessRules || found.accessRules;
-                                found.aiRules = newLoc.aiRules || found.aiRules;
-                            } else {
-                                existingLocs.push(newLoc);
-                            }
+                            if (!found) existingLocs.push(newLoc);
                         });
                         renderLocationsVisual(existingLocs);
                         document.getElementById('locations').value = JSON.stringify(existingLocs, null, 2);
+                    }
+
+                    // Đồng bộ Sự kiện & Bí cảnh (Bảo toàn quy tắc AI người dùng đã nhập)
+                    if(codexData.eventsList && Array.isArray(codexData.eventsList)) {
+                        codexData.eventsList.forEach(newEv => {
+                            let found = eventList.find(e => e.name.toLowerCase() === newEv.name.toLowerCase());
+                            if (found) {
+                                found.events = newEv.events || found.events;
+                                found.timeNote = newEv.timeNote || found.timeNote;
+                                found.accessRules = newEv.accessRules || found.accessRules;
+                                // Giữ nguyên aiRules cũ nếu người dùng đã tự định nghĩa
+                            } else {
+                                eventList.push({
+                                    name: newEv.name || 'Sự kiện mới',
+                                    timeNote: newEv.timeNote || 'Không thời hạn',
+                                    accessRules: newEv.accessRules || 'Tự do',
+                                    events: newEv.events || 'Nội dung...',
+                                    aiRules: newEv.aiRules || 'Mặc định'
+                                });
+                            }
+                        });
+                        renderEventsVisual();
+                        syncEventsToTextarea();
                     }
 
                     if(codexData.weaponsList) {
@@ -912,24 +1005,21 @@
         }
 
         const JSON_STRUCTURE_INSTRUCTION = `
-[QUY TẮC CẬP NHẬT CODEX - SỰ KIỆN & BÍ CẢNH]:
-Mỗi lượt chơi, nếu có sự kiện hoặc bí cảnh mới xuất hiện, AI PHẢI GHI NHẬN VÀO MỤC \`locationsList\` theo định dạng JSON chuẩn sau (KHÔNG BAO GIỜ XÓA SỰ KIỆN CŨ ĐÃ QUA):
+[QUY TẮC CẬP NHẬT CODEX]:
+Mỗi lượt chơi, trả về JSON chuẩn sau:
 \`\`\`json
 {
   "mcLevel": "",
   "mcGameTime": "",
   "mcInventoryList": [],
-  "npcActiveList": [],
-  "locationsList": [
+  "locationsList": [],
+  "eventsList": [
     {
-      "name": "Tên Bí Cảnh / Sự Kiện",
-      "icon": "📍",
-      "position": "Vị trí",
-      "timeNote": "Thời gian diễn ra sự kiện",
-      "events": "Nội dung chi tiết sự kiện",
-      "accessRules": "Điều kiện tham gia",
-      "aiRules": "Quy tắc AI chi phối sự kiện này",
-      "danger": "Trung bình"
+      "name": "Tên Sự Kiện / Bí Cảnh",
+      "timeNote": "Thời gian",
+      "accessRules": "Điều kiện",
+      "events": "Nội dung hiện tại",
+      "aiRules": "Giữ nguyên quy tắc AI hiện tại"
     }
   ],
   "weaponsList": []

@@ -79,7 +79,6 @@
         .loc-danger-mid { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid #d29922; }
         .loc-danger-high { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid #da3633; }
         .loc-detail-text { font-size: 11px; color: var(--subtext-color); margin-top: 3px; line-height: 1.3; }
-        .loc-events-box { background: rgba(137, 87, 229, 0.1); border: 1px solid rgba(137, 87, 229, 0.3); border-radius: 6px; padding: 6px 8px; margin-top: 6px; font-size: 11px; color: #d2a8ff; line-height: 1.4; }
 
         .npc-card { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; }
         .npc-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
@@ -147,7 +146,7 @@
         <button class="sidebar-item" style="background: var(--accent-red); margin-top: 15px;" onclick="resetAllFields()">🧹 RESET TẤT CẢ CẤU HÌNH</button>
     </div>
 
-    <!-- CÁC TAB CHÍNH ĐÃ ĐƯỢC TÁCH RIÊNG ĐỊA DANH VÀ SỰ KIỆN -->
+    <!-- CÁC TAB CHÍNH -->
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
         <button class="tab-btn" onclick="openTab('mc')">👤 NVC</button>
@@ -356,13 +355,13 @@
         </div>
     </div>
 
-    <!-- TAB 5: SỰ KIỆN & BÍ CẢNH (CÓ QUY TẮC AI RIÊNG NHƯ YÊU CẦU) -->
+    <!-- TAB 5: SỰ KIỆN & BÍ CẢNH -->
     <div id="events" class="tab-content">
         <div class="section-tag">
             <span>📜 CODEX: SỰ KIỆN & BÍ CẢNH (KHÔNG XÓA KHI QUA LƯỢT)</span>
             <button class="btn-aigen" style="background: var(--accent-green);" onclick="addNewEventCard()">➕ THÊM SỰ KIỆN MỚI</button>
         </div>
-        <div class="label-desc">⚡ Ghi chú thời gian, nội dung, điều kiện tham gia, vị trí và <b>Quy tắc AI cho sự kiện</b> giống như mục NPC[span_4](start_span)[span_4](end_span).</div>
+        <div class="label-desc">⚡ Ghi chú thời gian, nội dung, điều kiện tham gia, vị trí và <b>Quy tắc AI cho sự kiện</b> giống như mục quản lý NPC.</div>
         
         <div id="eventVisualGrid" class="event-grid"></div>
 
@@ -385,7 +384,7 @@
         </div>
     </div>
 
-    <!-- TAB 7: PLAY (CÓ NÚT NHẢY NHANH XUỐNG CUỐI TRANG) -->
+    <!-- TAB 7: PLAY -->
     <div id="play" class="tab-content">
         <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình thế giới và bấm "⚡ KHỞI TẠO GAME" ở góc trên bên phải!</div>
 
@@ -407,7 +406,7 @@
     <script>
         const DB_NAME = 'HongDucTuTienDB';
         const STORE_NAME = 'GameSaves';
-        const DB_VERSION = 4;
+        const DB_VERSION = 10; // Nâng lên 10 để tránh lỗi VersionError với trình duyệt cũ
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -497,7 +496,6 @@
             }
         }
 
-        // HÀM NHẢY NHANH XUỐNG CUỐI TRANG NHẬT KÝ GAME
         function jumpToBottom() {
             const storyBox = document.getElementById('story-box');
             if(storyBox) {
@@ -760,7 +758,6 @@
             reader.readAsDataURL(file);
         }
 
-        // RENDER ĐỊA DANH (RIÊNG BIỆT)
         function renderLocationsVisual(locArray) {
             const grid = document.getElementById('locVisualGrid');
             if(!locArray || !Array.isArray(locArray) || locArray.length === 0) {
@@ -797,7 +794,6 @@
             grid.innerHTML = html;
         }
 
-        // RENDER SỰ KIỆN & BÍ CẢNH (CÓ QUY TẮC AI RIÊNG CHO TỪNG SỰ KIỆN NHƯ YÊU CẦU)
         function renderEventsVisual() {
             const grid = document.getElementById('eventVisualGrid');
             if(!eventList || eventList.length === 0) {
@@ -1343,7 +1339,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         document.getElementById('locations').value = JSON.stringify(existingLocs, null, 2);
                     }
 
-                    // ĐỒNG BỘ SỰ KIỆN & BÍ CẢNH (BẢO TOÀN QUA LƯỢT VÀ GIỮ NGUYÊN QUY TẮC AI NGƯỜI DÙNG ĐÃ ĐẶT)
                     if(codexData.eventsList !== undefined && Array.isArray(codexData.eventsList)) {
                         codexData.eventsList.forEach(newEv => {
                             let found = eventList.find(e => e.name.toLowerCase() === newEv.name.toLowerCase());

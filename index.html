@@ -197,8 +197,8 @@
             <textarea id="aiRules" style="border-color: #7d2828; min-height: 110px;" placeholder="Ví dụ: 
 1. Nhịp độ game CHẬM VÀ CẨN TRỌNG (chuẩn Phàm Nhân Tu Tiên).
 2. Khi nhân vật sử dụng Đan Dược/Linh Thạch phải trừ chính xác số lượng trong mcInventoryList. Đã dùng hết thì xóa khỏi túi đồ.
-3. Luôn duy trì NPC SỐNG và tuân thủ [QUY TẮC AI CHO NPC].
-4. Duy trì các Sự Kiện & Bí Cảnh (không xóa khi qua lượt) và tuân thủ [QUY TẮC AI CHO SỰ KIỆN]."></textarea>
+3. Luôn duy trì đầy đủ danh sách các NPC ĐÃ BIẾT TÊN ĐANG CÒN SỐNG (lưu trữ không giới hạn, không tự ý xóa NPC chưa chết hoặc giới hạn 10 NPC).
+4. Tích lũy và duy trì không giới hạn các Địa Danh (locationsList) và Sự Kiện & Bí Cảnh (không xóa khi qua lượt)."></textarea>
         </div>
 
         <div class="form-group">
@@ -356,9 +356,10 @@
     <!-- TAB 3: NPCS -->
     <div id="npc" class="tab-content">
         <div class="section-tag">
-            <span>👥 QUẢN LÝ NHÂN VẬT (NPCS SỐNG) & QUAN HỆ</span>
+            <span>👥 QUẢN LÝ NHÂN VẬT (NPCS SỐNG - LƯU TRỮ KHÔNG GIỚI HẠN) & QUAN HỆ</span>
             <button class="btn-aigen" style="background: var(--accent-green);" onclick="addNewNpcCard()">➕ THÊM NPC MỚI</button>
         </div>
+        <div class="label-desc">⚡ Lưu trữ không giới hạn toàn bộ các NPC đã biết tên còn sống. Tuyệt đối không tự động xóa NPC chưa chết.</div>
 
         <div id="npcContainer" class="npc-grid"></div>
 
@@ -371,8 +372,8 @@
 
     <!-- TAB 4: LOCATIONS -->
     <div id="loc" class="tab-content">
-        <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH (BẢN ĐỒ LOGIC)</div>
-        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua (Không xóa bỏ địa danh cũ).</div>
+        <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH (BẢN ĐỒ LOGIC - LƯU TRỮ KHÔNG GIỚI HẠN)</div>
+        <div class="label-desc">⚡ Lưu lại toàn bộ các vùng đất từng đi qua (Tích lũy không giới hạn, không xóa bỏ địa danh cũ).</div>
         
         <div id="locVisualGrid" class="loc-grid"></div>
 
@@ -844,7 +845,7 @@
                         <textarea style="min-height:50px; font-size:11px; padding:6px;" placeholder="Nội dung sự kiện..." onchange="updateEventField(${index}, 'events', this.value)">${ev.events || ''}</textarea>
                     </div>
                     <div class="form-group" style="margin-bottom:0;">
-                        <div style="font-size:10px; color:var(--accent-gold); font-weight:bold;">⚙️️ QUY TẮC AI CHO SỰ KIỆN NÀY:</div>
+                        <div style="font-size:10px; color:var(--accent-gold); font-weight:bold;">⚙ QUY TẮC AI CHO SỰ KIỆN NÀY:</div>
                         <textarea style="min-height:50px; font-size:11px; padding:6px;" placeholder="Nhập quy tắc AI chi phối sự kiện..." onchange="updateEventField(${index}, 'aiRules', this.value)">${ev.aiRules || ''}</textarea>
                     </div>
                 </div>`;
@@ -1237,13 +1238,13 @@ ${document.getElementById('mcSkills').value || 'Chưa có'}
 - 🎒 TÚI ĐỒ / INVENTORY NVC:
 ${document.getElementById('mcInventory').value || 'Chưa có'}
 
-- 🟢 DANH SÁCH NPC ACTIVE (ĐANG SỐNG) & ĐIỂM HẢO CẢM (0-100):
+- 🟢 DANH SÁCH NPC ACTIVE (ĐANG SỐNG - LƯU TRỮ KHÔNG GIỚI HẠN, GIỮ NGUYÊN TOÀN BỘ NPC CÒN SỐNG):
 ${npcSummary || 'Chưa có'}
 
 - 🔴 NPC ARCHIVE (ĐÃ CHẾT / LỊCH SỬ - DẠNG CHỮ):
 ${document.getElementById('npcArchive').value || 'Chưa có'}
 
-- 📍 ĐỊA DANH ĐÃ QUA (TÍCH LŨY TOÀN BỘ KHÔNG XÓA):
+- 📍 ĐỊA DANH ĐÃ QUA (TÍCH LŨY TOÀN BỘ KHÔNG XÓA - LƯU TRỮ KHÔNG GIỚI HẠN):
 ${document.getElementById('locations').value || 'Chưa có'}
 
 - 📜 SỰ KIỆN & BÍ CẢNH HIỆN TẠI (GIỮ NGUYÊN QUA LƯỢT, TUÂN THỦ QUY TẮC AI SỰ KIỆN):
@@ -1313,10 +1314,12 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                     }
 
                     if(codexData.npcActiveList !== undefined && Array.isArray(codexData.npcActiveList)) {
-                        let updatedNpcList = [];
                         codexData.npcActiveList.forEach(aiNpc => {
+                            if (!aiNpc || !aiNpc.name) return;
                             let cleanName = (aiNpc.name || '').trim();
-                            let exist = npcList.find(n => n.name.toLowerCase().includes(cleanName.toLowerCase()) || cleanName.toLowerCase().includes(n.name.toLowerCase()));
+                            if (!cleanName) return;
+
+                            let exist = npcList.find(n => n.name.toLowerCase().trim() === cleanName.toLowerCase() || n.name.toLowerCase().includes(cleanName.toLowerCase()) || cleanName.toLowerCase().includes(n.name.toLowerCase()));
                             if(exist) {
                                 exist.name = aiNpc.name;
                                 if(aiNpc.identity) exist.identity = aiNpc.identity;
@@ -1324,10 +1327,9 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                                 if(aiNpc.affinity !== undefined) exist.affinity = aiNpc.affinity;
                                 if(aiNpc.avatar) exist.avatar = aiNpc.avatar;
                                 if(aiNpc.npcRules) exist.npcRules = aiNpc.npcRules;
-                                updatedNpcList.push(exist);
                             } else {
                                 const autoAvatarUrl = aiNpc.avatar || generateAutoAvatar(aiNpc.name);
-                                updatedNpcList.push({
+                                npcList.push({
                                     id: 'npc_' + Date.now() + Math.random().toString(36).substr(2, 4),
                                     name: aiNpc.name,
                                     identity: aiNpc.identity || 'Luyện Khí sơ kỳ',
@@ -1338,7 +1340,6 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                                 });
                             }
                         });
-                        npcList = updatedNpcList;
                         renderNpcs();
                     }
 
@@ -1352,11 +1353,13 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
                         } catch(e) {}
 
                         codexData.locationsList.forEach(newLoc => {
-                            let found = existingLocs.find(l => l.name.toLowerCase() === newLoc.name.toLowerCase());
+                            if (!newLoc || !newLoc.name) return;
+                            let found = existingLocs.find(l => l.name.toLowerCase().trim() === newLoc.name.toLowerCase().trim());
                             if (found) {
                                 if (newLoc.danger) found.danger = newLoc.danger;
                                 if (newLoc.position) found.position = newLoc.position;
                                 if (newLoc.desc) found.desc = newLoc.desc;
+                                if (newLoc.icon) found.icon = newLoc.icon;
                             } else {
                                 existingLocs.push(newLoc);
                             }
@@ -1368,7 +1371,7 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
                     if(codexData.eventsList !== undefined && Array.isArray(codexData.eventsList)) {
                         codexData.eventsList.forEach(newEv => {
-                            let found = eventList.find(e => e.name.toLowerCase() === newEv.name.toLowerCase());
+                            let found = eventList.find(e => e.name.toLowerCase().trim() === newEv.name.toLowerCase().trim());
                             if (found) {
                                 if (newEv.events) found.events = newEv.events;
                                 if (newEv.timeNote) found.timeNote = newEv.timeNote;
@@ -1410,8 +1413,8 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 
                         if (archiveStr.trim() !== '') {
                             npcList = npcList.filter(npc => {
-                                let nName = npc.name.toLowerCase();
-                                if (archiveStr.toLowerCase().includes(nName)) {
+                                let nName = npc.name.toLowerCase().trim();
+                                if (nName && archiveStr.toLowerCase().includes(nName)) {
                                     log(`> Tự động loại bỏ NPC đã chết [${npc.name}] khỏi danh sách Active.`);
                                     return false;
                                 }
@@ -1443,8 +1446,8 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 - Khi NVC đột phá tăng 1 Đại Cảnh Giới, tự động đổi tên nâng cấp chiêu thức ("mcSkills").
 
 3. QUY TẮC QUẢN LÝ QUAN TRỌNG:
-- npcActiveList CHỈ CHỨA các NPC CÒN SỐNG. Khi NPC chết, PHẢI XÓA KHỎI npcActiveList và chuyển vào npcArchive.
-- locationsList: Tích lũy toàn bộ địa danh đã từng đi qua, KHÔNG BAO GIỜ XÓA BỎ.
+- npcActiveList LƯU TRỮ VÀ CẬP NHẬT TẤT CẢ CÁC NPC ĐÃ BIẾT TÊN VẪN CÒN SỐNG, LƯU TRỮ KHÔNG GIỚI HẠN (TUYỆT ĐỐI KHÔNG TỰ Ý XÓA CÁC NPC CHƯA CHẾT HOẶC GIỚI HẠN 10 NPC). CHỈ XÓA HOẶC CHUYỂN VÀO npcArchive KHI NPC ĐÓ ĐÃ CHẾT.
+- locationsList: Tích lũy toàn bộ địa danh đã từng đi qua, LƯU TRỮ KHÔNG GIỚI HẠN VÀ KHÔNG BAO GIỜ XÓA BỎ DỮ LIỆU CŨ.
 - eventsList: Tích lũy toàn bộ sự kiện & bí cảnh, KHÔNG BAO GIỜ XÓA BỎ khi qua lượt, luôn tuân thủ [QUY TẮC AI CHO SỰ KIỆN NÀY] đã thiết lập.
 
 4. Cuối mỗi bài dẫn chuyện, bắt buộc đính kèm khối JSON tự động cập nhật Codex:

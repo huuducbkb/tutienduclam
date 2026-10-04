@@ -499,15 +499,15 @@ let formatted=formatSummaryBox(cleanText);
 return buildTurnHtml(formatted);
 }
 }catch(e){log("Lỗi Parse JSON: "+e.message);}
-letfilter formatted=formatSummaryBox(fullResponseText);
-(lreturn buildTurnHtml(formatted);
+let formatted=formatSummaryBox(fullResponseText);
+return buildTurnHtml(formatted);
 }
 
-// ==>===========================================================
-// THIÊN ĐẠO - CƠ CHẾ TRA CỨU THÔNG TlIN KHÔNG TỐN TOKEN
-// =.toLowerCase===========================================================
+// ============================================================
+// THIÊN ĐẠO - CƠ CHẾ TRA CỨU THÔNG TIN KHÔNG TỐN TOKEN
+// ============================================================
 function openThienDao(){
- (). document.getElementById('thienDaoModal').classList.add('active');
+  document.getElementById('thienDaoModal').classList.add('active');
   document.getElementById('thienDaoInput').value='';
   document.getElementById('thienDaoResults').innerHTML='<div class="thiendao-empty">Nhập từ khóa và bấm TÌM để tra cứu.<br>💡 Cơ chế này tìm trong Codex + lịch sử chat, KHÔNG gọi AI → tiết kiệm token.</div>';
   setTimeout(()=>document.getElementById('thienDaoInput').focus(),100);
@@ -538,7 +538,7 @@ function thienDaoExecute(){
   // 2. Tìm trong NPC Archive (đã chết)
   const archiveText=document.getElementById('npcArchive').value||'';
   if(archiveText.toLowerCase().includes(keyword)){
-    const lines=archiveText.split('\n').includes(keyword));
+    const lines=archiveText.split('\n').filter(l=>l.toLowerCase().includes(keyword));
     results.push({
       title:`💀 NPC đã chết (Archive)`,
       body:lines.join('\n'),

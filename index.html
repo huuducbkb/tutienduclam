@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v1.3 - AI RPG (Thiên Đạo Edition)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v1.4 - AI RPG (Optimized)</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -97,7 +97,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v1.3</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v1.4</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -145,7 +145,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ chậm, cẩn trọng, tiêu hao rõ ràng.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:110px" placeholder="1. Nhịp độ game CHẬM VÀ CẨN TRỌNG..."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v1.3</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v1.4</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -175,7 +175,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="inventoryVisualGrid" class="inventory-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô túi đồ..."></textarea></div>
 </div>
-
 <div id="npc" class="tab-content">
 <div class="section-tag"><span>👥 QUẢN LÝ NPCs SỐNG & QUAN HỆ</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
 <div class="label-desc">⚡ Lưu trữ không giới hạn toàn bộ NPC còn sống.</div>
@@ -184,28 +183,24 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT)</div>
 <div class="form-group"><textarea id="npcArchive" style="min-height:90px" placeholder="Danh sách NPC đã tử trận..."></textarea></div>
 </div>
-
 <div id="loc" class="tab-content">
 <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH</div>
 <div class="label-desc">⚡ Lưu lại toàn bộ vùng đất từng đi qua (không xóa).</div>
 <div id="locVisualGrid" class="loc-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="locations" style="min-height:120px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô địa danh..."></textarea></div>
 </div>
-
 <div id="events" class="tab-content">
 <div class="section-tag"><span>📜 CODEX: SỰ KIỆN & BÍ CẢNH</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewEventCard()">➕ THÊM SỰ KIỆN</button></div>
 <div class="label-desc">⚡ Ghi chú thời gian, nội dung, quy tắc AI cho sự kiện.</div>
 <div id="eventVisualGrid" class="event-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="gameEvents" style="min-height:120px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô sự kiện..."></textarea></div>
 </div>
-
 <div id="items" class="tab-content">
 <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT</div>
 <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật.</div>
 <div id="weaponVisualGrid" class="weapon-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="worldItems" style="min-height:120px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô pháp bảo..."></textarea></div>
 </div>
-
 <div id="play" class="tab-content">
 <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!</div>
 <div class="form-group" style="margin-top:10px">
@@ -218,27 +213,26 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 <div class="label-title">SYSTEM LOGS</div>
-<div id="sysLogs" class="log-box">> System v1.3 initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v1.4 initialized... Ready.</div>
 </div>
-
 <div id="thienDaoModal" class="thiendao-modal">
-  <div class="thiendao-content">
-    <div class="thiendao-header">
-      <div class="thiendao-title">🔍 THIÊN ĐẠO - TRA CỨU THÔNG TIN</div>
-      <button class="thiendao-close" onclick="closeThienDao()">✕ ĐÓNG</button>
-    </div>
-    <div class="thiendao-search-box">
-      <input type="text" id="thienDaoInput" placeholder="Nhập từ khóa (VD: Huyết Mộc Ma Túi, Tuyết Cơ...)" onkeypress="if(event.key==='Enter')thienDaoExecute()">
-      <button class="btn-action btn-send" style="flex:0 0 auto;min-width:80px" onclick="thienDaoExecute()">🔍 TÌM</button>
-    </div>
-    <div id="thienDaoResults"></div>
-  </div>
+<div class="thiendao-content">
+<div class="thiendao-header">
+<div class="thiendao-title">🔍 THIÊN ĐẠO - TRA CỨU THÔNG TIN</div>
+<button class="thiendao-close" onclick="closeThienDao()">✕ ĐÓNG</button>
+</div>
+<div class="thiendao-search-box">
+<input type="text" id="thienDaoInput" placeholder="Nhập từ khóa (VD: Huyết Mộc Ma Túi, Tuyết Cơ...)" onkeypress="if(event.key==='Enter')thienDaoExecute()">
+<button class="btn-action btn-send" style="flex:0 0 auto;min-width:80px" onclick="thienDaoExecute()">🔍 TÌM</button>
+</div>
+<div id="thienDaoResults"></div>
+</div>
 </div><script>
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=13;
-const MAX_RECENT_TURNS=8;
-const SUMMARY_TRIGGER_TURNS=10;
+const DB_VERSION=14;
+const MAX_RECENT_TURNS=4;
+const SUMMARY_TRIGGER_TURNS=6;
 
 let chatHistory=[];
 let turnHtmlHistory=[];
@@ -304,7 +298,7 @@ async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,
 
 async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";codexCache=gameData.codexCache||"";tokenStats=gameData.tokenStats||{input:0,output:0,requests:0,errors:0};document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v1.3_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v1.4_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -522,7 +516,6 @@ function thienDaoExecute(){
   
   let results=[];
   
-  // 1. Tìm trong NPC
   npcList.forEach(npc=>{
     const text=JSON.stringify(npc).toLowerCase();
     if(text.includes(keyword)){
@@ -535,7 +528,6 @@ function thienDaoExecute(){
     }
   });
   
-  // 2. Tìm trong NPC Archive (đã chết)
   const archiveText=document.getElementById('npcArchive').value||'';
   if(archiveText.toLowerCase().includes(keyword)){
     const lines=archiveText.split('\n').filter(l=>l.toLowerCase().includes(keyword));
@@ -547,7 +539,6 @@ function thienDaoExecute(){
     });
   }
   
-  // 3. Tìm trong Địa danh
   try{
     const locs=JSON.parse(document.getElementById('locations').value||'[]');
     locs.forEach(loc=>{
@@ -563,7 +554,6 @@ function thienDaoExecute(){
     });
   }catch(e){}
   
-  // 4. Tìm trong Sự kiện
   eventList.forEach(ev=>{
     const text=JSON.stringify(ev).toLowerCase();
     if(text.includes(keyword)){
@@ -576,7 +566,6 @@ function thienDaoExecute(){
     }
   });
   
-  // 5. Tìm trong Pháp bảo
   try{
     const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');
     weapons.forEach(w=>{
@@ -592,7 +581,6 @@ function thienDaoExecute(){
     });
   }catch(e){}
   
-  // 6. Tìm trong Túi đồ
   try{
     const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');
     inv.forEach(item=>{
@@ -608,7 +596,6 @@ function thienDaoExecute(){
     });
   }catch(e){}
   
-  // 7. Tìm trong Tóm tắt cốt truyện
   if(storySummary&&storySummary.toLowerCase().includes(keyword)){
     const sentences=storySummary.split(/[.!?]\s+/);
     const relevant=sentences.filter(s=>s.toLowerCase().includes(keyword)).join('. ');
@@ -620,7 +607,6 @@ function thienDaoExecute(){
     });
   }
   
-  // 8. Tìm trong lịch sử chat gần đây
   const recent=chatHistory.slice(-MAX_RECENT_TURNS*2);
   recent.forEach((msg,idx)=>{
     const text=msg.parts[0].text||'';
@@ -641,7 +627,6 @@ function thienDaoExecute(){
     }
   });
   
-  // 9. Tìm trong toàn bộ chatHistory nếu không tìm thấy gì
   if(results.length===0&&chatHistory.length>0){
     chatHistory.forEach((msg,idx)=>{
       const text=msg.parts[0].text||'';
@@ -663,7 +648,6 @@ function thienDaoExecute(){
     });
   }
   
-  // Hiển thị kết quả
   if(results.length===0){
     resultsDiv.innerHTML=`<div class="thiendao-empty">❌ Không tìm thấy thông tin về "<b>${document.getElementById('thienDaoInput').value}</b>".<br><br>💡 Có thể thông tin này chỉ có trong lịch sử chat cũ đã bị xóa khỏi tầng gần đây.<br>Hãy thử từ khóa khác, hoặc hỏi AI trực tiếp (sẽ tốn token hơn).</div>`;
     return;
@@ -769,13 +753,14 @@ const actionId='action_'+Date.now();
 const userHtml=`<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
 storyBox.innerHTML+=userHtml;
 setTimeout(()=>{const actionEl=document.getElementById(actionId);if(actionEl)actionEl.scrollIntoView({behavior:'smooth',block:'start'});},50);
-const promptWithCodex=`[HÀNH ĐỘNG CỦA NGƯỜI CHƠI]: "${actionText}"
 
-${buildSystemRules()}
+// TỐI ƯU v1.4: Không gửi lại rules mỗi lượt. Chỉ gửi action + Codex.
+const promptWithCodex=`[HÀNH ĐỘNG]: "${actionText}"
 
+[CODEX CẬP NHẬT]:
 ${getCodexMemoryPrompt()}
 
-${JSON_STRUCTURE_INSTRUCTION}`;
+[YÊU CẦU]: Tiếp tục dẫn chuyện theo các quy tắc đã thiết lập ở đầu game. Trả về mục [TÓM TẮT] và khối JSON cập nhật Codex như thường lệ.`;
 const reply=await callGemini(promptWithCodex);
 if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}
 };

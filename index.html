@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.1 - AI RPG (Optimized Cache)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.2 - AI RPG (Gemini 3.5)</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -97,12 +97,23 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.1</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.2</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 <div class="form-group"><label class="label-title">API Key Gemini:</label><input type="password" id="apiKey" placeholder="Dán Gemini API Key..."></div>
+<div class="form-group">
+  <label class="label-title">Model AI:</label>
+  <div class="label-desc">Chọn model Gemini đang hỗ trợ. 3.5 Flash-Lite là nhanh và rẻ nhất.</div>
+  <select id="modelSelect">
+    <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Nhanh, rẻ)</option>
+    <option value="gemini-3.6-flash">3.6 Flash (Toàn diện)</option>
+    <option value="gemini-3.1-pro">3.1 Pro (Suy luận cao)</option>
+    <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Cũ)</option>
+    <option value="gemini-2.5-flash">2.5 Flash (Cũ)</option>
+  </select>
+</div>
 <hr style="border-color:var(--border-color);margin:12px 0">
 <div class="label-title" style="margin-bottom:8px">QUẢN LÝ TIẾN TRÌNH</div>
 <button class="sidebar-item" style="background:var(--accent-green)" onclick="saveGame(true)">💾 Lưu Game</button>
@@ -146,7 +157,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ chậm, cẩn trọng, tiêu hao rõ ràng.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:110px" placeholder="1. Nhịp độ game CHẬM VÀ CẨN TRỌNG..."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.1</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.2</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -215,7 +226,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 <div class="label-title">SYSTEM LOGS</div>
-<div id="sysLogs" class="log-box">> System v2.1 initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.2 initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -232,16 +243,18 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <script>
 // ============================================================
-// CẤU HÌNH - ĐÃ SỬA MODEL VÀ TTL
+// CẤU HÌNH - GEMINI 3.5 FLASH-LITE (MODEL MỚI NHẤT)
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=21;
-const MAX_RECENT_TURNS=4;            // Số lượt gần nhất gửi kèm (giảm từ 5)
-const SUMMARY_TRIGGER_TURNS=5;       // Ngưỡng kích hoạt tóm tắt (giảm từ 6)
-const CACHE_MODEL='gemini-2.0-flash'; // ✅ Model THẬT, hỗ trợ caching
-const FALLBACK_MODELS=['gemini-2.0-flash','gemini-2.5-flash','gemini-1.5-flash'];
-const CACHE_TTL='7200s';             // ✅ 2 giờ thay vì 1 giờ
+const DB_VERSION=22;
+const MAX_RECENT_TURNS=4;
+const SUMMARY_TRIGGER_TURNS=5;
+const DEFAULT_MODEL='gemini-3.5-flash-lite';  // ✅ Model mới, hỗ trợ cache
+const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash','gemini-2.5-flash-lite'];
+const CACHE_TTL='7200s';
+
+let CACHE_MODEL=DEFAULT_MODEL;  // ✅ Có thể đổi qua dropdown
 
 let chatHistory=[];
 let turnHtmlHistory=[];
@@ -252,16 +265,15 @@ let eventList=[];
 let storySummary="";
 let tokenStats={input:0,output:0,requests:0,errors:0};
 
-// Context Caching state
 let cacheName=null;
 let cacheExpiry=0;
 let cacheContentHash="";
 
 const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
-const inputIds=['apiKey',...fieldsToReset,'difficultySelect'];
+const inputIds=['apiKey','modelSelect',...fieldsToReset,'difficultySelect'];
 
 // ============================================================
-// INDEXEDDB - LƯU TRỮ
+// INDEXEDDB
 // ============================================================
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=(evt)=>{const db=evt.target.result;if(!db.objectStoreNames.contains(STORE_NAME)){db.createObjectStore(STORE_NAME);}};req.onsuccess=(evt)=>resolve(evt.target.result);req.onerror=(evt)=>reject("Lỗi IndexedDB: "+evt.target.error);});}
 async function saveToIDB(key,value){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE_NAME,'readwrite');const store=tx.objectStore(STORE_NAME);const req=store.put(value,key);req.onsuccess=()=>resolve();req.onerror=()=>reject("Lỗi lưu: "+req.error);});}
@@ -278,11 +290,11 @@ function log(msg){const logBox=document.getElementById('sysLogs');if(logBox){log
 function jumpToBottom(){const storyBox=document.getElementById('story-box');if(storyBox){storyBox.scrollTop=storyBox.scrollHeight;log("Đã nhảy xuống cuối.");}}
 function copyGameStory(){const t=document.getElementById('story-box').innerText;if(!t||t.includes('Chưa có dữ liệu')){alert("⚠️ Chưa có nội dung!");return;}navigator.clipboard.writeText(t).then(()=>alert("📋 Đã sao chép!")).catch(e=>alert("❌ Lỗi: "+e));}
 
-function updateTokenStatsDisplay(){const el=document.getElementById('tokenStats');if(!el)return;const cacheInfo=cacheName?`<br>🗄️ Cache: ✅ Hoạt động (${Math.round((cacheExpiry-Date.now())/1000)}s)`:'<br>🗄️ Cache: ❌ Chưa tạo';el.innerHTML=`Input: ${tokenStats.input.toLocaleString()} tokens<br>Output: ${tokenStats.output.toLocaleString()} tokens<br>Requests: ${tokenStats.requests}<br>Errors: ${tokenStats.errors}<br>Ước tính chi phí: $${((tokenStats.input/1000000*0.10)+(tokenStats.output/1000000*0.40)).toFixed(4)}${cacheInfo}`;}
+function updateTokenStatsDisplay(){const el=document.getElementById('tokenStats');if(!el)return;const cacheInfo=cacheName?`<br>🗄️ Cache: ✅ Hoạt động (${Math.round((cacheExpiry-Date.now())/1000)}s)`:'<br>🗄️ Cache: ❌ Chưa tạo';el.innerHTML=`Model: ${CACHE_MODEL}<br>Input: ${tokenStats.input.toLocaleString()} tokens<br>Output: ${tokenStats.output.toLocaleString()} tokens<br>Requests: ${tokenStats.requests}<br>Errors: ${tokenStats.errors}${cacheInfo}`;}
 function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
-// TTS - TEXT TO SPEECH
+// TTS
 // ============================================================
 function playFemaleTTS(text,btnElement){if(!('speechSynthesis' in window)){alert("Trình duyệt không hỗ trợ TTS.");return;}window.speechSynthesis.cancel();let cleanText=text.replace(/<[^>]*>?/gm,'').replace(/\[TÓM TẮT\]:?/gi,'').trim();if(!cleanText)return;let utterance=new SpeechSynthesisUtterance(cleanText);utterance.lang='vi-VN';utterance.rate=1.0;utterance.pitch=1.2;let voices=window.speechSynthesis.getVoices();let femaleVoice=voices.find(v=>v.lang.includes('vi')&&(v.name.toLowerCase().includes('female')||v.name.toLowerCase().includes('hoai-my')||v.name.toLowerCase().includes('nhi')||v.name.toLowerCase().includes('linh')||v.name.toLowerCase().includes('google')))||voices.find(v=>v.lang.includes('vi'));if(femaleVoice)utterance.voice=femaleVoice;if(btnElement){btnElement.innerHTML='🔊 Đang đọc...';btnElement.style.background='#8957e5';}utterance.onend=function(){if(btnElement){btnElement.innerHTML='🔊 Đọc giọng nữ';btnElement.style.background='#238636';}};utterance.onerror=function(){if(btnElement){btnElement.innerHTML='🔊 Đọc giọng nữ';btnElement.style.background='#238636';}};window.speechSynthesis.speak(utterance);}
 function stopTTS(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
@@ -295,7 +307,7 @@ function removeMcAvatar(){setMcAvatarImage('');document.getElementById('avatarFi
 function uploadMcAvatarFile(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);const resizedBase64=canvas.toDataURL('image/jpeg',0.85);setMcAvatarImage(resizedBase64);log("Tải ảnh NVC thành công!");};img.src=e.target.result;};reader.readAsDataURL(file);}
 
 // ============================================================
-// NPC MANAGEMENT
+// NPC
 // ============================================================
 function getAffinityInfo(val){if(val<=20)return{status:'Thù Địch',color:'#f85149'};if(val<=40)return{status:'Lạnh Nhạt',color:'#d29922'};if(val<=60)return{status:'Thân Thiết',color:'#388bfd'};if(val<=80)return{status:'Tin Tưởng',color:'#238636'};return{status:'Tri Kỷ / Nô Lệ',color:'#a371f7'};}
 
@@ -335,20 +347,20 @@ function renderInventoryVisual(itemsArray){const grid=document.getElementById('i
 // ============================================================
 // RESET
 // ============================================================
-async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();cacheName=null;cacheExpiry=0;cacheContentHash="";log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
+async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();invalidateCache();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
 
 // ============================================================
 // SAVE / LOAD
 // ============================================================
-async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
+async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
-async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=gameData.tokenStats||{input:0,output:0,requests:0,errors:0};document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
+async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=gameData.tokenStats||{input:0,output:0,requests:0,errors:0};if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.1_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.2_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=gameData.tokenStats;}}catch(e){}renderNpcs();renderEventsVisual();updateTokenStatsDisplay();});
+window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=gameData.tokenStats;}}catch(e){}renderNpcs();renderEventsVisual();updateTokenStatsDisplay();});
 
 // ============================================================
 // UNDO
@@ -356,7 +368,7 @@ window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await ge
 function undoLastTurn(){stopTTS();if(chatHistory.length<=2){alert("⚠️ Không thể quay lại thêm!");return;}chatHistory.pop();chatHistory.pop();if(turnHtmlHistory.length>1){turnHtmlHistory.pop();const previousHtmlState=turnHtmlHistory[turnHtmlHistory.length-1];document.getElementById('story-box').innerHTML=previousHtmlState;}log("Undo executed.");alert("↩ Đã quay lại lượt trước!");}
 
 // ============================================================
-// TÓM TẮT CỐT TRUYỆN TỰ ĐỘNG (AN TOÀN - KHÔNG MẤT DỮ LIỆU)
+// TÓM TẮT CỐT TRUYỆN
 // ============================================================
 async function generateStorySummary(){
   if(chatHistory.length < SUMMARY_TRIGGER_TURNS*2+2)return;
@@ -397,7 +409,7 @@ ${oldText}
 }
 
 // ============================================================
-// CODEX NÉN (TẦNG 1) - KHÔNG CẮT CỤT DỮ LIỆU QUAN TRỌNG
+// CODEX MEMORY
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -469,7 +481,7 @@ ${storySummary||'Chưa có (game mới bắt đầu).'}
 }
 
 // ============================================================
-// SYSTEM RULES (CACHE 1 LẦN - KHÔNG GỬI LẠI)
+// SYSTEM RULES
 // ============================================================
 function buildSystemRules(){
   const v=id=>document.getElementById(id)?.value||'';
@@ -537,15 +549,13 @@ Cấu trúc JSON mẫu:
 }
 
 // ============================================================
-// CONTEXT CACHING (TIẾT KIỆM 75-90% TOKEN)
+// CACHE
 // ============================================================
 function invalidateCache(){cacheName=null;cacheExpiry=0;cacheContentHash="";}
 
-async function forceRefreshCache(){invalidateCache();log("🗄️ Đã xóa cache - sẽ tạo mới ở lượt sau.");const ok=await createOrRefreshCache();if(ok)alert("✅ Cache đã được làm mới!");else alert("⚠️ Không thể tạo cache. Kiểm tra API Key.");}
+async function forceRefreshCache(){invalidateCache();log("🗄️ Đã xóa cache - sẽ tạo mới ở lượt sau.");const ok=await createOrRefreshCache();if(ok)alert("✅ Cache đã được làm mới!");else alert("⚠️ Không thể tạo cache. Kiểm tra API Key và model.");}
 
-function getCacheContent(){
-  return buildSystemRules();
-}
+function getCacheContent(){return buildSystemRules();}
 
 async function createOrRefreshCache(){
   const key=document.getElementById('apiKey').value.trim();
@@ -559,7 +569,7 @@ async function createOrRefreshCache(){
     return cacheName;
   }
 
-  log("🗄️ Đang tạo Context Cache...");
+  log("🗄️ Đang tạo Context Cache với model: "+CACHE_MODEL+"...");
   try{
     const createUrl=`https://generativelanguage.googleapis.com/v1beta/cachedContents?key=${key}`;
     const createResponse=await fetch(createUrl,{
@@ -592,7 +602,7 @@ async function createOrRefreshCache(){
 }
 
 // ============================================================
-// CALL GEMINI (TỐI ƯU CACHE - KHÔNG GỬI TRÙNG)
+// CALL GEMINI
 // ============================================================
 async function callGemini(promptText,useCache=true){
   const key=document.getElementById('apiKey').value.trim();
@@ -640,13 +650,16 @@ async function callGemini(promptText,useCache=true){
       const data=await response.json();
 
       if(data.error){
-        log(`Model ${modelName} lỗi: ${data.error.message||JSON.stringify(data.error)}`);
+        const errMsg=data.error.message||JSON.stringify(data.error);
+        log(`❌ Model ${modelName} lỗi: ${errMsg}`);
         tokenStats.errors++;
         updateTokenStatsDisplay();
 
-        if(cachedContentName&&data.error.message&&
-           (data.error.message.toLowerCase().includes('cache')||
-            data.error.message.toLowerCase().includes('expired'))){
+        if(errMsg.includes('not found')||errMsg.includes('not supported')){
+          log(`⚠️ Model "${modelName}" không khả dụng. Đang thử model kế tiếp...`);
+        }
+
+        if(cachedContentName&&(errMsg.toLowerCase().includes('cache')||errMsg.toLowerCase().includes('expired'))){
           log("🔄 Cache hết hạn, đang tạo lại...");
           invalidateCache();
           cachedContentName=await createOrRefreshCache();
@@ -657,7 +670,7 @@ async function callGemini(promptText,useCache=true){
           }
         }
         if(i<models.length-1)continue;
-        throw new Error(data.error.message||"Tất cả model đều lỗi.");
+        throw new Error(errMsg||"Tất cả model đều lỗi.");
       }
 
       if(data.candidates&&data.candidates[0]&&data.candidates[0].content){
@@ -683,7 +696,7 @@ async function callGemini(promptText,useCache=true){
 }
 
 // ============================================================
-// AI GEN FIELD
+// AI GEN
 // ============================================================
 async function aiGenField(fieldId,promptMsg){
   const field=document.getElementById(fieldId);
@@ -695,7 +708,7 @@ async function aiGenField(fieldId,promptMsg){
 }
 
 // ============================================================
-// FORMAT SUMMARY BOX
+// FORMAT
 // ============================================================
 function formatSummaryBox(text){
   const summaryRegex=/\[TÓM TẮT\]:\s*([\s\S]*?)(?=\n\n|\n[0-9]+\.|\nNgười sẽ|\nNgươi sẽ|$)/i;
@@ -713,7 +726,7 @@ function buildTurnHtml(rawText){
 }
 
 // ============================================================
-// PARSE CODEX TỰ ĐỘNG CẬP NHẬT (AN TOÀN)
+// PARSE CODEX
 // ============================================================
 function parseAndAutoUpdateCodex(fullResponseText){
   try{
@@ -725,7 +738,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
       if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){const validInventory=codexData.mcInventoryList.filter(item=>(item.quantity===undefined||item.quantity>0));renderInventoryVisual(validInventory);document.getElementById('mcInventory').value=JSON.stringify(validInventory,null,2);}
 
-      // ✅ NPC: KHÔNG XÓA NPC cũ nếu AI không nhắc tới
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
           if(!aiNpc||!aiNpc.name)return;
@@ -744,14 +756,13 @@ function parseAndAutoUpdateCodex(fullResponseText){
             if(aiNpc.avatar)exist.avatar=aiNpc.avatar;
             if(aiNpc.npcRules)exist.npcRules=aiNpc.npcRules;
           }else{
-            const autoAvatarUrl=aiNpc.avatar||generateAutoAvatar(aiNpc.name);
             npcList.push({
               id:'npc_'+Date.now()+Math.random().toString(36).substr(2,4),
               name:aiNpc.name,
               identity:aiNpc.identity||'Luyện Khí sơ kỳ',
               personality:aiNpc.personality||'Chưa rõ',
               npcRules:aiNpc.npcRules||'Tuân thủ thiết lập.',
-              avatar:autoAvatarUrl,
+              avatar:aiNpc.avatar||generateAutoAvatar(aiNpc.name),
               affinity:aiNpc.affinity!==undefined?aiNpc.affinity:50
             });
           }
@@ -778,7 +789,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
 }
 
 // ============================================================
-// THIÊN ĐẠO - TRA CỨU
+// THIÊN ĐẠO
 // ============================================================
 function openThienDao(){
   document.getElementById('thienDaoModal').classList.add('active');
@@ -921,6 +932,7 @@ function thienDaoStats(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ CODEX HIỆN TẠI</div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Model AI</div><div class="thiendao-result-body">${CACHE_MODEL}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📍 Địa danh</div><div class="thiendao-result-body">Tổng: ${locCount}</div></div>`;
@@ -932,7 +944,7 @@ function thienDaoStats(){
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin nhắn | Đang gửi AI: ${Math.min(chatHistory.length,MAX_RECENT_TURNS*2)} tin gần nhất</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📖 Tóm tắt cốt truyện</div><div class="thiendao-result-body">${storySummary?'Đã có ('+storySummary.length+' ký tự)':'Chưa có'}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🗄️ Context Cache</div><div class="thiendao-result-body">${cacheName?'Đang hoạt động (hết hạn sau '+Math.round((cacheExpiry-Date.now())/1000)+'s)':'Chưa tạo'}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Input: ${tokenStats.input.toLocaleString()} | Output: ${tokenStats.output.toLocaleString()}<br>Requests: ${tokenStats.requests} | Errors: ${tokenStats.errors}<br>Ước tính chi phí: $${((tokenStats.input/1000000*0.10)+(tokenStats.output/1000000*0.40)).toFixed(4)}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Input: ${tokenStats.input.toLocaleString()} | Output: ${tokenStats.output.toLocaleString()}<br>Requests: ${tokenStats.requests} | Errors: ${tokenStats.errors}</div></div>`;
   resultsDiv.innerHTML=html;
 }
 
@@ -951,7 +963,7 @@ const startGame=async()=>{
   chatHistory=[];turnHtmlHistory=[];turnCounter=0;storySummary="";
   invalidateCache();
   resetTokenStats();
-  storyBox.innerHTML='<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới... Vui lòng chờ...</div>';
+  storyBox.innerHTML='<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới với model '+CACHE_MODEL+'... Vui lòng chờ...</div>';
   const systemPrompt=`Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value||'HỒNG ĐỨC TU TIÊN LỘ'}".
 
 [THÔNG TIN NVC]:
@@ -968,11 +980,11 @@ ${getCodexMemoryPrompt()}
 
 Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, tuân thủ tuyệt đối các quy tắc đã thiết lập!`;
   const reply=await callGemini(systemPrompt,true);
-  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key.</div>';}
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key và model đã chọn.</div>';}
 };
 
 // ============================================================
-// SEND ACTION (TỐI ƯU v2.1 - DÙNG CACHE)
+// SEND ACTION
 // ============================================================
 const sendAction=async()=>{
   const inputEl=document.getElementById('userInput');
@@ -998,6 +1010,16 @@ ${getCodexMemoryPrompt()}
 };
 
 document.getElementById('userInput').addEventListener('keypress',function(e){if(e.key==='Enter')sendAction();});
+
+// ============================================================
+// MODEL SELECTOR
+// ============================================================
+document.getElementById('modelSelect').addEventListener('change',function(e){
+  CACHE_MODEL=e.target.value;
+  invalidateCache();
+  updateTokenStatsDisplay();
+  log("🔄 Đã đổi model sang: "+CACHE_MODEL+" (cache sẽ tạo lại ở lượt sau)");
+});
 </script>
 </body>
 </html>

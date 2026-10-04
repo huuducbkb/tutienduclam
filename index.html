@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v1.2 - AI RPG (Optimized)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v1.3 - AI RPG (Thiên Đạo Edition)</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -80,11 +80,24 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .btn-tts-stop{background:#da3633}
 .log-box{background:#000;color:#7cb342;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;height:80px;overflow-y:auto;margin-top:10px}
 .section-tag{background:#21262d;border-left:3px solid var(--accent-gold);padding:4px 8px;font-size:12px;font-weight:bold;margin-bottom:8px;color:var(--accent-gold);display:flex;justify-content:space-between;align-items:center}
+.thiendao-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:200;justify-content:center;align-items:center;padding:15px}
+.thiendao-modal.active{display:flex}
+.thiendao-content{background:var(--panel-bg);border:2px solid var(--accent-gold);border-radius:10px;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;padding:20px;box-shadow:0 0 30px rgba(210,153,34,.5)}
+.thiendao-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;border-bottom:1px solid var(--border-color);padding-bottom:10px}
+.thiendao-title{font-size:16px;font-weight:bold;color:var(--accent-gold)}
+.thiendao-close{background:var(--accent-red);border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:bold}
+.thiendao-search-box{display:flex;gap:8px;margin-bottom:15px}
+.thiendao-search-box input{flex:1}
+.thiendao-result{background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:12px;margin-bottom:10px}
+.thiendao-result-title{color:var(--accent-gold);font-weight:bold;font-size:13px;margin-bottom:6px}
+.thiendao-result-body{font-size:12px;color:var(--text-color);line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.thiendao-result-source{font-size:10px;color:var(--subtext-color);font-style:italic;margin-top:6px;border-top:1px dashed var(--border-color);padding-top:4px}
+.thiendao-empty{color:var(--subtext-color);font-style:italic;text-align:center;padding:20px}
 </style>
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v1.2</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v1.3</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -102,6 +115,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="label-title" style="font-size:11px;color:var(--accent-gold);margin-bottom:6px">📊 TOKEN STATS</div>
 <div style="font-size:11px;color:var(--subtext-color)" id="tokenStats">Chưa có dữ liệu</div>
 <button class="sidebar-item" style="background:#444;font-size:11px;margin-top:8px" onclick="resetTokenStats()">🔄 Reset Token Stats</button>
+<hr style="border-color:var(--border-color);margin:10px 0">
+<div class="label-title" style="font-size:11px;color:var(--accent-gold);margin-bottom:6px">🔍 THIÊN ĐẠO - TRA CỨU</div>
+<button class="sidebar-item" style="background:#8b4513;font-size:12px" onclick="thienDaoSearch()">🔍 Tra Cứu Thông Tin</button>
+<button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="thienDaoRecent()">📜 Xem Lịch Sử Gần Đây</button>
+<button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="thienDaoStats()">📊 Thống Kê Codex</button>
 <hr style="border-color:var(--border-color);margin:10px 0">
 <button class="sidebar-item" style="background:var(--accent-red);margin-top:15px" onclick="resetAllFields()">🧹 RESET TẤT CẢ</button>
 </div>
@@ -127,7 +145,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ chậm, cẩn trọng, tiêu hao rõ ràng.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:110px" placeholder="1. Nhịp độ game CHẬM VÀ CẨN TRỌNG..."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v1.2</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v1.3</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -200,13 +218,25 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 <div class="label-title">SYSTEM LOGS</div>
-<div id="sysLogs" class="log-box">> System v1.2 initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v1.3 initialized... Ready.</div>
 </div>
 
-<script>
+<div id="thienDaoModal" class="thiendao-modal">
+  <div class="thiendao-content">
+    <div class="thiendao-header">
+      <div class="thiendao-title">🔍 THIÊN ĐẠO - TRA CỨU THÔNG TIN</div>
+      <button class="thiendao-close" onclick="closeThienDao()">✕ ĐÓNG</button>
+    </div>
+    <div class="thiendao-search-box">
+      <input type="text" id="thienDaoInput" placeholder="Nhập từ khóa (VD: Huyết Mộc Ma Túi, Tuyết Cơ...)" onkeypress="if(event.key==='Enter')thienDaoExecute()">
+      <button class="btn-action btn-send" style="flex:0 0 auto;min-width:80px" onclick="thienDaoExecute()">🔍 TÌM</button>
+    </div>
+    <div id="thienDaoResults"></div>
+  </div>
+</div><script>
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=12;
+const DB_VERSION=13;
 const MAX_RECENT_TURNS=8;
 const SUMMARY_TRIGGER_TURNS=10;
 
@@ -266,13 +296,15 @@ function syncEventsToTextarea(){const ta=document.getElementById('gameEvents');i
 
 function renderWeaponsVisual(weaponArray){const grid=document.getElementById('weaponVisualGrid');if(!weaponArray||!Array.isArray(weaponArray)||weaponArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';return;}let html='';weaponArray.forEach(wp=>{const icon=wp.icon||'🗡️';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${wp.name}">`:icon;const isUnknown=(wp.rank&&wp.rank.includes('?'))||(wp.usage&&wp.usage.includes('Chờ cơ duyên'));const cardStyle=isUnknown?'border-color:#7d2828;':'';const iconStyle=isUnknown?'color:#f85149;font-weight:bold;':'';const nameStyle=isUnknown?'color:#f85149;':'';const usageStyle=isUnknown?'color:#f85149;font-style:italic;':'';let badgeClass='loc-danger-low';let badgeRank=wp.rank||'Hạ Phẩm';const rLower=(wp.rank||'').toLowerCase();if(rLower.includes('cao')||rLower.includes('thần khí')||rLower.includes('linh bảo')||rLower.includes('?')){badgeClass='loc-danger-high';}else if(rLower.includes('trung')||rLower.includes('thượng')){badgeClass='loc-danger-mid';}html+=`<div class="weapon-card" style="${cardStyle}"><div class="item-icon-box" style="${iconStyle}">${iconContent}</div><div class="weapon-info"><div class="weapon-name" style="${nameStyle}">${wp.name||'Pháp bảo lạ'}</div><span class="loc-badge ${badgeClass}">Cấp bậc: ${badgeRank}</span><div class="loc-detail-text" style="${usageStyle}">🛠️ ${wp.usage||'Chưa rõ công dụng.'}</div></div></div>`;});grid.innerHTML=html;}
 
-function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";codexCache="";removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
+function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
+
+async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";codexCache="";removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
 
 async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,turnCounter:turnCounter,storySummary:storySummary,codexCache:codexCache,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
 async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";codexCache=gameData.codexCache||"";tokenStats=gameData.tokenStats||{input:0,output:0,requests:0,errors:0};document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v1.2_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v1.3_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -467,9 +499,233 @@ let formatted=formatSummaryBox(cleanText);
 return buildTurnHtml(formatted);
 }
 }catch(e){log("Lỗi Parse JSON: "+e.message);}
-let formatted=formatSummaryBox(fullResponseText);
-return buildTurnHtml(formatted);
+letfilter formatted=formatSummaryBox(fullResponseText);
+(lreturn buildTurnHtml(formatted);
 }
+
+// ==>===========================================================
+// THIÊN ĐẠO - CƠ CHẾ TRA CỨU THÔNG TlIN KHÔNG TỐN TOKEN
+// =.toLowerCase===========================================================
+function openThienDao(){
+ (). document.getElementById('thienDaoModal').classList.add('active');
+  document.getElementById('thienDaoInput').value='';
+  document.getElementById('thienDaoResults').innerHTML='<div class="thiendao-empty">Nhập từ khóa và bấm TÌM để tra cứu.<br>💡 Cơ chế này tìm trong Codex + lịch sử chat, KHÔNG gọi AI → tiết kiệm token.</div>';
+  setTimeout(()=>document.getElementById('thienDaoInput').focus(),100);
+}
+function closeThienDao(){document.getElementById('thienDaoModal').classList.remove('active');}
+function thienDaoSearch(){openThienDao();}
+
+function thienDaoExecute(){
+  const keyword=document.getElementById('thienDaoInput').value.trim().toLowerCase();
+  const resultsDiv=document.getElementById('thienDaoResults');
+  if(!keyword){resultsDiv.innerHTML='<div class="thiendao-empty">Vui lòng nhập từ khóa!</div>';return;}
+  
+  let results=[];
+  
+  // 1. Tìm trong NPC
+  npcList.forEach(npc=>{
+    const text=JSON.stringify(npc).toLowerCase();
+    if(text.includes(keyword)){
+      results.push({
+        title:`👤 NPC: ${npc.name}`,
+        body:`Thân phận: ${npc.identity}\nTính cách: ${npc.personality}\nQuy tắc AI: ${npc.npcRules}\nHảo cảm: ${npc.affinity}/100`,
+        source:'Codex NPC (còn sống)',
+        type:'npc'
+      });
+    }
+  });
+  
+  // 2. Tìm trong NPC Archive (đã chết)
+  const archiveText=document.getElementById('npcArchive').value||'';
+  if(archiveText.toLowerCase().includes(keyword)){
+    const lines=archiveText.split('\n').includes(keyword));
+    results.push({
+      title:`💀 NPC đã chết (Archive)`,
+      body:lines.join('\n'),
+      source:'NPC Archive',
+      type:'archive'
+    });
+  }
+  
+  // 3. Tìm trong Địa danh
+  try{
+    const locs=JSON.parse(document.getElementById('locations').value||'[]');
+    locs.forEach(loc=>{
+      const text=JSON.stringify(loc).toLowerCase();
+      if(text.includes(keyword)){
+        results.push({
+          title:`📍 Địa danh: ${loc.name}`,
+          body:`Vị trí: ${loc.position||'Chưa rõ'}\nNguy hiểm: ${loc.danger||'Thấp'}\nĐặc điểm: ${loc.desc||'Bình thường'}`,
+          source:'Codex Địa danh',
+          type:'location'
+        });
+      }
+    });
+  }catch(e){}
+  
+  // 4. Tìm trong Sự kiện
+  eventList.forEach(ev=>{
+    const text=JSON.stringify(ev).toLowerCase();
+    if(text.includes(keyword)){
+      results.push({
+        title:`📜 Sự kiện: ${ev.name}`,
+        body:`Thời gian: ${ev.timeNote}\nĐiều kiện: ${ev.accessRules}\nNội dung: ${ev.events}\nQuy tắc AI: ${ev.aiRules}`,
+        source:'Codex Sự kiện',
+        type:'event'
+      });
+    }
+  });
+  
+  // 5. Tìm trong Pháp bảo
+  try{
+    const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');
+    weapons.forEach(w=>{
+      const text=JSON.stringify(w).toLowerCase();
+      if(text.includes(keyword)){
+        results.push({
+          title:`⚔️ Pháp bảo: ${w.name}`,
+          body:`Cấp bậc: ${w.rank}\nCông dụng: ${w.usage}`,
+          source:'Codex Pháp bảo',
+          type:'weapon'
+        });
+      }
+    });
+  }catch(e){}
+  
+  // 6. Tìm trong Túi đồ
+  try{
+    const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');
+    inv.forEach(item=>{
+      const text=JSON.stringify(item).toLowerCase();
+      if(text.includes(keyword)){
+        results.push({
+          title:`🎒 Vật phẩm trong túi: ${item.name}`,
+          body:`Số lượng: ${item.quantity||1}\nPhẩm chất: ${item.quality||'Thường'}\nCông dụng: ${item.effect||'Chưa rõ'}`,
+          source:'Túi đồ NVC',
+          type:'item'
+        });
+      }
+    });
+  }catch(e){}
+  
+  // 7. Tìm trong Tóm tắt cốt truyện
+  if(storySummary&&storySummary.toLowerCase().includes(keyword)){
+    const sentences=storySummary.split(/[.!?]\s+/);
+    const relevant=sentences.filter(s=>s.toLowerCase().includes(keyword)).join('. ');
+    results.push({
+      title:`📖 Tóm tắt cốt truyện (Tầng 2)`,
+      body:relevant||storySummary.substring(0,500),
+      source:'Story Summary - Tóm tắt AI tích lũy',
+      type:'summary'
+    });
+  }
+  
+  // 8. Tìm trong lịch sử chat gần đây
+  const recent=chatHistory.slice(-MAX_RECENT_TURNS*2);
+  recent.forEach((msg,idx)=>{
+    const text=msg.parts[0].text||'';
+    if(text.toLowerCase().includes(keyword)){
+      const lower=text.toLowerCase();
+      const pos=lower.indexOf(keyword);
+      const start=Math.max(0,pos-100);
+      const end=Math.min(text.length,pos+200);
+      let snippet=text.substring(start,end);
+      if(start>0)snippet='...'+snippet;
+      if(end<text.length)snippet=snippet+'...';
+      results.push({
+        title:`💬 Lịch sử chat ${idx%2===0?'(bạn hỏi)':'(AI trả lời)'}`,
+        body:snippet,
+        source:'Lịch sử chat gần đây',
+        type:'chat'
+      });
+    }
+  });
+  
+  // 9. Tìm trong toàn bộ chatHistory nếu không tìm thấy gì
+  if(results.length===0&&chatHistory.length>0){
+    chatHistory.forEach((msg,idx)=>{
+      const text=msg.parts[0].text||'';
+      if(text.toLowerCase().includes(keyword)){
+        const lower=text.toLowerCase();
+        const pos=lower.indexOf(keyword);
+        const start=Math.max(0,pos-150);
+        const end=Math.min(text.length,pos+250);
+        let snippet=text.substring(start,end);
+        if(start>0)snippet='...'+snippet;
+        if(end<text.length)snippet=snippet+'...';
+        results.push({
+          title:`💬 Lịch sử chat (lượt ${idx+1}/${chatHistory.length})`,
+          body:snippet,
+          source:'Lịch sử chat đầy đủ (cũ)',
+          type:'chat_old'
+        });
+      }
+    });
+  }
+  
+  // Hiển thị kết quả
+  if(results.length===0){
+    resultsDiv.innerHTML=`<div class="thiendao-empty">❌ Không tìm thấy thông tin về "<b>${document.getElementById('thienDaoInput').value}</b>".<br><br>💡 Có thể thông tin này chỉ có trong lịch sử chat cũ đã bị xóa khỏi tầng gần đây.<br>Hãy thử từ khóa khác, hoặc hỏi AI trực tiếp (sẽ tốn token hơn).</div>`;
+    return;
+  }
+  
+  let html='';
+  results.forEach(r=>{
+    html+=`<div class="thiendao-result">
+      <div class="thiendao-result-title">${r.title}</div>
+      <div class="thiendao-result-body">${r.body}</div>
+      <div class="thiendao-result-source">📌 Nguồn: ${r.source}</div>
+    </div>`;
+  });
+  
+  html=`<div style="color:var(--accent-green);font-size:12px;margin-bottom:10px">✅ Tìm thấy ${results.length} kết quả cho "<b>${document.getElementById('thienDaoInput').value}</b>"</div>`+html;
+  resultsDiv.innerHTML=html;
+  log(`> Thiên Đạo: Tìm "${keyword}" → ${results.length} kết quả`);
+}
+
+function thienDaoRecent(){
+  openThienDao();
+  const resultsDiv=document.getElementById('thienDaoResults');
+  const recent=chatHistory.slice(-MAX_RECENT_TURNS*2);
+  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📜 ${recent.length} tin nhắn gần nhất (đang được gửi cho AI)</div>`;
+  if(recent.length===0){
+    html+='<div class="thiendao-empty">Chưa có lịch sử chat.</div>';
+  }else{
+    recent.forEach((msg,idx)=>{
+      const role=msg.role==='user'?'👤 Bạn':'🤖 AI';
+      const color=msg.role==='user'?'#ff5577':'#388bfd';
+      const text=msg.parts[0].text||'';
+      const preview=text.substring(0,300)+(text.length>300?'...':'');
+      html+=`<div class="thiendao-result">
+        <div class="thiendao-result-title" style="color:${color}">${role} - Tin ${idx+1}/${recent.length}</div>
+        <div class="thiendao-result-body">${preview.replace(/\n/g,'<br>')}</div>
+      </div>`;
+    });
+  }
+  resultsDiv.innerHTML=html;
+}
+
+function thienDaoStats(){
+  openThienDao();
+  const resultsDiv=document.getElementById('thienDaoResults');
+  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ CODEX HIỆN TẠI</div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
+  let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📍 Địa danh</div><div class="thiendao-result-body">Tổng: ${locCount}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📜 Sự kiện</div><div class="thiendao-result-body">Tổng: ${eventList.length}</div></div>`;
+  let wepCount=0;try{wepCount=JSON.parse(document.getElementById('worldItems').value||'[]').length;}catch(e){}
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚔️ Pháp bảo</div><div class="thiendao-result-body">Tổng: ${wepCount}</div></div>`;
+  let invCount=0;try{invCount=JSON.parse(document.getElementById('mcInventory').value||'[]').length;}catch(e){}
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎒 Túi đồ</div><div class="thiendao-result-body">Số loại vật phẩm: ${invCount}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin nhắn | Đang gửi AI: ${Math.min(chatHistory.length,MAX_RECENT_TURNS*2)} tin gần nhất</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📖 Tóm tắt cốt truyện</div><div class="thiendao-result-body">${storySummary?'Đã có ('+storySummary.length+' ký tự)':'Chưa có - sẽ tạo sau '+(SUMMARY_TRIGGER_TURNS*2+4)+' tin nhắn'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Input: ${tokenStats.input.toLocaleString()} | Output: ${tokenStats.output.toLocaleString()}<br>Requests: ${tokenStats.requests} | Errors: ${tokenStats.errors}<br>Ước tính chi phí: $${((tokenStats.input/1000000*0.25)+(tokenStats.output/1000000*1.5)).toFixed(4)}</div></div>`;
+  resultsDiv.innerHTML=html;
+}
+
+document.getElementById('thienDaoModal').addEventListener('click',function(e){
+  if(e.target===this)closeThienDao();
+});
 
 const confirmAndStartGame=()=>{const confirmReset=confirm("⚠️ Xóa tiến trình cũ và KHỞI TẠO GAME MỚI?");if(confirmReset){openTab('play');startGame();}};
 

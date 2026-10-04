@@ -500,7 +500,7 @@
         const inputIds = ['apiKey', ...fieldsToReset, 'difficultySelect'];
 
         function generateAutoAvatar(name) {
-            return `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name || 'NPC')}`;
+            return "https://api.dicebear.com" + "/7.x/adventurer/svg?seed=" + encodeURIComponent(name || 'NPC');
         }
 
         function toggleSidebar() {
@@ -1159,6 +1159,7 @@
             const models = [
                 'gemini-3.6-flash',
                 'gemini-3.5-flash',
+                'gemini-3.5-flash-lite',
                 'gemini-3.1-flash-lite',
                 'gemini-2.5-flash',
                 'gemini-2.5-flash-lite'
@@ -1506,15 +1507,15 @@ ${document.getElementById('worldItems').value || 'Chưa có'}
 \`\`\`
 `;
 
-        function confirmAndStartGame() {
+        const confirmAndStartGame = () => {
             const confirmReset = confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa tiến trình cũ và KHỞI TẠO GAME MỚI không?");
             if (confirmReset) {
                 openTab('play');
                 startGame();
             }
-        }
+        };
 
-        async function startGame() {
+        const startGame = async () => {
             stopTTS();
             const storyBox = document.getElementById('story-box');
             chatHistory = [];
@@ -1567,9 +1568,9 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, đưa ngư�
             } else {
                 storyBox.innerHTML = '<div style="color: var(--accent-red);">❌ Không thể khởi tạo game. Kiểm tra lại API Key.</div>';
             }
-        }
+        };
 
-        async function sendAction() {
+        const sendAction = async () => {
             const inputEl = document.getElementById('userInput');
             const actionText = inputEl.value.trim();
             if (!actionText) return;
@@ -1611,7 +1612,7 @@ ${JSON_STRUCTURE_INSTRUCTION}
                 turnHtmlHistory.push(storyBox.innerHTML);
                 await saveGame(false);
             }
-        }
+        };
 
         document.getElementById('userInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') { sendAction(); }

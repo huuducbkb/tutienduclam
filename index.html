@@ -3,11 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.2 - AI RPG (Copy Logs + Model Update)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.3 - AI RPG (Dynamic Scope Registry)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
+     
+     v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY (FEW-SHOT)
+     ─────────────────────────────────────────────────────────
+     ✅ Thêm Dynamic Scope Registry — user tự định nghĩa scope.
+     ✅ Mỗi scope gồm: ID + Label + Trigger keywords + Exemplar.
+     ✅ detectSceneScope() dynamic match theo registry.
+     ✅ getStyleExemplarBlock() tra registry → inject có điều kiện.
+     ✅ Scope isolation: chỉ inject khi action match trigger.
+     ✅ Save/Load bao gồm scopeRegistry.
+     ✅ Reset game reset exemplar của các scope.
+     ✅ Preset 4 scope mặc định: đặc biệt / chiến đấu / đối thoại / tu luyện.
      
      v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE
      ─────────────────────────────────────────────────────────
@@ -149,7 +160,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.2</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.3</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -245,11 +256,30 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUI TẮC 18+</div><div class="label-desc">Bạn tự điền rule 18+ chi tiết tại đây.</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Quy tắc xử lý nội dung 18+, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div>
 <textarea id="rule18Plus" style="border-color:#a83250;min-height:120px" placeholder="Bạn tự điền rule 18+ chi tiết tại đây."></textarea>
 </div>
+
+<!-- ============ DYNAMIC SCOPE REGISTRY ============ -->
+<div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
+  <div class="input-header">
+    <div>
+      <div class="label-title" style="color:#b392f0">🎨 DYNAMIC SCOPE REGISTRY (FEW-SHOT)</div>
+      <div class="label-desc">
+        Định nghĩa các <b>scope</b> tùy biến. Mỗi scope gồm: <b>ID</b> + <b>Trigger keywords</b> + <b>Exemplar</b>.<br>
+        Khi action khớp trigger → AI pattern-match exemplar của scope đó. Không khớp → dùng <b>VĂN PHONG & NGÔI KỂ</b>.
+      </div>
+    </div>
+    <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM SCOPE</button>
+  </div>
+  <div id="scopeRegistryContainer" style="display:flex;flex-direction:column;gap:10px;margin-top:10px"></div>
+  <div class="label-desc" style="margin-top:8px;color:#b392f0">
+    💡 <b>Scope isolation:</b> exemplar chỉ inject khi action match trigger → tránh style bleed.
+  </div>
+</div>
+
 <div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.2</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.3</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -324,7 +354,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.2 (Copy Logs + Model Update) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.3 (Dynamic Scope Registry) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -345,7 +375,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=252;
+const DB_VERSION=253;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -377,6 +407,40 @@ let tokenStats={
 
 let systemRulesSentThisSession=false;
 let isAiGenCall=false;
+
+// ============================================================
+// DYNAMIC SCOPE REGISTRY (v2.5.3)
+// ============================================================
+let scopeRegistry = [
+  {
+    id: 'scope_nsfw',
+    label: 'Cảnh đặc biệt (NSFW)',
+    triggers: ['song tu','ái ân','hoan ái','thân mật','mây mưa','ân ái'],
+    exemplar: ''
+  },
+  {
+    id: 'scope_combat',
+    label: 'Chiến đấu',
+    triggers: ['đánh','chém','giết','chiến','đấu','giao chiến','đối đầu'],
+    exemplar: ''
+  },
+  {
+    id: 'scope_dialogue',
+    label: 'Đối thoại',
+    triggers: ['nói','hỏi','đáp','trả lời','đối thoại','thương lượng'],
+    exemplar: ''
+  },
+  {
+    id: 'scope_cultivation',
+    label: 'Tu luyện',
+    triggers: ['tu luyện','bế quan','đột phá','thiền','tĩnh tọa','luyện công'],
+    exemplar: ''
+  }
+];
+
+function generateScopeId(){
+  return 'scope_'+Date.now().toString(36)+Math.random().toString(36).substr(2,5);
+}
 
 const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
 const inputIds=['apiKey','modelSelect','openRouterKey','openRouterModel','openRouterCustomModel',...fieldsToReset,'difficultySelect'];
@@ -415,6 +479,129 @@ function detectNsfwIntent(actionText){
     if(lower.includes(kw))return true;
   }
   return false;
+}
+
+// ============================================================
+// SCOPE REGISTRY — RENDER + LOGIC
+// ============================================================
+function renderScopeRegistry(){
+  const container = document.getElementById('scopeRegistryContainer');
+  if(!container) return;
+
+  if(scopeRegistry.length === 0){
+    container.innerHTML = '<div style="color:var(--subtext-color);font-style:italic;font-size:12px;text-align:center;padding:8px">Chưa có scope. Bấm "➕ THÊM SCOPE".</div>';
+    return;
+  }
+
+  let html = '';
+  scopeRegistry.forEach((scope, idx) => {
+    html += `
+    <div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:10px">
+      <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
+        <input type="text" value="${scope.id||''}"
+               style="font-family:monospace;font-size:11px;padding:4px;flex:0 0 130px;color:#b392f0"
+               placeholder="scope_id" readonly>
+        <input type="text" value="${scope.label||''}"
+               style="font-size:12px;font-weight:bold;padding:4px;flex:1"
+               placeholder="Tên scope..."
+               onchange="updateScopeField(${idx},'label',this.value)">
+        <button onclick="removeScopeEntry(${idx})"
+                style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:0 6px">✕</button>
+      </div>
+
+      <div style="margin-bottom:6px">
+        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">🔑 TRIGGER KEYWORDS (cách nhau bằng dấu phẩy):</div>
+        <input type="text" value="${(scope.triggers||[]).join(', ')}"
+               style="font-size:11px;padding:5px;font-family:monospace"
+               placeholder="từ_khóa_1, từ_khóa_2, ..."
+               onchange="updateScopeTriggers(${idx},this.value)">
+      </div>
+
+      <div>
+        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">📖 EXEMPLAR (300–800 từ):</div>
+        <textarea style="min-height:120px;font-size:12px;padding:6px;font-family:Georgia,serif"
+                  placeholder="Dán đoạn văn mẫu cho scope này..."
+                  onchange="updateScopeField(${idx},'exemplar',this.value)">${scope.exemplar||''}</textarea>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function addScopeEntry(){
+  scopeRegistry.push({
+    id: generateScopeId(),
+    label: 'Scope Mới',
+    triggers: [],
+    exemplar: ''
+  });
+  renderScopeRegistry();
+  log("➕ Đã thêm scope mới.");
+}
+
+function removeScopeEntry(idx){
+  if(!confirm(`Xóa scope "${scopeRegistry[idx]?.label||''}"?`)) return;
+  scopeRegistry.splice(idx,1);
+  renderScopeRegistry();
+  log("🗑️ Đã xóa scope.");
+}
+
+function updateScopeField(idx, field, value){
+  if(scopeRegistry[idx]) scopeRegistry[idx][field] = value;
+}
+
+function updateScopeTriggers(idx, rawValue){
+  if(!scopeRegistry[idx]) return;
+  scopeRegistry[idx].triggers = rawValue.split(',')
+    .map(s => s.trim().toLowerCase())
+    .filter(s => s.length > 0);
+}
+
+// ============================================================
+// SCOPE DETECTION + EXEMPLAR INJECTION
+// ============================================================
+function detectSceneScope(actionText){
+  if(!actionText) return 'default';
+  const normalized = actionText.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+  for(const scope of scopeRegistry){
+    if(!scope.triggers || scope.triggers.length === 0) continue;
+    for(const trigger of scope.triggers){
+      const tNorm = trigger.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if(actionText.toLowerCase().includes(trigger) || normalized.includes(tNorm)){
+        return scope.id;
+      }
+    }
+  }
+  return 'default';
+}
+
+function getStyleExemplarBlock(scopeId){
+  if(scopeId === 'default') return '';
+  const scope = scopeRegistry.find(s => s.id === scopeId);
+  if(!scope) return '';
+  const sample = (scope.exemplar || '').trim();
+  if(!sample) return '';
+
+  return `
+# 🎨 STYLE EXEMPLAR — BẮT BUỘC PATTERN-MATCH (scope: ${scope.label || scope.id})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Đoạn văn dưới đây là MẪU VĂN PHONG CHUẨN cho scope "${scope.label || scope.id}".
+Khi viết trong scope này, PHẢI bắt chước:
+  • Từ vựng, ẩn dụ, hình ảnh
+  • Nhịp câu, độ dài đoạn
+  • Cách chuyển cảnh, tả cảm xúc
+  • Mức độ trực diện / ẩn dụ
+
+⚠️ Scope isolation: NGOÀI scope "${scope.label || scope.id}", dùng writingStyle bình thường.
+
+[EXEMPLAR]:
+"""
+${sample}
+"""
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
 }
 
 // ============================================================
@@ -549,14 +736,14 @@ async function testOpenRouterKey(){
 // ============================================================
 // RESET
 // ============================================================
-async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
+async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});scopeRegistry.forEach(s=>{s.exemplar='';});renderScopeRegistry();stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
 
 // ============================================================
 // SAVE / LOAD
 // ============================================================
-async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
+async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,scopeRegistry:scopeRegistry,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
-async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
+async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
 function syncToggleUI(){
   ['autoSwitch','autoFallback','retry5xx'].forEach(name=>{
@@ -565,11 +752,11 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.2_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.3_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();renderEventsVisual();updateTokenStatsDisplay();syncToggleUI();});
+window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
 
 // ============================================================
 // UNDO
@@ -668,9 +855,11 @@ ${npcSummary}
 // ============================================================
 // SYSTEM RULES
 // ============================================================
-function buildSystemRules(){
+function buildSystemRules(scope='default'){
   const v=id=>document.getElementById(id)?.value||'';
-  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle')||'HỒNG ĐỨC TU TIÊN LỘ'}".
+  const exemplarBlock=getStyleExemplarBlock(scope);
+  if(exemplarBlock)log(`🎨 Style exemplar injected (scope: ${scope})`);
+  return `${exemplarBlock}# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle')||'HỒNG ĐỨC TU TIÊN LỘ'}".
 
 # QUY TẮC TỐI CAO (KHÔNG PHÁ VỠ)
 ${v('supremeMotifRule')||'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt, không buff NVC vô lý.'}
@@ -732,7 +921,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 // ============================================================
 // CALL GEMINI
 // ============================================================
-async function callGemini(promptText,isFirstCall=false){
+async function callGemini(promptText,isFirstCall=false,scope='default'){
   const key=document.getElementById('apiKey').value.trim();
   if(!key){throw new Error("Chưa nhập Gemini API Key");}
 
@@ -750,7 +939,7 @@ async function callGemini(promptText,isFirstCall=false){
   };
 
   if(isFirstCall||!systemRulesSentThisSession){
-    const wrappedPrompt=`${buildSystemRules()}\n\n---\n\n${promptText}`;
+    const wrappedPrompt=`${buildSystemRules(scope)}\n\n---\n\n${promptText}`;
     requestPayload.contents=[...recentHistory,{role:"user",parts:[{text:wrappedPrompt}]}];
     log("📤 Gemini: FULL rules (lượt đầu)");
     systemRulesSentThisSession=true;
@@ -799,7 +988,7 @@ async function callGemini(promptText,isFirstCall=false){
 // ============================================================
 // CALL OPENROUTER
 // ============================================================
-async function callOpenRouter(promptText){
+async function callOpenRouter(promptText,scope='default'){
   const rawKey=document.getElementById('openRouterKey').value;
   const key=rawKey.trim();
   if(!key){throw new Error("Chưa nhập OpenRouter API Key");}
@@ -808,7 +997,6 @@ async function callOpenRouter(promptText){
     throw new Error("OpenRouter Key sai định dạng (phải bắt đầu sk-or-v1-)");
   }
 
-  // ✅ Xử lý model custom
   let model=document.getElementById('openRouterModel').value;
   if(model==='custom'){
     const customInput=document.getElementById('openRouterCustomModel');
@@ -825,7 +1013,7 @@ async function callOpenRouter(promptText){
   let messages;
   if(!systemRulesSentThisSession){
     messages=[
-      {role:"system",content:buildSystemRules()},
+      {role:"system",content:buildSystemRules(scope)},
       ...recentHistory,
       currentMessage
     ];
@@ -921,15 +1109,18 @@ async function callOpenRouter(promptText){
 async function callAI(promptText, isFirstCall=false){
   const actionText=promptText.substring(0,500);
   const isNsfw=detectNsfwIntent(actionText);
+  const scope=detectSceneScope(actionText);
   const orKey=document.getElementById('openRouterKey').value.trim();
   const geminiKey=document.getElementById('apiKey').value.trim();
+
+  log(`🎬 Scene scope: ${scope}`);
 
   const useOpenRouter = isNsfw && settings.autoSwitch && orKey;
 
   if(useOpenRouter){
     log("🎯 Phát hiện NSFW → dùng OpenRouter");
     try{
-      const reply=await callOpenRouter(promptText);
+      const reply=await callOpenRouter(promptText,scope);
       return reply;
     }catch(e){
       log(`❌ OpenRouter fail: ${e.message}`);
@@ -940,7 +1131,7 @@ async function callAI(promptText, isFirstCall=false){
         tokenStats.fallbackCount++;
         updateTokenStatsDisplay();
         try{
-          return await callGemini(promptText, isFirstCall);
+          return await callGemini(promptText, isFirstCall, scope);
         }catch(e2){
           log(`❌ Gemini cũng fail: ${e2.message}`);
           return null;
@@ -956,13 +1147,13 @@ async function callAI(promptText, isFirstCall=false){
     }
     log("🎯 Dùng Gemini");
     try{
-      return await callGemini(promptText, isFirstCall);
+      return await callGemini(promptText, isFirstCall, scope);
     }catch(e){
       log(`❌ Gemini fail: ${e.message}`);
       if(orKey){
         log("🔄 Gemini fail, thử OpenRouter...");
         try{
-          return await callOpenRouter(promptText);
+          return await callOpenRouter(promptText,scope);
         }catch(e2){
           log(`❌ OpenRouter cũng fail: ${e2.message}`);
           return null;
@@ -1136,6 +1327,7 @@ function thienDaoStats(){
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Models</div><div class="thiendao-result-body">Gemini: ${CACHE_MODEL}<br>OpenRouter: ${document.getElementById('openRouterModel').value}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚙️ Settings</div><div class="thiendao-result-body">Auto-switch: ${settings.autoSwitch?'✅':'❌'}<br>Auto-fallback: ${settings.autoFallback?'✅':'❌'}<br>Retry 5xx: ${settings.retry5xx?'✅':'❌'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng scope: ${scopeRegistry.length}<br>Có exemplar: ${scopeRegistry.filter(s=>s.exemplar&&s.exemplar.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📍 Địa danh</div><div class="thiendao-result-body">Tổng: ${locCount}</div></div>`;
@@ -1152,18 +1344,20 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">
-✅ Thêm nút "📋 Copy Logs" — copy toàn bộ SYSTEM LOGS.
-✅ Thêm nút "🗑️ Clear" — xóa log.
-✅ Cập nhật dropdown model OpenRouter — thêm Gemma 4 31B, Qwen 3.6 Plus, Nemotron Super 120B, Auto Router.
-✅ Thêm option "Nhập tay model ID" — dùng model bất kỳ.
-✅ Sửa callOpenRouter() hỗ trợ model custom.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">
+✅ Dynamic Scope Registry — user tự định nghĩa scope (ID + Label + Triggers + Exemplar).
+✅ detectSceneScope() match động theo registry.
+✅ getStyleExemplarBlock() inject có điều kiện theo scope.
+✅ Scope isolation: chỉ inject khi action match trigger.
+✅ Save/Load bao gồm scopeRegistry.
+✅ Preset 4 scope: đặc biệt / chiến đấu / đối thoại / tu luyện.
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.1 (2026-10-05) - FIX AI GEN</div><div class="thiendao-result-body">Cờ isAiGenCall → không push vào chatHistory</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER</div><div class="thiendao-result-body">OpenRouter + fallback + detectNsfwIntent</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.4 (2026-10-04) - NPC ID</div><div class="thiendao-result-body">Thêm ID NPC, AI giữ nguyên ID</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - FREE TIER</div><div class="thiendao-result-body">Bỏ cache, nén rules 75%</div></div>`;
-  html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Tag version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">Nút Copy/Clear Logs + model OpenRouter mới + custom model ID.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.1 (2026-10-05) - FIX AI GEN</div><div class="thiendao-result-body">Cờ isAiGenCall → không push vào chatHistory.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER</div><div class="thiendao-result-body">OpenRouter + fallback + detectNsfwIntent.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.4 (2026-10-04) - NPC ID</div><div class="thiendao-result-body">Thêm ID NPC, AI giữ nguyên ID.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - FREE TIER</div><div class="thiendao-result-body">Bỏ cache, nén rules 75%.</div></div>`;
+  html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
   resultsDiv.innerHTML=html;
 }
 
@@ -1216,9 +1410,13 @@ const sendAction=async()=>{
   setTimeout(()=>{const actionEl=document.getElementById(actionId);if(actionEl)actionEl.scrollIntoView({behavior:'smooth',block:'start'});},50);
 
   const needRulesResend=(chatHistory.length===0);
+  const sceneScope=detectSceneScope(actionText);
+  const styleReminder=getStyleExemplarBlock(sceneScope)
+    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar đã cung cấp.\n`
+    : '';
   const promptWithCodex=needRulesResend
-    ? `${buildSystemRules()}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện. Trả về [TÓM TẮT] + JSON Codex.`
-    : `[HÀNH ĐỘNG]: "${actionText}"\n\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện theo quy tắc đã thiết lập. Trả về [TÓM TẮT] + JSON Codex (GIỮ NGUYÊN ID NPC).`;
+    ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện. Trả về [TÓM TẮT] + JSON Codex.`
+    : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện theo quy tắc đã thiết lập. Trả về [TÓM TẮT] + JSON Codex (GIỮ NGUYÊN ID NPC).`;
 
   const reply=await callAI(promptWithCodex,false);
   if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;}

@@ -3,63 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.4 - AI RPG (Free Tier + NPC ID Fix)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5 - AI RPG (Multi-Provider Fallback)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
-     Phần này chỉ để con người đọc lại, AI KHÔNG quét.
      ============================================================
+     
+     v2.5 (2026-10-05) - MULTI-PROVIDER FALLBACK
+     ─────────────────────────────────────────────────────────
+     ✅ Thêm: Hỗ trợ OpenRouter làm provider phụ
+     ✅ Thêm: Hàm detectNsfwIntent() phát hiện action NSFW
+     ✅ Thêm: Hàm callOpenRouter() gọi API chuẩn OpenAI
+     ✅ Thêm: Hàm callAI() unified điều phối 2 provider
+     ✅ Thêm: Fallback tự động OpenRouter → Gemini khi lỗi
+     ✅ Thêm: UI cấu hình OpenRouter (API key, model, toggles)
+     ✅ Thêm: Token stats tách riêng 2 provider
+     ✅ Thêm: Đếm số lần fallback
+     ─────────────────────────────────────────────────────────
      
      v2.4 (2026-10-04) - FIX TRÙNG NPC KHI ĐỔI TÊN
      ─────────────────────────────────────────────────────────
-     🐛 Lỗi: Đổi tên NPC trong UI (VD: "Khương Mi" → "Tuyết Cơ")
-             → AI vẫn nhớ tên cũ trong chat history → trả về Codex
-             với tên cũ → code match không thấy → tạo NPC trùng lặp.
-     
-     ✅ Fix:
-       1. Thêm trường "id" vào Codex gửi cho AI (getCodexMemoryPrompt)
-       2. AI bắt buộc giữ nguyên "id" khi trả về Codex (buildSystemRules)
-       3. parseAndAutoUpdateCodex ưu tiên match theo "id" trước,
-          fallback mới match theo "name" chính xác, cuối cùng mới fuzzy
-       4. Siết điều kiện fuzzy: chỉ match khi tên ≥ 3 ký tự và
-          một tên chứa trọn tên kia (không match 1 phần từ)
-     
-     📌 Lưu ý khi dùng: Sau khi đổi tên NPC giữa chừng, gõ vào ô chat:
-        "[HỆ THỐNG]: NPC 'Tên Cũ' đã đổi tên thành 'Tên Mới'."
-        để AI cập nhật Codex ngay lượt kế tiếp.
+     🐛 Lỗi: Đổi tên NPC → AI tạo NPC trùng
+     ✅ Fix: Thêm "id" vào Codex, AI giữ nguyên ID, match theo ID
      ─────────────────────────────────────────────────────────
      
      v2.3 (2026-10-03) - TỐI ƯU FREE TIER
      ─────────────────────────────────────────────────────────
-     - Bỏ hoàn toàn Context Caching (free tier limit=0)
-     - Nén rules từ ~8000 → ~2000 tokens (giảm 75%)
-     - Chỉ gửi FULL rules ở lượt đầu, các lượt sau chỉ gửi Codex
-     - MAX_RECENT_TURNS: 4 → 3 (giảm history gửi kèm)
-     - SUMMARY_TRIGGER_TURNS: 5 → 4 (tóm tắt sớm hơn)
-     - Thêm cảnh báo "Chế độ: Free Tier (không cache)"
-     
-     v2.2 (2026-10-02) - GEMINI 3.5
+     - Bỏ Context Caching (free tier limit=0)
+     - Nén rules ~8000 → ~2000 tokens
+     - Chỉ gửi FULL rules ở lượt đầu
+     - MAX_RECENT_TURNS: 4 → 3; SUMMARY_TRIGGER: 5 → 4
      ─────────────────────────────────────────────────────────
-     - Đổi model: gemini-2.0-flash → gemini-3.5-flash-lite
-     - Thêm dropdown chọn model trong sidebar
-     - Xóa gemini-1.5-flash khỏi fallback (đã khai tử)
      
-     v2.1 (2026-10-01) - CONTEXT CACHING
-     ─────────────────────────────────────────────────────────
-     - Thêm Context Caching (chỉ hoạt động trên Gemini trả phí)
-     - Nén Codex không cắt cụt (bỏ substring)
-     - Gộp JSON instruction vào buildSystemRules
-     - await generateStorySummary() tránh race condition
-     
-     v2.0 (2026-09-30) - BẢN GỐC
-     ─────────────────────────────────────────────────────────
-     - Layout 7 tabs, IndexedDB save/load, TTS, Thiên Đạo tra cứu
-     - NPC affinity, Event/Location/Weapon codex, Auto-avatar
+     v2.0-v2.2 - Xem lịch sử cũ trong sidebar
      
      ============================================================ -->
 
 <style>
-:root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
+:root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px}
@@ -68,10 +49,16 @@ body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;lin
 .menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px}
 .restart-btn{background:var(--accent-green);border-color:#388e3c}
 .restart-btn:hover{background:#2e7d32}
-.sidebar{position:fixed;top:0;left:-280px;width:270px;height:100%;background:var(--panel-bg);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto}
+.sidebar{position:fixed;top:0;left:-320px;width:310px;height:100%;background:var(--panel-bg);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto}
 .sidebar.active{left:0}
 .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:16px;font-weight:bold}
 .sidebar-item{display:block;width:100%;padding:10px 12px;background:#21262d;border:1px solid var(--border-color);color:#fff;text-align:left;border-radius:6px;margin-bottom:8px;font-weight:bold;cursor:pointer;font-size:13px}
+.section-header{background:#0d1117;border-left:3px solid var(--accent-orange);padding:6px 8px;font-size:11px;font-weight:bold;color:var(--accent-orange);margin:12px 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;margin-bottom:6px;font-size:12px}
+.toggle-switch{position:relative;width:44px;height:24px;background:#21262d;border-radius:12px;cursor:pointer;transition:.3s;flex-shrink:0}
+.toggle-switch.active{background:var(--accent-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.3s}
+.toggle-switch.active::after{left:22px}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;background:var(--panel-bg);padding:6px;border-radius:8px;-webkit-overflow-scrolling:touch;white-space:nowrap}
 .tab-btn{flex:0 0 auto;min-width:65px;padding:8px 10px;border:none;background:transparent;color:var(--subtext-color);font-weight:bold;border-radius:6px;font-size:12px;cursor:pointer;text-align:center}
 .tab-btn.active{background:var(--input-bg);color:var(--accent-blue);border:1px solid var(--border-color)}
@@ -132,7 +119,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .tts-btn-container{margin:8px 0 14px 0;display:flex;gap:8px;align-items:center}
 .btn-tts{background:#238636;border:1px solid var(--border-color);color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;display:inline-flex;align-items:center;gap:4px}
 .btn-tts-stop{background:#da3633}
-.log-box{background:#000;color:#7cb342;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;height:80px;overflow-y:auto;margin-top:10px}
+.log-box{background:#000;color:#7cb342;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;height:100px;overflow-y:auto;margin-top:10px}
 .section-tag{background:#21262d;border-left:3px solid var(--accent-gold);padding:4px 8px;font-size:12px;font-weight:bold;margin-bottom:8px;color:var(--accent-gold);display:flex;justify-content:space-between;align-items:center}
 .thiendao-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:200;justify-content:center;align-items:center;padding:15px}
 .thiendao-modal.active{display:flex}
@@ -148,43 +135,77 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .thiendao-result-source{font-size:10px;color:var(--subtext-color);font-style:italic;margin-top:6px;border-top:1px dashed var(--border-color);padding-top:4px}
 .thiendao-empty{color:var(--subtext-color);font-style:italic;text-align:center;padding:20px}
 .npc-id-badge{font-size:9px;color:#666;font-family:monospace;margin-left:4px}
+.provider-badge{display:inline-block;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;margin-left:6px}
+.provider-gemini{background:rgba(56,139,253,.2);color:#388bfd;border:1px solid #388bfd}
+.provider-openrouter{background:rgba(227,112,45,.2);color:#e3702d;border:1px solid #e3702d}
 </style>
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.4</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
+
+<div class="section-header">🔵 Gemini (Provider Chính)</div>
 <div class="form-group"><label class="label-title">API Key Gemini:</label><input type="password" id="apiKey" placeholder="Dán Gemini API Key..."></div>
 <div class="form-group">
-  <label class="label-title">Model AI:</label>
-  <div class="label-desc">3.5 Flash-Lite là nhanh và rẻ nhất (free tier).</div>
+  <label class="label-title">Model Gemini:</label>
   <select id="modelSelect">
     <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Nhanh, rẻ)</option>
     <option value="gemini-3.6-flash">3.6 Flash (Toàn diện)</option>
     <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Cũ)</option>
   </select>
 </div>
+
+<div class="section-header">🟠 OpenRouter (Provider NSFW)</div>
+<div class="form-group"><label class="label-title">API Key OpenRouter:</label><input type="password" id="openRouterKey" placeholder="Dán OpenRouter API Key (sk-or-v1-...)"></div>
+<div class="form-group">
+  <label class="label-title">Model OpenRouter:</label>
+  <select id="openRouterModel">
+    <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition:free" selected>Dolphin Mistral 24B (free)</option>
+    <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition">Dolphin Mistral 24B (paid)</option>
+    <option value="undi95/toppy-m-7b:free">Toppy M 7B (free)</option>
+    <option value="gryphe/mythomax-l2-13b:free">Mythomax 13B (free)</option>
+    <option value="nousresearch/nous-hermes-2-mixtral-8x7b-dpo:free">Nous Hermes 2 Mixtral (free)</option>
+  </select>
+</div>
+
+<div class="section-header">⚙️ Điều Khiển Provider</div>
+<div class="toggle-row">
+  <span>Tự động chuyển khi NSFW</span>
+  <div class="toggle-switch active" id="toggleAutoSwitch" onclick="toggleSetting('autoSwitch')"></div>
+</div>
+<div class="toggle-row">
+  <span>Tự động fallback về Gemini</span>
+  <div class="toggle-switch active" id="toggleAutoFallback" onclick="toggleSetting('autoFallback')"></div>
+</div>
+<div class="toggle-row">
+  <span>Thử lại OpenRouter khi lỗi 5xx</span>
+  <div class="toggle-switch active" id="toggleRetry5xx" onclick="toggleSetting('retry5xx')"></div>
+</div>
+
 <hr style="border-color:var(--border-color);margin:12px 0">
-<div class="label-title" style="margin-bottom:8px">QUẢN LÝ TIẾN TRÌNH</div>
+<div class="section-header">💾 Quản Lý Tiến Trình</div>
 <button class="sidebar-item" style="background:var(--accent-green)" onclick="saveGame(true)">💾 Lưu Game</button>
 <button class="sidebar-item" style="background:var(--accent-blue)" onclick="loadGame()">📂 Tải Game</button>
-<hr style="border-color:var(--border-color);margin:10px 0">
 <button class="sidebar-item" style="background:var(--accent-purple)" onclick="exportSaveFile()">📥 Xuất File Save</button>
 <button class="sidebar-item" style="background:#1f6beb" onclick="importSaveFile()">📤 Nhập File Save</button>
 <input type="file" id="fileInput" style="display:none" accept=".json" onchange="handleFileSelect(event)">
+
 <hr style="border-color:var(--border-color);margin:10px 0">
 <div class="label-title" style="font-size:11px;color:var(--accent-gold);margin-bottom:6px">📊 TOKEN STATS</div>
 <div style="font-size:11px;color:var(--subtext-color)" id="tokenStats">Chưa có dữ liệu</div>
 <button class="sidebar-item" style="background:#444;font-size:11px;margin-top:8px" onclick="resetTokenStats()">🔄 Reset Token Stats</button>
+
 <hr style="border-color:var(--border-color);margin:10px 0">
-<div class="label-title" style="font-size:11px;color:var(--accent-gold);margin-bottom:6px">🔍 THIÊN ĐẠO - TRA CỨU</div>
+<div class="section-header">🔍 Thiên Đạo</div>
 <button class="sidebar-item" style="background:#8b4513;font-size:12px" onclick="thienDaoSearch()">🔍 Tra Cứu Thông Tin</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="thienDaoRecent()">📜 Xem Lịch Sử Gần Đây</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="thienDaoStats()">📊 Thống Kê Codex</button>
 <button class="sidebar-item" style="background:#3a2a1a;font-size:11px" onclick="showVersionLog()">📋 Nhật Ký Phiên Bản</button>
+
 <hr style="border-color:var(--border-color);margin:10px 0">
 <button class="sidebar-item" style="background:var(--accent-red);margin-top:15px" onclick="resetAllFields()">🧹 RESET TẤT CẢ</button>
 </div>
@@ -203,14 +224,14 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:70px" placeholder="VD: Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt, không buff NVC vô lý."></textarea>
 </div>
 <div class="form-group" style="background:#1c0e12;padding:10px;border-radius:6px;border:1px solid #a83250">
-<div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUI TẮC 18+</div><div class="label-desc">Ngắn gọn, chỉ ghi điều cốt lõi.</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Quy tắc xử lý nội dung 18+, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div>
-<textarea id="rule18Plus" style="border-color:#a83250;min-height:70px" placeholder="VD: Cho phép khai thác chi tiết song tu, sắc hiệp khi phù hợp ngữ cảnh."></textarea>
+<div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUI TẮC 18+</div><div class="label-desc">Bạn tự điền rule 18+ chi tiết tại đây.</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Quy tắc xử lý nội dung 18+, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div>
+<textarea id="rule18Plus" style="border-color:#a83250;min-height:120px" placeholder="Bạn tự điền rule 18+ chi tiết tại đây. Game sẽ gửi rule này cho AI mỗi lượt."></textarea>
 </div>
 <div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Cốt lõi: tốc độ chậm, tiêu hao rõ ràng, không tự ý xóa.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 200 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:90px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác linh thạch/đan dược khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.4</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -243,7 +264,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div id="npc" class="tab-content">
 <div class="section-tag"><span>👥 QUẢN LÝ NPCs SỐNG & QUAN HỆ</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
-<div class="label-desc">⚡ Lưu trữ không giới hạn toàn bộ NPC còn sống. Mỗi NPC có ID định danh riêng — AI giữ nguyên ID khi cập nhật, kể cả khi đổi tên.</div>
+<div class="label-desc">⚡ Mỗi NPC có ID định danh riêng — AI giữ nguyên ID khi cập nhật.</div>
 <div id="npcContainer" class="npc-grid"></div>
 <hr style="border-color:var(--border-color);margin:15px 0">
 <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT)</div>
@@ -279,7 +300,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 <div class="label-title">SYSTEM LOGS</div>
-<div id="sysLogs" class="log-box">> System v2.4 (Free Tier + NPC ID Fix) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5 (Multi-Provider) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -288,7 +309,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="thiendao-close" onclick="closeThienDao()">✕ ĐÓNG</button>
 </div>
 <div class="thiendao-search-box">
-<input type="text" id="thienDaoInput" placeholder="Nhập từ khóa (VD: Huyết Mộc Ma Túi, Tuyết Cơ...)" onkeypress="if(event.key==='Enter')thienDaoExecute()">
+<input type="text" id="thienDaoInput" placeholder="Nhập từ khóa..." onkeypress="if(event.key==='Enter')thienDaoExecute()">
 <button class="btn-action btn-send" style="flex:0 0 auto;min-width:80px" onclick="thienDaoExecute()">🔍 TÌM</button>
 </div>
 <div id="thienDaoResults"></div>
@@ -296,11 +317,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <script>
 // ============================================================
-// CẤU HÌNH - TỐI ƯU CHO FREE TIER (KHÔNG CACHE)
+// CẤU HÌNH
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=24;
+const DB_VERSION=25;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -310,6 +331,13 @@ const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash','gemini-2.5-fl
 
 let CACHE_MODEL=DEFAULT_MODEL;
 
+// ✅ Cấu hình multi-provider
+let settings={
+  autoSwitch: true,      // Tự động chuyển OpenRouter khi NSFW
+  autoFallback: true,    // Fallback về Gemini khi OpenRouter lỗi
+  retry5xx: true         // Thử lại OpenRouter 1 lần khi lỗi 5xx
+};
+
 let chatHistory=[];
 let turnHtmlHistory=[];
 let mcAvatarBase64="";
@@ -317,12 +345,59 @@ let turnCounter=0;
 let npcList=[];
 let eventList=[];
 let storySummary="";
-let tokenStats={input:0,output:0,requests:0,errors:0};
+let tokenStats={
+  input:0,output:0,requests:0,errors:0,
+  geminiReq:0, geminiIn:0, geminiOut:0,
+  orReq:0, orIn:0, orOut:0,
+  fallbackCount:0
+};
 
 let systemRulesSentThisSession=false;
 
 const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
-const inputIds=['apiKey','modelSelect',...fieldsToReset,'difficultySelect'];
+const inputIds=['apiKey','modelSelect','openRouterKey','openRouterModel',...fieldsToReset,'difficultySelect'];
+
+// ============================================================
+// NSFW INTENT DETECTION - KỸ THUẬT
+// ============================================================
+const NSFW_KEYWORDS_VI = [
+  // Nhóm 1: Thân mật / song tu
+  'song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái',
+  'thân mật','hôn','ôm','vuốt ve','cởi','lột','hở hang','khỏa thân',
+  'lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa',
+  'thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm',
+  'sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ',
+  // Nhóm 2: Bạo lực
+  'chém giết','giết','tàn sát','đồ sát','chém','đâm','chặt','moi tim',
+  'lột da','tra tấn','hành hạ','ngược đãi','huyết tinh','máu me',
+  'sát nhân','đoạt bảo','cướp','hiếp','giết chóc','sát phạt','đồ diệt',
+  // Nhóm 3: Cưỡng chế
+  'cưỡng','bắt cóc','giam cầm','trói','khống chế','nô lệ','nô gia',
+  'chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức',
+  'cưỡng hiếp','cưỡng đoạt','cưỡng chế'
+];
+const NSFW_KEYWORDS_EN = [
+  'sex','intercourse','rape','fuck','kiss','naked','nude','orgasm',
+  'kill','murder','slaughter','torture','slave','capture'
+];
+
+function detectNsfwIntent(actionText){
+  if(!actionText)return false;
+  const lower=actionText.toLowerCase();
+  // Chuẩn hóa tiếng Việt có dấu
+  const normalized=lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  // Check VI keywords (cả có dấu và không dấu)
+  for(const kw of NSFW_KEYWORDS_VI){
+    if(lower.includes(kw))return true;
+    const kwNorm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(normalized.includes(kwNorm))return true;
+  }
+  // Check EN keywords
+  for(const kw of NSFW_KEYWORDS_EN){
+    if(lower.includes(kw))return true;
+  }
+  return false;
+}
 
 // ============================================================
 // INDEXEDDB
@@ -343,8 +418,24 @@ function log(msg){const logBox=document.getElementById('sysLogs');if(logBox){log
 function jumpToBottom(){const storyBox=document.getElementById('story-box');if(storyBox){storyBox.scrollTop=storyBox.scrollHeight;log("Đã nhảy xuống cuối.");}}
 function copyGameStory(){const t=document.getElementById('story-box').innerText;if(!t||t.includes('Chưa có dữ liệu')){alert("⚠️ Chưa có nội dung!");return;}navigator.clipboard.writeText(t).then(()=>alert("📋 Đã sao chép!")).catch(e=>alert("❌ Lỗi: "+e));}
 
-function updateTokenStatsDisplay(){const el=document.getElementById('tokenStats');if(!el)return;const avgIn=tokenStats.requests>0?Math.round(tokenStats.input/tokenStats.requests):0;const avgOut=tokenStats.requests>0?Math.round(tokenStats.output/tokenStats.requests):0;el.innerHTML=`Model: ${CACHE_MODEL}<br>Input: ${tokenStats.input.toLocaleString()} tokens<br>Output: ${tokenStats.output.toLocaleString()} tokens<br>Requests: ${tokenStats.requests}<br>Errors: ${tokenStats.errors}<br>TB/lượt: ~${avgIn} in / ~${avgOut} out<br><span style="color:#7cb342">Chế độ: Free Tier (không cache)</span>`;}
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+function toggleSetting(name){
+  settings[name]=!settings[name];
+  const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1));
+  if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');}
+  log(`⚙️ ${name}: ${settings[name]?'BẬT':'TẮT'}`);
+}
+
+function updateTokenStatsDisplay(){
+  const el=document.getElementById('tokenStats');if(!el)return;
+  const avgIn=tokenStats.requests>0?Math.round(tokenStats.input/tokenStats.requests):0;
+  const avgOut=tokenStats.requests>0?Math.round(tokenStats.output/tokenStats.requests):0;
+  el.innerHTML=`<span class="provider-badge provider-gemini">Gemini</span> ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>
+<span class="provider-badge provider-openrouter">OpenRouter</span> ${tokenStats.orReq} req | ${tokenStats.orIn.toLocaleString()} in / ${tokenStats.orOut.toLocaleString()} out<br>
+Fallback: ${tokenStats.fallbackCount} lần<br>
+Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
+Errors: ${tokenStats.errors}`;
+}
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
 // TTS
@@ -353,7 +444,7 @@ function playFemaleTTS(text,btnElement){if(!('speechSynthesis' in window)){alert
 function stopTTS(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
 
 // ============================================================
-// AVATAR NVC
+// AVATAR
 // ============================================================
 function setMcAvatarImage(src){const img=document.getElementById('avatarImg');const placeholder=document.getElementById('avatarPlaceholder');const btnRemove=document.getElementById('btnRemoveAvatar');if(src&&src.trim()!==''){img.src=src;img.style.display='block';placeholder.style.display='none';if(btnRemove)btnRemove.style.display='inline-block';mcAvatarBase64=src;}else{img.src='';img.style.display='none';placeholder.style.display='block';if(btnRemove)btnRemove.style.display='none';mcAvatarBase64="";}}
 function removeMcAvatar(){setMcAvatarImage('');document.getElementById('avatarFileInput').value='';log("Đã xóa ảnh NVC.");}
@@ -405,15 +496,22 @@ async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu
 // ============================================================
 // SAVE / LOAD
 // ============================================================
-async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
+async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
-async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=gameData.tokenStats||{input:0,output:0,requests:0,errors:0};if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
+async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.4_save.json";a.click();log("Xuất file save thành công.");}
+function syncToggleUI(){
+  ['autoSwitch','autoFallback','retry5xx'].forEach(name=>{
+    const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1));
+    if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');}
+  });
+}
+
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=gameData.tokenStats;}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();renderEventsVisual();updateTokenStatsDisplay();});
+window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();renderEventsVisual();updateTokenStatsDisplay();syncToggleUI();});
 
 // ============================================================
 // UNDO
@@ -421,7 +519,7 @@ window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await ge
 function undoLastTurn(){stopTTS();if(chatHistory.length<=2){alert("⚠️ Không thể quay lại thêm!");return;}chatHistory.pop();chatHistory.pop();if(turnHtmlHistory.length>1){turnHtmlHistory.pop();const previousHtmlState=turnHtmlHistory[turnHtmlHistory.length-1];document.getElementById('story-box').innerHTML=previousHtmlState;}log("Undo executed.");alert("↩ Đã quay lại lượt trước!");}
 
 // ============================================================
-// TÓM TẮT CỐT TRUYỆN
+// SUMMARY
 // ============================================================
 async function generateStorySummary(){
   if(chatHistory.length < SUMMARY_TRIGGER_TURNS*2+2)return;
@@ -439,6 +537,7 @@ ${storySummary||'(chưa có)'}
 ${oldText}
 
 Chỉ trả về đoạn tóm tắt tổng hợp.`;
+  // Summary luôn dùng Gemini (không cần NSFW)
   const key=document.getElementById('apiKey').value.trim();
   if(!key)return;
   const url=`https://generativelanguage.googleapis.com/v1beta/models/${CACHE_MODEL}:generateContent?key=${key}`;
@@ -455,7 +554,7 @@ Chỉ trả về đoạn tóm tắt tổng hợp.`;
 }
 
 // ============================================================
-// CODEX MEMORY - CÓ ID NPC
+// CODEX MEMORY
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -465,7 +564,6 @@ function getCodexMemoryPrompt(){
 
   let npcSummary='';
   if(npcList.length>0){
-    // ✅ Gửi kèm ID để AI biết giữ nguyên khi cập nhật
     npcSummary=npcList.map(n=>{
       if(!n.id)n.id=generateNpcId();
       return `• [${n.id}] ${n.name}[${n.identity||'?'}]❤${n.affinity!==undefined?n.affinity:50}`;
@@ -511,7 +609,7 @@ ${npcSummary}
 }
 
 // ============================================================
-// SYSTEM RULES - CÓ RULE NPC ID
+// SYSTEM RULES
 // ============================================================
 function buildSystemRules(){
   const v=id=>document.getElementById(id)?.value||'';
@@ -564,7 +662,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Mỗi NPC trong Codex có ID dạng "npc_xxx".
 - Khi trả về "npcActiveList", BẮT BUỘC giữ nguyên "id" của NPC đã có.
 - Nếu NPC đổi tên → CHỈ đổi "name", KHÔNG tạo ID mới.
-- Nếu NPC mới xuất hiện → mới cấp ID mới (định dạng "npc_" + chuỗi).
+- Nếu NPC mới xuất hiện → mới cấp ID mới.
 - TUYỆT ĐỐI KHÔNG tạo 2 entry cho cùng 1 NPC với 2 ID khác nhau.
 
 # NGUYÊN TẮC MẠCH LẠC
@@ -580,7 +678,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 // ============================================================
 async function callGemini(promptText,isFirstCall=false){
   const key=document.getElementById('apiKey').value.trim();
-  if(!key){alert("Vui lòng nhập API Key trong Menu ☰!");toggleSidebar();return null;}
+  if(!key){throw new Error("Chưa nhập Gemini API Key");}
 
   const currentMessage={role:"user",parts:[{text:promptText}]};
   const recentHistory=chatHistory.slice(-MAX_RECENT_TURNS*2);
@@ -598,59 +696,217 @@ async function callGemini(promptText,isFirstCall=false){
   if(isFirstCall||!systemRulesSentThisSession){
     const wrappedPrompt=`${buildSystemRules()}\n\n---\n\n${promptText}`;
     requestPayload.contents=[...recentHistory,{role:"user",parts:[{text:wrappedPrompt}]}];
-    log("📤 Gửi FULL rules (lượt đầu)");
+    log("📤 Gemini: FULL rules (lượt đầu)");
     systemRulesSentThisSession=true;
   }else{
     requestPayload.contents=[...recentHistory,currentMessage];
-    log("📤 Gửi prompt gọn (đã có rules trong ngữ cảnh)");
+    log("📤 Gemini: prompt gọn");
   }
 
   const models=FALLBACK_MODELS;
-
   for(let i=0;i<models.length;i++){
     const modelName=models[i];
     const url=`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
     try{
-      log(`Đang gọi: ${modelName}...`);
-      const response=await fetch(url,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(requestPayload)
-      });
+      const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestPayload)});
       const data=await response.json();
-
       if(data.error){
         const errMsg=data.error.message||JSON.stringify(data.error);
-        log(`❌ Model ${modelName} lỗi: ${errMsg}`);
+        log(`❌ Gemini ${modelName}: ${errMsg}`);
         tokenStats.errors++;
-        updateTokenStatsDisplay();
-        if(errMsg.includes('not found')||errMsg.includes('not supported')){
-          log(`⚠️ Model "${modelName}" không khả dụng. Thử model kế...`);
-        }
         if(i<models.length-1)continue;
-        throw new Error(errMsg||"Tất cả model đều lỗi.");
+        throw new Error(errMsg);
       }
-
       if(data.candidates&&data.candidates[0]&&data.candidates[0].content){
         const aiReply=data.candidates[0].content.parts[0].text;
         if(data.usageMetadata){
-          tokenStats.input+=(data.usageMetadata.promptTokenCount||0);
-          tokenStats.output+=(data.usageMetadata.candidatesTokenCount||0);
-          tokenStats.requests++;
+          const inT=data.usageMetadata.promptTokenCount||0;
+          const outT=data.usageMetadata.candidatesTokenCount||0;
+          tokenStats.input+=inT; tokenStats.output+=outT; tokenStats.requests++;
+          tokenStats.geminiIn+=inT; tokenStats.geminiOut+=outT; tokenStats.geminiReq++;
           updateTokenStatsDisplay();
         }
         chatHistory.push(currentMessage);
         chatHistory.push({role:"model",parts:[{text:aiReply}]});
-        if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2){
-          await generateStorySummary();
-        }
+        if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
         return aiReply;
       }
     }catch(e){
-      if(i===models.length-1){log("LỖI: "+e.message);alert("Lỗi gọi AI: "+e.message);return null;}
+      if(i===models.length-1)throw e;
     }
   }
-  return null;
+  throw new Error("Tất cả Gemini models đều lỗi");
+}
+
+// ============================================================
+// CALL OPENROUTER
+// ============================================================
+async function callOpenRouter(promptText){
+  const key=document.getElementById('openRouterKey').value.trim();
+  if(!key){throw new Error("Chưa nhập OpenRouter API Key");}
+  const model=document.getElementById('openRouterModel').value;
+
+  // OpenRouter dùng format OpenAI Chat Completions
+  const currentMessage={role:"user",content:promptText};
+  const recentHistory=chatHistory.slice(-MAX_RECENT_TURNS*2).map(m=>({
+    role: m.role==='model'?'assistant':'user',
+    content: m.parts[0].text
+  }));
+
+  let messages;
+  if(!systemRulesSentThisSession){
+    messages=[
+      {role:"system",content:buildSystemRules()},
+      ...recentHistory,
+      currentMessage
+    ];
+    log("📤 OpenRouter: FULL rules (lượt đầu)");
+    systemRulesSentThisSession=true;
+  }else{
+    messages=[...recentHistory,currentMessage];
+    log("📤 OpenRouter: prompt gọn");
+  }
+
+  const url="https://openrouter.ai/api/v1/chat/completions";
+  const body={
+    model: model,
+    messages: messages,
+    temperature: 0.9,
+    max_tokens: 4000
+  };
+
+  const headers={
+    "Content-Type": "application/json",
+    "Authorization": "Bearer "+key,
+    "HTTP-Referer": window.location.origin || "https://localhost",
+    "X-Title": "HongDucTuTien"
+  };
+
+  let attempt=0;
+  const maxAttempts=settings.retry5xx?2:1;
+  
+  while(attempt<maxAttempts){
+    attempt++;
+    try{
+      const response=await fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body)});
+      
+      // Xử lý các mã lỗi HTTP
+      if(!response.ok){
+        const errText=await response.text();
+        const status=response.status;
+        log(`❌ OpenRouter HTTP ${status}: ${errText.substring(0,200)}`);
+        
+        // 5xx → thử lại nếu setting bật
+        if(status>=500&&status<600&&settings.retry5xx&&attempt<maxAttempts){
+          log(`⏳ OpenRouter 5xx, thử lại lần ${attempt+1}...`);
+          await new Promise(r=>setTimeout(r,2000));
+          continue;
+        }
+        
+        // Lỗi khác → throw
+        tokenStats.errors++;
+        throw new Error(`OpenRouter HTTP ${status}`);
+      }
+      
+      const data=await response.json();
+      
+      if(data.error){
+        log(`❌ OpenRouter: ${data.error.message||JSON.stringify(data.error)}`);
+        tokenStats.errors++;
+        throw new Error(data.error.message||"OpenRouter error");
+      }
+      
+      if(data.choices&&data.choices[0]&&data.choices[0].message){
+        const aiReply=data.choices[0].message.content;
+        if(!aiReply||aiReply.trim()===''){
+          log("⚠️ OpenRouter trả về rỗng");
+          throw new Error("Empty response");
+        }
+        if(data.usage){
+          const inT=data.usage.prompt_tokens||0;
+          const outT=data.usage.completion_tokens||0;
+          tokenStats.input+=inT; tokenStats.output+=outT; tokenStats.requests++;
+          tokenStats.orIn+=inT; tokenStats.orOut+=outT; tokenStats.orReq++;
+          updateTokenStatsDisplay();
+        }
+        chatHistory.push({role:"user",parts:[{text:promptText}]});
+        chatHistory.push({role:"model",parts:[{text:aiReply}]});
+        if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
+        return aiReply;
+      }
+      
+      throw new Error("OpenRouter response không hợp lệ");
+      
+    }catch(e){
+      if(attempt>=maxAttempts){
+        tokenStats.errors++;
+        throw e;
+      }
+    }
+  }
+  throw new Error("OpenRouter fail after retries");
+}
+
+// ============================================================
+// CALL AI - UNIFIED VỚI FALLBACK
+// ============================================================
+async function callAI(promptText, isFirstCall=false){
+  const actionText=promptText.substring(0,500);
+  const isNsfw=detectNsfwIntent(actionText);
+  const orKey=document.getElementById('openRouterKey').value.trim();
+  const geminiKey=document.getElementById('apiKey').value.trim();
+  
+  // Quyết định provider
+  const useOpenRouter = isNsfw && settings.autoSwitch && orKey;
+  
+  if(useOpenRouter){
+    log("🎯 Phát hiện NSFW → dùng OpenRouter");
+    try{
+      const reply=await callOpenRouter(promptText);
+      return reply;
+    }catch(e){
+      log(`❌ OpenRouter fail: ${e.message}`);
+      
+      // Fallback
+      if(settings.autoFallback && geminiKey){
+        log("🔄 Fallback về Gemini...");
+        log("⚠️ Nội dung NSFW có thể bị filter");
+        tokenStats.fallbackCount++;
+        updateTokenStatsDisplay();
+        try{
+          return await callGemini(promptText, isFirstCall);
+        }catch(e2){
+          log(`❌ Gemini cũng fail: ${e2.message}`);
+          return null;
+        }
+      }else{
+        log("❌ Không fallback (đã tắt hoặc thiếu Gemini key)");
+        return null;
+      }
+    }
+  }else{
+    // Không NSFW → dùng Gemini
+    if(isNsfw){
+      log("⚠️ NSFW nhưng autoSwitch tắt hoặc thiếu OR key → dùng Gemini");
+    }
+    log("🎯 Dùng Gemini");
+    try{
+      return await callGemini(promptText, isFirstCall);
+    }catch(e){
+      log(`❌ Gemini fail: ${e.message}`);
+      // Nếu Gemini fail và có OR key → thử OpenRouter như phương án cuối
+      if(orKey){
+        log("🔄 Gemini fail, thử OpenRouter...");
+        try{
+          return await callOpenRouter(promptText);
+        }catch(e2){
+          log(`❌ OpenRouter cũng fail: ${e2.message}`);
+          return null;
+        }
+      }
+      return null;
+    }
+  }
 }
 
 // ============================================================
@@ -661,8 +917,12 @@ async function aiGenField(fieldId,promptMsg){
   log("AI Gen: "+fieldId);
   const originalVal=field.value;
   field.value="AI đang suy nghĩ...";
-  const res=await callGemini(`Đóng vai Game Master tu tiên, tạo nội dung ngắn gọn cho mục: ${promptMsg}. Chỉ trả về text, không giải thích.`,false);
-  if(res){field.value=res;}else{field.value=originalVal;}
+  const geminiKey=document.getElementById('apiKey').value.trim();
+  if(!geminiKey){field.value=originalVal;alert("Cần Gemini API Key để dùng AI Gen!");return;}
+  try{
+    const res=await callGemini(`Đóng vai Game Master tu tiên, tạo nội dung ngắn gọn cho mục: ${promptMsg}. Chỉ trả về text, không giải thích.`,false);
+    if(res){field.value=res;}else{field.value=originalVal;}
+  }catch(e){log("AI Gen lỗi: "+e.message);field.value=originalVal;}
 }
 
 // ============================================================
@@ -684,7 +944,7 @@ function buildTurnHtml(rawText){
 }
 
 // ============================================================
-// PARSE CODEX - FIX TRÙNG NPC THEO ID
+// PARSE CODEX
 // ============================================================
 function parseAndAutoUpdateCodex(fullResponseText){
   try{
@@ -696,44 +956,30 @@ function parseAndAutoUpdateCodex(fullResponseText){
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
       if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){const validInventory=codexData.mcInventoryList.filter(item=>(item.quantity===undefined||item.quantity>0));renderInventoryVisual(validInventory);document.getElementById('mcInventory').value=JSON.stringify(validInventory,null,2);}
 
-      // ✅ FIX TRÙNG NPC: Ưu tiên match theo ID
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
           if(!aiNpc||!aiNpc.name)return;
           const cleanName=aiNpc.name.trim();
           if(!cleanName)return;
-          
-          // Bước 1: Match theo ID (ưu tiên cao nhất)
           let exist=null;
-          if(aiNpc.id){
-            exist=npcList.find(n=>n.id===aiNpc.id);
-          }
-          // Bước 2: Match theo tên chính xác
-          if(!exist){
-            exist=npcList.find(n=>n.name.toLowerCase().trim()===cleanName.toLowerCase());
-          }
-          // Bước 3: Fuzzy match CHỈ khi tên ≥ 3 ký tự và match trọn từ
+          if(aiNpc.id)exist=npcList.find(n=>n.id===aiNpc.id);
+          if(!exist)exist=npcList.find(n=>n.name.toLowerCase().trim()===cleanName.toLowerCase());
           if(!exist&&cleanName.length>=3){
             const b=cleanName.toLowerCase();
             exist=npcList.find(n=>{
               const a=n.name.toLowerCase().trim();
               if(a.length<3)return false;
-              // Chỉ match khi 1 tên chứa trọn tên kia (có khoảng trắng phân tách)
               return a===b||a.startsWith(b+" ")||b.startsWith(a+" ")||a.endsWith(" "+b)||b.endsWith(" "+a);
             });
           }
-          
           if(exist){
-            // Cập nhật NPC đã có, GIỮ NGUYÊN ID
             exist.name=aiNpc.name;
             if(aiNpc.identity)exist.identity=aiNpc.identity;
             if(aiNpc.personality)exist.personality=aiNpc.personality;
             if(aiNpc.affinity!==undefined)exist.affinity=aiNpc.affinity;
             if(aiNpc.avatar)exist.avatar=aiNpc.avatar;
             if(aiNpc.npcRules)exist.npcRules=aiNpc.npcRules;
-            // Không cập nhật ID
           }else{
-            // Tạo NPC mới với ID mới
             npcList.push({
               id:aiNpc.id||generateNpcId(),
               name:aiNpc.name,
@@ -773,7 +1019,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
 function openThienDao(){
   document.getElementById('thienDaoModal').classList.add('active');
   document.getElementById('thienDaoInput').value='';
-  document.getElementById('thienDaoResults').innerHTML='<div class="thiendao-empty">Nhập từ khóa và bấm TÌM để tra cứu.<br>💡 Cơ chế này tìm trong Codex + lịch sử chat, KHÔNG gọi AI → tiết kiệm token.</div>';
+  document.getElementById('thienDaoResults').innerHTML='<div class="thiendao-empty">Nhập từ khóa và bấm TÌM để tra cứu.<br>💡 Không gọi AI → tiết kiệm token.</div>';
   setTimeout(()=>document.getElementById('thienDaoInput').focus(),100);
 }
 function closeThienDao(){document.getElementById('thienDaoModal').classList.remove('active');}
@@ -783,107 +1029,21 @@ function thienDaoExecute(){
   const keyword=document.getElementById('thienDaoInput').value.trim().toLowerCase();
   const resultsDiv=document.getElementById('thienDaoResults');
   if(!keyword){resultsDiv.innerHTML='<div class="thiendao-empty">Vui lòng nhập từ khóa!</div>';return;}
-
   let results=[];
-
-  npcList.forEach(npc=>{
-    const text=JSON.stringify(npc).toLowerCase();
-    if(text.includes(keyword)){
-      results.push({title:`👤 NPC: ${npc.name}`,body:`ID: ${npc.id}\nThân phận: ${npc.identity}\nTính cách: ${npc.personality}\nQuy tắc AI: ${npc.npcRules}\nHảo cảm: ${npc.affinity}/100`,source:'Codex NPC (còn sống)',type:'npc'});
-    }
-  });
-
+  npcList.forEach(npc=>{const text=JSON.stringify(npc).toLowerCase();if(text.includes(keyword)){results.push({title:`👤 NPC: ${npc.name}`,body:`ID: ${npc.id}\nThân phận: ${npc.identity}\nTính cách: ${npc.personality}\nQuy tắc AI: ${npc.npcRules}\nHảo cảm: ${npc.affinity}/100`,source:'Codex NPC'});}});
   const archiveText=document.getElementById('npcArchive').value||'';
-  if(archiveText.toLowerCase().includes(keyword)){
-    const lines=archiveText.split('\n').filter(l=>l.toLowerCase().includes(keyword));
-    results.push({title:`💀 NPC đã chết (Archive)`,body:lines.join('\n'),source:'NPC Archive',type:'archive'});
-  }
-
-  try{
-    const locs=JSON.parse(document.getElementById('locations').value||'[]');
-    locs.forEach(loc=>{
-      const text=JSON.stringify(loc).toLowerCase();
-      if(text.includes(keyword)){
-        results.push({title:`📍 Địa danh: ${loc.name}`,body:`Vị trí: ${loc.position||'Chưa rõ'}\nNguy hiểm: ${loc.danger||'Thấp'}\nĐặc điểm: ${loc.desc||'Bình thường'}`,source:'Codex Địa danh',type:'location'});
-      }
-    });
-  }catch(e){}
-
-  eventList.forEach(ev=>{
-    const text=JSON.stringify(ev).toLowerCase();
-    if(text.includes(keyword)){
-      results.push({title:`📜 Sự kiện: ${ev.name}`,body:`Thời gian: ${ev.timeNote}\nĐiều kiện: ${ev.accessRules}\nNội dung: ${ev.events}\nQuy tắc AI: ${ev.aiRules}`,source:'Codex Sự kiện',type:'event'});
-    }
-  });
-
-  try{
-    const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');
-    weapons.forEach(w=>{
-      const text=JSON.stringify(w).toLowerCase();
-      if(text.includes(keyword)){
-        results.push({title:`⚔️ Pháp bảo: ${w.name}`,body:`Cấp bậc: ${w.rank}\nCông dụng: ${w.usage}`,source:'Codex Pháp bảo',type:'weapon'});
-      }
-    });
-  }catch(e){}
-
-  try{
-    const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');
-    inv.forEach(item=>{
-      const text=JSON.stringify(item).toLowerCase();
-      if(text.includes(keyword)){
-        results.push({title:`🎒 Vật phẩm trong túi: ${item.name}`,body:`Số lượng: ${item.quantity||1}\nPhẩm chất: ${item.quality||'Thường'}\nCông dụng: ${item.effect||'Chưa rõ'}`,source:'Túi đồ NVC',type:'item'});
-      }
-    });
-  }catch(e){}
-
-  if(storySummary&&storySummary.toLowerCase().includes(keyword)){
-    const sentences=storySummary.split(/[.!?]\s+/);
-    const relevant=sentences.filter(s=>s.toLowerCase().includes(keyword)).join('. ');
-    results.push({title:`📖 Tóm tắt cốt truyện (Tầng 2)`,body:relevant||storySummary.substring(0,500),source:'Story Summary - Tóm tắt AI tích lũy',type:'summary'});
-  }
-
+  if(archiveText.toLowerCase().includes(keyword)){const lines=archiveText.split('\n').filter(l=>l.toLowerCase().includes(keyword));results.push({title:`💀 NPC đã chết`,body:lines.join('\n'),source:'NPC Archive'});}
+  try{const locs=JSON.parse(document.getElementById('locations').value||'[]');locs.forEach(loc=>{const text=JSON.stringify(loc).toLowerCase();if(text.includes(keyword)){results.push({title:`📍 Địa danh: ${loc.name}`,body:`Vị trí: ${loc.position||'Chưa rõ'}\nNguy hiểm: ${loc.danger||'Thấp'}\nĐặc điểm: ${loc.desc||'Bình thường'}`,source:'Codex Địa danh'});}});}catch(e){}
+  eventList.forEach(ev=>{const text=JSON.stringify(ev).toLowerCase();if(text.includes(keyword)){results.push({title:`📜 Sự kiện: ${ev.name}`,body:`Thời gian: ${ev.timeNote}\nĐiều kiện: ${ev.accessRules}\nNội dung: ${ev.events}\nQuy tắc AI: ${ev.aiRules}`,source:'Codex Sự kiện'});}});
+  try{const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');weapons.forEach(w=>{const text=JSON.stringify(w).toLowerCase();if(text.includes(keyword)){results.push({title:`⚔️ Pháp bảo: ${w.name}`,body:`Cấp bậc: ${w.rank}\nCông dụng: ${w.usage}`,source:'Codex Pháp bảo'});}});}catch(e){}
+  try{const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');inv.forEach(item=>{const text=JSON.stringify(item).toLowerCase();if(text.includes(keyword)){results.push({title:`🎒 Vật phẩm: ${item.name}`,body:`SL: ${item.quantity||1}\nPhẩm chất: ${item.quality||'Thường'}\nCông dụng: ${item.effect||'Chưa rõ'}`,source:'Túi đồ NVC'});}});}catch(e){}
+  if(storySummary&&storySummary.toLowerCase().includes(keyword)){const sentences=storySummary.split(/[.!?]\s+/);const relevant=sentences.filter(s=>s.toLowerCase().includes(keyword)).join('. ');results.push({title:`📖 Tóm tắt cốt truyện`,body:relevant||storySummary.substring(0,500),source:'Story Summary'});}
   const recent=chatHistory.slice(-MAX_RECENT_TURNS*2);
-  recent.forEach((msg,idx)=>{
-    const text=msg.parts[0].text||'';
-    if(text.toLowerCase().includes(keyword)){
-      const lower=text.toLowerCase();
-      const pos=lower.indexOf(keyword);
-      const start=Math.max(0,pos-100);
-      const end=Math.min(text.length,pos+200);
-      let snippet=text.substring(start,end);
-      if(start>0)snippet='...'+snippet;
-      if(end<text.length)snippet=snippet+'...';
-      results.push({title:`💬 Lịch sử chat ${idx%2===0?'(bạn hỏi)':'(AI trả lời)'}`,body:snippet,source:'Lịch sử chat gần đây',type:'chat'});
-    }
-  });
-
-  if(results.length===0&&chatHistory.length>0){
-    chatHistory.forEach((msg,idx)=>{
-      const text=msg.parts[0].text||'';
-      if(text.toLowerCase().includes(keyword)){
-        const lower=text.toLowerCase();
-        const pos=lower.indexOf(keyword);
-        const start=Math.max(0,pos-150);
-        const end=Math.min(text.length,pos+250);
-        let snippet=text.substring(start,end);
-        if(start>0)snippet='...'+snippet;
-        if(end<text.length)snippet=snippet+'...';
-        results.push({title:`💬 Lịch sử chat (lượt ${idx+1}/${chatHistory.length})`,body:snippet,source:'Lịch sử chat đầy đủ (cũ)',type:'chat_old'});
-      }
-    });
-  }
-
-  if(results.length===0){
-    resultsDiv.innerHTML=`<div class="thiendao-empty">❌ Không tìm thấy thông tin về "<b>${document.getElementById('thienDaoInput').value}</b>".</div>`;
-    return;
-  }
-
+  recent.forEach((msg,idx)=>{const text=msg.parts[0].text||'';if(text.toLowerCase().includes(keyword)){const lower=text.toLowerCase();const pos=lower.indexOf(keyword);const start=Math.max(0,pos-100);const end=Math.min(text.length,pos+200);let snippet=text.substring(start,end);if(start>0)snippet='...'+snippet;if(end<text.length)snippet=snippet+'...';results.push({title:`💬 Lịch sử chat ${idx%2===0?'(bạn hỏi)':'(AI trả lời)'}`,body:snippet,source:'Lịch sử chat gần đây'});}});
+  if(results.length===0){resultsDiv.innerHTML=`<div class="thiendao-empty">❌ Không tìm thấy "${document.getElementById('thienDaoInput').value}".</div>`;return;}
   let html='';
-  results.forEach(r=>{
-    html+=`<div class="thiendao-result"><div class="thiendao-result-title">${r.title}</div><div class="thiendao-result-body">${r.body}</div><div class="thiendao-result-source">📌 Nguồn: ${r.source}</div></div>`;
-  });
-
-  html=`<div style="color:var(--accent-green);font-size:12px;margin-bottom:10px">✅ Tìm thấy ${results.length} kết quả cho "<b>${document.getElementById('thienDaoInput').value}</b>"</div>`+html;
+  results.forEach(r=>{html+=`<div class="thiendao-result"><div class="thiendao-result-title">${r.title}</div><div class="thiendao-result-body">${r.body}</div><div class="thiendao-result-source">📌 Nguồn: ${r.source}</div></div>`;});
+  html=`<div style="color:var(--accent-green);font-size:12px;margin-bottom:10px">✅ Tìm thấy ${results.length} kết quả</div>`+html;
   resultsDiv.innerHTML=html;
   log(`> Thiên Đạo: Tìm "${keyword}" → ${results.length} kết quả`);
 }
@@ -892,92 +1052,53 @@ function thienDaoRecent(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   const recent=chatHistory.slice(-MAX_RECENT_TURNS*2);
-  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📜 ${recent.length} tin nhắn gần nhất (đang được gửi cho AI)</div>`;
-  if(recent.length===0){
-    html+='<div class="thiendao-empty">Chưa có lịch sử chat.</div>';
-  }else{
-    recent.forEach((msg,idx)=>{
-      const role=msg.role==='user'?'👤 Bạn':'🤖 AI';
-      const color=msg.role==='user'?'#ff5577':'#388bfd';
-      const text=msg.parts[0].text||'';
-      const preview=text.substring(0,300)+(text.length>300?'...':'');
-      html+=`<div class="thiendao-result"><div class="thiendao-result-title" style="color:${color}">${role} - Tin ${idx+1}/${recent.length}</div><div class="thiendao-result-body">${preview.replace(/\n/g,'<br>')}</div></div>`;
-    });
-  }
+  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📜 ${recent.length} tin nhắn gần nhất</div>`;
+  if(recent.length===0){html+='<div class="thiendao-empty">Chưa có lịch sử.</div>';}
+  else{recent.forEach((msg,idx)=>{const role=msg.role==='user'?'👤 Bạn':'🤖 AI';const color=msg.role==='user'?'#ff5577':'#388bfd';const text=msg.parts[0].text||'';const preview=text.substring(0,300)+(text.length>300?'...':'');html+=`<div class="thiendao-result"><div class="thiendao-result-title" style="color:${color}">${role} - ${idx+1}/${recent.length}</div><div class="thiendao-result-body">${preview.replace(/\n/g,'<br>')}</div></div>`;});}
   resultsDiv.innerHTML=html;
 }
 
 function thienDaoStats(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
-  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ CODEX HIỆN TẠI</div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Model AI</div><div class="thiendao-result-body">${CACHE_MODEL}</div></div>`;
+  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Models</div><div class="thiendao-result-body">Gemini: ${CACHE_MODEL}<br>OpenRouter: ${document.getElementById('openRouterModel').value}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚙️ Settings</div><div class="thiendao-result-body">Auto-switch: ${settings.autoSwitch?'✅':'❌'}<br>Auto-fallback: ${settings.autoFallback?'✅':'❌'}<br>Retry 5xx: ${settings.retry5xx?'✅':'❌'}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📍 Địa danh</div><div class="thiendao-result-body">Tổng: ${locCount}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📜 Sự kiện</div><div class="thiendao-result-body">Tổng: ${eventList.length}</div></div>`;
   let wepCount=0;try{wepCount=JSON.parse(document.getElementById('worldItems').value||'[]').length;}catch(e){}
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚔️ Pháp bảo</div><div class="thiendao-result-body">Tổng: ${wepCount}</div></div>`;
-  let invCount=0;try{invCount=JSON.parse(document.getElementById('mcInventory').value||'[]').length;}catch(e){}
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎒 Túi đồ</div><div class="thiendao-result-body">Số loại vật phẩm: ${invCount}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin nhắn | Đang gửi AI: ${Math.min(chatHistory.length,MAX_RECENT_TURNS*2)} tin gần nhất</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📖 Tóm tắt cốt truyện</div><div class="thiendao-result-body">${storySummary?'Đã có ('+storySummary.length+' ký tự)':'Chưa có'}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Input: ${tokenStats.input.toLocaleString()} | Output: ${tokenStats.output.toLocaleString()}<br>Requests: ${tokenStats.requests} | Errors: ${tokenStats.errors}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin | Gửi AI: ${Math.min(chatHistory.length,MAX_RECENT_TURNS*2)} tin gần nhất</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📖 Tóm tắt</div><div class="thiendao-result-body">${storySummary?'Đã có ('+storySummary.length+' ký tự)':'Chưa có'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Gemini: ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>OpenRouter: ${tokenStats.orReq} req | ${tokenStats.orIn.toLocaleString()} in / ${tokenStats.orOut.toLocaleString()} out<br>Fallback: ${tokenStats.fallbackCount} lần | Errors: ${tokenStats.errors}</div></div>`;
   resultsDiv.innerHTML=html;
 }
 
-// ============================================================
-// NHẬT KÝ PHIÊN BẢN - HIỂN THỊ CHO USER
-// ============================================================
 function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
-  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN - LỊCH SỬ SỬA LỖI</div>`;
-  
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.4 (2026-10-04) - FIX TRÙNG NPC KHI ĐỔI TÊN</div><div class="thiendao-result-body">
-🐛 Lỗi: Đổi tên NPC trong UI (VD: "Khương Mi" → "Tuyết Cơ") → AI vẫn nhớ tên cũ trong chat history → trả về Codex với tên cũ → code match không thấy → tạo NPC trùng lặp.
-
-✅ Fix:
-1. Thêm trường "id" vào Codex gửi cho AI
-2. AI bắt buộc giữ nguyên "id" khi trả về Codex
-3. parseAndAutoUpdateCodex ưu tiên match theo "id" trước, fallback mới match theo "name" chính xác, cuối cùng mới fuzzy
-4. Siết điều kiện fuzzy: chỉ match khi tên ≥ 3 ký tự và một tên chứa trọn tên kia
-
-📌 Lưu ý: Sau khi đổi tên NPC giữa chừng, gõ vào ô chat "[HỆ THỐNG]: NPC 'Tên Cũ' đã đổi tên thành 'Tên Mới'." để AI cập nhật Codex ngay.
+  let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER FALLBACK</div><div class="thiendao-result-body">
+✅ Thêm OpenRouter làm provider phụ cho NSFW
+✅ Hàm detectNsfwIntent() phát hiện 60+ keyword VI/EN
+✅ Hàm callOpenRouter() format OpenAI API
+✅ Hàm callAI() unified điều phối
+✅ Fallback tự động OpenRouter → Gemini khi lỗi
+✅ Retry 5xx server error
+✅ Token stats tách riêng 2 provider
+✅ Đếm số lần fallback
+✅ 3 toggle điều khiển: autoSwitch, autoFallback, retry5xx
 </div></div>`;
-  
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - TỐI ƯU FREE TIER</div><div class="thiendao-result-body">
-- Bỏ hoàn toàn Context Caching (free tier limit=0)
-- Nén rules từ ~8000 → ~2000 tokens (giảm 75%)
-- Chỉ gửi FULL rules ở lượt đầu, các lượt sau chỉ gửi Codex
-- MAX_RECENT_TURNS: 4 → 3; SUMMARY_TRIGGER_TURNS: 5 → 4
-</div></div>`;
-  
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.2 (2026-10-02) - GEMINI 3.5</div><div class="thiendao-result-body">
-- Đổi model: gemini-2.0-flash → gemini-3.5-flash-lite
-- Thêm dropdown chọn model trong sidebar
-- Xóa gemini-1.5-flash khỏi fallback (đã khai tử)
-</div></div>`;
-  
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.1 (2026-10-01) - CONTEXT CACHING</div><div class="thiendao-result-body">
-- Thêm Context Caching (chỉ hoạt động trên Gemini trả phí)
-- Nén Codex không cắt cụt (bỏ substring)
-- await generateStorySummary() tránh race condition
-</div></div>`;
-  
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.0 (2026-09-30) - BẢN GỐC</div><div class="thiendao-result-body">
-- Layout 7 tabs, IndexedDB save/load, TTS, Thiên Đạo tra cứu
-- NPC affinity, Event/Location/Weapon codex, Auto-avatar
-</div></div>`;
-  
-  html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Tag version log nằm trong comment HTML ở thẻ &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
-  
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.4 (2026-10-04) - FIX TRÙNG NPC</div><div class="thiendao-result-body">Thêm ID NPC, AI giữ nguyên ID, match theo ID</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - TỐI ƯU FREE TIER</div><div class="thiendao-result-body">Bỏ cache, nén rules 75%, chỉ gửi rules lượt đầu</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.2 (2026-10-02) - GEMINI 3.5</div><div class="thiendao-result-body">Đổi model, thêm dropdown chọn model</div></div>`;
+  html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Tag version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
   resultsDiv.innerHTML=html;
 }
 
-document.getElementById('thienDaoModal').addEventListener('click',function(e){
-  if(e.target===this)closeThienDao();
-});
+document.getElementById('thienDaoModal').addEventListener('click',function(e){if(e.target===this)closeThienDao();});
 
 // ============================================================
 // START GAME
@@ -990,7 +1111,7 @@ const startGame=async()=>{
   chatHistory=[];turnHtmlHistory=[];turnCounter=0;storySummary="";
   systemRulesSentThisSession=false;
   resetTokenStats();
-  storyBox.innerHTML='<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới với model '+CACHE_MODEL+'... Vui lòng chờ...</div>';
+  storyBox.innerHTML='<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   const systemPrompt=`Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value||'HỒNG ĐỨC TU TIÊN LỘ'}".
 
 [THÔNG TIN NVC]:
@@ -1006,8 +1127,8 @@ ${document.getElementById('startScript').value}
 ${getCodexMemoryPrompt()}
 
 Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, tuân thủ tuyệt đối các quy tắc đã thiết lập!`;
-  const reply=await callGemini(systemPrompt,true);
-  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key và model.</div>';}
+  const reply=await callAI(systemPrompt,true);
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key.</div>';}
 };
 
 // ============================================================
@@ -1030,19 +1151,22 @@ const sendAction=async()=>{
     ? `${buildSystemRules()}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện. Trả về [TÓM TẮT] + JSON Codex.`
     : `[HÀNH ĐỘNG]: "${actionText}"\n\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện theo quy tắc đã thiết lập. Trả về [TÓM TẮT] + JSON Codex (GIỮ NGUYÊN ID NPC).`;
 
-  const reply=await callGemini(promptWithCodex,false);
-  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}
+  const reply=await callAI(promptWithCodex,false);
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;}
 };
 
 document.getElementById('userInput').addEventListener('keypress',function(e){if(e.key==='Enter')sendAction();});
 
 // ============================================================
-// MODEL SELECTOR
+// MODEL SELECTORS
 // ============================================================
 document.getElementById('modelSelect').addEventListener('change',function(e){
   CACHE_MODEL=e.target.value;
   updateTokenStatsDisplay();
-  log("🔄 Đã đổi model sang: "+CACHE_MODEL);
+  log("🔄 Đổi Gemini model: "+CACHE_MODEL);
+});
+document.getElementById('openRouterModel').addEventListener('change',function(e){
+  log("🔄 Đổi OpenRouter model: "+e.target.value);
 });
 </script>
 </body>

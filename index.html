@@ -3,39 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5 - AI RPG (Multi-Provider Fallback)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.1 - AI RPG (Multi-Provider + AI Gen Fix)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
+     v2.5.1 (2026-10-05) - FIX AI GEN LÀM NHIỄU SUMMARY
+     ─────────────────────────────────────────────────────────
+     🐛 Lỗi: AI Gen push prompt vào chatHistory → summary tự động
+             tóm tắt luôn cả prompt AI Gen → nhiễu cốt truyện.
+     ✅ Fix: Lưu historyLenBefore, sau khi AI Gen xong cắt bỏ
+             các message vừa push → giữ chatHistory sạch.
+     
      v2.5 (2026-10-05) - MULTI-PROVIDER FALLBACK
      ─────────────────────────────────────────────────────────
-     ✅ Thêm: Hỗ trợ OpenRouter làm provider phụ
-     ✅ Thêm: Hàm detectNsfwIntent() phát hiện action NSFW
-     ✅ Thêm: Hàm callOpenRouter() gọi API chuẩn OpenAI
-     ✅ Thêm: Hàm callAI() unified điều phối 2 provider
-     ✅ Thêm: Fallback tự động OpenRouter → Gemini khi lỗi
-     ✅ Thêm: UI cấu hình OpenRouter (API key, model, toggles)
-     ✅ Thêm: Token stats tách riêng 2 provider
-     ✅ Thêm: Đếm số lần fallback
-     ─────────────────────────────────────────────────────────
+     ✅ Thêm OpenRouter làm provider phụ cho NSFW
+     ✅ Hàm detectNsfwIntent() phát hiện 60+ keyword VI/EN
+     ✅ Hàm callOpenRouter() format OpenAI API
+     ✅ Hàm callAI() unified điều phối 2 provider
+     ✅ Fallback tự động OpenRouter → Gemini khi lỗi
+     ✅ Retry 5xx server error
+     ✅ Token stats tách riêng 2 provider
+     ✅ 3 toggle: autoSwitch, autoFallback, retry5xx
      
      v2.4 (2026-10-04) - FIX TRÙNG NPC KHI ĐỔI TÊN
      ─────────────────────────────────────────────────────────
      🐛 Lỗi: Đổi tên NPC → AI tạo NPC trùng
-     ✅ Fix: Thêm "id" vào Codex, AI giữ nguyên ID, match theo ID
-     ─────────────────────────────────────────────────────────
+     ✅ Fix: Thêm "id" vào Codex, AI giữ nguyên ID
      
      v2.3 (2026-10-03) - TỐI ƯU FREE TIER
      ─────────────────────────────────────────────────────────
      - Bỏ Context Caching (free tier limit=0)
      - Nén rules ~8000 → ~2000 tokens
-     - Chỉ gửi FULL rules ở lượt đầu
-     - MAX_RECENT_TURNS: 4 → 3; SUMMARY_TRIGGER: 5 → 4
-     ─────────────────────────────────────────────────────────
-     
-     v2.0-v2.2 - Xem lịch sử cũ trong sidebar
      
      ============================================================ -->
 
@@ -138,11 +138,12 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .provider-badge{display:inline-block;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;margin-left:6px}
 .provider-gemini{background:rgba(56,139,253,.2);color:#388bfd;border:1px solid #388bfd}
 .provider-openrouter{background:rgba(227,112,45,.2);color:#e3702d;border:1px solid #e3702d}
+.key-warning{font-size:10px;color:var(--accent-gold);margin-top:2px}
 </style>
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.1</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -160,7 +161,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <div class="section-header">🟠 OpenRouter (Provider NSFW)</div>
-<div class="form-group"><label class="label-title">API Key OpenRouter:</label><input type="password" id="openRouterKey" placeholder="Dán OpenRouter API Key (sk-or-v1-...)"></div>
+<div class="form-group">
+  <label class="label-title">API Key OpenRouter:</label>
+  <input type="password" id="openRouterKey" placeholder="Dán OpenRouter API Key (sk-or-v1-...)">
+  <div class="key-warning">⚠️ Key phải bắt đầu bằng sk-or-v1- và KHÔNG có dấu cách</div>
+</div>
 <div class="form-group">
   <label class="label-title">Model OpenRouter:</label>
   <select id="openRouterModel">
@@ -185,6 +190,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span>Thử lại OpenRouter khi lỗi 5xx</span>
   <div class="toggle-switch active" id="toggleRetry5xx" onclick="toggleSetting('retry5xx')"></div>
 </div>
+
+<hr style="border-color:var(--border-color);margin:12px 0">
+<button class="sidebar-item" style="background:var(--accent-orange);font-size:12px" onclick="testOpenRouterKey()">🔍 Test OpenRouter Key</button>
 
 <hr style="border-color:var(--border-color);margin:12px 0">
 <div class="section-header">💾 Quản Lý Tiến Trình</div>
@@ -220,18 +228,18 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div id="world" class="tab-content active">
 <div class="form-group" style="background:#1c150c;padding:10px;border-radius:6px;border:1px solid #b8860b">
-<div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUI TẮC TỐI CAO</div><div class="label-desc">AI căn cứ vào đây để duy trì mô tuýp truyện. Viết NGẮN GỌN để tiết kiệm token.</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Chỉ thị bắt buộc mô tuýp truyện gốc, viết ngắn gọn dưới 200 từ')">✨ AI GEN</button></div>
-<textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:70px" placeholder="VD: Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt, không buff NVC vô lý."></textarea>
+<div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUI TẮC TỐI CAO</div><div class="label-desc">AI căn cứ vào đây để duy trì mô tuýp truyện.</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Chỉ thị bắt buộc mô tuýp truyện gốc, viết ngắn gọn dưới 200 từ')">✨ AI GEN</button></div>
+<textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:70px" placeholder="VD: Phàm Nhân Tu Tiên chính tông..."></textarea>
 </div>
 <div class="form-group" style="background:#1c0e12;padding:10px;border-radius:6px;border:1px solid #a83250">
 <div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUI TẮC 18+</div><div class="label-desc">Bạn tự điền rule 18+ chi tiết tại đây.</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Quy tắc xử lý nội dung 18+, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div>
-<textarea id="rule18Plus" style="border-color:#a83250;min-height:120px" placeholder="Bạn tự điền rule 18+ chi tiết tại đây. Game sẽ gửi rule này cho AI mỗi lượt."></textarea>
+<textarea id="rule18Plus" style="border-color:#a83250;min-height:120px" placeholder="Bạn tự điền rule 18+ chi tiết tại đây."></textarea>
 </div>
 <div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
-<div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Cốt lõi: tốc độ chậm, tiêu hao rõ ràng, không tự ý xóa.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 200 từ')">✨ AI GEN</button></div>
-<textarea id="aiRules" style="border-color:#7d2828;min-height:90px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác linh thạch/đan dược khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
+<div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
+<textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.1</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -255,7 +263,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div class="form-group"><div class="input-header"><div class="label-title">TÊN & THÂN PHẬN NVC</div><button class="btn-aigen" onclick="aiGenField('mcName','Tên và thân phận NVC ngắn gọn')">✨ AI GEN</button></div><textarea id="mcName" style="min-height:50px" placeholder="VD: Hồng Đức (Tán tu)"></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title" style="color:var(--accent-gold)">⭐ LEVEL / CẢNH GIỚI HIỆN TẠI</div><button class="btn-aigen" onclick="aiGenField('mcLevel','Cảnh giới hiện tại ngắn gọn')">✨ AI GEN</button></div><input type="text" id="mcLevel" style="border-color:var(--accent-gold)" placeholder="VD: Luyện Khí Kỳ tầng 5"></div>
-<div class="form-group"><div class="input-header"><div class="label-title" style="color:#388bfd">⏳ TỔNG THỜI GIAN TRONG GAME</div><button class="btn-aigen" onclick="aiGenField('mcGameTime','Tổng thời gian tu luyện ngắn gọn')">✨ AI GEN</button></div><input type="text" id="mcGameTime" style="border-color:#388bfd" placeholder="VD: 3 năm 6 tháng"><div class="label-desc">💡 AI căn cứ vào đây để tính thời hạn bế quan.</div></div>
+<div class="form-group"><div class="input-header"><div class="label-title" style="color:#388bfd">⏳ TỔNG THỜI GIAN TRONG GAME</div><button class="btn-aigen" onclick="aiGenField('mcGameTime','Tổng thời gian tu luyện ngắn gọn')">✨ AI GEN</button></div><input type="text" id="mcGameTime" style="border-color:#388bfd" placeholder="VD: 3 năm 6 tháng"></div>
 <div class="form-group"><div class="input-header"><div class="label-title" style="color:var(--accent-purple)">🔥 KĨ NĂNG & CÔNG PHÁP</div><button class="btn-aigen" onclick="aiGenField('mcSkills','Danh sách kỹ năng đã học ngắn gọn')">✨ AI GEN</button></div><textarea id="mcSkills" placeholder="VD:&#10;- Trường Xuân Công (Tầng 5)&#10;- Vô Địch Thần Thức"></textarea></div>
 <hr style="border-color:var(--border-color);margin:15px 0">
 <div class="section-tag">🎒 TÚI ĐỒ / HÀNH TRANG NVC</div>
@@ -300,7 +308,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 <div class="label-title">SYSTEM LOGS</div>
-<div id="sysLogs" class="log-box">> System v2.5 (Multi-Provider) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.1 (Multi-Provider + AI Gen Fix) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -321,7 +329,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=25;
+const DB_VERSION=251;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -331,11 +339,10 @@ const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash','gemini-2.5-fl
 
 let CACHE_MODEL=DEFAULT_MODEL;
 
-// ✅ Cấu hình multi-provider
 let settings={
-  autoSwitch: true,      // Tự động chuyển OpenRouter khi NSFW
-  autoFallback: true,    // Fallback về Gemini khi OpenRouter lỗi
-  retry5xx: true         // Thử lại OpenRouter 1 lần khi lỗi 5xx
+  autoSwitch: true,
+  autoFallback: true,
+  retry5xx: true
 };
 
 let chatHistory=[];
@@ -354,24 +361,24 @@ let tokenStats={
 
 let systemRulesSentThisSession=false;
 
+// ✅ Cờ để AI Gen KHÔNG push vào chatHistory
+let isAiGenCall=false;
+
 const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
 const inputIds=['apiKey','modelSelect','openRouterKey','openRouterModel',...fieldsToReset,'difficultySelect'];
 
 // ============================================================
-// NSFW INTENT DETECTION - KỸ THUẬT
+// NSFW INTENT DETECTION
 // ============================================================
 const NSFW_KEYWORDS_VI = [
-  // Nhóm 1: Thân mật / song tu
   'song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái',
   'thân mật','hôn','ôm','vuốt ve','cởi','lột','hở hang','khỏa thân',
   'lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa',
   'thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm',
   'sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ',
-  // Nhóm 2: Bạo lực
   'chém giết','giết','tàn sát','đồ sát','chém','đâm','chặt','moi tim',
   'lột da','tra tấn','hành hạ','ngược đãi','huyết tinh','máu me',
   'sát nhân','đoạt bảo','cướp','hiếp','giết chóc','sát phạt','đồ diệt',
-  // Nhóm 3: Cưỡng chế
   'cưỡng','bắt cóc','giam cầm','trói','khống chế','nô lệ','nô gia',
   'chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức',
   'cưỡng hiếp','cưỡng đoạt','cưỡng chế'
@@ -384,15 +391,12 @@ const NSFW_KEYWORDS_EN = [
 function detectNsfwIntent(actionText){
   if(!actionText)return false;
   const lower=actionText.toLowerCase();
-  // Chuẩn hóa tiếng Việt có dấu
   const normalized=lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  // Check VI keywords (cả có dấu và không dấu)
   for(const kw of NSFW_KEYWORDS_VI){
     if(lower.includes(kw))return true;
     const kwNorm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     if(normalized.includes(kwNorm))return true;
   }
-  // Check EN keywords
   for(const kw of NSFW_KEYWORDS_EN){
     if(lower.includes(kw))return true;
   }
@@ -489,6 +493,43 @@ function renderWeaponsVisual(weaponArray){const grid=document.getElementById('we
 function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
 
 // ============================================================
+// TEST OPENROUTER KEY
+// ============================================================
+async function testOpenRouterKey(){
+  const k=document.getElementById('openRouterKey').value.trim();
+  if(!k){alert("⚠️ Chưa nhập OpenRouter API Key!");return;}
+  log("🔍 Đang test OpenRouter key...");
+  log(`   - Độ dài: ${k.length} ký tự`);
+  log(`   - Prefix: ${k.substring(0,10)}...`);
+  log(`   - Có khoảng trắng đầu: ${k.startsWith(' ')?'CÓ (LỖI!)':'Không'}`);
+  log(`   - Có khoảng trắng cuối: ${k.endsWith(' ')?'CÓ (LỖI!)':'Không'}`);
+  if(!k.startsWith('sk-or-v1-')){
+    log("❌ Key KHÔNG đúng định dạng! Phải bắt đầu bằng 'sk-or-v1-'");
+    alert("❌ Key sai định dạng!\n\nKey OpenRouter phải bắt đầu bằng:\nsk-or-v1-...\n\nKey bạn nhập bắt đầu bằng:\n"+k.substring(0,15)+"...\n\n→ Vào openrouter.ai → Keys → tạo key mới.");
+    return;
+  }
+  try{
+    const res=await fetch('https://openrouter.ai/api/v1/auth/key',{
+      method:'GET',
+      headers:{'Authorization':'Bearer '+k}
+    });
+    const data=await res.json();
+    if(res.ok&&data.data){
+      log("✅ Key hợp lệ!");
+      log(`   - Label: ${data.data.label||'N/A'}`);
+      log(`   - Usage: ${data.data.usage||0} / ${data.data.limit||'∞'}`);
+      alert("✅ Key OpenRouter HỢP LỆ!\n\nLabel: "+(data.data.label||'N/A')+"\nUsage: "+(data.data.usage||0)+" / "+(data.data.limit||'∞'));
+    }else{
+      log("❌ Key không hợp lệ: "+(data.error?.message||JSON.stringify(data)));
+      alert("❌ Key không hợp lệ!\n\n"+(data.error?.message||"Lỗi không xác định"));
+    }
+  }catch(e){
+    log("❌ Lỗi test key: "+e.message);
+    alert("❌ Lỗi kết nối: "+e.message);
+  }
+}
+
+// ============================================================
 // RESET
 // ============================================================
 async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
@@ -507,7 +548,7 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.1_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -537,7 +578,6 @@ ${storySummary||'(chưa có)'}
 ${oldText}
 
 Chỉ trả về đoạn tóm tắt tổng hợp.`;
-  // Summary luôn dùng Gemini (không cần NSFW)
   const key=document.getElementById('apiKey').value.trim();
   if(!key)return;
   const url=`https://generativelanguage.googleapis.com/v1beta/models/${CACHE_MODEL}:generateContent?key=${key}`;
@@ -662,7 +702,6 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Mỗi NPC trong Codex có ID dạng "npc_xxx".
 - Khi trả về "npcActiveList", BẮT BUỘC giữ nguyên "id" của NPC đã có.
 - Nếu NPC đổi tên → CHỈ đổi "name", KHÔNG tạo ID mới.
-- Nếu NPC mới xuất hiện → mới cấp ID mới.
 - TUYỆT ĐỐI KHÔNG tạo 2 entry cho cùng 1 NPC với 2 ID khác nhau.
 
 # NGUYÊN TẮC MẠCH LẠC
@@ -726,9 +765,12 @@ async function callGemini(promptText,isFirstCall=false){
           tokenStats.geminiIn+=inT; tokenStats.geminiOut+=outT; tokenStats.geminiReq++;
           updateTokenStatsDisplay();
         }
-        chatHistory.push(currentMessage);
-        chatHistory.push({role:"model",parts:[{text:aiReply}]});
-        if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
+        // ✅ Chỉ push vào chatHistory nếu KHÔNG phải AI Gen
+        if(!isAiGenCall){
+          chatHistory.push(currentMessage);
+          chatHistory.push({role:"model",parts:[{text:aiReply}]});
+          if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
+        }
         return aiReply;
       }
     }catch(e){
@@ -742,11 +784,17 @@ async function callGemini(promptText,isFirstCall=false){
 // CALL OPENROUTER
 // ============================================================
 async function callOpenRouter(promptText){
-  const key=document.getElementById('openRouterKey').value.trim();
+  const rawKey=document.getElementById('openRouterKey').value;
+  const key=rawKey.trim();
   if(!key){throw new Error("Chưa nhập OpenRouter API Key");}
+
+  // ✅ Validate key format
+  if(!key.startsWith('sk-or-v1-')){
+    throw new Error("OpenRouter Key sai định dạng (phải bắt đầu sk-or-v1-)");
+  }
+
   const model=document.getElementById('openRouterModel').value;
 
-  // OpenRouter dùng format OpenAI Chat Completions
   const currentMessage={role:"user",content:promptText};
   const recentHistory=chatHistory.slice(-MAX_RECENT_TURNS*2).map(m=>({
     role: m.role==='model'?'assistant':'user',
@@ -784,38 +832,35 @@ async function callOpenRouter(promptText){
 
   let attempt=0;
   const maxAttempts=settings.retry5xx?2:1;
-  
+
   while(attempt<maxAttempts){
     attempt++;
     try{
       const response=await fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body)});
-      
-      // Xử lý các mã lỗi HTTP
+
       if(!response.ok){
         const errText=await response.text();
         const status=response.status;
         log(`❌ OpenRouter HTTP ${status}: ${errText.substring(0,200)}`);
-        
-        // 5xx → thử lại nếu setting bật
+
         if(status>=500&&status<600&&settings.retry5xx&&attempt<maxAttempts){
           log(`⏳ OpenRouter 5xx, thử lại lần ${attempt+1}...`);
           await new Promise(r=>setTimeout(r,2000));
           continue;
         }
-        
-        // Lỗi khác → throw
+
         tokenStats.errors++;
         throw new Error(`OpenRouter HTTP ${status}`);
       }
-      
+
       const data=await response.json();
-      
+
       if(data.error){
         log(`❌ OpenRouter: ${data.error.message||JSON.stringify(data.error)}`);
         tokenStats.errors++;
         throw new Error(data.error.message||"OpenRouter error");
       }
-      
+
       if(data.choices&&data.choices[0]&&data.choices[0].message){
         const aiReply=data.choices[0].message.content;
         if(!aiReply||aiReply.trim()===''){
@@ -829,14 +874,17 @@ async function callOpenRouter(promptText){
           tokenStats.orIn+=inT; tokenStats.orOut+=outT; tokenStats.orReq++;
           updateTokenStatsDisplay();
         }
-        chatHistory.push({role:"user",parts:[{text:promptText}]});
-        chatHistory.push({role:"model",parts:[{text:aiReply}]});
-        if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
+        // ✅ Chỉ push vào chatHistory nếu KHÔNG phải AI Gen
+        if(!isAiGenCall){
+          chatHistory.push({role:"user",parts:[{text:promptText}]});
+          chatHistory.push({role:"model",parts:[{text:aiReply}]});
+          if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
+        }
         return aiReply;
       }
-      
+
       throw new Error("OpenRouter response không hợp lệ");
-      
+
     }catch(e){
       if(attempt>=maxAttempts){
         tokenStats.errors++;
@@ -855,10 +903,9 @@ async function callAI(promptText, isFirstCall=false){
   const isNsfw=detectNsfwIntent(actionText);
   const orKey=document.getElementById('openRouterKey').value.trim();
   const geminiKey=document.getElementById('apiKey').value.trim();
-  
-  // Quyết định provider
+
   const useOpenRouter = isNsfw && settings.autoSwitch && orKey;
-  
+
   if(useOpenRouter){
     log("🎯 Phát hiện NSFW → dùng OpenRouter");
     try{
@@ -866,8 +913,7 @@ async function callAI(promptText, isFirstCall=false){
       return reply;
     }catch(e){
       log(`❌ OpenRouter fail: ${e.message}`);
-      
-      // Fallback
+
       if(settings.autoFallback && geminiKey){
         log("🔄 Fallback về Gemini...");
         log("⚠️ Nội dung NSFW có thể bị filter");
@@ -885,7 +931,6 @@ async function callAI(promptText, isFirstCall=false){
       }
     }
   }else{
-    // Không NSFW → dùng Gemini
     if(isNsfw){
       log("⚠️ NSFW nhưng autoSwitch tắt hoặc thiếu OR key → dùng Gemini");
     }
@@ -894,7 +939,6 @@ async function callAI(promptText, isFirstCall=false){
       return await callGemini(promptText, isFirstCall);
     }catch(e){
       log(`❌ Gemini fail: ${e.message}`);
-      // Nếu Gemini fail và có OR key → thử OpenRouter như phương án cuối
       if(orKey){
         log("🔄 Gemini fail, thử OpenRouter...");
         try{
@@ -910,7 +954,7 @@ async function callAI(promptText, isFirstCall=false){
 }
 
 // ============================================================
-// AI GEN
+// AI GEN - FIX KHÔNG PUSH VÀO CHATHISTORY
 // ============================================================
 async function aiGenField(fieldId,promptMsg){
   const field=document.getElementById(fieldId);
@@ -919,10 +963,20 @@ async function aiGenField(fieldId,promptMsg){
   field.value="AI đang suy nghĩ...";
   const geminiKey=document.getElementById('apiKey').value.trim();
   if(!geminiKey){field.value=originalVal;alert("Cần Gemini API Key để dùng AI Gen!");return;}
+
+  // ✅ Đánh dấu đây là AI Gen → callGemini sẽ KHÔNG push vào chatHistory
+  isAiGenCall=true;
+
   try{
     const res=await callGemini(`Đóng vai Game Master tu tiên, tạo nội dung ngắn gọn cho mục: ${promptMsg}. Chỉ trả về text, không giải thích.`,false);
     if(res){field.value=res;}else{field.value=originalVal;}
-  }catch(e){log("AI Gen lỗi: "+e.message);field.value=originalVal;}
+  }catch(e){
+    log("AI Gen lỗi: "+e.message);
+    field.value=originalVal;
+  }finally{
+    // ✅ Luôn reset cờ sau khi xong
+    isAiGenCall=false;
+  }
 }
 
 // ============================================================
@@ -1080,20 +1134,15 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER FALLBACK</div><div class="thiendao-result-body">
-✅ Thêm OpenRouter làm provider phụ cho NSFW
-✅ Hàm detectNsfwIntent() phát hiện 60+ keyword VI/EN
-✅ Hàm callOpenRouter() format OpenAI API
-✅ Hàm callAI() unified điều phối
-✅ Fallback tự động OpenRouter → Gemini khi lỗi
-✅ Retry 5xx server error
-✅ Token stats tách riêng 2 provider
-✅ Đếm số lần fallback
-✅ 3 toggle điều khiển: autoSwitch, autoFallback, retry5xx
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.1 (2026-10-05) - FIX AI GEN</div><div class="thiendao-result-body">
+🐛 Lỗi: AI Gen push prompt vào chatHistory → summary tóm tắt cả prompt AI Gen → nhiễu cốt truyện.
+✅ Fix: Thêm cờ isAiGenCall → callGemini không push khi là AI Gen.
+✅ Thêm: Nút "Test OpenRouter Key" trong sidebar.
+✅ Thêm: Validate key format sk-or-v1- trước khi gọi API.
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.4 (2026-10-04) - FIX TRÙNG NPC</div><div class="thiendao-result-body">Thêm ID NPC, AI giữ nguyên ID, match theo ID</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - TỐI ƯU FREE TIER</div><div class="thiendao-result-body">Bỏ cache, nén rules 75%, chỉ gửi rules lượt đầu</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.2 (2026-10-02) - GEMINI 3.5</div><div class="thiendao-result-body">Đổi model, thêm dropdown chọn model</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER</div><div class="thiendao-result-body">OpenRouter + fallback + detectNsfwIntent</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.4 (2026-10-04) - NPC ID</div><div class="thiendao-result-body">Thêm ID NPC, AI giữ nguyên ID</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - FREE TIER</div><div class="thiendao-result-body">Bỏ cache, nén rules 75%</div></div>`;
   html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Tag version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
   resultsDiv.innerHTML=html;
 }

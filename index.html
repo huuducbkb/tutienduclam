@@ -3,36 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.3 - AI RPG (Dynamic Scope Registry)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.4 - AI RPG (World Config Export/Import)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
+     v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG
+     ─────────────────────────────────────────────────────────
+     ✅ Thêm nút "📤 Xuất Cấu Hình" trong tab World.
+     ✅ Thêm nút "📥 Nhập Cấu Hình" — restore từ file JSON.
+     ✅ Bao gồm: World fields + NVC fields + Scope Registry + Model + Settings.
+     ✅ Có validate + confirm trước khi ghi đè.
+     
      v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY (FEW-SHOT)
      ─────────────────────────────────────────────────────────
-     ✅ Thêm Dynamic Scope Registry — user tự định nghĩa scope.
+     ✅ Dynamic Scope Registry — user tự định nghĩa scope.
      ✅ Mỗi scope gồm: ID + Label + Trigger keywords + Exemplar.
      ✅ detectSceneScope() dynamic match theo registry.
      ✅ getStyleExemplarBlock() tra registry → inject có điều kiện.
      ✅ Scope isolation: chỉ inject khi action match trigger.
      ✅ Save/Load bao gồm scopeRegistry.
-     ✅ Reset game reset exemplar của các scope.
-     ✅ Preset 4 scope mặc định: đặc biệt / chiến đấu / đối thoại / tu luyện.
      
      v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE
      ─────────────────────────────────────────────────────────
-     ✅ Thêm nút "📋 Copy Logs" — copy toàn bộ SYSTEM LOGS.
-     ✅ Thêm nút "🗑️ Clear" — xóa log.
-     ✅ Cập nhật dropdown model OpenRouter — thêm Gemma 4 31B, 
-        Qwen 3.6 Plus, Nemotron Super 120B, Auto Router.
-     ✅ Thêm option "Nhập tay model ID" — dùng model bất kỳ.
-     ✅ Sửa callOpenRouter() hỗ trợ model custom.
+     ✅ Nút "📋 Copy Logs" — copy toàn bộ SYSTEM LOGS.
+     ✅ Nút "🗑️ Clear" — xóa log.
+     ✅ Cập nhật dropdown model OpenRouter.
+     ✅ Thêm option "Nhập tay model ID".
      
      v2.5.1 (2026-10-05) - FIX AI GEN LÀM NHIỄU SUMMARY
      ─────────────────────────────────────────────────────────
-     🐛 Lỗi: AI Gen push prompt vào chatHistory → summary nhiễu.
-     ✅ Fix: Thêm cờ isAiGenCall → callGemini không push khi AI Gen.
+     ✅ Thêm cờ isAiGenCall → callGemini không push khi AI Gen.
      
      v2.5 (2026-10-05) - MULTI-PROVIDER FALLBACK
      ─────────────────────────────────────────────────────────
@@ -156,11 +158,16 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .provider-gemini{background:rgba(56,139,253,.2);color:#388bfd;border:1px solid #388bfd}
 .provider-openrouter{background:rgba(227,112,45,.2);color:#e3702d;border:1px solid #e3702d}
 .key-warning{font-size:10px;color:var(--accent-gold);margin-top:2px}
+.config-box{background:#0d1a0d;padding:10px;border-radius:6px;border:1px solid #238636;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.config-info{flex:1;min-width:200px}
+.config-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn-config{background:var(--accent-purple);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
+.btn-config.import{background:var(--accent-blue)}
 </style>
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.3</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.4</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -248,6 +255,20 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
 </div>
 <div id="world" class="tab-content active">
+
+<!-- ============ EXPORT / IMPORT WORLD CONFIG ============ -->
+<div class="config-box">
+  <div class="config-info">
+    <div class="label-title" style="color:#3fb950">📦 QUẢN LÝ CẤU HÌNH WORLD</div>
+    <div class="label-desc">Xuất/nhập toàn bộ cấu hình tab World + Scope Registry (không bao gồm save game).</div>
+  </div>
+  <div class="config-actions">
+    <button class="btn-config" onclick="exportWorldConfig()">📤 Xuất Cấu Hình</button>
+    <button class="btn-config import" onclick="importWorldConfig()">📥 Nhập Cấu Hình</button>
+    <input type="file" id="worldConfigFileInput" style="display:none" accept=".json" onchange="handleWorldConfigImport(event)">
+  </div>
+</div>
+
 <div class="form-group" style="background:#1c150c;padding:10px;border-radius:6px;border:1px solid #b8860b">
 <div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUI TẮC TỐI CAO</div><div class="label-desc">AI căn cứ vào đây để duy trì mô tuýp truyện.</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Chỉ thị bắt buộc mô tuýp truyện gốc, viết ngắn gọn dưới 200 từ')">✨ AI GEN</button></div>
 <textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:70px" placeholder="VD: Phàm Nhân Tu Tiên chính tông..."></textarea>
@@ -279,7 +300,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.3</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.4</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -354,7 +375,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.3 (Dynamic Scope Registry) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.4 (World Config Export/Import) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -375,7 +396,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=253;
+const DB_VERSION=254;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -409,7 +430,7 @@ let systemRulesSentThisSession=false;
 let isAiGenCall=false;
 
 // ============================================================
-// DYNAMIC SCOPE REGISTRY (v2.5.3)
+// DYNAMIC SCOPE REGISTRY
 // ============================================================
 let scopeRegistry = [
   {
@@ -605,6 +626,99 @@ ${sample}
 }
 
 // ============================================================
+// EXPORT / IMPORT WORLD CONFIG
+// ============================================================
+function exportWorldConfig(){
+  try{
+    const config = {
+      _meta: { app:'HongDucTuTien', version:'v2.5.4', type:'world_config', exportedAt:new Date().toISOString() },
+      fields: {},
+      scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
+      currentModel: CACHE_MODEL,
+      settings: JSON.parse(JSON.stringify(settings)),
+      fieldIds: [...fieldsToReset]
+    };
+    fieldsToReset.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) config.fields[id] = el.value;
+    });
+    const diffEl = document.getElementById('difficultySelect');
+    if(diffEl) config.fields['difficultySelect'] = diffEl.value;
+    
+    const blob = new Blob([JSON.stringify(config, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+    a.download = `hongduc_world_config_${ts}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    log(`📤 Đã xuất cấu hình World (${Object.keys(config.fields).length} fields + ${scopeRegistry.length} scopes).`);
+  }catch(e){
+    log("❌ Lỗi xuất cấu hình: " + e.message);
+    alert("❌ Lỗi xuất cấu hình:\n" + e.message);
+  }
+}
+
+function importWorldConfig(){
+  document.getElementById('worldConfigFileInput').click();
+}
+
+function handleWorldConfigImport(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const config = JSON.parse(e.target.result);
+      if(!config._meta || config._meta.type !== 'world_config'){
+        if(!confirm("⚠️ File không phải cấu hình World của game này.\nVẫn tiếp tục import?")) return;
+      }
+      const fieldCount = config.fields ? Object.keys(config.fields).length : 0;
+      const scopeCount = config.scopeRegistry ? config.scopeRegistry.length : 0;
+      const msg = `📥 IMPORT CẤU HÌNH WORLD\n\n` +
+                  `• Fields: ${fieldCount}\n` +
+                  `• Scope Registry: ${scopeCount}\n` +
+                  `• Model: ${config.currentModel||'(không có)'}\n` +
+                  `• Xuất lúc: ${config._meta?.exportedAt||'(không rõ)'}\n\n` +
+                  `⚠️ Sẽ GHI ĐÈ cấu hình hiện tại. Tiếp tục?`;
+      if(!confirm(msg)) return;
+      
+      let importedFields = 0;
+      if(config.fields && typeof config.fields === 'object'){
+        Object.keys(config.fields).forEach(id => {
+          const el = document.getElementById(id);
+          if(el){ el.value = config.fields[id]; importedFields++; }
+        });
+      }
+      if(config.scopeRegistry && Array.isArray(config.scopeRegistry)){
+        scopeRegistry = config.scopeRegistry;
+        renderScopeRegistry();
+      }
+      if(config.currentModel){
+        CACHE_MODEL = config.currentModel;
+        const modelSel = document.getElementById('modelSelect');
+        if(modelSel){
+          const opt = Array.from(modelSel.options).find(o => o.value === config.currentModel);
+          if(opt) modelSel.value = config.currentModel;
+        }
+      }
+      if(config.settings && typeof config.settings === 'object'){
+        Object.assign(settings, config.settings);
+        syncToggleUI();
+      }
+      updateTokenStatsDisplay();
+      log(`✅ Đã nhập cấu hình: ${importedFields} fields + ${scopeRegistry.length} scopes.`);
+      alert(`✅ IMPORT THÀNH CÔNG!\n\n• Fields đã nhập: ${importedFields}\n• Scopes: ${scopeRegistry.length}\n\nBấm "💾 Lưu Game" để lưu vào IndexedDB.`);
+    }catch(err){
+      log("❌ Lỗi nhập cấu hình: " + err.message);
+      alert("❌ File không hợp lệ!\n\n" + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============================================================
 // INDEXEDDB
 // ============================================================
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=(evt)=>{const db=evt.target.result;if(!db.objectStoreNames.contains(STORE_NAME)){db.createObjectStore(STORE_NAME);}};req.onsuccess=(evt)=>resolve(evt.target.result);req.onerror=(evt)=>reject("Lỗi IndexedDB: "+evt.target.error);});}
@@ -752,7 +866,7 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.3_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.4_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -1344,14 +1458,13 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">
-✅ Dynamic Scope Registry — user tự định nghĩa scope (ID + Label + Triggers + Exemplar).
-✅ detectSceneScope() match động theo registry.
-✅ getStyleExemplarBlock() inject có điều kiện theo scope.
-✅ Scope isolation: chỉ inject khi action match trigger.
-✅ Save/Load bao gồm scopeRegistry.
-✅ Preset 4 scope: đặc biệt / chiến đấu / đối thoại / tu luyện.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">
+✅ Thêm nút "📤 Xuất Cấu Hình" trong tab World.
+✅ Thêm nút "📥 Nhập Cấu Hình" — restore từ file JSON.
+✅ Bao gồm: World fields + NVC fields + Scope Registry + Model + Settings.
+✅ Có validate + confirm trước khi ghi đè.
 </div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">Nút Copy/Clear Logs + model OpenRouter mới + custom model ID.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.1 (2026-10-05) - FIX AI GEN</div><div class="thiendao-result-body">Cờ isAiGenCall → không push vào chatHistory.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER</div><div class="thiendao-result-body">OpenRouter + fallback + detectNsfwIntent.</div></div>`;

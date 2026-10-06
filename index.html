@@ -3,11 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.4 - AI RPG (World Config Export/Import)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.5 - AI RPG (NPC Pin + Lock + Auto-filter)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
+     
+     v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
+     ─────────────────────────────────────────────────────────
+     ✅ Thêm nút 📌/📍 ghim NPC quan trọng lên đầu danh sách.
+     ✅ Thêm nút 🔒/🔓 khóa quy tắc AI — AI không ghi đè khi đã khóa.
+     ✅ Tự động xóa NPC bị "đã phế/tẩu hỏa/si ngốc/mất ý thức" 
+        khỏi danh sách sống — TRỪ KHI có tick xanh (pinned).
+     ✅ Badge trạng thái: 💀 Đã chết / ⚠️ Đã phế.
+     ✅ Fix lỗi AI ghi đè quy tắc AI của NPC khi chơi tiếp.
      
      v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG
      ─────────────────────────────────────────────────────────
@@ -167,7 +176,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.4</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.5</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -300,7 +309,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.4</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.5</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -333,7 +342,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div id="npc" class="tab-content">
 <div class="section-tag"><span>👥 QUẢN LÝ NPCs SỐNG & QUAN HỆ</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
-<div class="label-desc">⚡ Mỗi NPC có ID định danh riêng — AI giữ nguyên ID khi cập nhật.</div>
+<div class="label-desc">⚡ Mỗi NPC có ID định danh riêng — AI giữ nguyên ID khi cập nhật.<br>📌 Tick xanh = NPC quan trọng (giữ lại bất chấp trạng thái, đẩy lên đầu).<br>🔒 Khóa quy tắc AI = AI không ghi đè quy tắc bạn tự thêm.</div>
 <div id="npcContainer" class="npc-grid"></div>
 <hr style="border-color:var(--border-color);margin:15px 0">
 <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT)</div>
@@ -375,7 +384,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.4 (World Config Export/Import) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.5 (NPC Pin + Lock + Auto-filter) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -396,7 +405,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=254;
+const DB_VERSION=255;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -428,6 +437,18 @@ let tokenStats={
 
 let systemRulesSentThisSession=false;
 let isAiGenCall=false;
+
+// ============================================================
+// TỪ KHÓA NHẬN DIỆN NPC KHÔNG CÒN HOẠT ĐỘNG
+// ============================================================
+const INACTIVE_KEYWORDS = [
+  'đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn',
+  'đã phế','bị phế','tàn phế','si ngốc','mất ý thức','tẩu hỏa',
+  'tẩu hỏa nhập ma','mất trí','hôn mê','bất tỉnh','phế nhân',
+  'không còn hành động','vô dụng','đã bị giết','bị chôn','thân tử đạo tiêu'
+];
+const DEATH_KEYWORDS = ['đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn'];
+const DISABLED_KEYWORDS = ['đã phế','bị phế','tàn phế','si ngốc','mất ý thức','tẩu hỏa','tẩu hỏa nhập ma','mất trí','hôn mê','bất tỉnh','phế nhân'];
 
 // ============================================================
 // DYNAMIC SCOPE REGISTRY
@@ -631,7 +652,7 @@ ${sample}
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.5.4', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.5', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -777,14 +798,141 @@ function uploadMcAvatarFile(event){const file=event.target.files[0];if(!file)ret
 // ============================================================
 function getAffinityInfo(val){if(val<=20)return{status:'Thù Địch',color:'#f85149'};if(val<=40)return{status:'Lạnh Nhạt',color:'#d29922'};if(val<=60)return{status:'Thân Thiết',color:'#388bfd'};if(val<=80)return{status:'Tin Tưởng',color:'#238636'};return{status:'Tri Kỷ / Nô Lệ',color:'#a371f7'};}
 
-function renderNpcs(){const container=document.getElementById('npcContainer');if(!npcList||npcList.length===0){container.innerHTML=`<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có NPC. Bấm "THÊM NPC" để tạo.</div>`;return;}let html='';npcList.forEach((npc,index)=>{const affInfo=getAffinityInfo(npc.affinity);if(!npc.avatar||npc.avatar.trim()==='')npc.avatar=generateAutoAvatar(npc.name);const hasAvatar=npc.avatar&&npc.avatar.trim()!=='';if(!npc.id)npc.id=generateNpcId();html+=`<div class="npc-card" id="npc-card-${npc.id}"><button style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px" onclick="removeNpc(${index})">✕</button><div class="npc-header"><div class="avatar-box" style="width:70px;height:70px;border-color:${affInfo.color}">${hasAvatar?`<img src="${npc.avatar}" alt="${npc.name}">`:`<span class="avatar-placeholder" style="font-size:28px">👤</span>`}</div><div style="flex:1"><input type="text" value="${npc.name||''}" style="font-weight:bold;padding:4px;margin-bottom:4px" placeholder="Tên NPC..." onchange="updateNpcField(${index},'name',this.value)"><input type="text" value="${npc.identity||''}" style="font-size:11px;padding:4px" placeholder="Thân phận..." onchange="updateNpcField(${index},'identity',this.value)"><span class="npc-id-badge">ID: ${npc.id}</span></div></div><div style="margin-bottom:6px;display:flex;gap:6px"><label class="btn-upload-file" style="padding:3px 8px;font-size:10px;flex:1">📷 Tải ảnh...<input type="file" style="display:none" accept="image/*" onchange="uploadNpcAvatar(event,${index})"></label>${hasAvatar?`<button class="btn-remove-avatar" style="padding:3px 6px;font-size:10px" onclick="removeNpcAvatar(${index})">✕ Xóa</button>`:''}</div><div class="form-group" style="margin-bottom:8px"><textarea style="min-height:50px;font-size:12px;padding:6px" placeholder="Tính cách..." onchange="updateNpcField(${index},'personality',this.value)">${npc.personality||''}</textarea></div><div class="form-group" style="margin-bottom:8px"><div style="font-size:10px;color:var(--accent-gold);font-weight:bold">⚙️ QUY TẮC AI:</div><textarea style="min-height:40px;font-size:11px;padding:6px" placeholder="Quy tắc điều khiển NPC..." onchange="updateNpcField(${index},'npcRules',this.value)">${npc.npcRules||''}</textarea></div><div class="affinity-container"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:bold"><span>❤ Hảo Cảm:</span><span style="color:${affInfo.color}">${npc.affinity}/100 (${affInfo.status})</span></div><div class="affinity-bar-bg"><div class="affinity-bar-fill" style="width:${Math.max(0,Math.min(100,npc.affinity))}%;background:${affInfo.color}"></div></div><div class="affinity-btns"><div><button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-5)">-5</button> <button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-1)">-1</button></div><div><button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},1)">+1</button> <button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},5)">+5</button></div></div></div></div>`;});container.innerHTML=html;}
+function renderNpcs(){
+  const container=document.getElementById('npcContainer');
+  if(!npcList||npcList.length===0){
+    container.innerHTML=`<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có NPC. Bấm "THÊM NPC" để tạo.</div>`;
+    return;
+  }
+  
+  // Sắp xếp: pinned lên đầu, còn lại giữ nguyên thứ tự gốc
+  const sortedNpcs = [...npcList].sort((a,b) => {
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    return 0;
+  });
+  
+  const getOriginalIndex = (npc) => npcList.indexOf(npc);
+  
+  let html='';
+  sortedNpcs.forEach((npc)=>{
+    const index = getOriginalIndex(npc);
+    const affInfo=getAffinityInfo(npc.affinity);
+    if(!npc.avatar||npc.avatar.trim()==='')npc.avatar=generateAutoAvatar(npc.name);
+    const hasAvatar=npc.avatar&&npc.avatar.trim()!=='';
+    if(!npc.id)npc.id=generateNpcId();
+    
+    // Badge trạng thái đặc biệt
+    let statusBadge = '';
+    const statusText = (npc.status || '').toLowerCase();
+    const rulesText = (npc.npcRules || '').toLowerCase();
+    const combined = statusText + ' ' + rulesText;
+    
+    if(DEATH_KEYWORDS.some(kw => combined.includes(kw))){
+      statusBadge = `<span style="background:rgba(218,54,51,.2);color:#f85149;border:1px solid #da3633;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">💀 Đã chết</span>`;
+    } else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))){
+      statusBadge = `<span style="background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">⚠️ Đã phế${npc.pinned?'':' (sẽ xóa nếu không tick xanh)'}</span>`;
+    }
+    
+    // Nút ghim
+    const pinBtn = `<button style="background:none;border:none;color:${npc.pinned?'#3fb950':'#666'};cursor:pointer;font-size:14px;padding:0 4px" onclick="togglePinNpc(${index})" title="${npc.pinned?'Bỏ ghim':'Ghim lên đầu'}">${npc.pinned?'📌':'📍'}</button>`;
+    
+    // Nút khóa quy tắc
+    const lockBtn = `<button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:11px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa quy tắc':'Khóa quy tắc (AI không ghi đè)'}">${npc.lockedRules?'🔒':'🔓'}</button>`;
+    
+    // Style viền card
+    let cardBorderColor = '';
+    if(npc.pinned){
+      cardBorderColor = '#3fb950';
+    } else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))){
+      cardBorderColor = '#d29922';
+    }
+    
+    html+=`<div class="npc-card" id="npc-card-${npc.id}" style="${cardBorderColor?`border-color:${cardBorderColor};${npc.pinned?'box-shadow:0 0 8px rgba(63,185,80,.3)':''}`:''}">
+      <div style="position:absolute;top:8px;right:8px;display:flex;gap:2px;align-items:center">
+        ${pinBtn}
+        ${lockBtn}
+        <button style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px" onclick="removeNpc(${index})">✕</button>
+      </div>
+      <div class="npc-header">
+        <div class="avatar-box" style="width:70px;height:70px;border-color:${npc.pinned?'#3fb950':affInfo.color}">
+          ${hasAvatar?`<img src="${npc.avatar}" alt="${npc.name}">`:`<span class="avatar-placeholder" style="font-size:28px">👤</span>`}
+        </div>
+        <div style="flex:1">
+          <input type="text" value="${npc.name||''}" style="font-weight:bold;padding:4px;margin-bottom:4px" placeholder="Tên NPC..." onchange="updateNpcField(${index},'name',this.value)">
+          <input type="text" value="${npc.identity||''}" style="font-size:11px;padding:4px" placeholder="Thân phận..." onchange="updateNpcField(${index},'identity',this.value)">
+          <span class="npc-id-badge">ID: ${npc.id}</span>${statusBadge}
+        </div>
+      </div>
+      <div style="margin-bottom:6px;display:flex;gap:6px">
+        <label class="btn-upload-file" style="padding:3px 8px;font-size:10px;flex:1">📷 Tải ảnh...<input type="file" style="display:none" accept="image/*" onchange="uploadNpcAvatar(event,${index})"></label>
+        ${hasAvatar?`<button class="btn-remove-avatar" style="padding:3px 6px;font-size:10px" onclick="removeNpcAvatar(${index})">✕ Xóa</button>`:''}
+      </div>
+      <div class="form-group" style="margin-bottom:8px">
+        <textarea style="min-height:50px;font-size:12px;padding:6px" placeholder="Tính cách..." onchange="updateNpcField(${index},'personality',this.value)">${npc.personality||''}</textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:8px">
+        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;display:flex;justify-content:space-between;align-items:center">
+          <span>⚙️ QUY TẮC AI: ${npc.lockedRules?'<span style="color:#d29922">(ĐÃ KHÓA)</span>':''}</span>
+          <button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:12px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa':'Khóa để AI không ghi đè'}">${npc.lockedRules?'🔒':'🔓'}</button>
+        </div>
+        <textarea style="min-height:40px;font-size:11px;padding:6px;${npc.lockedRules?'border-color:#d29922;':''}" placeholder="Quy tắc điều khiển NPC..." onchange="updateNpcField(${index},'npcRules',this.value)">${npc.npcRules||''}</textarea>
+      </div>
+      <div class="affinity-container">
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:bold">
+          <span>❤ Hảo Cảm:</span>
+          <span style="color:${affInfo.color}">${npc.affinity}/100 (${affInfo.status})</span>
+        </div>
+        <div class="affinity-bar-bg"><div class="affinity-bar-fill" style="width:${Math.max(0,Math.min(100,npc.affinity))}%;background:${affInfo.color}"></div></div>
+        <div class="affinity-btns">
+          <div><button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-5)">-5</button> <button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-1)">-1</button></div>
+          <div><button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},1)">+1</button> <button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},5)">+5</button></div>
+        </div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML=html;
+}
 
-function addNewNpcCard(){const newName='NPC Mới '+(npcList.length+1);npcList.push({id:generateNpcId(),name:newName,identity:'Luyện Khí sơ kỳ',personality:'Chưa rõ.',npcRules:'Tuân thủ thiết lập.',avatar:generateAutoAvatar(newName),affinity:50});renderNpcs();}
+function addNewNpcCard(){
+  const newName='NPC Mới '+(npcList.length+1);
+  npcList.push({
+    id:generateNpcId(),
+    name:newName,
+    identity:'Luyện Khí sơ kỳ',
+    personality:'Chưa rõ.',
+    npcRules:'Tuân thủ thiết lập.',
+    avatar:generateAutoAvatar(newName),
+    affinity:50,
+    pinned:false,
+    lockedRules:false,
+    status:''
+  });
+  renderNpcs();
+}
 function removeNpc(index){if(confirm("Xóa NPC này?")){npcList.splice(index,1);renderNpcs();}}
 function updateNpcField(index,field,value){if(npcList[index]){npcList[index][field]=value;if(field==='name'&&(!npcList[index].avatar||npcList[index].avatar.includes('dicebear')))npcList[index].avatar=generateAutoAvatar(value);renderNpcs();log(`Đã đổi ${field} của NPC [${npcList[index].id}] → "${value}"`);}}
 function changeAffinity(index,delta){if(npcList[index]){let val=(npcList[index].affinity||0)+delta;npcList[index].affinity=Math.min(100,Math.max(-100,val));renderNpcs();}}
 function removeNpcAvatar(index){if(npcList[index]){npcList[index].avatar='';renderNpcs();log(`Reset ảnh NPC [${npcList[index].name}]`);}}
 function uploadNpcAvatar(event,index){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);const resizedBase64=canvas.toDataURL('image/jpeg',0.85);npcList[index].avatar=resizedBase64;renderNpcs();log(`Cập nhật ảnh NPC [${npcList[index].name}]!`);};img.src=e.target.result;};reader.readAsDataURL(file);}
+
+// Toggle ghim NPC
+function togglePinNpc(index){
+  if(npcList[index]){
+    npcList[index].pinned = !npcList[index].pinned;
+    log(`${npcList[index].pinned?'📌 Đã ghim':'📍 Đã bỏ ghim'} NPC [${npcList[index].name}]`);
+    renderNpcs();
+  }
+}
+
+// Toggle khóa quy tắc AI
+function toggleLockRules(index){
+  if(npcList[index]){
+    npcList[index].lockedRules = !npcList[index].lockedRules;
+    log(`${npcList[index].lockedRules?'🔒 Đã khóa':'🔓 Đã mở khóa'} quy tắc AI của NPC [${npcList[index].name}]`);
+    renderNpcs();
+  }
+}
 
 // ============================================================
 // LOCATIONS
@@ -857,7 +1005,7 @@ async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu
 // ============================================================
 async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,scopeRegistry:scopeRegistry,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
-async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
+async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
 function syncToggleUI(){
   ['autoSwitch','autoFallback','retry5xx'].forEach(name=>{
@@ -866,11 +1014,11 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.4_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.5_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList)npcList=gameData.npcList;if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
+window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
 
 // ============================================================
 // UNDO
@@ -924,7 +1072,8 @@ function getCodexMemoryPrompt(){
   if(npcList.length>0){
     npcSummary=npcList.map(n=>{
       if(!n.id)n.id=generateNpcId();
-      return `• [${n.id}] ${n.name}[${n.identity||'?'}]❤${n.affinity!==undefined?n.affinity:50}`;
+      const statusTag = n.status ? ` [${n.status}]` : '';
+      return `• [${n.id}] ${n.name}[${n.identity||'?'}]❤${n.affinity!==undefined?n.affinity:50}${statusTag}`;
     }).join('\n');
   }else npcSummary='Chưa có';
 
@@ -1010,7 +1159,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 {
   "mcLevel":"...","mcGameTime":"...","mcSkills":"...",
   "mcInventoryList":[{"name":"...","icon":"🌟","quantity":1,"quality":"...","effect":"..."}],
-  "npcActiveList":[{"id":"npc_xxx","name":"...","identity":"...","personality":"...","npcRules":"...","affinity":50}],
+  "npcActiveList":[{"id":"npc_xxx","name":"...","identity":"...","personality":"...","npcRules":"...","affinity":50,"status":"Bình thường"}],
   "locationsList":[{"name":"...","icon":"🏛","position":"...","danger":"...","desc":"..."}],
   "eventsList":[{"name":"...","timeNote":"...","accessRules":"...","events":"..."}],
   "weaponsList":[{"name":"...","icon":"🗡️","rank":"...","usage":"..."}],
@@ -1023,6 +1172,11 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Khi trả về "npcActiveList", BẮT BUỘC giữ nguyên "id" của NPC đã có.
 - Nếu NPC đổi tên → CHỈ đổi "name", KHÔNG tạo ID mới.
 - TUYỆT ĐỐI KHÔNG tạo 2 entry cho cùng 1 NPC với 2 ID khác nhau.
+
+# QUY TẮC NPC KHÔNG CÒN HOẠT ĐỘNG (CỰC KỲ QUAN TRỌNG)
+- Nếu NPC CHẾT (tử vong, tử trận, hy sinh) → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
+- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC / MẤT Ý THỨC / TÀN PHẾ → thêm trường "status" với giá trị tương ứng (VD: "Đã phế", "Tẩu hỏa nhập ma", "Si ngốc"), và VẪN GIỮ trong "npcActiveList" (hệ thống sẽ tự lọc).
+- KHÔNG tự ý giữ NPC đã chết trong "npcActiveList".
 
 # NGUYÊN TẮC MẠCH LẠC
 - Trước khi viết, ĐỌC LẠI Codex + Tóm tắt để đảm bảo nhất quán.
@@ -1355,7 +1509,22 @@ function parseAndAutoUpdateCodex(fullResponseText){
             if(aiNpc.personality)exist.personality=aiNpc.personality;
             if(aiNpc.affinity!==undefined)exist.affinity=aiNpc.affinity;
             if(aiNpc.avatar)exist.avatar=aiNpc.avatar;
-            if(aiNpc.npcRules)exist.npcRules=aiNpc.npcRules;
+            
+            // Cập nhật npcRules CHỈ KHI:
+            // 1. AI trả về giá trị khác rỗng
+            // 2. VÀ NPC chưa bị khóa quy tắc thủ công
+            if(aiNpc.npcRules !== undefined && aiNpc.npcRules !== null && String(aiNpc.npcRules).trim() !== ''){
+              if(!exist.lockedRules){
+                exist.npcRules = aiNpc.npcRules;
+              } else {
+                log(`🔒 Giữ nguyên quy tắc AI của [${exist.name}] (đã khóa)`);
+              }
+            }
+            
+            // Cập nhật status nếu AI trả về
+            if(aiNpc.status !== undefined){
+              exist.status = aiNpc.status;
+            }
           }else{
             npcList.push({
               id:aiNpc.id||generateNpcId(),
@@ -1364,12 +1533,14 @@ function parseAndAutoUpdateCodex(fullResponseText){
               personality:aiNpc.personality||'Chưa rõ',
               npcRules:aiNpc.npcRules||'Tuân thủ thiết lập.',
               avatar:aiNpc.avatar||generateAutoAvatar(aiNpc.name),
-              affinity:aiNpc.affinity!==undefined?aiNpc.affinity:50
+              affinity:aiNpc.affinity!==undefined?aiNpc.affinity:50,
+              pinned:false,
+              lockedRules:false,
+              status:aiNpc.status||''
             });
             log(`> Thêm NPC mới: [${aiNpc.id||'auto'}] ${aiNpc.name}`);
           }
         });
-        renderNpcs();
       }
 
       if(codexData.locationsList!==undefined&&Array.isArray(codexData.locationsList)){let currentLocsText=document.getElementById('locations').value;let existingLocs=[];try{if(currentLocsText.trim().startsWith('['))existingLocs=JSON.parse(currentLocsText);}catch(e){}codexData.locationsList.forEach(newLoc=>{if(!newLoc||!newLoc.name)return;let found=existingLocs.find(l=>l.name.toLowerCase().trim()===newLoc.name.toLowerCase().trim());if(found){if(newLoc.danger)found.danger=newLoc.danger;if(newLoc.position)found.position=newLoc.position;if(newLoc.desc)found.desc=newLoc.desc;if(newLoc.icon)found.icon=newLoc.icon;}else{existingLocs.push(newLoc);}});renderLocationsVisual(existingLocs);document.getElementById('locations').value=JSON.stringify(existingLocs,null,2);}
@@ -1378,7 +1549,47 @@ function parseAndAutoUpdateCodex(fullResponseText){
 
       if(codexData.weaponsList!==undefined&&Array.isArray(codexData.weaponsList)){renderWeaponsVisual(codexData.weaponsList);document.getElementById('worldItems').value=JSON.stringify(codexData.weaponsList,null,2);}
 
-      if(codexData.npcArchive!==undefined){let archiveStr='';if(typeof codexData.npcArchive==='object'){if(Array.isArray(codexData.npcArchive))archiveStr=codexData.npcArchive.map(item=>typeof item==='string'?item:JSON.stringify(item)).join('\n');else archiveStr=JSON.stringify(codexData.npcArchive,null,2);}else archiveStr=String(codexData.npcArchive);document.getElementById('npcArchive').value=archiveStr;if(archiveStr.trim()!==''){npcList=npcList.filter(npc=>{let nName=npc.name.toLowerCase().trim();if(nName&&archiveStr.toLowerCase().includes(nName)){log(`> Loại bỏ NPC đã chết [${npc.id}] ${npc.name}.`);return false;}return true;});renderNpcs();}}
+      if(codexData.npcArchive!==undefined){let archiveStr='';if(typeof codexData.npcArchive==='object'){if(Array.isArray(codexData.npcArchive))archiveStr=codexData.npcArchive.map(item=>typeof item==='string'?item:JSON.stringify(item)).join('\n');else archiveStr=JSON.stringify(codexData.npcArchive,null,2);}else archiveStr=String(codexData.npcArchive);document.getElementById('npcArchive').value=archiveStr;}
+
+      // ============================================================
+      // LỌC NPC KHÔNG CÒN HOẠT ĐỘNG (CHẾT / PHẾ / TẨU HỎA...)
+      // Quy tắc: xóa khỏi danh sách sống TRỪ KHI có tick xanh (pinned)
+      // ============================================================
+      const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
+      
+      npcList = npcList.filter(npc => {
+        // Tick xanh → LUÔN giữ lại
+        if(npc.pinned){
+          log(`📌 Giữ lại NPC [${npc.id}] ${npc.name} (đã tick xanh - quan trọng).`);
+          return true;
+        }
+        
+        // Gom tất cả text có thể chứa trạng thái
+        const haystack = [
+          npc.status || '',
+          npc.npcRules || '',
+          npc.personality || '',
+          npc.identity || ''
+        ].join(' ').toLowerCase();
+        
+        // Kiểm tra có chứa từ khóa "không còn hoạt động" không
+        const matchedKeyword = INACTIVE_KEYWORDS.find(kw => haystack.includes(kw));
+        if(matchedKeyword){
+          log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (trạng thái: "${matchedKeyword}").`);
+          return false;
+        }
+        
+        // Kiểm tra tên NPC có nằm trong npcArchive không
+        const nName = npc.name.toLowerCase().trim();
+        if(nName && archiveLower.includes(nName)){
+          log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (có trong Archive).`);
+          return false;
+        }
+        
+        return true;
+      });
+
+      renderNpcs();
 
       log("> Cập nhật Codex thành công!");
       let cleanText=fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i,'').trim();
@@ -1407,7 +1618,7 @@ function thienDaoExecute(){
   const resultsDiv=document.getElementById('thienDaoResults');
   if(!keyword){resultsDiv.innerHTML='<div class="thiendao-empty">Vui lòng nhập từ khóa!</div>';return;}
   let results=[];
-  npcList.forEach(npc=>{const text=JSON.stringify(npc).toLowerCase();if(text.includes(keyword)){results.push({title:`👤 NPC: ${npc.name}`,body:`ID: ${npc.id}\nThân phận: ${npc.identity}\nTính cách: ${npc.personality}\nQuy tắc AI: ${npc.npcRules}\nHảo cảm: ${npc.affinity}/100`,source:'Codex NPC'});}});
+  npcList.forEach(npc=>{const text=JSON.stringify(npc).toLowerCase();if(text.includes(keyword)){results.push({title:`👤 NPC: ${npc.name}`,body:`ID: ${npc.id}\nThân phận: ${npc.identity}\nTính cách: ${npc.personality}\nQuy tắc AI: ${npc.npcRules}\nHảo cảm: ${npc.affinity}/100${npc.status?`\nTrạng thái: ${npc.status}`:''}`,source:'Codex NPC'});}});
   const archiveText=document.getElementById('npcArchive').value||'';
   if(archiveText.toLowerCase().includes(keyword)){const lines=archiveText.split('\n').filter(l=>l.toLowerCase().includes(keyword));results.push({title:`💀 NPC đã chết`,body:lines.join('\n'),source:'NPC Archive'});}
   try{const locs=JSON.parse(document.getElementById('locations').value||'[]');locs.forEach(loc=>{const text=JSON.stringify(loc).toLowerCase();if(text.includes(keyword)){results.push({title:`📍 Địa danh: ${loc.name}`,body:`Vị trí: ${loc.position||'Chưa rõ'}\nNguy hiểm: ${loc.danger||'Thấp'}\nĐặc điểm: ${loc.desc||'Bình thường'}`,source:'Codex Địa danh'});}});}catch(e){}
@@ -1458,12 +1669,14 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">
-✅ Thêm nút "📤 Xuất Cấu Hình" trong tab World.
-✅ Thêm nút "📥 Nhập Cấu Hình" — restore từ file JSON.
-✅ Bao gồm: World fields + NVC fields + Scope Registry + Model + Settings.
-✅ Có validate + confirm trước khi ghi đè.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">
+✅ Thêm nút 📌/📍 ghim NPC quan trọng lên đầu danh sách.
+✅ Thêm nút 🔒/🔓 khóa quy tắc AI — AI không ghi đè khi đã khóa.
+✅ Tự động xóa NPC bị "đã phế/tẩu hỏa/si ngốc/mất ý thức" khỏi danh sách sống — TRỪ KHI có tick xanh (pinned).
+✅ Badge trạng thái: 💀 Đã chết / ⚠️ Đã phế.
+✅ Fix lỗi AI ghi đè quy tắc AI của NPC khi chơi tiếp.
 </div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">Xuất/nhập cấu hình World + Scope Registry.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">Nút Copy/Clear Logs + model OpenRouter mới + custom model ID.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.1 (2026-10-05) - FIX AI GEN</div><div class="thiendao-result-body">Cờ isAiGenCall → không push vào chatHistory.</div></div>`;

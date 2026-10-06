@@ -9,6 +9,12 @@
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
+     v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK
+     ─────────────────────────────────────────────────────────
+     ✅ Fix lỗi AI trả về mcInventoryList dạng mảng string 
+        → tự động normalize thành object {name, quantity, icon, quality, effect}.
+     ✅ Bổ sung ghi chú cứng trong prompt buộc AI trả đúng cấu trúc.
+
      v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
      ─────────────────────────────────────────────────────────
      ✅ Thêm nút 📌/📍 ghim NPC quan trọng lên đầu danh sách.
@@ -176,7 +182,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.5</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.6</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -309,7 +315,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.5</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.6</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -384,7 +390,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.5 (NPC Pin + Lock + Auto-filter) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.6 (NPC Pin + Lock + Auto-filter + Inventory Normalizer) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -405,7 +411,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=255;
+const DB_VERSION=256;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -652,7 +658,7 @@ ${sample}
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.5.5', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.6', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -1014,7 +1020,7 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.5_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.6_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -1158,7 +1164,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 \`\`\`json
 {
   "mcLevel":"...","mcGameTime":"...","mcSkills":"...",
-  "mcInventoryList":[{"name":"...","icon":"🌟","quantity":1,"quality":"...","effect":"..."}],
+  "mcInventoryList":[{"name":"Tên vật phẩm","icon":"📦","quantity":10,"quality":"Phẩm chất","effect":"Công dụng"}],
   "npcActiveList":[{"id":"npc_xxx","name":"...","identity":"...","personality":"...","npcRules":"...","affinity":50,"status":"Bình thường"}],
   "locationsList":[{"name":"...","icon":"🏛","position":"...","danger":"...","desc":"..."}],
   "eventsList":[{"name":"...","timeNote":"...","accessRules":"...","events":"..."}],
@@ -1166,6 +1172,18 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
   "npcArchive":"- Tên (lý do): đã chết."
 }
 \`\`\`
+
+# ⚠️ QUY TẮC ĐỊNH DẠNG mcInventoryList (CỰC KỲ QUAN TRỌNG - KHÔNG ĐƯỢC SAI)
+- TUYỆT ĐỐI KHÔNG trả về mảng string như: ["10 Hạ phẩm Linh thạch", "Tụ Khí Đan (2 viên)"].
+- BẮT BUỘC trả về mảng OBJECT, mỗi phần tử có cấu trúc:
+  {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"}
+- Nếu AI trả về string, hệ thống sẽ hiển thị "Vật phẩm lạ" → SAI.
+- Ví dụ ĐÚNG:
+  "mcInventoryList":[
+    {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"},
+    {"name":"Tụ Khí Đan","icon":"💊","quantity":2,"quality":"Hạ phẩm","effect":"Hỗ trợ tụ khí, tăng tốc tu luyện"},
+    {"name":"Phá Thiết Kiếm","icon":"🗡️","quantity":1,"quality":"Hạ phẩm","effect":"Pháp bảo tấn công cơ bản"}
+  ]
 
 # QUY TẮC NPC ID (CỰC KỲ QUAN TRỌNG)
 - Mỗi NPC trong Codex có ID dạng "npc_xxx".
@@ -1485,7 +1503,39 @@ function parseAndAutoUpdateCodex(fullResponseText){
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!=="")document.getElementById('mcGameTime').value=codexData.mcGameTime;
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
-      if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){const validInventory=codexData.mcInventoryList.filter(item=>(item.quantity===undefined||item.quantity>0));renderInventoryVisual(validInventory);document.getElementById('mcInventory').value=JSON.stringify(validInventory,null,2);}
+
+      // ============================================================
+      // ✅ FIX v2.5.6: NORMALIZE mcInventoryList
+      // Nếu AI trả về mảng string → tự động chuyển sang object
+      // ============================================================
+      if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
+        const normalizedInventory = codexData.mcInventoryList.map(item => {
+          if (typeof item === 'string') {
+            const match = item.match(/^(\d+)\s+(.+)$/);
+            if (match) {
+              return {
+                name: match[2],
+                icon: '📦',
+                quantity: parseInt(match[1]),
+                quality: 'Chưa rõ',
+                effect: 'Chưa rõ'
+              };
+            }
+            return {
+              name: item,
+              icon: '📦',
+              quantity: 1,
+              quality: 'Chưa rõ',
+              effect: 'Chưa rõ'
+            };
+          }
+          return item;
+        });
+
+        const validInventory = normalizedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
+        renderInventoryVisual(validInventory);
+        document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
+      }
 
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
@@ -1669,13 +1719,11 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">
-✅ Thêm nút 📌/📍 ghim NPC quan trọng lên đầu danh sách.
-✅ Thêm nút 🔒/🔓 khóa quy tắc AI — AI không ghi đè khi đã khóa.
-✅ Tự động xóa NPC bị "đã phế/tẩu hỏa/si ngốc/mất ý thức" khỏi danh sách sống — TRỪ KHI có tick xanh (pinned).
-✅ Badge trạng thái: 💀 Đã chết / ⚠️ Đã phế.
-✅ Fix lỗi AI ghi đè quy tắc AI của NPC khi chơi tiếp.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">
+✅ Fix lỗi AI trả về mcInventoryList dạng mảng string → tự động normalize thành object {name, quantity, icon, quality, effect}.
+✅ Bổ sung ghi chú cứng trong prompt buộc AI trả đúng cấu trúc object.
 </div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động, badge trạng thái.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">Xuất/nhập cấu hình World + Scope Registry.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">Nút Copy/Clear Logs + model OpenRouter mới + custom model ID.</div></div>`;

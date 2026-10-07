@@ -1702,8 +1702,31 @@ const sendAction=async()=>{
   setTimeout(()=>{const actionEl=document.getElementById(actionId);if(actionEl)actionEl.scrollIntoView({behavior:'smooth',block:'start'});},50);
 
   const needRulesResend=(chatHistory.length===0);
-  const sceneScope=detectSceneScope(actionText);
-  const styleReminder=getStyleExemplarBlock(sceneScope)
+const sceneScope=detectSceneScope(actionText);
+
+// 🔍 DEBUG EXEMPLAR (tạm thời - có thể xóa sau khi fix xong)
+try {
+  const dbgScope = scopeRegistry.find(s => s.id === sceneScope);
+  const rawEx = dbgScope?.exemplar || '';
+  const trimEx = rawEx.trim();
+  log(`🔍 [DEBUG] Scope matched: ${sceneScope}`);
+  log(`🔍 [DEBUG] Tìm thấy scope object: ${!!dbgScope}`);
+  log(`🔍 [DEBUG] Exemplar raw length: ${rawEx.length}`);
+  log(`🔍 [DEBUG] Exemplar trimmed length: ${trimEx.length}`);
+  log(`🔍 [DEBUG] 80 ký tự đầu: "${rawEx.substring(0,80).replace(/\n/g,' ')}"`);
+  if (!dbgScope) {
+    log(`❌ [DEBUG] KHÔNG tìm thấy scope trong registry!`);
+    log(`❌ [DEBUG] Danh sách scope IDs: ${scopeRegistry.map(s=>s.id).join(', ')}`);
+  } else if (trimEx.length === 0) {
+    log(`❌ [DEBUG] Exemplar TRỐNG → chưa điền hoặc chưa lưu!`);
+  } else {
+    log(`✅ [DEBUG] Exemplar CÓ NỘI DUNG → sẽ inject vào prompt`);
+  }
+} catch(err) {
+  log(`❌ [DEBUG] Lỗi: ${err.message}`);
+}
+
+const styleReminder=getStyleExemplarBlock(sceneScope)
     ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar đã cung cấp.\n`
     : '';
   const promptWithCodex=needRulesResend

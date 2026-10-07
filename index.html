@@ -3,67 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.5 - AI RPG (NPC Pin + Lock + Auto-filter)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.7 - AI RPG (Limit Events)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
+     v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI
+     ─────────────────────────────────────────────────────────
+     ✅ Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.
+     ✅ Sự kiện cũ vẫn được lưu đầy đủ trong tab Sự Kiện + RAW DATA.
+     ✅ Tiết kiệm ~700-800 tokens/lượt khi event list phình to.
+     
      v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK
      ─────────────────────────────────────────────────────────
      ✅ Fix lỗi AI trả về mcInventoryList dạng mảng string 
-        → tự động normalize thành object {name, quantity, icon, quality, effect}.
-     ✅ Bổ sung ghi chú cứng trong prompt buộc AI trả đúng cấu trúc.
-
+        → tự động normalize thành object.
+     
      v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
      ─────────────────────────────────────────────────────────
-     ✅ Thêm nút 📌/📍 ghim NPC quan trọng lên đầu danh sách.
-     ✅ Thêm nút 🔒/🔓 khóa quy tắc AI — AI không ghi đè khi đã khóa.
-     ✅ Tự động xóa NPC bị "đã phế/tẩu hỏa/si ngốc/mất ý thức" 
-        khỏi danh sách sống — TRỪ KHI có tick xanh (pinned).
-     ✅ Badge trạng thái: 💀 Đã chết / ⚠️ Đã phế.
-     ✅ Fix lỗi AI ghi đè quy tắc AI của NPC khi chơi tiếp.
+     ✅ Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.
      
      v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG
      ─────────────────────────────────────────────────────────
-     ✅ Thêm nút "📤 Xuất Cấu Hình" trong tab World.
-     ✅ Thêm nút "📥 Nhập Cấu Hình" — restore từ file JSON.
-     ✅ Bao gồm: World fields + NVC fields + Scope Registry + Model + Settings.
-     ✅ Có validate + confirm trước khi ghi đè.
+     ✅ Xuất/nhập cấu hình World + Scope Registry.
      
      v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY (FEW-SHOT)
      ─────────────────────────────────────────────────────────
-     ✅ Dynamic Scope Registry — user tự định nghĩa scope.
-     ✅ Mỗi scope gồm: ID + Label + Trigger keywords + Exemplar.
-     ✅ detectSceneScope() dynamic match theo registry.
-     ✅ getStyleExemplarBlock() tra registry → inject có điều kiện.
-     ✅ Scope isolation: chỉ inject khi action match trigger.
-     ✅ Save/Load bao gồm scopeRegistry.
-     
-     v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE
-     ─────────────────────────────────────────────────────────
-     ✅ Nút "📋 Copy Logs" — copy toàn bộ SYSTEM LOGS.
-     ✅ Nút "🗑️ Clear" — xóa log.
-     ✅ Cập nhật dropdown model OpenRouter.
-     ✅ Thêm option "Nhập tay model ID".
-     
-     v2.5.1 (2026-10-05) - FIX AI GEN LÀM NHIỄU SUMMARY
-     ─────────────────────────────────────────────────────────
-     ✅ Thêm cờ isAiGenCall → callGemini không push khi AI Gen.
-     
-     v2.5 (2026-10-05) - MULTI-PROVIDER FALLBACK
-     ─────────────────────────────────────────────────────────
-     ✅ OpenRouter làm provider phụ cho NSFW.
-     ✅ Fallback tự động OpenRouter → Gemini khi lỗi.
-     ✅ detectNsfwIntent() 60+ keyword VI/EN.
-     
-     v2.4 (2026-10-04) - FIX TRÙNG NPC KHI ĐỔI TÊN
-     ─────────────────────────────────────────────────────────
-     ✅ Thêm "id" vào Codex, AI giữ nguyên ID.
-     
-     v2.3 (2026-10-03) - TỐI ƯU FREE TIER
-     ─────────────────────────────────────────────────────────
-     - Bỏ Context Caching, nén rules 75%.
+     ✅ Scope Registry (ID + Label + Triggers + Exemplar).
      
      ============================================================ -->
 
@@ -179,10 +146,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .btn-config{background:var(--accent-purple);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
 .btn-config.import{background:var(--accent-blue)}
 </style>
-</head>
-<body>
+</head><body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.6</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.7</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -268,10 +234,8 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="tab-btn" onclick="openTab('events')">📜 Sự Kiện</button>
 <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
 <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
-</div>
-<div id="world" class="tab-content active">
+</div><div id="world" class="tab-content active">
 
-<!-- ============ EXPORT / IMPORT WORLD CONFIG ============ -->
 <div class="config-box">
   <div class="config-info">
     <div class="label-title" style="color:#3fb950">📦 QUẢN LÝ CẤU HÌNH WORLD</div>
@@ -293,7 +257,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <textarea id="rule18Plus" style="border-color:#a83250;min-height:120px" placeholder="Bạn tự điền rule 18+ chi tiết tại đây."></textarea>
 </div>
 
-<!-- ============ DYNAMIC SCOPE REGISTRY ============ -->
 <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
   <div class="input-header">
     <div>
@@ -315,7 +278,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.6</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.7</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -326,6 +289,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','Hệ thống cảnh giới ngắn gọn')">✨ AI GEN</button></div><textarea id="powerSystem" placeholder="Các bậc năng lực..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">VĂN PHONG & NGÔI KỂ</div><button class="btn-aigen" onclick="aiGenField('writingStyle','Định hướng văn phong ngắn gọn')">✨ AI GEN</button></div><textarea id="writingStyle" placeholder="Văn phong..."></textarea></div>
 </div>
+
 <div id="mc" class="tab-content">
 <div class="section-tag">🖼️ ẢNH ĐẠI DIỆN & THÔNG TIN NVC</div>
 <div class="profile-card">
@@ -346,6 +310,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="inventoryVisualGrid" class="inventory-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô túi đồ..."></textarea></div>
 </div>
+
 <div id="npc" class="tab-content">
 <div class="section-tag"><span>👥 QUẢN LÝ NPCs SỐNG & QUAN HỆ</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
 <div class="label-desc">⚡ Mỗi NPC có ID định danh riêng — AI giữ nguyên ID khi cập nhật.<br>📌 Tick xanh = NPC quan trọng (giữ lại bất chấp trạng thái, đẩy lên đầu).<br>🔒 Khóa quy tắc AI = AI không ghi đè quy tắc bạn tự thêm.</div>
@@ -354,24 +319,28 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="section-tag">🔴 NPC ARCHIVE (ĐÃ CHẾT)</div>
 <div class="form-group"><textarea id="npcArchive" style="min-height:90px" placeholder="Danh sách NPC đã tử trận..."></textarea></div>
 </div>
+
 <div id="loc" class="tab-content">
 <div class="section-tag">📍 CODEX: LỊCH SỬ ĐỊA DANH</div>
 <div class="label-desc">⚡ Lưu lại toàn bộ vùng đất từng đi qua (không xóa).</div>
 <div id="locVisualGrid" class="loc-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="locations" style="min-height:120px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô địa danh..."></textarea></div>
 </div>
+
 <div id="events" class="tab-content">
 <div class="section-tag"><span>📜 CODEX: SỰ KIỆN & BÍ CẢNH</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewEventCard()">➕ THÊM SỰ KIỆN</button></div>
 <div class="label-desc">⚡ Ghi chú thời gian, nội dung, quy tắc AI cho sự kiện.</div>
 <div id="eventVisualGrid" class="event-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="gameEvents" style="min-height:120px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô sự kiện..."></textarea></div>
 </div>
+
 <div id="items" class="tab-content">
 <div class="section-tag">⚔️ CODEX: PHÁP BẢO & BẢO VẬT</div>
 <div class="label-desc">⚡ Hiển thị trực quan pháp bảo, bảo vật.</div>
 <div id="weaponVisualGrid" class="weapon-grid"></div>
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="worldItems" style="min-height:120px;font-size:12px;color:#8b949e" placeholder="Dữ liệu thô pháp bảo..."></textarea></div>
 </div>
+
 <div id="play" class="tab-content">
 <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!</div>
 <div class="form-group" style="margin-top:10px">
@@ -390,8 +359,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.6 (NPC Pin + Lock + Auto-filter + Inventory Normalizer) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.7 (Limit Events) initialized... Ready.</div>
 </div>
+
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
 <div class="thiendao-header">
@@ -404,14 +374,13 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div id="thienDaoResults"></div>
 </div>
-</div>
-<script>
+</div><script>
 // ============================================================
 // CẤU HÌNH
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=256;
+const DB_VERSION=257;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
@@ -605,9 +574,6 @@ function updateScopeTriggers(idx, rawValue){
     .filter(s => s.length > 0);
 }
 
-// ============================================================
-// SCOPE DETECTION + EXEMPLAR INJECTION
-// ============================================================
 function detectSceneScope(actionText){
   if(!actionText) return 'default';
   const normalized = actionText.toLowerCase()
@@ -658,7 +624,7 @@ ${sample}
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.5.6', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.7', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -671,7 +637,7 @@ function exportWorldConfig(){
     });
     const diffEl = document.getElementById('difficultySelect');
     if(diffEl) config.fields['difficultySelect'] = diffEl.value;
-    
+
     const blob = new Blob([JSON.stringify(config, null, 2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -709,7 +675,7 @@ function handleWorldConfigImport(event){
                   `• Xuất lúc: ${config._meta?.exportedAt||'(không rõ)'}\n\n` +
                   `⚠️ Sẽ GHI ĐÈ cấu hình hiện tại. Tiếp tục?`;
       if(!confirm(msg)) return;
-      
+
       let importedFields = 0;
       if(config.fields && typeof config.fields === 'object'){
         Object.keys(config.fields).forEach(id => {
@@ -810,16 +776,12 @@ function renderNpcs(){
     container.innerHTML=`<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có NPC. Bấm "THÊM NPC" để tạo.</div>`;
     return;
   }
-  
-  // Sắp xếp: pinned lên đầu, còn lại giữ nguyên thứ tự gốc
   const sortedNpcs = [...npcList].sort((a,b) => {
     if(a.pinned && !b.pinned) return -1;
     if(!a.pinned && b.pinned) return 1;
     return 0;
   });
-  
   const getOriginalIndex = (npc) => npcList.indexOf(npc);
-  
   let html='';
   sortedNpcs.forEach((npc)=>{
     const index = getOriginalIndex(npc);
@@ -827,33 +789,28 @@ function renderNpcs(){
     if(!npc.avatar||npc.avatar.trim()==='')npc.avatar=generateAutoAvatar(npc.name);
     const hasAvatar=npc.avatar&&npc.avatar.trim()!=='';
     if(!npc.id)npc.id=generateNpcId();
-    
-    // Badge trạng thái đặc biệt
+
     let statusBadge = '';
     const statusText = (npc.status || '').toLowerCase();
     const rulesText = (npc.npcRules || '').toLowerCase();
     const combined = statusText + ' ' + rulesText;
-    
+
     if(DEATH_KEYWORDS.some(kw => combined.includes(kw))){
       statusBadge = `<span style="background:rgba(218,54,51,.2);color:#f85149;border:1px solid #da3633;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">💀 Đã chết</span>`;
     } else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))){
       statusBadge = `<span style="background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">⚠️ Đã phế${npc.pinned?'':' (sẽ xóa nếu không tick xanh)'}</span>`;
     }
-    
-    // Nút ghim
+
     const pinBtn = `<button style="background:none;border:none;color:${npc.pinned?'#3fb950':'#666'};cursor:pointer;font-size:14px;padding:0 4px" onclick="togglePinNpc(${index})" title="${npc.pinned?'Bỏ ghim':'Ghim lên đầu'}">${npc.pinned?'📌':'📍'}</button>`;
-    
-    // Nút khóa quy tắc
     const lockBtn = `<button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:11px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa quy tắc':'Khóa quy tắc (AI không ghi đè)'}">${npc.lockedRules?'🔒':'🔓'}</button>`;
-    
-    // Style viền card
+
     let cardBorderColor = '';
     if(npc.pinned){
       cardBorderColor = '#3fb950';
     } else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))){
       cardBorderColor = '#d29922';
     }
-    
+
     html+=`<div class="npc-card" id="npc-card-${npc.id}" style="${cardBorderColor?`border-color:${cardBorderColor};${npc.pinned?'box-shadow:0 0 8px rgba(63,185,80,.3)':''}`:''}">
       <div style="position:absolute;top:8px;right:8px;display:flex;gap:2px;align-items:center">
         ${pinBtn}
@@ -922,7 +879,6 @@ function changeAffinity(index,delta){if(npcList[index]){let val=(npcList[index].
 function removeNpcAvatar(index){if(npcList[index]){npcList[index].avatar='';renderNpcs();log(`Reset ảnh NPC [${npcList[index].name}]`);}}
 function uploadNpcAvatar(event,index){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);const resizedBase64=canvas.toDataURL('image/jpeg',0.85);npcList[index].avatar=resizedBase64;renderNpcs();log(`Cập nhật ảnh NPC [${npcList[index].name}]!`);};img.src=e.target.result;};reader.readAsDataURL(file);}
 
-// Toggle ghim NPC
 function togglePinNpc(index){
   if(npcList[index]){
     npcList[index].pinned = !npcList[index].pinned;
@@ -931,7 +887,6 @@ function togglePinNpc(index){
   }
 }
 
-// Toggle khóa quy tắc AI
 function toggleLockRules(index){
   if(npcList[index]){
     npcList[index].lockedRules = !npcList[index].lockedRules;
@@ -963,7 +918,6 @@ function renderWeaponsVisual(weaponArray){const grid=document.getElementById('we
 // INVENTORY
 // ============================================================
 function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
-
 // ============================================================
 // TEST OPENROUTER KEY
 // ============================================================
@@ -1020,7 +974,7 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.6_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.7_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -1066,7 +1020,7 @@ Chỉ trả về đoạn tóm tắt tổng hợp.`;
 }
 
 // ============================================================
-// CODEX MEMORY
+// CODEX MEMORY - v2.5.7: CHỈ GỬI 5 SỰ KIỆN GẦN NHẤT
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -1083,9 +1037,17 @@ function getCodexMemoryPrompt(){
     }).join('\n');
   }else npcSummary='Chưa có';
 
-  let eventSummary=eventList.length>0
-    ? eventList.map(ev=>`• ${ev.name}@${ev.timeNote||'?'}`).join('\n')
-    : 'Chưa có';
+  // ✅ v2.5.7: CHỈ gửi 5 sự kiện GẦN NHẤT (tiết kiệm token)
+  let eventSummary='';
+  if(eventList.length>0){
+    const recentEvents = eventList.slice(-5);
+    eventSummary = recentEvents.map(ev=>`• ${ev.name}@${ev.timeNote||'?'}`).join('\n');
+    if(eventList.length > 5){
+      eventSummary += `\n(Đã xảy ra ${eventList.length - 5} sự kiện cũ hơn — xem RAW DATA nếu cần)`;
+    }
+  }else{
+    eventSummary='Chưa có';
+  }
 
   let locSummary='';
   try{
@@ -1115,7 +1077,7 @@ function getCodexMemoryPrompt(){
 ${npcSummary}
 [NPC chết] ${archive}
 [Địa danh] ${locSummary}
-[Sự kiện] ${eventSummary}
+[Sự kiện - 5 gần nhất] ${eventSummary}
 [Pháp bảo] ${weaponSummary}
 [TÓM TẮT CỐT TRUYỆN] ${storySummary||'Game mới bắt đầu.'}
 【END CODEX】`;
@@ -1178,12 +1140,6 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - BẮT BUỘC trả về mảng OBJECT, mỗi phần tử có cấu trúc:
   {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"}
 - Nếu AI trả về string, hệ thống sẽ hiển thị "Vật phẩm lạ" → SAI.
-- Ví dụ ĐÚNG:
-  "mcInventoryList":[
-    {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"},
-    {"name":"Tụ Khí Đan","icon":"💊","quantity":2,"quality":"Hạ phẩm","effect":"Hỗ trợ tụ khí, tăng tốc tu luyện"},
-    {"name":"Phá Thiết Kiếm","icon":"🗡️","quantity":1,"quality":"Hạ phẩm","effect":"Pháp bảo tấn công cơ bản"}
-  ]
 
 # QUY TẮC NPC ID (CỰC KỲ QUAN TRỌNG)
 - Mỗi NPC trong Codex có ID dạng "npc_xxx".
@@ -1193,7 +1149,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 
 # QUY TẮC NPC KHÔNG CÒN HOẠT ĐỘNG (CỰC KỲ QUAN TRỌNG)
 - Nếu NPC CHẾT (tử vong, tử trận, hy sinh) → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
-- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC / MẤT Ý THỨC / TÀN PHẾ → thêm trường "status" với giá trị tương ứng (VD: "Đã phế", "Tẩu hỏa nhập ma", "Si ngốc"), và VẪN GIỮ trong "npcActiveList" (hệ thống sẽ tự lọc).
+- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC / MẤT Ý THỨC / TÀN PHẾ → thêm trường "status" với giá trị tương ứng.
 - KHÔNG tự ý giữ NPC đã chết trong "npcActiveList".
 
 # NGUYÊN TẮC MẠCH LẠC
@@ -1449,7 +1405,6 @@ async function callAI(promptText, isFirstCall=false){
     }
   }
 }
-
 // ============================================================
 // AI GEN
 // ============================================================
@@ -1504,34 +1459,17 @@ function parseAndAutoUpdateCodex(fullResponseText){
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!=="")document.getElementById('mcGameTime').value=codexData.mcGameTime;
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
 
-      // ============================================================
-      // ✅ FIX v2.5.6: NORMALIZE mcInventoryList
-      // Nếu AI trả về mảng string → tự động chuyển sang object
-      // ============================================================
       if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
         const normalizedInventory = codexData.mcInventoryList.map(item => {
           if (typeof item === 'string') {
             const match = item.match(/^(\d+)\s+(.+)$/);
             if (match) {
-              return {
-                name: match[2],
-                icon: '📦',
-                quantity: parseInt(match[1]),
-                quality: 'Chưa rõ',
-                effect: 'Chưa rõ'
-              };
+              return { name: match[2], icon: '📦', quantity: parseInt(match[1]), quality: 'Chưa rõ', effect: 'Chưa rõ' };
             }
-            return {
-              name: item,
-              icon: '📦',
-              quantity: 1,
-              quality: 'Chưa rõ',
-              effect: 'Chưa rõ'
-            };
+            return { name: item, icon: '📦', quantity: 1, quality: 'Chưa rõ', effect: 'Chưa rõ' };
           }
           return item;
         });
-
         const validInventory = normalizedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
         renderInventoryVisual(validInventory);
         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
@@ -1559,10 +1497,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
             if(aiNpc.personality)exist.personality=aiNpc.personality;
             if(aiNpc.affinity!==undefined)exist.affinity=aiNpc.affinity;
             if(aiNpc.avatar)exist.avatar=aiNpc.avatar;
-            
-            // Cập nhật npcRules CHỈ KHI:
-            // 1. AI trả về giá trị khác rỗng
-            // 2. VÀ NPC chưa bị khóa quy tắc thủ công
+
             if(aiNpc.npcRules !== undefined && aiNpc.npcRules !== null && String(aiNpc.npcRules).trim() !== ''){
               if(!exist.lockedRules){
                 exist.npcRules = aiNpc.npcRules;
@@ -1570,8 +1505,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
                 log(`🔒 Giữ nguyên quy tắc AI của [${exist.name}] (đã khóa)`);
               }
             }
-            
-            // Cập nhật status nếu AI trả về
+
             if(aiNpc.status !== undefined){
               exist.status = aiNpc.status;
             }
@@ -1601,41 +1535,23 @@ function parseAndAutoUpdateCodex(fullResponseText){
 
       if(codexData.npcArchive!==undefined){let archiveStr='';if(typeof codexData.npcArchive==='object'){if(Array.isArray(codexData.npcArchive))archiveStr=codexData.npcArchive.map(item=>typeof item==='string'?item:JSON.stringify(item)).join('\n');else archiveStr=JSON.stringify(codexData.npcArchive,null,2);}else archiveStr=String(codexData.npcArchive);document.getElementById('npcArchive').value=archiveStr;}
 
-      // ============================================================
-      // LỌC NPC KHÔNG CÒN HOẠT ĐỘNG (CHẾT / PHẾ / TẨU HỎA...)
-      // Quy tắc: xóa khỏi danh sách sống TRỪ KHI có tick xanh (pinned)
-      // ============================================================
       const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
-      
       npcList = npcList.filter(npc => {
-        // Tick xanh → LUÔN giữ lại
         if(npc.pinned){
-          log(`📌 Giữ lại NPC [${npc.id}] ${npc.name} (đã tick xanh - quan trọng).`);
+          log(`📌 Giữ lại NPC [${npc.id}] ${npc.name} (đã tick xanh).`);
           return true;
         }
-        
-        // Gom tất cả text có thể chứa trạng thái
-        const haystack = [
-          npc.status || '',
-          npc.npcRules || '',
-          npc.personality || '',
-          npc.identity || ''
-        ].join(' ').toLowerCase();
-        
-        // Kiểm tra có chứa từ khóa "không còn hoạt động" không
+        const haystack = [npc.status||'', npc.npcRules||'', npc.personality||'', npc.identity||''].join(' ').toLowerCase();
         const matchedKeyword = INACTIVE_KEYWORDS.find(kw => haystack.includes(kw));
         if(matchedKeyword){
           log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (trạng thái: "${matchedKeyword}").`);
           return false;
         }
-        
-        // Kiểm tra tên NPC có nằm trong npcArchive không
         const nName = npc.name.toLowerCase().trim();
         if(nName && archiveLower.includes(nName)){
           log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (có trong Archive).`);
           return false;
         }
-        
         return true;
       });
 
@@ -1706,7 +1622,7 @@ function thienDaoStats(){
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📍 Địa danh</div><div class="thiendao-result-body">Tổng: ${locCount}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📜 Sự kiện</div><div class="thiendao-result-body">Tổng: ${eventList.length}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📜 Sự kiện</div><div class="thiendao-result-body">Tổng: ${eventList.length} (gửi AI: 5 gần nhất)</div></div>`;
   let wepCount=0;try{wepCount=JSON.parse(document.getElementById('worldItems').value||'[]').length;}catch(e){}
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚔️ Pháp bảo</div><div class="thiendao-result-body">Tổng: ${wepCount}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin | Gửi AI: ${Math.min(chatHistory.length,MAX_RECENT_TURNS*2)} tin gần nhất</div></div>`;
@@ -1719,11 +1635,13 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">
-✅ Fix lỗi AI trả về mcInventoryList dạng mảng string → tự động normalize thành object {name, quantity, icon, quality, effect}.
-✅ Bổ sung ghi chú cứng trong prompt buộc AI trả đúng cấu trúc object.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI</div><div class="thiendao-result-body">
+✅ Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory (thay vì toàn bộ).
+✅ Sự kiện cũ vẫn được lưu đầy đủ trong tab Sự Kiện + RAW DATA.
+✅ Tiết kiệm ~700-800 tokens/lượt khi event list phình to.
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động, badge trạng thái.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string → tự động normalize thành object.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">Xuất/nhập cấu hình World + Scope Registry.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">Nút Copy/Clear Logs + model OpenRouter mới + custom model ID.</div></div>`;

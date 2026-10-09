@@ -3,34 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.7 - AI RPG (Limit Events)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.8 - AI RPG (Format Reinforce)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
+     v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM
+     ─────────────────────────────────────────────────────────
+     ✅ Thêm nhắc format vào prompt gọn mỗi lượt (2-4 lựa chọn).
+     ✅ Thêm nhắc format vào cuối Codex memory.
+     ✅ Fix lỗi AI quên đưa lựa chọn hành động ở lượt 2+.
+     ✅ Bổ sung hệ thống tu vi đầy đủ vào powerSystem.
+     
      v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI
      ─────────────────────────────────────────────────────────
      ✅ Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.
-     ✅ Sự kiện cũ vẫn được lưu đầy đủ trong tab Sự Kiện + RAW DATA.
-     ✅ Tiết kiệm ~700-800 tokens/lượt khi event list phình to.
      
      v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK
      ─────────────────────────────────────────────────────────
-     ✅ Fix lỗi AI trả về mcInventoryList dạng mảng string 
-        → tự động normalize thành object.
+     ✅ Fix lỗi AI trả về mcInventoryList dạng mảng string.
      
      v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
      ─────────────────────────────────────────────────────────
      ✅ Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.
-     
-     v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG
-     ─────────────────────────────────────────────────────────
-     ✅ Xuất/nhập cấu hình World + Scope Registry.
-     
-     v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY (FEW-SHOT)
-     ─────────────────────────────────────────────────────────
-     ✅ Scope Registry (ID + Label + Triggers + Exemplar).
      
      ============================================================ -->
 
@@ -148,7 +144,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </style>
 </head><body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.7</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.8</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -278,7 +274,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.7</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.8</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -286,7 +282,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','Quy tắc thế giới ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldRules" placeholder="Luật lệ thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC ĐẶT TÊN</div><button class="btn-aigen" onclick="aiGenField('namingRules','Quy tắc đặt tên ngắn gọn')">✨ AI GEN</button></div><textarea id="namingRules" placeholder="Quy tắc đặt tên..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THỂ LOẠI & ÂM HƯỞNG</div><button class="btn-aigen" onclick="aiGenField('genre','Thể loại và âm hưởng ngắn gọn')">✨ AI GEN</button></div><textarea id="genre" placeholder="Thể loại..."></textarea></div>
-<div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','Hệ thống cảnh giới ngắn gọn')">✨ AI GEN</button></div><textarea id="powerSystem" placeholder="Các bậc năng lực..."></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','Hệ thống cảnh giới ngắn gọn')">✨ AI GEN</button></div><textarea id="powerSystem" style="min-height:300px" placeholder="Các bậc năng lực..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">VĂN PHONG & NGÔI KỂ</div><button class="btn-aigen" onclick="aiGenField('writingStyle','Định hướng văn phong ngắn gọn')">✨ AI GEN</button></div><textarea id="writingStyle" placeholder="Văn phong..."></textarea></div>
 </div>
 
@@ -359,7 +355,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.7 (Limit Events) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.8 (Format Reinforce) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -380,13 +376,13 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=257;
+const DB_VERSION=258;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
 
 const DEFAULT_MODEL='gemini-3.5-flash-lite';
-const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash','gemini-2.5-flash-lite'];
+const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash'];
 
 let CACHE_MODEL=DEFAULT_MODEL;
 
@@ -624,7 +620,7 @@ ${sample}
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.5.7', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.8', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -974,7 +970,7 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.7_save.json";a.click();log("Xuất file save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.8_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
@@ -1020,7 +1016,7 @@ Chỉ trả về đoạn tóm tắt tổng hợp.`;
 }
 
 // ============================================================
-// CODEX MEMORY - v2.5.7: CHỈ GỬI 5 SỰ KIỆN GẦN NHẤT
+// CODEX MEMORY - v2.5.8: THÊM NHẮC FORMAT OUTPUT
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -1037,7 +1033,6 @@ function getCodexMemoryPrompt(){
     }).join('\n');
   }else npcSummary='Chưa có';
 
-  // ✅ v2.5.7: CHỈ gửi 5 sự kiện GẦN NHẤT (tiết kiệm token)
   let eventSummary='';
   if(eventList.length>0){
     const recentEvents = eventList.slice(-5);
@@ -1069,6 +1064,7 @@ function getCodexMemoryPrompt(){
 
   const archive=document.getElementById('npcArchive').value||'Chưa có';
 
+  // ✅ v2.5.8: THÊM NHẮC FORMAT Ở CUỐI CODEX
   return `【CODEX】
 [NVC] ${mcName} | Cảnh giới: ${mcLevel} | Time: ${mcTime}
 [Kỹ năng] ${mcSkills}
@@ -1080,7 +1076,16 @@ ${npcSummary}
 [Sự kiện - 5 gần nhất] ${eventSummary}
 [Pháp bảo] ${weaponSummary}
 [TÓM TẮT CỐT TRUYỆN] ${storySummary||'Game mới bắt đầu.'}
-【END CODEX】`;
+【END CODEX】
+
+⚠️ NHẮC LẠI FORMAT OUTPUT (BẮT BUỘC - KHÔNG ĐƯỢC THIẾU):
+Sau khi dẫn chuyện, PHẢI có đầy đủ 3 phần:
+1. [TÓM TẮT]: 2-3 câu tình thế hiện tại
+2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
+3. Khối \`\`\`json cập nhật Codex
+
+TUYỆT ĐỐI KHÔNG được bỏ qua phần lựa chọn hành động.
+KHÔNG được viết tiếp nếu chưa đưa đủ 2-4 lựa chọn.`;
 }
 
 // ============================================================
@@ -1116,11 +1121,14 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Cảnh giới: ${v('powerSystem')||'Luyện Khí → Trúc Cơ → Kim Đan → Nguyên Anh → Hóa Thần'}
 - Văn phong: ${v('writingStyle')||'Miêu tả tỉ mỉ'}
 
-# OUTPUT BẮT BUỘC MỖI LƯỢT
+# ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT (KHÔNG ĐƯỢC BỎ QUA)
+Mỗi lượt trả lời PHẢI có đầy đủ 4 phần:
 1) Dẫn chuyện 3-6 đoạn cuốn hút logic.
 2) \`[TÓM TẮT]:\` 2-3 câu tình thế hiện tại.
-3) 2-4 lựa chọn hành động (đánh số).
-4) Khối \`\`\`json cập nhật Codex (cấu trúc dưới).
+3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
+4) Khối \`\`\`json cập nhật Codex.
+
+NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
 
 # CẤU TRÚC JSON CODEX
 \`\`\`json
@@ -1139,25 +1147,21 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - TUYỆT ĐỐI KHÔNG trả về mảng string như: ["10 Hạ phẩm Linh thạch", "Tụ Khí Đan (2 viên)"].
 - BẮT BUỘC trả về mảng OBJECT, mỗi phần tử có cấu trúc:
   {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"}
-- Nếu AI trả về string, hệ thống sẽ hiển thị "Vật phẩm lạ" → SAI.
 
 # QUY TẮC NPC ID (CỰC KỲ QUAN TRỌNG)
 - Mỗi NPC trong Codex có ID dạng "npc_xxx".
 - Khi trả về "npcActiveList", BẮT BUỘC giữ nguyên "id" của NPC đã có.
 - Nếu NPC đổi tên → CHỈ đổi "name", KHÔNG tạo ID mới.
-- TUYỆT ĐỐI KHÔNG tạo 2 entry cho cùng 1 NPC với 2 ID khác nhau.
 
-# QUY TẮC NPC KHÔNG CÒN HOẠT ĐỘNG (CỰC KỲ QUAN TRỌNG)
-- Nếu NPC CHẾT (tử vong, tử trận, hy sinh) → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
-- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC / MẤT Ý THỨC / TÀN PHẾ → thêm trường "status" với giá trị tương ứng.
-- KHÔNG tự ý giữ NPC đã chết trong "npcActiveList".
+# QUY TẮC NPC KHÔNG CÒN HOẠT ĐỘNG
+- Nếu NPC CHẾT → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
+- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC → thêm trường "status".
 
 # NGUYÊN TẮC MẠCH LẠC
 - Trước khi viết, ĐỌC LẠI Codex + Tóm tắt để đảm bảo nhất quán.
 - "mcGameTime" TÍCH LŨY, không reset.
 - "npcActiveList" PHẢI liệt kê TOÀN BỘ NPC sống, GIỮ NGUYÊN ID.
-- "locationsList"/"eventsList" TÍCH LŨY, không xóa cũ.
-- Không tự thêm NPC/vật phẩm ngoài Codex mà không giải thích nguồn gốc.`;
+- "locationsList"/"eventsList" TÍCH LŨY, không xóa cũ.`;
 }
 
 // ============================================================
@@ -1635,20 +1639,17 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI</div><div class="thiendao-result-body">
-✅ Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory (thay vì toàn bộ).
-✅ Sự kiện cũ vẫn được lưu đầy đủ trong tab Sự Kiện + RAW DATA.
-✅ Tiết kiệm ~700-800 tokens/lượt khi event list phình to.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM</div><div class="thiendao-result-body">
+✅ Thêm nhắc format vào prompt gọn mỗi lượt (2-4 lựa chọn).
+✅ Thêm nhắc format vào cuối Codex memory.
+✅ Fix lỗi AI quên đưa lựa chọn hành động ở lượt 2+.
+✅ Bổ sung hệ thống tu vi đầy đủ (10 cảnh giới + thời gian đột phá + linh căn + đan dược).
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string → tự động normalize thành object.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI</div><div class="thiendao-result-body">Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">Xuất/nhập cấu hình World + Scope Registry.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.2 (2026-10-05) - COPY LOGS + MODEL UPDATE</div><div class="thiendao-result-body">Nút Copy/Clear Logs + model OpenRouter mới + custom model ID.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.1 (2026-10-05) - FIX AI GEN</div><div class="thiendao-result-body">Cờ isAiGenCall → không push vào chatHistory.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5 (2026-10-05) - MULTI-PROVIDER</div><div class="thiendao-result-body">OpenRouter + fallback + detectNsfwIntent.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.4 (2026-10-04) - NPC ID</div><div class="thiendao-result-body">Thêm ID NPC, AI giữ nguyên ID.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.3 (2026-10-03) - FREE TIER</div><div class="thiendao-result-body">Bỏ cache, nén rules 75%.</div></div>`;
   html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
   resultsDiv.innerHTML=html;
 }
@@ -1687,7 +1688,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, tuân thủ
 };
 
 // ============================================================
-// SEND ACTION
+// SEND ACTION - v2.5.8: THÊM NHẮC FORMAT VÀO PROMPT GỌN
 // ============================================================
 const sendAction=async()=>{
   const inputEl=document.getElementById('userInput');
@@ -1702,36 +1703,23 @@ const sendAction=async()=>{
   setTimeout(()=>{const actionEl=document.getElementById(actionId);if(actionEl)actionEl.scrollIntoView({behavior:'smooth',block:'start'});},50);
 
   const needRulesResend=(chatHistory.length===0);
-const sceneScope=detectSceneScope(actionText);
-
-// 🔍 DEBUG EXEMPLAR (tạm thời - có thể xóa sau khi fix xong)
-try {
-  const dbgScope = scopeRegistry.find(s => s.id === sceneScope);
-  const rawEx = dbgScope?.exemplar || '';
-  const trimEx = rawEx.trim();
-  log(`🔍 [DEBUG] Scope matched: ${sceneScope}`);
-  log(`🔍 [DEBUG] Tìm thấy scope object: ${!!dbgScope}`);
-  log(`🔍 [DEBUG] Exemplar raw length: ${rawEx.length}`);
-  log(`🔍 [DEBUG] Exemplar trimmed length: ${trimEx.length}`);
-  log(`🔍 [DEBUG] 80 ký tự đầu: "${rawEx.substring(0,80).replace(/\n/g,' ')}"`);
-  if (!dbgScope) {
-    log(`❌ [DEBUG] KHÔNG tìm thấy scope trong registry!`);
-    log(`❌ [DEBUG] Danh sách scope IDs: ${scopeRegistry.map(s=>s.id).join(', ')}`);
-  } else if (trimEx.length === 0) {
-    log(`❌ [DEBUG] Exemplar TRỐNG → chưa điền hoặc chưa lưu!`);
-  } else {
-    log(`✅ [DEBUG] Exemplar CÓ NỘI DUNG → sẽ inject vào prompt`);
-  }
-} catch(err) {
-  log(`❌ [DEBUG] Lỗi: ${err.message}`);
-}
-
-const styleReminder=getStyleExemplarBlock(sceneScope)
+  const sceneScope=detectSceneScope(actionText);
+  const styleReminder=getStyleExemplarBlock(sceneScope)
     ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar đã cung cấp.\n`
     : '';
+
+  // ✅ v2.5.8: THÊM NHẮC FORMAT VÀO PROMPT GỌN
+  const formatReminder = `\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT (KHÔNG ĐƯỢC THIẾU):
+1) Dẫn chuyện (2-4 đoạn)
+2) [TÓM TẮT]: 2-3 câu tình thế
+3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
+4) Khối \`\`\`json cập nhật Codex
+
+NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.`;
+
   const promptWithCodex=needRulesResend
-    ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện. Trả về [TÓM TẮT] + JSON Codex.`
-    : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}\n\nTiếp tục dẫn chuyện theo quy tắc đã thiết lập. Trả về [TÓM TẮT] + JSON Codex (GIỮ NGUYÊN ID NPC).`;
+    ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
+    : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
 
   const reply=await callAI(promptWithCodex,false);
   if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;}

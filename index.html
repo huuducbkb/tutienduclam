@@ -3,36 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.1 - AI RPG (Anti-Degradation + CJK Filter)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.2 - Multi-Key Auto-Rotate</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
+     v2.5.9.2 (2026-10-10) - MULTI-KEY + AI GEN FORMAT LOCK
+     ─────────────────────────────────────────────────────────
+     ✅ FIX AI Gen viết "Chào đạo hữu..." thay vì danh sách quy tắc:
+        - Few-shot example trong prompt.
+        - Post-validation + retry tự động.
+        - Banned words check.
+     ✅ API Key hiển thị (không ẩn) — dễ kiểm tra, sửa.
+     ✅ Hỗ trợ NHIỀU key, phân tách bằng dấu < >.
+     ✅ Auto-rotate key: key1 hết quota model X → thử model Y → 
+        hết tất cả model thì sang key2.
+     ✅ Hiển thị trạng thái từng key + model (healthy/exhausted).
+     ✅ Log chi tiết khi rotate.
+     ✅ Giữ toàn bộ fix v2.5.9.1 (CJK filter, anti-degradation).
+     
      v2.5.9.1 (2026-10-10) - CJK FILTER + AI GEN LANGUAGE LOCK
-     ─────────────────────────────────────────────────────────
-     ✅ Fix AI Gen trả về ký tự Trung Quốc (丹, 神...) — ràng buộc prompt.
-     ✅ Auto-filter CJK trong mọi response (chat + AI Gen).
-     ✅ Nút "🔍 Quét Ký Tự Trung" trong sidebar (scan thủ công).
-     ✅ Auto-scan CJK khi bấm "💾 Lưu Game" — cảnh báo nếu phát hiện.
-     ✅ Chỉ thị rõ ràng Hán-Việt trong system rules.
-     ✅ Giữ toàn bộ fix anti-degradation từ v2.5.9.
-     
      v2.5.9 (2026-10-10) - ANTI-DEGRADATION PATCH
-     ─────────────────────────────────────────────────────────
-     ✅ Resend FULL rules mỗi 4 lượt (chống AI quên format).
-     ✅ Tăng MAX_RECENT_TURNS từ 3 → 6 (giữ ngữ cảnh tốt hơn).
-     ✅ Anti-shortening guard: phát hiện lượt trước < 200 từ → cảnh báo.
-     ✅ Style Anchor mạnh hơn trong Codex memory.
-     ✅ Summary dùng gemini-3.6-flash thay vì flash-lite.
-     ✅ Nút "Force Full Rules" thủ công trong sidebar.
-     ✅ Giới hạn chatHistory trong RAM (tránh tràn bộ nhớ).
-     ✅ Yêu cầu độ dài tối thiểu 350 từ/lượt trong format reminder.
-     
      v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM
-     v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI
-     v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK
-     v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
      ============================================================ -->
 
 <style>
@@ -45,7 +38,7 @@ body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;lin
 .menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px}
 .restart-btn{background:var(--accent-green);border-color:#388e3c}
 .restart-btn:hover{background:#2e7d32}
-.sidebar{position:fixed;top:0;left:-320px;width:310px;height:100%;background:var(--panel-bg);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto}
+.sidebar{position:fixed;top:0;left:-340px;width:330px;height:100%;background:var(--panel-bg);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto}
 .sidebar.active{left:0}
 .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:16px;font-weight:bold}
 .sidebar-item{display:block;width:100%;padding:10px 12px;background:#21262d;border:1px solid var(--border-color);color:#fff;text-align:left;border-radius:6px;margin-bottom:8px;font-weight:bold;cursor:pointer;font-size:13px}
@@ -149,30 +142,60 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .degradation-guard{background:rgba(218,54,51,.1);border:1px solid var(--accent-red);border-left:4px solid var(--accent-red);padding:8px 10px;border-radius:6px;margin:10px 0;font-size:11px;color:#f0b4b4}
 .cjk-warning{background:rgba(210,153,34,.1);border:1px solid var(--accent-gold);border-left:4px solid var(--accent-gold);padding:8px 10px;border-radius:6px;margin:10px 0;font-size:11px;color:#f0e6d2}
 .cjk-highlight{background:rgba(218,54,51,.3);color:#f85149;font-weight:bold;padding:0 3px;border-radius:2px}
+.key-status-box{background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:8px;margin-top:8px;font-size:11px;font-family:monospace}
+.key-item{padding:4px 6px;margin:3px 0;border-radius:4px;border-left:3px solid #666;background:#0a0d13}
+.key-item.healthy{border-left-color:var(--accent-green)}
+.key-item.exhausted{border-left-color:var(--accent-red);opacity:.6}
+.key-item.current{border-left-color:var(--accent-gold);background:#1c150c}
+.key-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold}
+.key-badge.healthy{background:rgba(35,134,54,.2);color:#3fb950}
+.key-badge.exhausted{background:rgba(218,54,51,.2);color:#f85149}
+.key-badge.current{background:rgba(210,153,34,.2);color:#d29922}
+.model-status{font-size:10px;color:var(--subtext-color);margin-left:8px}
+.model-tag{display:inline-block;padding:1px 4px;border-radius:3px;background:#21262d;margin-right:3px;font-size:9px}
+.model-tag.exhausted{background:rgba(218,54,51,.2);color:#f85149;text-decoration:line-through}
+.model-tag.healthy{background:rgba(35,134,54,.2);color:#3fb950}
 </style>
 </head><body>
 <div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.1</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.2</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 
-<div class="section-header">🔵 Gemini (Provider Chính)</div>
-<div class="form-group"><label class="label-title">API Key Gemini:</label><input type="password" id="apiKey" placeholder="Dán Gemini API Key..."></div>
+<div class="section-header">🔵 Gemini (Multi-Key + Auto-Rotate)</div>
 <div class="form-group">
-  <label class="label-title">Model Gemini:</label>
+  <label class="label-title">Danh sách API Key Gemini:</label>
+  <div class="key-warning" style="color:#3fb950;margin-bottom:4px">💡 Nhập NHIỀU key, phân tách bằng dấu &lt; &gt; (không khoảng trắng thừa). VD: <code>AIzaKey1&lt;&gt;AIzaKey2&lt;&gt;AIzaKey3</code></div>
+  <textarea id="apiKey" placeholder="AIzaSyKEY1...<>AIzaSyKEY2...<>AIzaSyKEY3..." style="min-height:70px;font-family:monospace;font-size:11px"></textarea>
+  <div style="font-size:10px;color:var(--subtext-color);margin-top:3px" id="keyCountInfo">Chưa có key</div>
+</div>
+<div class="form-group">
+  <label class="label-title">Danh sách Model Gemini (theo thứ tự ưu tiên):</label>
+  <div class="key-warning" style="color:#3fb950;margin-bottom:4px">💡 Phân tách bằng dấu phẩy. Khi model đầu hết quota → tự động nhảy model sau. Hết tất cả → nhảy key tiếp theo.</div>
+  <textarea id="modelListInput" placeholder="gemini-3.5-flash-lite, gemini-3.6-flash, gemini-2.5-flash-lite" style="min-height:50px;font-family:monospace;font-size:11px">gemini-3.5-flash-lite, gemini-3.6-flash, gemini-2.5-flash-lite</textarea>
+</div>
+<div class="form-group">
+  <label class="label-title">Model Gemini (đang dùng - UI):</label>
   <select id="modelSelect">
     <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Nhanh, rẻ)</option>
     <option value="gemini-3.6-flash">3.6 Flash (Toàn diện)</option>
     <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Cũ)</option>
   </select>
+  <div class="key-warning">⚠️ UI này chỉ hiển thị model mặc định. Auto-rotate sẽ dùng danh sách ở trên.</div>
+</div>
+
+<div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:8px;margin-bottom:10px">
+  <div style="font-size:11px;font-weight:bold;color:var(--accent-gold);margin-bottom:6px">📊 TRẠNG THÁI KEY & MODEL</div>
+  <div id="keyStatusDisplay" class="key-status-box">Chưa có key nào. Nhập key để xem trạng thái.</div>
+  <button class="sidebar-item" style="background:#444;font-size:11px;margin-top:8px" onclick="resetKeyStatus()">🔄 Reset Trạng Thái Key (thử lại)</button>
 </div>
 
 <div class="section-header">🟠 OpenRouter (Provider NSFW)</div>
 <div class="form-group">
   <label class="label-title">API Key OpenRouter:</label>
-  <input type="password" id="openRouterKey" placeholder="Dán OpenRouter API Key (sk-or-v1-...)">
+  <input type="text" id="openRouterKey" placeholder="sk-or-v1-..." style="font-family:monospace;font-size:11px">
   <div class="key-warning">⚠️ Key phải bắt đầu bằng sk-or-v1- và KHÔNG có dấu cách</div>
 </div>
 <div class="form-group">
@@ -203,6 +226,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span>Thử lại OpenRouter khi lỗi 5xx</span>
   <div class="toggle-switch active" id="toggleRetry5xx" onclick="toggleSetting('retry5xx')"></div>
 </div>
+<div class="toggle-row">
+  <span>Auto-rotate Key & Model</span>
+  <div class="toggle-switch active" id="toggleAutoRotate" onclick="toggleSetting('autoRotate')"></div>
+</div>
 
 <div class="section-header">🛡️ Anti-Degradation (v2.5.9)</div>
 <div class="toggle-row">
@@ -229,6 +256,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <hr style="border-color:var(--border-color);margin:12px 0">
 <button class="sidebar-item" style="background:var(--accent-orange);font-size:12px" onclick="testOpenRouterKey()">🔍 Test OpenRouter Key</button>
+<button class="sidebar-item" style="background:var(--accent-blue);font-size:12px" onclick="testAllGeminiKeys()">🔍 Test Tất Cả Gemini Keys</button>
 
 <hr style="border-color:var(--border-color);margin:12px 0">
 <div class="section-header">💾 Quản Lý Tiến Trình</div>
@@ -302,10 +330,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
-<div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
+<div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Viết danh sách 8-10 quy tắc đánh số cho AI Game Master Phàm Nhân Tu Tiên: nhịp độ chậm, tiêu hao tài nguyên chính xác, không buff NVC vô lý, không tự xóa NPC, mô tả hậu quả logic, không đột phá cảnh giới tùy tiện')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.9.1</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.9.2</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
@@ -371,10 +399,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="play" class="tab-content">
 <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!</div>
 <div id="degradationWarning" class="degradation-guard" style="display:none">
-  🚨 <b>CẢNH BÁO THOÁI HÓA:</b> Lượt trước AI viết quá ngắn (&lt;200 từ). Hệ thống đã tự động tăng cường nhắc nhở format. Nếu vẫn tiếp diễn, bấm "🔄 Gửi Lại Full Rules" trong menu.
+  🚨 <b>CẢNH BÁO THOÁI HÓA:</b> Lượt trước AI viết quá ngắn (&lt;200 từ). Hệ thống đã tự động tăng cường nhắc nhở format.
 </div>
 <div id="cjkWarningBox" class="cjk-warning" style="display:none">
-  🈶 <b>CẢNH BÁO CJK:</b> Phát hiện ký tự Trung Quốc trong nội dung gần đây. Bấm "🔍 Quét Ký Tự Trung" trong menu để kiểm tra.
+  🈶 <b>CẢNH BÁO CJK:</b> Phát hiện ký tự Trung Quốc trong nội dung gần đây. Bấm "🔍 Quét Ký Tự Trung" trong menu.
 </div>
 <div class="form-group" style="margin-top:10px">
 <input type="text" id="userInput" placeholder="Nhập lựa chọn (1,2,3...) hoặc hành động...">
@@ -392,7 +420,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.9.1 (Anti-Degradation + CJK Filter) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.9.2 (Multi-Key + AI Gen Format Lock) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -409,26 +437,17 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div><script>
 // ============================================================
-// CẤU HÌNH v2.5.9.1
+// CẤU HÌNH v2.5.9.2
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=2591;
+const DB_VERSION=2592;
 
-// v2.5.9: Tăng từ 3 → 6 để AI giữ ngữ cảnh tốt hơn
 const MAX_RECENT_TURNS=6;
-
-// v2.5.9: Summary trigger sớm hơn để giữ cốt truyện
 const SUMMARY_TRIGGER_TURNS=3;
-
-// v2.5.9: Resend full rules mỗi N lượt (chống thoái hóa format)
 const RULES_RESEND_INTERVAL=4;
-
-// v2.5.9: Ngưỡng cảnh báo lượt ngắn
-const SHORT_TURN_THRESHOLD=200; // từ
-const MIN_TURN_WORDS=350; // từ (yêu cầu AI)
-
-// v2.5.9: Giới hạn chatHistory trong RAM
+const SHORT_TURN_THRESHOLD=200;
+const MIN_TURN_WORDS=350;
 const MAX_HISTORY_IN_RAM=30;
 const KEEP_HISTORY_AFTER_TRIM=20;
 
@@ -436,7 +455,9 @@ const DEFAULT_MODEL='gemini-3.5-flash-lite';
 const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash'];
 const SUMMARY_MODEL='gemini-3.6-flash';
 
-// ✅ v2.5.9.1: Regex phát hiện ký tự CJK (Trung/Nhật/Hàn)
+// ✅ v2.5.9.2: Multi-key config
+const KEY_SEPARATOR = '<>';
+
 const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF\u3000-\u303F]/g;
 
 let CACHE_MODEL=DEFAULT_MODEL;
@@ -445,10 +466,11 @@ let settings={
   autoSwitch: true,
   autoFallback: true,
   retry5xx: true,
-  periodicRules: true,      // v2.5.9
-  antiShortening: true,     // v2.5.9
-  cjkFilter: true,          // v2.5.9.1
-  cjkWarnOnSave: true       // v2.5.9.1
+  periodicRules: true,
+  antiShortening: true,
+  cjkFilter: true,
+  cjkWarnOnSave: true,
+  autoRotate: true     // ✅ v2.5.9.2
 };
 
 let chatHistory=[];
@@ -465,14 +487,123 @@ let tokenStats={
   fallbackCount:0,
   resendRulesCount:0,
   shortTurnWarnings:0,
-  cjkFilteredCount:0    // v2.5.9.1
+  cjkFilteredCount:0,
+  keyRotations:0       // ✅ v2.5.9.2
 };
 
 let systemRulesSentThisSession=false;
 let isAiGenCall=false;
 
+// ✅ v2.5.9.2: Trạng thái các key & model
+// keyStatus = { keyIndex: { modelName: 'healthy'|'exhausted'|'error', ... }, ... }
+let keyStatus = {};
+let currentKeyIndex = 0;
+
 // ============================================================
-// CJK FILTER UTILITIES (v2.5.9.1)
+// KEY MANAGEMENT (v2.5.9.2)
+// ============================================================
+function getGeminiKeys(){
+  const raw = document.getElementById('apiKey').value || '';
+  return raw.split(KEY_SEPARATOR)
+    .map(k => k.trim())
+    .filter(k => k.length > 0);
+}
+
+function getGeminiModels(){
+  const raw = document.getElementById('modelListInput').value || '';
+  const models = raw.split(',')
+    .map(m => m.trim())
+    .filter(m => m.length > 0);
+  return models.length > 0 ? models : FALLBACK_MODELS;
+}
+
+function ensureKeyStatusStructure(){
+  const keys = getGeminiKeys();
+  const models = getGeminiModels();
+  keys.forEach((_, idx) => {
+    if(!keyStatus[idx]) keyStatus[idx] = {};
+    models.forEach(m => {
+      if(!keyStatus[idx][m]) keyStatus[idx][m] = 'healthy';
+    });
+  });
+  // Xóa key index không còn tồn tại
+  Object.keys(keyStatus).forEach(idx => {
+    if(parseInt(idx) >= keys.length) delete keyStatus[idx];
+  });
+  if(currentKeyIndex >= keys.length) currentKeyIndex = 0;
+}
+
+function markModelExhausted(keyIdx, modelName){
+  ensureKeyStatusStructure();
+  if(!keyStatus[keyIdx]) keyStatus[keyIdx] = {};
+  keyStatus[keyIdx][modelName] = 'exhausted';
+  log(`💀 Đánh dấu [Key ${keyIdx+1}][${modelName}] = HẾT QUOTA`);
+  renderKeyStatus();
+}
+
+function markModelError(keyIdx, modelName){
+  ensureKeyStatusStructure();
+  if(!keyStatus[keyIdx]) keyStatus[keyIdx] = {};
+  // Chỉ đánh dấu error nếu chưa phải exhausted (error có thể là tạm thời)
+  if(keyStatus[keyIdx][modelName] !== 'exhausted'){
+    keyStatus[keyIdx][modelName] = 'error';
+  }
+  renderKeyStatus();
+}
+
+function resetKeyStatus(){
+  keyStatus = {};
+  currentKeyIndex = 0;
+  ensureKeyStatusStructure();
+  renderKeyStatus();
+  log("🔄 Đã reset toàn bộ trạng thái key (thử lại từ đầu).");
+  alert("🔄 Đã reset trạng thái tất cả key.\n\nLượt tiếp theo sẽ thử từ Key 1 + Model 1.");
+}
+
+function renderKeyStatus(){
+  const el = document.getElementById('keyStatusDisplay');
+  if(!el) return;
+  ensureKeyStatusStructure();
+  const keys = getGeminiKeys();
+  const models = getGeminiModels();
+
+  if(keys.length === 0){
+    el.innerHTML = '<div style="color:var(--subtext-color);font-style:italic">Chưa có key nào. Nhập key ở trên để xem trạng thái.</div>';
+    return;
+  }
+
+  let html = '';
+  keys.forEach((key, idx) => {
+    const isCurrent = idx === currentKeyIndex;
+    const maskedKey = key.length > 12 ? key.substring(0,8) + '...' + key.substring(key.length-4) : key;
+    const status = keyStatus[idx] || {};
+
+    // Đếm số model healthy trong key này
+    const healthyCount = models.filter(m => status[m] !== 'exhausted').length;
+    const exhaustedCount = models.length - healthyCount;
+    const allExhausted = healthyCount === 0;
+
+    const keyClass = isCurrent ? 'current' : (allExhausted ? 'exhausted' : 'healthy');
+    const keyBadge = isCurrent ? 'current' : (allExhausted ? 'exhausted' : 'healthy');
+    const keyBadgeText = isCurrent ? '▶ ĐANG DÙNG' : (allExhausted ? '💀 HẾT' : '✅ OK');
+
+    html += `<div class="key-item ${keyClass}">`;
+    html += `<strong>Key ${idx+1}:</strong> ${maskedKey}`;
+    html += `<span class="key-badge ${keyBadge}">${keyBadgeText}</span>`;
+    html += `<div class="model-status">`;
+    models.forEach(m => {
+      const st = status[m] || 'healthy';
+      const stClass = st === 'exhausted' ? 'exhausted' : (st === 'error' ? 'exhausted' : 'healthy');
+      const stIcon = st === 'exhausted' ? '💀' : (st === 'error' ? '⚠️' : '✅');
+      html += `<span class="model-tag ${stClass}">${stIcon} ${m}</span>`;
+    });
+    html += `</div></div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ============================================================
+// CJK FILTER (v2.5.9.1)
 // ============================================================
 function countCJK(text){
   if(!text) return 0;
@@ -492,25 +623,18 @@ function stripCJK(text){
   return text.replace(CJK_REGEX, '');
 }
 
-/**
- * Filter CJK khỏi response AI nhưng vẫn giữ nội dung.
- * Có 2 chế độ:
- * - 'auto'  : Lọc sạch, thay CJK bằng phiên âm Hán-Việt phổ biến
- * - 'strip' : Xóa hẳn CJK
- */
 function filterCJKFromResponse(text){
   if(!text || !settings.cjkFilter) return text;
   const cjkCount = countCJK(text);
   if(cjkCount === 0) return text;
 
-  // Bảng map các CJK phổ biến trong tu tiên → Hán-Việt
   const cjkMap = {
     '丹':'Đan','神':'Thần','仙':'Tiên','劫':'Kiếp','道':'Đạo',
     '气':'Khí','基':'Cơ','婴':'Anh','虚':'Hư','合':'Hợp',
     '魔':'Ma','妖':'Yêu','兽':'Thú','灵':'Linh','宝':'Bảo',
     '器':'Khí','法':'Pháp','术':'Thuật','剑':'Kiếm','刀':'Đao',
     '天':'Thiên','地':'Địa','人':'Nhân','龙':'Long','凤':'Phượng',
-    '元':'Nguyên','婴':'Anh','化':'Hóa','炼':'Luyện','筑':'Trúc',
+    '元':'Nguyên','化':'Hóa','炼':'Luyện','筑':'Trúc',
     '境':'Cảnh','界':'Giới','宗':'Tông','门':'Môn','派':'Phái',
     '大':'Đại','小':'Tiểu','上':'Thượng','中':'Trung','下':'Hạ',
     '一':'Nhất','二':'Nhị','三':'Tam','四':'Tứ','五':'Ngũ',
@@ -525,7 +649,6 @@ function filterCJKFromResponse(text){
   let cleaned = text;
   let replacedCount = 0;
 
-  // Bước 1: Thay thế CJK phổ biến bằng Hán-Việt
   for(const [cjk, viet] of Object.entries(cjkMap)){
     if(cleaned.includes(cjk)){
       const re = new RegExp(cjk, 'g');
@@ -535,7 +658,6 @@ function filterCJKFromResponse(text){
     }
   }
 
-  // Bước 2: Xóa các CJK còn lại (không có trong map)
   const remainingCount = countCJK(cleaned);
   if(remainingCount > 0){
     cleaned = cleaned.replace(CJK_REGEX, '');
@@ -549,7 +671,7 @@ function filterCJKFromResponse(text){
 }
 
 // ============================================================
-// SCAN + CLEAN CJK THỦ CÔNG (v2.5.9.1)
+// SCAN + CLEAN CJK
 // ============================================================
 function scanChineseChars(){
   const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
@@ -560,7 +682,6 @@ function scanChineseChars(){
     if(matches && matches.length > 0){
       found.push({
         id: el.id || '(no id)',
-        label: el.previousElementSibling?.textContent?.trim().substring(0,40) || el.placeholder?.substring(0,30) || '',
         chars: getUniqueCJK(val).join(' '),
         count: matches.length,
         preview: val.substring(0, 120).replace(/\n/g, ' ') + (val.length > 120 ? '...' : '')
@@ -568,18 +689,15 @@ function scanChineseChars(){
     }
   });
   if(found.length === 0){
-    alert('✅ Không phát hiện ký tự Trung Quốc nào!\n\nTất cả các ô nhập liệu đều sạch.');
+    alert('✅ Không phát hiện ký tự Trung Quốc nào!');
     log('🔍 Quét CJK: 0 kết quả.');
     return;
   }
   let msg = `⚠️ PHÁT HIỆN ${found.length} Ô CHỨA KÝ TỰ TRUNG QUỐC:\n\n`;
   found.forEach((f, i) => {
-    msg += `${i+1}. Ô [${f.id}]${f.label ? ' — ' + f.label : ''}\n`;
-    msg += `   Ký tự: ${f.chars}\n`;
-    msg += `   Số lượng: ${f.count}\n`;
-    msg += `   Preview: ${f.preview}\n\n`;
+    msg += `${i+1}. Ô [${f.id}]\n   Ký tự: ${f.chars}\n   SL: ${f.count}\n   Preview: ${f.preview}\n\n`;
   });
-  msg += `\n→ Dùng nút "🧹 Tự Động Xóa CJK" hoặc sửa thủ công.`;
+  msg += `\n→ Dùng "🧹 Tự Động Xóa CJK" hoặc sửa thủ công.`;
   alert(msg);
   console.warn('Kết quả quét CJK:', found);
   log(`🔍 Quét CJK: ${found.length} ô bị lỗi.`);
@@ -606,7 +724,7 @@ function autoCleanCJK(){
     log('🧹 Auto-clean CJK: 0 ô.');
     return;
   }
-  alert(`🧹 ĐÃ LÀM SẠCH ${cleanedCount} Ô!\n\nTổng ký tự CJK đã xử lý: ${totalRemoved}\n\n→ Bấm "💾 Lưu Game" để lưu lại.`);
+  alert(`🧹 ĐÃ LÀM SẠCH ${cleanedCount} Ô!\n\nTổng ký tự CJK đã xử lý: ${totalRemoved}`);
   log(`🧹 Auto-clean CJK: ${cleanedCount} ô, ${totalRemoved} ký tự.`);
 }
 
@@ -618,18 +736,17 @@ function checkCJKOnSave(){
     if(countCJK(el.value || '') > 0) foundCount++;
   });
   if(foundCount > 0){
-    const proceed = confirm(`⚠️ Phát hiện ${foundCount} ô chứa ký tự Trung Quốc!\n\nBạn có muốn:\n• OK = Tiếp tục lưu (AI sẽ học theo)\n• Cancel = Hủy, dùng "🧹 Tự Động Xóa CJK" trước`);
+    const proceed = confirm(`⚠️ Phát hiện ${foundCount} ô chứa ký tự Trung Quốc!\n\nBạn có muốn:\n• OK = Tiếp tục lưu\n• Cancel = Hủy, dùng "🧹 Tự Động Xóa CJK" trước`);
     if(!proceed){
       log('💾 Hủy lưu game do có CJK.');
       return false;
     }
-    log(`💾 Lưu game với ${foundCount} ô có CJK (user chấp nhận).`);
   }
   return true;
 }
 
 // ============================================================
-// TỪ KHÓA NHẬN DIỆN NPC KHÔNG CÒN HOẠT ĐỘNG
+// TỪ KHÓA NPC KHÔNG HOẠT ĐỘNG
 // ============================================================
 const INACTIVE_KEYWORDS = [
   'đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn',
@@ -644,41 +761,21 @@ const DISABLED_KEYWORDS = ['đã phế','bị phế','tàn phế','si ngốc','m
 // DYNAMIC SCOPE REGISTRY
 // ============================================================
 let scopeRegistry = [
-  {
-    id: 'scope_nsfw',
-    label: 'Cảnh đặc biệt (NSFW)',
-    triggers: ['song tu','ái ân','hoan ái','thân mật','mây mưa','ân ái'],
-    exemplar: ''
-  },
-  {
-    id: 'scope_combat',
-    label: 'Chiến đấu',
-    triggers: ['đánh','chém','giết','chiến','đấu','giao chiến','đối đầu'],
-    exemplar: ''
-  },
-  {
-    id: 'scope_dialogue',
-    label: 'Đối thoại',
-    triggers: ['nói','hỏi','đáp','trả lời','đối thoại','thương lượng'],
-    exemplar: ''
-  },
-  {
-    id: 'scope_cultivation',
-    label: 'Tu luyện',
-    triggers: ['tu luyện','bế quan','đột phá','thiền','tĩnh tọa','luyện công'],
-    exemplar: ''
-  }
+  { id: 'scope_nsfw', label: 'Cảnh đặc biệt (NSFW)', triggers: ['song tu','ái ân','hoan ái','thân mật','mây mưa','ân ái'], exemplar: '' },
+  { id: 'scope_combat', label: 'Chiến đấu', triggers: ['đánh','chém','giết','chiến','đấu','giao chiến','đối đầu'], exemplar: '' },
+  { id: 'scope_dialogue', label: 'Đối thoại', triggers: ['nói','hỏi','đáp','trả lời','đối thoại','thương lượng'], exemplar: '' },
+  { id: 'scope_cultivation', label: 'Tu luyện', triggers: ['tu luyện','bế quan','đột phá','thiền','tĩnh tọa','luyện công'], exemplar: '' }
 ];
 
 function generateScopeId(){
   return 'scope_'+Date.now().toString(36)+Math.random().toString(36).substr(2,5);
 }
 
-const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
+const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems','modelListInput'];
 const inputIds=['apiKey','modelSelect','openRouterKey','openRouterModel','openRouterCustomModel',...fieldsToReset,'difficultySelect'];
 
 // ============================================================
-// NSFW INTENT DETECTION
+// NSFW DETECTION
 // ============================================================
 const NSFW_KEYWORDS_VI = [
   'song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái',
@@ -693,10 +790,7 @@ const NSFW_KEYWORDS_VI = [
   'chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức',
   'cưỡng hiếp','cưỡng đoạt','cưỡng chế'
 ];
-const NSFW_KEYWORDS_EN = [
-  'sex','intercourse','rape','fuck','kiss','naked','nude','orgasm',
-  'kill','murder','slaughter','torture','slave','capture'
-];
+const NSFW_KEYWORDS_EN = ['sex','intercourse','rape','fuck','kiss','naked','nude','orgasm','kill','murder','slaughter','torture','slave','capture'];
 
 function detectNsfwIntent(actionText){
   if(!actionText)return false;
@@ -714,46 +808,31 @@ function detectNsfwIntent(actionText){
 }
 
 // ============================================================
-// SCOPE REGISTRY — RENDER + LOGIC
+// SCOPE REGISTRY
 // ============================================================
 function renderScopeRegistry(){
   const container = document.getElementById('scopeRegistryContainer');
   if(!container) return;
-
   if(scopeRegistry.length === 0){
     container.innerHTML = '<div style="color:var(--subtext-color);font-style:italic;font-size:12px;text-align:center;padding:8px">Chưa có scope. Bấm "➕ THÊM SCOPE".</div>';
     return;
   }
-
   let html = '';
   scopeRegistry.forEach((scope, idx) => {
     html += `
     <div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:10px">
       <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
-        <input type="text" value="${scope.id||''}"
-               style="font-family:monospace;font-size:11px;padding:4px;flex:0 0 130px;color:#b392f0"
-               placeholder="scope_id" readonly>
-        <input type="text" value="${scope.label||''}"
-               style="font-size:12px;font-weight:bold;padding:4px;flex:1"
-               placeholder="Tên scope..."
-               onchange="updateScopeField(${idx},'label',this.value)">
-        <button onclick="removeScopeEntry(${idx})"
-                style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:0 6px">✕</button>
+        <input type="text" value="${scope.id||''}" style="font-family:monospace;font-size:11px;padding:4px;flex:0 0 130px;color:#b392f0" readonly>
+        <input type="text" value="${scope.label||''}" style="font-size:12px;font-weight:bold;padding:4px;flex:1" onchange="updateScopeField(${idx},'label',this.value)">
+        <button onclick="removeScopeEntry(${idx})" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:0 6px">✕</button>
       </div>
-
       <div style="margin-bottom:6px">
-        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">🔑 TRIGGER KEYWORDS (cách nhau bằng dấu phẩy):</div>
-        <input type="text" value="${(scope.triggers||[]).join(', ')}"
-               style="font-size:11px;padding:5px;font-family:monospace"
-               placeholder="từ_khóa_1, từ_khóa_2, ..."
-               onchange="updateScopeTriggers(${idx},this.value)">
+        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">🔑 TRIGGER KEYWORDS:</div>
+        <input type="text" value="${(scope.triggers||[]).join(', ')}" style="font-size:11px;padding:5px;font-family:monospace" onchange="updateScopeTriggers(${idx},this.value)">
       </div>
-
       <div>
-        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">📖 EXEMPLAR (300–800 từ):</div>
-        <textarea style="min-height:120px;font-size:12px;padding:6px;font-family:Georgia,serif"
-                  placeholder="Dán đoạn văn mẫu cho scope này..."
-                  onchange="updateScopeField(${idx},'exemplar',this.value)">${scope.exemplar||''}</textarea>
+        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">📖 EXEMPLAR:</div>
+        <textarea style="min-height:120px;font-size:12px;padding:6px;font-family:Georgia,serif" onchange="updateScopeField(${idx},'exemplar',this.value)">${scope.exemplar||''}</textarea>
       </div>
     </div>`;
   });
@@ -761,69 +840,43 @@ function renderScopeRegistry(){
 }
 
 function addScopeEntry(){
-  scopeRegistry.push({
-    id: generateScopeId(),
-    label: 'Scope Mới',
-    triggers: [],
-    exemplar: ''
-  });
+  scopeRegistry.push({ id: generateScopeId(), label: 'Scope Mới', triggers: [], exemplar: '' });
   renderScopeRegistry();
   log("➕ Đã thêm scope mới.");
 }
-
 function removeScopeEntry(idx){
   if(!confirm(`Xóa scope "${scopeRegistry[idx]?.label||''}"?`)) return;
   scopeRegistry.splice(idx,1);
   renderScopeRegistry();
-  log("🗑️ Đã xóa scope.");
 }
-
-function updateScopeField(idx, field, value){
-  if(scopeRegistry[idx]) scopeRegistry[idx][field] = value;
-}
-
+function updateScopeField(idx, field, value){ if(scopeRegistry[idx]) scopeRegistry[idx][field] = value; }
 function updateScopeTriggers(idx, rawValue){
   if(!scopeRegistry[idx]) return;
-  scopeRegistry[idx].triggers = rawValue.split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(s => s.length > 0);
+  scopeRegistry[idx].triggers = rawValue.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
 }
-
 function detectSceneScope(actionText){
   if(!actionText) return 'default';
-  const normalized = actionText.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-
+  const normalized = actionText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   for(const scope of scopeRegistry){
     if(!scope.triggers || scope.triggers.length === 0) continue;
     for(const trigger of scope.triggers){
       const tNorm = trigger.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      if(actionText.toLowerCase().includes(trigger) || normalized.includes(tNorm)){
-        return scope.id;
-      }
+      if(actionText.toLowerCase().includes(trigger) || normalized.includes(tNorm)) return scope.id;
     }
   }
   return 'default';
 }
-
 function getStyleExemplarBlock(scopeId){
   if(scopeId === 'default') return '';
   const scope = scopeRegistry.find(s => s.id === scopeId);
   if(!scope) return '';
   const sample = (scope.exemplar || '').trim();
   if(!sample) return '';
-
   return `
-# 🎨 STYLE EXEMPLAR — BẮT BUỘC PATTERN-MATCH (scope: ${scope.label || scope.id})
+# 🎨 STYLE EXEMPLAR (scope: ${scope.label || scope.id})
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Đoạn văn dưới đây là MẪU VĂN PHONG CHUẨN cho scope "${scope.label || scope.id}".
-Khi viết trong scope này, PHẢI bắt chước:
-  • Từ vựng, ẩn dụ, hình ảnh
-  • Nhịp câu, độ dài đoạn
-  • Cách chuyển cảnh, tả cảm xúc
-  • Mức độ trực diện / ẩn dụ
-
-⚠️ Scope isolation: NGOÀI scope "${scope.label || scope.id}", dùng writingStyle bình thường.
+PHẢI bắt chước: từ vựng, nhịp câu, cách chuyển cảnh, mức độ trực diện.
 
 [EXEMPLAR]:
 """
@@ -839,7 +892,7 @@ ${sample}
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.5.9.1', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.9.2', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -867,9 +920,7 @@ function exportWorldConfig(){
   }
 }
 
-function importWorldConfig(){
-  document.getElementById('worldConfigFileInput').click();
-}
+function importWorldConfig(){ document.getElementById('worldConfigFileInput').click(); }
 
 function handleWorldConfigImport(event){
   const file = event.target.files[0];
@@ -881,15 +932,7 @@ function handleWorldConfigImport(event){
       if(!config._meta || config._meta.type !== 'world_config'){
         if(!confirm("⚠️ File không phải cấu hình World của game này.\nVẫn tiếp tục import?")) return;
       }
-      const fieldCount = config.fields ? Object.keys(config.fields).length : 0;
-      const scopeCount = config.scopeRegistry ? config.scopeRegistry.length : 0;
-      const msg = `📥 IMPORT CẤU HÌNH WORLD\n\n` +
-                  `• Fields: ${fieldCount}\n` +
-                  `• Scope Registry: ${scopeCount}\n` +
-                  `• Model: ${config.currentModel||'(không có)'}\n` +
-                  `• Xuất lúc: ${config._meta?.exportedAt||'(không rõ)'}\n\n` +
-                  `⚠️ Sẽ GHI ĐÈ cấu hình hiện tại. Tiếp tục?`;
-      if(!confirm(msg)) return;
+      if(!confirm(`📥 IMPORT CẤU HÌNH WORLD\n\n⚠️ Sẽ GHI ĐÈ cấu hình hiện tại. Tiếp tục?`)) return;
 
       let importedFields = 0;
       if(config.fields && typeof config.fields === 'object'){
@@ -902,21 +945,14 @@ function handleWorldConfigImport(event){
         scopeRegistry = config.scopeRegistry;
         renderScopeRegistry();
       }
-      if(config.currentModel){
-        CACHE_MODEL = config.currentModel;
-        const modelSel = document.getElementById('modelSelect');
-        if(modelSel){
-          const opt = Array.from(modelSel.options).find(o => o.value === config.currentModel);
-          if(opt) modelSel.value = config.currentModel;
-        }
-      }
       if(config.settings && typeof config.settings === 'object'){
         Object.assign(settings, config.settings);
         syncToggleUI();
       }
       updateTokenStatsDisplay();
+      renderKeyStatus();
       log(`✅ Đã nhập cấu hình: ${importedFields} fields + ${scopeRegistry.length} scopes.`);
-      alert(`✅ IMPORT THÀNH CÔNG!\n\n• Fields đã nhập: ${importedFields}\n• Scopes: ${scopeRegistry.length}\n\nBấm "💾 Lưu Game" để lưu vào IndexedDB.`);
+      alert(`✅ IMPORT THÀNH CÔNG!`);
     }catch(err){
       log("❌ Lỗi nhập cấu hình: " + err.message);
       alert("❌ File không hợp lệ!\n\n" + err.message);
@@ -942,8 +978,8 @@ function generateNpcId(){return 'npc_'+Date.now().toString(36)+Math.random().toS
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('active');}
 function openTab(tabId){document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));document.getElementById(tabId).classList.add('active');const btn=Array.from(document.querySelectorAll('.tab-btn')).find(b=>b.getAttribute('onclick').includes(tabId));if(btn)btn.classList.add('active');}
 function log(msg){const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML+=`<br>> ${msg}`;logBox.scrollTop=logBox.scrollHeight;}}
-function copySystemLogs(){const logBox=document.getElementById('sysLogs');if(!logBox){alert("⚠️ Không có log!");return;}const text=logBox.innerText||logBox.textContent;if(!text||text.trim()===''){alert("⚠️ Log trống!");return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>{log("📋 Đã copy " + text.length + " ký tự log!");alert("📋 Đã copy toàn bộ log!\n\nDán (Ctrl+V) vào đâu đó để lưu.");}).catch(e=>{fallbackCopyText(text);});}else{fallbackCopyText(text);}}
-function fallbackCopyText(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{const ok=document.execCommand('copy');if(ok){log("📋 Đã copy "+text.length+" ký tự log!");alert("📋 Đã copy toàn bộ log!");}else{alert("❌ Không thể copy. Vui lòng copy thủ công.");}}catch(err){alert("❌ Lỗi copy: "+err);}document.body.removeChild(ta);}
+function copySystemLogs(){const logBox=document.getElementById('sysLogs');if(!logBox){alert("⚠️ Không có log!");return;}const text=logBox.innerText||logBox.textContent;if(!text||text.trim()===''){alert("⚠️ Log trống!");return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>{alert("📋 Đã copy toàn bộ log!");}).catch(e=>{fallbackCopyText(text);});}else{fallbackCopyText(text);}}
+function fallbackCopyText(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert("📋 Đã copy toàn bộ log!");}catch(err){alert("❌ Lỗi copy");}document.body.removeChild(ta);}
 function clearSystemLogs(){if(!confirm("🗑️ Xóa toàn bộ SYSTEM LOGS?"))return;const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML='> Logs cleared at '+new Date().toLocaleTimeString('vi-VN');}}
 function jumpToBottom(){const storyBox=document.getElementById('story-box');if(storyBox){storyBox.scrollTop=storyBox.scrollHeight;log("Đã nhảy xuống cuối.");}}
 function copyGameStory(){const t=document.getElementById('story-box').innerText;if(!t||t.includes('Chưa có dữ liệu')){alert("⚠️ Chưa có nội dung!");return;}navigator.clipboard.writeText(t).then(()=>alert("📋 Đã sao chép!")).catch(e=>alert("❌ Lỗi: "+e));}
@@ -961,13 +997,13 @@ function updateTokenStatsDisplay(){
   const avgOut=tokenStats.requests>0?Math.round(tokenStats.output/tokenStats.requests):0;
   el.innerHTML=`<span class="provider-badge provider-gemini">Gemini</span> ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>
 <span class="provider-badge provider-openrouter">OpenRouter</span> ${tokenStats.orReq} req | ${tokenStats.orIn.toLocaleString()} in / ${tokenStats.orOut.toLocaleString()} out<br>
-Fallback: ${tokenStats.fallbackCount} lần<br>
+Fallback: ${tokenStats.fallbackCount} | Key rotations: ${tokenStats.keyRotations||0}<br>
 🛡️ Resend rules: ${tokenStats.resendRulesCount||0} | ⚠️ Short warns: ${tokenStats.shortTurnWarnings||0}<br>
 🈶 CJK filtered: ${tokenStats.cjkFilteredCount||0} ký tự<br>
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
 }
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
 // TTS
@@ -1008,9 +1044,7 @@ function renderNpcs(){
     if(!npc.id)npc.id=generateNpcId();
 
     let statusBadge = '';
-    const statusText = (npc.status || '').toLowerCase();
-    const rulesText = (npc.npcRules || '').toLowerCase();
-    const combined = statusText + ' ' + rulesText;
+    const combined = (npc.status || '').toLowerCase() + ' ' + (npc.npcRules || '').toLowerCase();
 
     if(DEATH_KEYWORDS.some(kw => combined.includes(kw))){
       statusBadge = `<span style="background:rgba(218,54,51,.2);color:#f85149;border:1px solid #da3633;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">💀 Đã chết</span>`;
@@ -1022,16 +1056,12 @@ function renderNpcs(){
     const lockBtn = `<button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:11px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa quy tắc':'Khóa quy tắc (AI không ghi đè)'}">${npc.lockedRules?'🔒':'🔓'}</button>`;
 
     let cardBorderColor = '';
-    if(npc.pinned){
-      cardBorderColor = '#3fb950';
-    } else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))){
-      cardBorderColor = '#d29922';
-    }
+    if(npc.pinned) cardBorderColor = '#3fb950';
+    else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))) cardBorderColor = '#d29922';
 
     html+=`<div class="npc-card" id="npc-card-${npc.id}" style="${cardBorderColor?`border-color:${cardBorderColor};${npc.pinned?'box-shadow:0 0 8px rgba(63,185,80,.3)':''}`:''}">
       <div style="position:absolute;top:8px;right:8px;display:flex;gap:2px;align-items:center">
-        ${pinBtn}
-        ${lockBtn}
+        ${pinBtn}${lockBtn}
         <button style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px" onclick="removeNpc(${index})">✕</button>
       </div>
       <div class="npc-header">
@@ -1054,7 +1084,6 @@ function renderNpcs(){
       <div class="form-group" style="margin-bottom:8px">
         <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;display:flex;justify-content:space-between;align-items:center">
           <span>⚙️ QUY TẮC AI: ${npc.lockedRules?'<span style="color:#d29922">(ĐÃ KHÓA)</span>':''}</span>
-          <button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:12px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa':'Khóa để AI không ghi đè'}">${npc.lockedRules?'🔒':'🔓'}</button>
         </div>
         <textarea style="min-height:40px;font-size:11px;padding:6px;${npc.lockedRules?'border-color:#d29922;':''}" placeholder="Quy tắc điều khiển NPC..." onchange="updateNpcField(${index},'npcRules',this.value)">${npc.npcRules||''}</textarea>
       </div>
@@ -1076,68 +1105,35 @@ function renderNpcs(){
 
 function addNewNpcCard(){
   const newName='NPC Mới '+(npcList.length+1);
-  npcList.push({
-    id:generateNpcId(),
-    name:newName,
-    identity:'Luyện Khí sơ kỳ',
-    personality:'Chưa rõ.',
-    npcRules:'Tuân thủ thiết lập.',
-    avatar:generateAutoAvatar(newName),
-    affinity:50,
-    pinned:false,
-    lockedRules:false,
-    status:''
-  });
+  npcList.push({ id:generateNpcId(), name:newName, identity:'Luyện Khí sơ kỳ', personality:'Chưa rõ.', npcRules:'Tuân thủ thiết lập.', avatar:generateAutoAvatar(newName), affinity:50, pinned:false, lockedRules:false, status:'' });
   renderNpcs();
 }
 function removeNpc(index){if(confirm("Xóa NPC này?")){npcList.splice(index,1);renderNpcs();}}
 function updateNpcField(index,field,value){if(npcList[index]){npcList[index][field]=value;if(field==='name'&&(!npcList[index].avatar||npcList[index].avatar.includes('dicebear')))npcList[index].avatar=generateAutoAvatar(value);renderNpcs();log(`Đã đổi ${field} của NPC [${npcList[index].id}] → "${value}"`);}}
 function changeAffinity(index,delta){if(npcList[index]){let val=(npcList[index].affinity||0)+delta;npcList[index].affinity=Math.min(100,Math.max(-100,val));renderNpcs();}}
-function removeNpcAvatar(index){if(npcList[index]){npcList[index].avatar='';renderNpcs();log(`Reset ảnh NPC [${npcList[index].name}]`);}}
-function uploadNpcAvatar(event,index){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);const resizedBase64=canvas.toDataURL('image/jpeg',0.85);npcList[index].avatar=resizedBase64;renderNpcs();log(`Cập nhật ảnh NPC [${npcList[index].name}]!`);};img.src=e.target.result;};reader.readAsDataURL(file);}
+function removeNpcAvatar(index){if(npcList[index]){npcList[index].avatar='';renderNpcs();}}
+function uploadNpcAvatar(event,index){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);npcList[index].avatar=canvas.toDataURL('image/jpeg',0.85);renderNpcs();};img.src=e.target.result;};reader.readAsDataURL(file);}
 
-function togglePinNpc(index){
-  if(npcList[index]){
-    npcList[index].pinned = !npcList[index].pinned;
-    log(`${npcList[index].pinned?'📌 Đã ghim':'📍 Đã bỏ ghim'} NPC [${npcList[index].name}]`);
-    renderNpcs();
-  }
-}
-
-function toggleLockRules(index){
-  if(npcList[index]){
-    npcList[index].lockedRules = !npcList[index].lockedRules;
-    log(`${npcList[index].lockedRules?'🔒 Đã khóa':'🔓 Đã mở khóa'} quy tắc AI của NPC [${npcList[index].name}]`);
-    renderNpcs();
-  }
-}
+function togglePinNpc(index){if(npcList[index]){npcList[index].pinned = !npcList[index].pinned;log(`${npcList[index].pinned?'📌 Đã ghim':'📍 Đã bỏ ghim'} NPC [${npcList[index].name}]`);renderNpcs();}}
+function toggleLockRules(index){if(npcList[index]){npcList[index].lockedRules = !npcList[index].lockedRules;log(`${npcList[index].lockedRules?'🔒 Đã khóa':'🔓 Đã mở khóa'} quy tắc AI của NPC [${npcList[index].name}]`);renderNpcs();}}
 
 // ============================================================
-// LOCATIONS
+// LOCATIONS / EVENTS / WEAPONS / INVENTORY
 // ============================================================
-function renderLocationsVisual(locArray){const grid=document.getElementById('locVisualGrid');if(!locArray||!Array.isArray(locArray)||locArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';return;}let html='';locArray.forEach(loc=>{const icon=loc.icon||'📍';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${loc.name}">`:icon;let dangerClass='loc-danger-low';let dangerText=loc.danger||'Thấp';const dLower=(loc.danger||'').toLowerCase();if(dLower.includes('cao')||dLower.includes('chí tử')||dLower.includes('rất cao')||dLower.includes('nguy hiểm')){dangerClass='loc-danger-high';}else if(dLower.includes('trung')||dLower.includes('vừa')){dangerClass='loc-danger-mid';}html+=`<div class="loc-card"><div class="item-icon-box">${iconContent}</div><div class="loc-info"><div class="loc-name">${loc.name||'Vô danh'}</div><span class="loc-badge ${dangerClass}">Nguy hiểm: ${dangerText}</span><div class="loc-detail-text">📍 Vị trí: ${loc.position||'Chưa rõ'}</div><div class="loc-detail-text">🚪 Đặc điểm: ${loc.desc||'Bình thường'}</div></div></div>`;});grid.innerHTML=html;}
+function renderLocationsVisual(locArray){const grid=document.getElementById('locVisualGrid');if(!locArray||!Array.isArray(locArray)||locArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';return;}let html='';locArray.forEach(loc=>{const icon=loc.icon||'📍';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${loc.name}">`:icon;let dangerClass='loc-danger-low';let dangerText=loc.danger||'Thấp';const dLower=(loc.danger||'').toLowerCase();if(dLower.includes('cao')||dLower.includes('chí tử')||dLower.includes('rất cao')){dangerClass='loc-danger-high';}else if(dLower.includes('trung')||dLower.includes('vừa')){dangerClass='loc-danger-mid';}html+=`<div class="loc-card"><div class="item-icon-box">${iconContent}</div><div class="loc-info"><div class="loc-name">${loc.name||'Vô danh'}</div><span class="loc-badge ${dangerClass}">Nguy hiểm: ${dangerText}</span><div class="loc-detail-text">📍 Vị trí: ${loc.position||'Chưa rõ'}</div><div class="loc-detail-text">🚪 Đặc điểm: ${loc.desc||'Bình thường'}</div></div></div>`;});grid.innerHTML=html;}
 
-// ============================================================
-// EVENTS
-// ============================================================
-function renderEventsVisual(){const grid=document.getElementById('eventVisualGrid');if(!eventList||eventList.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện. Bấm "THÊM SỰ KIỆN"!</div>';return;}let html='';eventList.forEach((ev,index)=>{html+=`<div class="event-card" style="display:block" id="event-card-${index}"><button style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px" onclick="removeEventCard(${index})">✕</button><div style="margin-bottom:6px"><input type="text" value="${ev.name||''}" style="font-weight:bold;padding:4px" placeholder="Tên Sự Kiện..." onchange="updateEventField(${index},'name',this.value)"></div><div style="display:flex;gap:6px;margin-bottom:6px"><input type="text" value="${ev.timeNote||''}" style="font-size:11px;padding:4px;flex:1" placeholder="Thời gian..." onchange="updateEventField(${index},'timeNote',this.value)"><input type="text" value="${ev.accessRules||''}" style="font-size:11px;padding:4px;flex:1" placeholder="Điều kiện..." onchange="updateEventField(${index},'accessRules',this.value)"></div><div class="form-group" style="margin-bottom:6px"><textarea style="min-height:50px;font-size:11px;padding:6px" placeholder="Nội dung..." onchange="updateEventField(${index},'events',this.value)">${ev.events||''}</textarea></div><div class="form-group" style="margin-bottom:0"><div style="font-size:10px;color:var(--accent-gold);font-weight:bold">⚙ QUY TẮC AI:</div><textarea style="min-height:50px;font-size:11px;padding:6px" placeholder="Quy tắc AI..." onchange="updateEventField(${index},'aiRules',this.value)">${ev.aiRules||''}</textarea></div></div>`;});grid.innerHTML=html;}
+function renderEventsVisual(){const grid=document.getElementById('eventVisualGrid');if(!eventList||eventList.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện.</div>';return;}let html='';eventList.forEach((ev,index)=>{html+=`<div class="event-card" style="display:block" id="event-card-${index}"><button style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px" onclick="removeEventCard(${index})">✕</button><div style="margin-bottom:6px"><input type="text" value="${ev.name||''}" style="font-weight:bold;padding:4px" placeholder="Tên Sự Kiện..." onchange="updateEventField(${index},'name',this.value)"></div><div style="display:flex;gap:6px;margin-bottom:6px"><input type="text" value="${ev.timeNote||''}" style="font-size:11px;padding:4px;flex:1" placeholder="Thời gian..." onchange="updateEventField(${index},'timeNote',this.value)"><input type="text" value="${ev.accessRules||''}" style="font-size:11px;padding:4px;flex:1" placeholder="Điều kiện..." onchange="updateEventField(${index},'accessRules',this.value)"></div><div class="form-group" style="margin-bottom:6px"><textarea style="min-height:50px;font-size:11px;padding:6px" placeholder="Nội dung..." onchange="updateEventField(${index},'events',this.value)">${ev.events||''}</textarea></div><div class="form-group" style="margin-bottom:0"><div style="font-size:10px;color:var(--accent-gold);font-weight:bold">⚙ QUY TẮC AI:</div><textarea style="min-height:50px;font-size:11px;padding:6px" placeholder="Quy tắc AI..." onchange="updateEventField(${index},'aiRules',this.value)">${ev.aiRules||''}</textarea></div></div>`;});grid.innerHTML=html;}
 function addNewEventCard(){eventList.push({name:'Sự Kiện Mới',timeNote:'Không thời hạn',accessRules:'Tự do',events:'Nội dung...',aiRules:'Tuân thủ cốt truyện.'});renderEventsVisual();syncEventsToTextarea();}
 function removeEventCard(index){if(confirm("Xóa sự kiện này?")){eventList.splice(index,1);renderEventsVisual();syncEventsToTextarea();}}
 function updateEventField(index,field,value){if(eventList[index]){eventList[index][field]=value;syncEventsToTextarea();}}
 function syncEventsToTextarea(){const ta=document.getElementById('gameEvents');if(ta)ta.value=JSON.stringify(eventList,null,2);}
 
-// ============================================================
-// WEAPONS
-// ============================================================
 function renderWeaponsVisual(weaponArray){const grid=document.getElementById('weaponVisualGrid');if(!weaponArray||!Array.isArray(weaponArray)||weaponArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';return;}let html='';weaponArray.forEach(wp=>{const icon=wp.icon||'🗡️';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${wp.name}">`:icon;const isUnknown=(wp.rank&&wp.rank.includes('?'))||(wp.usage&&wp.usage.includes('Chờ cơ duyên'));const cardStyle=isUnknown?'border-color:#7d2828;':'';const iconStyle=isUnknown?'color:#f85149;font-weight:bold;':'';const nameStyle=isUnknown?'color:#f85149;':'';const usageStyle=isUnknown?'color:#f85149;font-style:italic;':'';let badgeClass='loc-danger-low';let badgeRank=wp.rank||'Hạ Phẩm';const rLower=(wp.rank||'').toLowerCase();if(rLower.includes('cao')||rLower.includes('thần khí')||rLower.includes('linh bảo')||rLower.includes('?')){badgeClass='loc-danger-high';}else if(rLower.includes('trung')||rLower.includes('thượng')){badgeClass='loc-danger-mid';}html+=`<div class="weapon-card" style="${cardStyle}"><div class="item-icon-box" style="${iconStyle}">${iconContent}</div><div class="weapon-info"><div class="weapon-name" style="${nameStyle}">${wp.name||'Pháp bảo lạ'}</div><span class="loc-badge ${badgeClass}">Cấp bậc: ${badgeRank}</span><div class="loc-detail-text" style="${usageStyle}">🛠️ ${wp.usage||'Chưa rõ công dụng.'}</div></div></div>`;});grid.innerHTML=html;}
 
-// ============================================================
-// INVENTORY
-// ============================================================
 function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
 
 // ============================================================
-// TEST OPENROUTER KEY
+// TEST KEYS
 // ============================================================
 async function testOpenRouterKey(){
   const k=document.getElementById('openRouterKey').value.trim();
@@ -1145,14 +1141,11 @@ async function testOpenRouterKey(){
   log("🔍 Đang test OpenRouter key...");
   if(!k.startsWith('sk-or-v1-')){
     log("❌ Key KHÔNG đúng định dạng!");
-    alert("❌ Key sai định dạng!\n\nKey OpenRouter phải bắt đầu bằng:\nsk-or-v1-...");
+    alert("❌ Key sai định dạng!\n\nPhải bắt đầu bằng sk-or-v1-");
     return;
   }
   try{
-    const res=await fetch('https://openrouter.ai/api/v1/auth/key',{
-      method:'GET',
-      headers:{'Authorization':'Bearer '+k}
-    });
+    const res=await fetch('https://openrouter.ai/api/v1/auth/key',{method:'GET',headers:{'Authorization':'Bearer '+k}});
     const data=await res.json();
     if(res.ok&&data.data){
       log("✅ Key hợp lệ!");
@@ -1167,32 +1160,80 @@ async function testOpenRouterKey(){
   }
 }
 
+async function testAllGeminiKeys(){
+  const keys = getGeminiKeys();
+  if(keys.length === 0){ alert("⚠️ Chưa nhập key nào!"); return; }
+  const models = getGeminiModels();
+  log(`🔍 Test ${keys.length} keys × ${models.length} models...`);
+  let msg = `📊 KẾT QUẢ TEST ${keys.length} KEYS:\n\n`;
+  for(let i = 0; i < keys.length; i++){
+    msg += `━━━ KEY ${i+1} (${keys[i].substring(0,8)}...) ━━━\n`;
+    for(const model of models){
+      try{
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keys[i]}`;
+        const res = await fetch(url, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({contents:[{role:'user',parts:[{text:'hi'}]}]})
+        });
+        const data = await res.json();
+        if(data.error){
+          if(data.error.code === 429 || (data.error.message||'').toLowerCase().includes('quota')){
+            msg += `  💀 ${model}: HẾT QUOTA\n`;
+            markModelExhausted(i, model);
+          }else{
+            msg += `  ⚠️ ${model}: ${(data.error.message||'').substring(0,60)}\n`;
+          }
+        }else if(data.candidates){
+          msg += `  ✅ ${model}: OK\n`;
+          if(!keyStatus[i]) keyStatus[i] = {};
+          keyStatus[i][model] = 'healthy';
+        }
+      }catch(e){
+        msg += `  ❌ ${model}: Lỗi kết nối\n`;
+      }
+    }
+    msg += `\n`;
+  }
+  renderKeyStatus();
+  alert(msg);
+  log("✅ Đã test xong tất cả keys.");
+}
+
 // ============================================================
-// FORCE RESEND RULES (v2.5.9)
+// FORCE RESEND RULES
 // ============================================================
 function forceResendRules(){
   systemRulesSentThisSession = false;
   tokenStats.resendRulesCount = (tokenStats.resendRulesCount||0) + 1;
   updateTokenStatsDisplay();
   log("🔄 Đã reset flag — lượt tiếp theo sẽ gửi FULL RULES");
-  alert("✅ Lượt tiếp theo sẽ gửi lại TOÀN BỘ system rules!\n\nDùng khi AI bắt đầu viết ngắn hoặc quên lựa chọn hành động.");
+  alert("✅ Lượt tiếp theo sẽ gửi lại TOÀN BỘ system rules!");
   toggleSidebar();
 }
 
 // ============================================================
 // RESET
 // ============================================================
-async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});scopeRegistry.forEach(s=>{s.exemplar='';});renderScopeRegistry();stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';document.getElementById('degradationWarning').style.display='none';document.getElementById('cjkWarningBox').style.display='none';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
+async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});scopeRegistry.forEach(s=>{s.exemplar='';});renderScopeRegistry();stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';document.getElementById('degradationWarning').style.display='none';document.getElementById('cjkWarningBox').style.display='none';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();resetKeyStatus();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
 
 // ============================================================
 // SAVE / LOAD
 // ============================================================
 async function saveGame(isManual=false){
-  // ✅ v2.5.9.1: Kiểm tra CJK trước khi lưu
-  if(isManual && !checkCJKOnSave()){
-    return;
-  }
-  const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,scopeRegistry:scopeRegistry,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};
+  if(isManual && !checkCJKOnSave()) return;
+  const gameData={
+    chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary,
+    storyBoxContent: document.getElementById('story-box').innerHTML,
+    inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML,
+    locVisualHTML: document.getElementById('locVisualGrid').innerHTML,
+    eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML,
+    weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML,
+    mcAvatarBase64, npcList, eventList, tokenStats,
+    currentModel: CACHE_MODEL, settings,
+    keyStatus, currentKeyIndex,   // ✅ v2.5.9.2
+    inputs: {}
+  };
   inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});
   try{
     await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);
@@ -1201,20 +1242,105 @@ async function saveGame(isManual=false){
   }catch(e){alert("Lỗi lưu: "+e);}
 }
 
-async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
+async function loadGame(){
+  try{
+    const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');
+    if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}
+    if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}
+    chatHistory=gameData.chatHistory||[];
+    turnHtmlHistory=gameData.turnHtmlHistory||[];
+    turnCounter=gameData.turnCounter||0;
+    storySummary=gameData.storySummary||"";
+    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0},gameData.tokenStats||{});
+    if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;
+    if(gameData.settings)settings=Object.assign(settings,gameData.settings);
+    if(gameData.keyStatus)keyStatus=gameData.keyStatus;   // ✅ v2.5.9.2
+    if(gameData.currentKeyIndex !== undefined)currentKeyIndex=gameData.currentKeyIndex;
+    document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";
+    if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;
+    if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;
+    if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;
+    if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;
+    if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);
+    if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();}
+    if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}
+    if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}
+    updateTokenStatsDisplay();
+    renderKeyStatus();
+    syncToggleUI();
+    updateKeyCountInfo();
+    log("Game loaded.");
+    alert("📂 Khôi phục thành công!");
+    toggleSidebar();
+    openTab('play');
+  }catch(e){alert("Lỗi tải: "+e);}
+}
 
 function syncToggleUI(){
-  ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave'].forEach(name=>{
+  ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave','autoRotate'].forEach(name=>{
     const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1));
     if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');}
   });
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.9.1_save.json";a.click();log("Xuất file save thành công.");}
+function updateKeyCountInfo(){
+  const keys = getGeminiKeys();
+  const models = getGeminiModels();
+  const el = document.getElementById('keyCountInfo');
+  if(el){
+    el.textContent = `📌 ${keys.length} key | ${models.length} model | Tổng tổ hợp: ${keys.length * models.length}`;
+  }
+}
+
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.9.2_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
+window.addEventListener('DOMContentLoaded',async()=>{
+  try{
+    const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');
+    if(gameData){
+      if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)) scopeRegistry = gameData.scopeRegistry;
+      if(gameData.currentModel) CACHE_MODEL=gameData.currentModel;
+      if(gameData.settings) settings=Object.assign(settings,gameData.settings);
+      if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}
+      if(gameData.mcAvatarBase64) setMcAvatarImage(gameData.mcAvatarBase64);
+      if(gameData.inventoryVisualHTML) document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;
+      if(gameData.locVisualHTML) document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;
+      if(gameData.eventVisualHTML) document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;
+      if(gameData.weaponVisualHTML) document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;
+      if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}
+      if(gameData.eventList) eventList=gameData.eventList;
+      if(gameData.storySummary) storySummary=gameData.storySummary;
+      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0},gameData.tokenStats);
+      if(gameData.keyStatus) keyStatus=gameData.keyStatus;
+      if(gameData.currentKeyIndex !== undefined) currentKeyIndex=gameData.currentKeyIndex;
+    }
+  }catch(e){}
+  npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});
+  renderNpcs(); renderEventsVisual(); renderScopeRegistry();
+  updateTokenStatsDisplay(); syncToggleUI();
+  updateKeyCountInfo();
+  renderKeyStatus();
+
+  // ✅ v2.5.9.2: Lắng nghe thay đổi key input để update UI
+  const apiKeyEl = document.getElementById('apiKey');
+  if(apiKeyEl){
+    apiKeyEl.addEventListener('input', () => {
+      ensureKeyStatusStructure();
+      updateKeyCountInfo();
+      renderKeyStatus();
+    });
+  }
+  const modelListEl = document.getElementById('modelListInput');
+  if(modelListEl){
+    modelListEl.addEventListener('input', () => {
+      ensureKeyStatusStructure();
+      updateKeyCountInfo();
+      renderKeyStatus();
+    });
+  }
+});
 
 // ============================================================
 // UNDO
@@ -1231,7 +1357,7 @@ async function generateStorySummary(){
   const oldTurns=chatHistory.slice(0,cutoff);
   if(oldTurns.length===0)return;
   const oldText=oldTurns.map(m=>`[${m.role==='user'?'Người chơi':'AI'}]: ${m.parts[0].text}`).join('\n\n');
-  const summaryPrompt=`Tóm tắt cốt truyện game tu tiên sau thành đoạn 300-400 từ, GIỮ: tên NPC, cảnh giới, pháp bảo, âm mưu, quan hệ, địa điểm, mốc thời gian. BỎ: chi tiết vụn vặt. KHÔNG bịa. Viết liền mạch. CHỈ DÙNG TIẾNG VIỆT.
+  const summaryPrompt=`Tóm tắt cốt truyện game tu tiên sau thành đoạn 300-400 từ, GIỮ: tên NPC, cảnh giới, pháp bảo, âm mưu, quan hệ, địa điểm, mốc thời gian. BỎ: chi tiết vụn vặt. KHÔNG bịa. CHỈ DÙNG TIẾNG VIỆT.
 
 [TÓM TẮT CŨ]:
 ${storySummary||'(chưa có)'}
@@ -1240,21 +1366,20 @@ ${storySummary||'(chưa có)'}
 ${oldText}
 
 Chỉ trả về đoạn tóm tắt tổng hợp bằng tiếng Việt.`;
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key)return;
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${SUMMARY_MODEL}:generateContent?key=${key}`;
+  const keys = getGeminiKeys();
+  if(keys.length === 0) return;
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${SUMMARY_MODEL}:generateContent?key=${keys[0]}`;
   try{
     const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:summaryPrompt}]}]})});
     const data=await response.json();
     if(data.candidates&&data.candidates[0]?.content?.parts[0]?.text){
       let summaryText = data.candidates[0].content.parts[0].text.trim();
-      // ✅ v2.5.9.1: Filter CJK trong summary
       summaryText = filterCJKFromResponse(summaryText);
       storySummary=summaryText;
-      log(`✅ Đã cập nhật tóm tắt (${storySummary.length} ký tự, model: ${SUMMARY_MODEL}).`);
+      log(`✅ Đã cập nhật tóm tắt (${storySummary.length} ký tự).`);
       if(chatHistory.length > MAX_HISTORY_IN_RAM){
         chatHistory = chatHistory.slice(-KEEP_HISTORY_AFTER_TRIM);
-        log(`🗜️ Đã trim chatHistory xuống ${chatHistory.length} tin để tiết kiệm RAM.`);
+        log(`🗜️ Đã trim chatHistory xuống ${chatHistory.length} tin.`);
       }
       await saveGame(false);
     }else if(data.error){log("❌ Lỗi tóm tắt: "+(data.error.message||'unknown'));}
@@ -1262,7 +1387,7 @@ Chỉ trả về đoạn tóm tắt tổng hợp bằng tiếng Việt.`;
 }
 
 // ============================================================
-// CODEX MEMORY - v2.5.9.1: THÊM CHỈ THỊ HÁN-VIỆT
+// CODEX MEMORY
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -1283,30 +1408,17 @@ function getCodexMemoryPrompt(){
   if(eventList.length>0){
     const recentEvents = eventList.slice(-5);
     eventSummary = recentEvents.map(ev=>`• ${ev.name}@${ev.timeNote||'?'}`).join('\n');
-    if(eventList.length > 5){
-      eventSummary += `\n(Đã xảy ra ${eventList.length - 5} sự kiện cũ hơn — xem RAW DATA nếu cần)`;
-    }
-  }else{
-    eventSummary='Chưa có';
-  }
+    if(eventList.length > 5) eventSummary += `\n(Đã xảy ra ${eventList.length - 5} sự kiện cũ hơn)`;
+  }else eventSummary='Chưa có';
 
   let locSummary='';
-  try{
-    const locs=JSON.parse(document.getElementById('locations').value||'[]');
-    locSummary=locs.length>0?locs.map(l=>`• ${l.name}(${l.danger||'Thấp'})`).join('\n'):'Chưa có';
-  }catch(e){locSummary='Chưa có';}
+  try{const locs=JSON.parse(document.getElementById('locations').value||'[]');locSummary=locs.length>0?locs.map(l=>`• ${l.name}(${l.danger||'Thấp'})`).join('\n'):'Chưa có';}catch(e){locSummary='Chưa có';}
 
   let weaponSummary='';
-  try{
-    const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');
-    weaponSummary=weapons.length>0?weapons.map(w=>`• ${w.name}[${w.rank||'?'}]`).join('\n'):'Chưa có';
-  }catch(e){weaponSummary='Chưa có';}
+  try{const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');weaponSummary=weapons.length>0?weapons.map(w=>`• ${w.name}[${w.rank||'?'}]`).join('\n'):'Chưa có';}catch(e){weaponSummary='Chưa có';}
 
   let invSummary='';
-  try{
-    const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');
-    invSummary=inv.length>0?inv.map(i=>`• ${i.name}x${i.quantity||1}(${i.quality||'Thường'})`).join('\n'):'Trống';
-  }catch(e){invSummary=document.getElementById('mcInventory').value||'Trống';}
+  try{const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');invSummary=inv.length>0?inv.map(i=>`• ${i.name}x${i.quantity||1}(${i.quality||'Thường'})`).join('\n'):'Trống';}catch(e){invSummary=document.getElementById('mcInventory').value||'Trống';}
 
   const archive=document.getElementById('npcArchive').value||'Chưa có';
 
@@ -1323,30 +1435,26 @@ ${npcSummary}
 [TÓM TẮT CỐT TRUYỆN] ${storySummary||'Game mới bắt đầu.'}
 【END CODEX】
 
-⚠️ NHẮC LẠI FORMAT OUTPUT (BẮT BUỘC - KHÔNG ĐƯỢC THIẾU):
-Sau khi dẫn chuyện, PHẢI có đầy đủ 3 phần:
+⚠️ NHẮC LẠI FORMAT OUTPUT (BẮT BUỘC):
 1. [TÓM TẮT]: 2-3 câu tình thế hiện tại
 2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
 3. Khối \`\`\`json cập nhật Codex
 
-🚨 CẢNH BÁO THOÁI HÓA (v2.5.9) — ĐỌC KỸ:
-- Nếu bạn có xu hướng viết ngắn dần → DỪNG LẠI. Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
-- Nếu bạn quên lựa chọn hành động → DỪNG LẠI. Phải có 2-4 lựa chọn.
-- Không được tóm tắt cốt truyện qua loa. Không được bỏ qua miêu tả.
-- Giữ văn phong, motif gốc xuyên suốt. Không "lười" viết.
-- Miêu tả cảm xúc, hành động, không khí, đối thoại — KHÔNG chỉ kể sự kiện.
+🚨 CHỐNG THOÁI HÓA (v2.5.9):
+- Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
+- KHÔNG được bỏ qua LỰA CHỌN HÀNH ĐỘNG.
+- Miêu tả cảm xúc, hành động, không khí, đối thoại.
 
-🈶 QUY TẮC NGÔN NGỮ (v2.5.9.1) — BẮT BUỘC:
-- CHỈ VIẾT BẰNG TIẾNG VIỆT CÓ DẤU.
-- TUYỆT ĐỐI KHÔNG dùng ký tự Trung Quốc/Nhật/Hàn (丹, 神, 仙, 劫, 气, 基, 婴...).
-- Thuật ngữ tu tiên viết theo Hán-Việt: "Kim Đan" (không phải "Kim丹"), "Hóa Thần" (không phải "Hóa神"), "Nguyên Anh" (không phải "Nguyên婴"), "Luyện Khí" (không phải "Luyện气"), "Trúc Cơ" (không phải "Trúc基").
+🈶 QUY TẮC NGÔN NGỮ (v2.5.9.1):
+- CHỈ VIẾT TIẾNG VIỆT CÓ DẤU.
+- TUYỆT ĐỐI KHÔNG dùng ký tự Trung Quốc/Nhật/Hàn (丹, 神, 仙, 劫...).
+- Viết "Kim Đan", "Hóa Thần", "Nguyên Anh", "Luyện Khí", "Trúc Cơ".
 
-TUYỆT ĐỐI KHÔNG được bỏ qua phần lựa chọn hành động.
-KHÔNG được viết tiếp nếu chưa đưa đủ 2-4 lựa chọn.`;
+TUYỆT ĐỐI KHÔNG được bỏ qua phần lựa chọn hành động.`;
 }
 
 // ============================================================
-// SYSTEM RULES - v2.5.9.1: THÊM CJK LANGUAGE LOCK
+// SYSTEM RULES
 // ============================================================
 function buildSystemRules(scope='default'){
   const v=id=>document.getElementById(id)?.value||'';
@@ -1362,7 +1470,7 @@ ${v('rule18Plus')||'Cho phép khai thác song tu, sắc hiệp, tâm lý nhạy 
 
 # QUY TẮC BẮT BUỘC
 ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
-2. Trừ chính xác linh thạch/đan dược khi dùng, ghi rõ còn lại.
+2. Trừ chính xác linh thạch/đan dược khi dùng.
 3. KHÔNG tự xóa NPC/địa danh/sự kiện/vật phẩm khỏi Codex.
 4. Tin Codex hơn lời kể nếu mâu thuẫn.
 5. Mô tả hậu quả logic, có thể thất bại.
@@ -1378,46 +1486,28 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Cảnh giới: ${v('powerSystem')||'Luyện Khí → Trúc Cơ → Kim Đan → Nguyên Anh → Hóa Thần'}
 - Văn phong: ${v('writingStyle')||'Miêu tả tỉ mỉ'}
 
-# 🈶 QUY TẮC NGÔN NGỮ (BẮT BUỘC - VI PHẠM = SAI)
-- CHỈ ĐƯỢC VIẾT BẰNG TIẾNG VIỆT CÓ DẤU (chữ Quốc ngữ).
+# 🈶 QUY TẮC NGÔN NGỮ (BẮT BUỘC)
+- CHỈ ĐƯỢC VIẾT BẰNG TIẾNG VIỆT CÓ DẤU.
 - TUYỆT ĐỐI KHÔNG dùng bất kỳ ký tự Hán/Nhật/Hàn nào (漢字, 丹, 神, 仙, 劫, 道, 气, 基, 婴, 虚, 魔, 灵...).
-- Mọi thuật ngữ tu tiên PHẢI viết theo phiên âm Hán-Việt:
-  • 丹 → "Đan" (VD: Kim Đan, Trúc Cơ Đan)
-  • 神 → "Thần" (VD: Hóa Thần, Nguyên Thần)
-  • 仙 → "Tiên" (VD: Tiên Nhân, Tu Tiên)
-  • 劫 → "Kiếp" (VD: Thiên Kiếp, Lôi Kiếp)
-  • 道 → "Đạo" (VD: Đạo Tâm, Đại Đạo)
-  • 气 → "Khí" (VD: Luyện Khí, Linh Khí)
-  • 基 → "Cơ" (VD: Trúc Cơ, Cơ Sở)
-  • 婴 → "Anh" (VD: Nguyên Anh, Anh Nhi)
-  • 虚 → "Hư" (VD: Hư Không, Thái Hư)
-  • 魔 → "Ma" (VD: Tâm Ma, Ma Đạo)
-  • 灵 → "Linh" (VD: Linh Khí, Linh Bảo)
-- Ví dụ SAI: "Kim丹", "Hóa神", "Nguyên婴", "Luyện气", "Trúc基"
-- Ví dụ ĐÚNG: "Kim Đan", "Hóa Thần", "Nguyên Anh", "Luyện Khí", "Trúc Cơ"
+- Mọi thuật ngữ tu tiên viết theo phiên âm Hán-Việt: "Kim Đan", "Hóa Thần", "Nguyên Anh", "Luyện Khí", "Trúc Cơ".
 
-# ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT (KHÔNG ĐƯỢC BỎ QUA)
+# ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT
 Mỗi lượt trả lời PHẢI có đầy đủ 4 phần:
-1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ) — miêu tả chi tiết không khí, cảm xúc, hành động, đối thoại.
-2) \`[TÓM TẮT]:\` 2-3 câu tình thế hiện tại.
+1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).
+2) \`[TÓM TẮT]:\` 2-3 câu.
 3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
 4) Khối \`\`\`json cập nhật Codex.
 
-# 🚨 CHỐNG THOÁI HÓA (ANTI-DEGRADATION) — ĐỌC KỸ
-- TUYỆT ĐỐI KHÔNG được viết ngắn dần theo thời gian.
-- Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ. Nếu lượt trước ngắn, lượt này PHẢI dài hơn.
-- TUYỆT ĐỐI KHÔNG được bỏ qua LỰA CHỌN HÀNH ĐỘNG.
-- KHÔNG được tóm tắt cốt truyện qua loa, KHÔNG được "lười" miêu tả.
-- Giữ văn phong, motif gốc xuyên suốt toàn bộ trò chơi.
-- Mỗi lượt phải là một "chương truyện" thực sự, không phải ghi chú tóm tắt.
-
-NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG HOẶC DẪN CHUYỆN < ${MIN_TURN_WORDS} TỪ → COI NHƯ TRẢ LỜI SAI.
+# 🚨 CHỐNG THOÁI HÓA
+- TUYỆT ĐỐI KHÔNG viết ngắn dần.
+- Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
+- KHÔNG bỏ qua LỰA CHỌN HÀNH ĐỘNG.
 
 # CẤU TRÚC JSON CODEX
 \`\`\`json
 {
   "mcLevel":"...","mcGameTime":"...","mcSkills":"...",
-  "mcInventoryList":[{"name":"Tên vật phẩm","icon":"📦","quantity":10,"quality":"Phẩm chất","effect":"Công dụng"}],
+  "mcInventoryList":[{"name":"Tên","icon":"📦","quantity":10,"quality":"Phẩm chất","effect":"Công dụng"}],
   "npcActiveList":[{"id":"npc_xxx","name":"...","identity":"...","personality":"...","npcRules":"...","affinity":50,"status":"Bình thường"}],
   "locationsList":[{"name":"...","icon":"🏛","position":"...","danger":"...","desc":"..."}],
   "eventsList":[{"name":"...","timeNote":"...","accessRules":"...","events":"..."}],
@@ -1426,40 +1516,40 @@ NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG HOẶC DẪN CHUYỆN < ${MIN_TURN_WORD
 }
 \`\`\`
 
-# ⚠️ QUY TẮC ĐỊNH DẠNG mcInventoryList (CỰC KỲ QUAN TRỌNG - KHÔNG ĐƯỢC SAI)
-- TUYỆT ĐỐI KHÔNG trả về mảng string như: ["10 Hạ phẩm Linh thạch", "Tụ Khí Đan (2 viên)"].
-- BẮT BUỘC trả về mảng OBJECT, mỗi phần tử có cấu trúc:
-  {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"}
+# QUY TẮC mcInventoryList
+- BẮT BUỘC trả về mảng OBJECT: {"name":"...","icon":"📦","quantity":10,"quality":"...","effect":"..."}
+- KHÔNG trả về mảng string.
 
-# QUY TẮC NPC ID (CỰC KỲ QUAN TRỌNG)
-- Mỗi NPC trong Codex có ID dạng "npc_xxx".
-- Khi trả về "npcActiveList", BẮT BUỘC giữ nguyên "id" của NPC đã có.
-- Nếu NPC đổi tên → CHỈ đổi "name", KHÔNG tạo ID mới.
+# QUY TẮC NPC ID
+- BẮT BUỘC giữ nguyên "id" của NPC đã có. Nếu NPC đổi tên → CHỈ đổi "name".
 
-# QUY TẮC NPC KHÔNG CÒN HOẠT ĐỘNG
-- Nếu NPC CHẾT → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
-- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC → thêm trường "status".
+# QUY TẮC NPC KHÔNG HOẠT ĐỘNG
+- NPC CHẾT → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
+- NPC BỊ PHẾ/TẨU HỎA/SI NGỐC → thêm trường "status".
 
 # NGUYÊN TẮC MẠCH LẠC
-- Trước khi viết, ĐỌC LẠI Codex + Tóm tắt để đảm bảo nhất quán.
+- ĐỌC LẠI Codex + Tóm tắt để đảm bảo nhất quán.
 - "mcGameTime" TÍCH LŨY, không reset.
 - "npcActiveList" PHẢI liệt kê TOÀN BỘ NPC sống, GIỮ NGUYÊN ID.
 - "locationsList"/"eventsList" TÍCH LŨY, không xóa cũ.`;
 }
 
 // ============================================================
-// CALL GEMINI
+// CALL GEMINI — v2.5.9.2: MULTI-KEY + AUTO-ROTATE
 // ============================================================
-async function callGemini(promptText,isFirstCall=false,scope='default'){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key){throw new Error("Chưa nhập Gemini API Key");}
+async function callGemini(promptText, isFirstCall=false, scope='default'){
+  const keys = getGeminiKeys();
+  if(keys.length === 0){ throw new Error("Chưa nhập Gemini API Key"); }
 
-  const currentMessage={role:"user",parts:[{text:promptText}]};
-  const recentHistory=chatHistory.slice(-MAX_RECENT_TURNS*2);
+  ensureKeyStatusStructure();
+  const models = getGeminiModels();
 
-  const requestPayload={
-    contents:[...recentHistory,currentMessage],
-    safetySettings:[
+  const currentMessage = {role:"user", parts:[{text:promptText}]};
+  const recentHistory = chatHistory.slice(-MAX_RECENT_TURNS*2);
+
+  const requestPayload = {
+    contents: [...recentHistory, currentMessage],
+    safetySettings: [
       {category:"HARM_CATEGORY_HARASSMENT",threshold:"BLOCK_NONE"},
       {category:"HARM_CATEGORY_HATE_SPEECH",threshold:"BLOCK_NONE"},
       {category:"HARM_CATEGORY_SEXUALLY_EXPLICIT",threshold:"BLOCK_NONE"},
@@ -1467,53 +1557,122 @@ async function callGemini(promptText,isFirstCall=false,scope='default'){
     ]
   };
 
-  if(isFirstCall||!systemRulesSentThisSession){
-    const wrappedPrompt=`${buildSystemRules(scope)}\n\n---\n\n${promptText}`;
-    requestPayload.contents=[...recentHistory,{role:"user",parts:[{text:wrappedPrompt}]}];
+  if(isFirstCall || !systemRulesSentThisSession){
+    const wrappedPrompt = `${buildSystemRules(scope)}\n\n---\n\n${promptText}`;
+    requestPayload.contents = [...recentHistory, {role:"user", parts:[{text:wrappedPrompt}]}];
     log("📤 Gemini: FULL rules");
-    systemRulesSentThisSession=true;
+    systemRulesSentThisSession = true;
   }else{
-    requestPayload.contents=[...recentHistory,currentMessage];
     log("📤 Gemini: prompt gọn");
   }
 
-  const models=FALLBACK_MODELS;
-  for(let i=0;i<models.length;i++){
-    const modelName=models[i];
-    const url=`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
-    try{
-      const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestPayload)});
-      const data=await response.json();
-      if(data.error){
-        const errMsg=data.error.message||JSON.stringify(data.error);
-        log(`❌ Gemini ${modelName}: ${errMsg}`);
+  // ✅ v2.5.9.2: Duyệt qua tất cả key × model
+  const startKeyIdx = currentKeyIndex;
+  let lastError = null;
+
+  // Nếu autoRotate OFF → chỉ dùng key hiện tại, duyệt model
+  // Nếu autoRotate ON → duyệt tất cả key
+
+  const keyOrder = [];
+  if(settings.autoRotate){
+    for(let i = 0; i < keys.length; i++){
+      keyOrder.push((startKeyIdx + i) % keys.length);
+    }
+  }else{
+    keyOrder.push(startKeyIdx);
+  }
+
+  for(const keyIdx of keyOrder){
+    const key = keys[keyIdx];
+    if(!key) continue;
+
+    for(const model of models){
+      // Bỏ qua nếu đã biết là exhausted
+      if(keyStatus[keyIdx] && keyStatus[keyIdx][model] === 'exhausted'){
+        continue;
+      }
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+
+      try{
+        log(`🎯 Thử [Key ${keyIdx+1}][${model}]...`);
+        const response = await fetch(url, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(requestPayload)
+        });
+        const data = await response.json();
+
+        if(data.error){
+          const errMsg = data.error.message || JSON.stringify(data.error);
+          const errCode = data.error.code;
+          const isQuotaError = errCode === 429 ||
+                               (errMsg||'').toLowerCase().includes('quota') ||
+                               (errMsg||'').toLowerCase().includes('exceeded') ||
+                               (errMsg||'').toLowerCase().includes('rate limit');
+
+          if(isQuotaError){
+            log(`💀 [Key ${keyIdx+1}][${model}] HẾT QUOTA → nhảy tổ hợp tiếp`);
+            markModelExhausted(keyIdx, model);
+            lastError = errMsg;
+            continue;
+          }else{
+            log(`⚠️ [Key ${keyIdx+1}][${model}]: ${errMsg.substring(0,100)}`);
+            markModelError(keyIdx, model);
+            lastError = errMsg;
+            tokenStats.errors++;
+            continue;
+          }
+        }
+
+        if(data.candidates && data.candidates[0] && data.candidates[0].content){
+          let aiReply = data.candidates[0].content.parts[0].text;
+          aiReply = filterCJKFromResponse(aiReply);
+
+          // ✅ Thành công → cập nhật key hiện tại
+          if(currentKeyIndex !== keyIdx){
+            tokenStats.keyRotations = (tokenStats.keyRotations||0) + 1;
+            log(`🔄 Đã chuyển sang Key ${keyIdx+1}`);
+            currentKeyIndex = keyIdx;
+          }
+          if(!keyStatus[keyIdx]) keyStatus[keyIdx] = {};
+          keyStatus[keyIdx][model] = 'healthy';
+          renderKeyStatus();
+
+          if(data.usageMetadata){
+            const inT=data.usageMetadata.promptTokenCount||0;
+            const outT=data.usageMetadata.candidatesTokenCount||0;
+            tokenStats.input+=inT; tokenStats.output+=outT; tokenStats.requests++;
+            tokenStats.geminiIn+=inT; tokenStats.geminiOut+=outT; tokenStats.geminiReq++;
+            updateTokenStatsDisplay();
+          }
+
+          log(`✅ Thành công [Key ${keyIdx+1}][${model}]`);
+
+          if(!isAiGenCall){
+            chatHistory.push(currentMessage);
+            chatHistory.push({role:"model", parts:[{text:aiReply}]});
+            if(chatHistory.length >= SUMMARY_TRIGGER_TURNS*2+2) await generateStorySummary();
+          }
+          return aiReply;
+        }
+
+        // Response không có candidates — có thể bị block
+        log(`⚠️ [Key ${keyIdx+1}][${model}]: Không có candidates`);
+        lastError = "No candidates";
         tokenStats.errors++;
-        if(i<models.length-1)continue;
-        throw new Error(errMsg);
+
+      }catch(e){
+        log(`❌ [Key ${keyIdx+1}][${model}] lỗi: ${e.message}`);
+        lastError = e.message;
+        tokenStats.errors++;
       }
-      if(data.candidates&&data.candidates[0]&&data.candidates[0].content){
-        let aiReply=data.candidates[0].content.parts[0].text;
-        // ✅ v2.5.9.1: Filter CJK
-        aiReply = filterCJKFromResponse(aiReply);
-        if(data.usageMetadata){
-          const inT=data.usageMetadata.promptTokenCount||0;
-          const outT=data.usageMetadata.candidatesTokenCount||0;
-          tokenStats.input+=inT; tokenStats.output+=outT; tokenStats.requests++;
-          tokenStats.geminiIn+=inT; tokenStats.geminiOut+=outT; tokenStats.geminiReq++;
-          updateTokenStatsDisplay();
-        }
-        if(!isAiGenCall){
-          chatHistory.push(currentMessage);
-          chatHistory.push({role:"model",parts:[{text:aiReply}]});
-          if(chatHistory.length>=SUMMARY_TRIGGER_TURNS*2+2)await generateStorySummary();
-        }
-        return aiReply;
-      }
-    }catch(e){
-      if(i===models.length-1)throw e;
     }
   }
-  throw new Error("Tất cả Gemini models đều lỗi");
+
+  // Hết tất cả key × model
+  log(`💀 ĐÃ HẾT TẤT CẢ ${keys.length * models.length} TỔ HỢP KEY × MODEL!`);
+  throw new Error(`Tất cả ${keys.length} key × ${models.length} model đều lỗi. Lỗi cuối: ${lastError||'unknown'}`);
 }
 
 // ============================================================
@@ -1523,10 +1682,7 @@ async function callOpenRouter(promptText,scope='default'){
   const rawKey=document.getElementById('openRouterKey').value;
   const key=rawKey.trim();
   if(!key){throw new Error("Chưa nhập OpenRouter API Key");}
-
-  if(!key.startsWith('sk-or-v1-')){
-    throw new Error("OpenRouter Key sai định dạng (phải bắt đầu sk-or-v1-)");
-  }
+  if(!key.startsWith('sk-or-v1-')){throw new Error("OpenRouter Key sai định dạng (phải bắt đầu sk-or-v1-)");}
 
   let model=document.getElementById('openRouterModel').value;
   if(model==='custom'){
@@ -1543,11 +1699,7 @@ async function callOpenRouter(promptText,scope='default'){
 
   let messages;
   if(!systemRulesSentThisSession){
-    messages=[
-      {role:"system",content:buildSystemRules(scope)},
-      ...recentHistory,
-      currentMessage
-    ];
+    messages=[{role:"system",content:buildSystemRules(scope)},...recentHistory,currentMessage];
     log("📤 OpenRouter: FULL rules");
     systemRulesSentThisSession=true;
   }else{
@@ -1556,13 +1708,7 @@ async function callOpenRouter(promptText,scope='default'){
   }
 
   const url="https://openrouter.ai/api/v1/chat/completions";
-  const body={
-    model: model,
-    messages: messages,
-    temperature: 0.9,
-    max_tokens: 4000
-  };
-
+  const body={model, messages, temperature: 0.9, max_tokens: 4000};
   const headers={
     "Content-Type": "application/json",
     "Authorization": "Bearer "+key,
@@ -1576,38 +1722,28 @@ async function callOpenRouter(promptText,scope='default'){
   while(attempt<maxAttempts){
     attempt++;
     try{
-      const response=await fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body)});
-
+      const response=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
       if(!response.ok){
         const errText=await response.text();
         const status=response.status;
         log(`❌ OpenRouter HTTP ${status}: ${errText.substring(0,200)}`);
-
         if(status>=500&&status<600&&settings.retry5xx&&attempt<maxAttempts){
           log(`⏳ OpenRouter 5xx, thử lại lần ${attempt+1}...`);
           await new Promise(r=>setTimeout(r,2000));
           continue;
         }
-
         tokenStats.errors++;
         throw new Error(`OpenRouter HTTP ${status}`);
       }
-
       const data=await response.json();
-
       if(data.error){
         log(`❌ OpenRouter: ${data.error.message||JSON.stringify(data.error)}`);
         tokenStats.errors++;
         throw new Error(data.error.message||"OpenRouter error");
       }
-
       if(data.choices&&data.choices[0]&&data.choices[0].message){
         let aiReply=data.choices[0].message.content;
-        if(!aiReply||aiReply.trim()===''){
-          log("⚠️ OpenRouter trả về rỗng");
-          throw new Error("Empty response");
-        }
-        // ✅ v2.5.9.1: Filter CJK
+        if(!aiReply||aiReply.trim()===''){throw new Error("Empty response");}
         aiReply = filterCJKFromResponse(aiReply);
         if(data.usage){
           const inT=data.usage.prompt_tokens||0;
@@ -1623,34 +1759,28 @@ async function callOpenRouter(promptText,scope='default'){
         }
         return aiReply;
       }
-
       throw new Error("OpenRouter response không hợp lệ");
-
     }catch(e){
-      if(attempt>=maxAttempts){
-        tokenStats.errors++;
-        throw e;
-      }
+      if(attempt>=maxAttempts){tokenStats.errors++;throw e;}
     }
   }
   throw new Error("OpenRouter fail after retries");
 }
 
 // ============================================================
-// CALL AI - UNIFIED VỚI FALLBACK
+// CALL AI - UNIFIED
 // ============================================================
 async function callAI(promptText, isFirstCall=false){
   const actionText=promptText.substring(0,500);
   const isNsfw=detectNsfwIntent(actionText);
   const scope=detectSceneScope(actionText);
   const orKey=document.getElementById('openRouterKey').value.trim();
-  const geminiKey=document.getElementById('apiKey').value.trim();
+  const geminiKeys=getGeminiKeys();
 
-  // v2.5.9: Gửi lại full rules định kỳ
   if(settings.periodicRules && !isFirstCall){
     const turnNumber = Math.floor(chatHistory.length / 2);
     if(turnNumber > 0 && turnNumber % RULES_RESEND_INTERVAL === 0 && systemRulesSentThisSession){
-      log(`🔄 Gửi lại FULL RULES (định kỳ ${RULES_RESEND_INTERVAL} lượt) để chống thoái hóa format`);
+      log(`🔄 Gửi lại FULL RULES (định kỳ ${RULES_RESEND_INTERVAL} lượt)`);
       systemRulesSentThisSession = false;
       tokenStats.resendRulesCount = (tokenStats.resendRulesCount||0) + 1;
       updateTokenStatsDisplay();
@@ -1668,10 +1798,8 @@ async function callAI(promptText, isFirstCall=false){
       return reply;
     }catch(e){
       log(`❌ OpenRouter fail: ${e.message}`);
-
-      if(settings.autoFallback && geminiKey){
+      if(settings.autoFallback && geminiKeys.length > 0){
         log("🔄 Fallback về Gemini...");
-        log("⚠️ Nội dung NSFW có thể bị filter");
         tokenStats.fallbackCount++;
         updateTokenStatsDisplay();
         try{
@@ -1681,15 +1809,13 @@ async function callAI(promptText, isFirstCall=false){
           return null;
         }
       }else{
-        log("❌ Không fallback (đã tắt hoặc thiếu Gemini key)");
+        log("❌ Không fallback");
         return null;
       }
     }
   }else{
-    if(isNsfw){
-      log("⚠️ NSFW nhưng autoSwitch tắt hoặc thiếu OR key → dùng Gemini");
-    }
-    log("🎯 Dùng Gemini");
+    if(isNsfw){log("⚠️ NSFW nhưng autoSwitch tắt hoặc thiếu OR key → dùng Gemini");}
+    log("🎯 Dùng Gemini (multi-key)");
     try{
       return await callGemini(promptText, isFirstCall, scope);
     }catch(e){
@@ -1709,57 +1835,226 @@ async function callAI(promptText, isFirstCall=false){
 }
 
 // ============================================================
-// AI GEN - v2.5.9.1: RÀNG BUỘC NGÔN NGỮ + FILTER CJK
+// AI GEN - v2.5.9.2: FORMAT LOCK + FEW-SHOT + VALIDATION
 // ============================================================
-async function aiGenField(fieldId,promptMsg){
-  const field=document.getElementById(fieldId);
-  log("AI Gen: "+fieldId);
-  const originalVal=field.value;
-  field.value="AI đang suy nghĩ...";
-  const geminiKey=document.getElementById('apiKey').value.trim();
-  if(!geminiKey){field.value=originalVal;alert("Cần Gemini API Key để dùng AI Gen!");return;}
+const AI_GEN_BANNED_WORDS = [
+  'chào đạo hữu', 'kính chào', 'hỡi đạo hữu', 'chúc mừng ngươi',
+  'chào bạn', 'xin chào', 'kính thưa', 'hỡi ngươi', 'hỡi các vị'
+];
 
-  isAiGenCall=true;
+function isValidRulesFormat(text){
+  if(!text || text.trim().length < 20) return false;
+  const t = text.trim();
+  // Phải bắt đầu bằng "1." hoặc "1)"
+  if(!/^\s*1[\.\)]/.test(t)) return false;
+  // Phải có ít nhất 3 dòng đánh số
+  const numberedLines = t.split('\n').filter(l => /^\s*\d+[\.\)]/.test(l.trim()));
+  if(numberedLines.length < 3) return false;
+  // Không được chứa từ cấm
+  const lower = t.toLowerCase();
+  if(AI_GEN_BANNED_WORDS.some(w => lower.includes(w))) return false;
+  return true;
+}
 
-  // ✅ v2.5.9.1: Prompt nghiêm ngặt — CHỈ TIẾNG VIỆT, KHÔNG HÁN TỰ
-  const strictPrompt = `Bạn là Game Master chuyên viết nội dung cho text RPG tu tiên Việt Nam.
+function containsBannedWords(text){
+  if(!text) return false;
+  const lower = text.toLowerCase();
+  return AI_GEN_BANNED_WORDS.some(w => lower.includes(w));
+}
 
-⚠️ QUY TẮC NGÔN NGỮ BẮT BUỘC (VI PHẠM = SAI):
-- CHỈ ĐƯỢC VIẾT BẰNG TIẾNG VIỆT (chữ Quốc ngữ có dấu).
-- TUYỆT ĐỐI KHÔNG dùng bất kỳ ký tự Hán/Nhật/Hàn nào (漢字, 丹, 神, 仙, 劫, 道, 气, 基, 婴...).
-- Các thuật ngữ tu tiên phải viết bằng phiên âm Hán-Việt:
-  • 丹 → "Đan" (không viết "丹")
-  • 神 → "Thần" (không viết "神")
-  • 仙 → "Tiên" (không viết "仙")
-  • 劫 → "Kiếp" (không viết "劫")
-  • 道 → "Đạo" (không viết "道")
-  • 气 → "Khí" (không viết "气")
-  • 基 → "Cơ" (không viết "基")
-  • 婴 → "Anh" (không viết "婴")
-- Ví dụ ĐÚNG: "Kim Đan", "Hóa Thần", "Nguyên Anh", "Luyện Khí", "Trúc Cơ", "Thiên Kiếp"
-- Ví dụ SAI: "Kim丹", "Hóa神", "Nguyên婴", "Luyện气", "Trúc基"
+async function aiGenField(fieldId, promptMsg){
+  const field = document.getElementById(fieldId);
+  log("AI Gen: " + fieldId);
+  const originalVal = field.value;
+  field.value = "AI đang suy nghĩ...";
+  const keys = getGeminiKeys();
+  if(keys.length === 0){ field.value = originalVal; alert("Cần ít nhất 1 Gemini API Key!"); return; }
+
+  isAiGenCall = true;
+
+  // ✅ v2.5.9.2: Định dạng output theo từng loại field
+  const formatRules = {
+    'aiRules': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách quy tắc đánh số "1. ", "2. ", "3. "... Mỗi dòng 1 quy tắc ngắn gọn.',
+      example: `1. Nhịp độ chậm rãi, cẩn trọng, không buff NVC vô lý.
+2. Trừ chính xác linh thạch/đan dược khi dùng, ghi rõ số còn lại.
+3. Không tự ý xóa NPC/địa danh/sự kiện/vật phẩm khỏi Codex.
+4. Tin Codex hơn lời kể khi có mâu thuẫn.`
+    },
+    'supremeMotifRule': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách chỉ thị đánh số.',
+      example: `1. Giữ mô tuýp Phàm Nhân Tu Tiên chính tông.
+2. Nhịp truyện chậm, logic chặt chẽ.
+3. NVC không có hậu cung vô lý.`
+    },
+    'rule18Plus': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách quy tắc đánh số.',
+      example: `1. Cho phép miêu tả cảnh 18+ khi phù hợp bối cảnh.
+2. Không lạm dụng yếu tố 18+ làm loãng cốt truyện.
+3. Giữ tâm lý nhân vật tự nhiên, không gượng ép.`
+    },
+    'worldRules': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách quy tắc đánh số.',
+      example: `1. Tu tiên giới lấy mạnh được yếu thua làm gốc.
+2. Cơ duyên luôn đi kèm nguy hiểm.`
+    },
+    'namingRules': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách quy tắc đánh số.',
+      example: `1. Tên người dùng Hán-Việt cổ phong.
+2. Tên pháp bảo có 2-4 chữ, mang ý nghĩa võ học.`
+    },
+    'writingStyle': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách đặc điểm văn phong đánh số.',
+      example: `1. Ngôi kể thứ 2 (ngươi), xưng "ta" cho người dẫn chuyện.
+2. Giọng cổ phong, lạnh lùng, thực tế.
+3. Câu ngắn gọn, sắc bén.`
+    },
+    'powerSystem': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách cảnh giới đánh số tăng dần.',
+      example: `1. Luyện Khí Kỳ (1-13 tầng)
+2. Trúc Cơ Kỳ (Sơ/Trung/Hậu kỳ)
+3. Kim Đan Kỳ
+4. Nguyên Anh Kỳ
+5. Hóa Thần Kỳ`
+    },
+    'mcSkills': {
+      type: 'rules',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Danh sách kỹ năng, mỗi dòng có "- ".',
+      example: `- Trường Xuân Công (Tầng 5)
+- Vô Địch Thần Thức
+- Khinh Thân Thuật`
+    },
+    'worldContext': {
+      type: 'paragraph',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Đoạn mô tả ngắn gọn (3-5 câu). KHÔNG nhập vai, KHÔNG chào hỏi.'
+    },
+    'startTime': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1-2 câu mô tả mốc thời gian. KHÔNG nhập vai.'
+    },
+    'startScript': {
+      type: 'paragraph',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: Đoạn kịch bản mở đầu 3-5 câu. Có thể kể chuyện nhưng KHÔNG chào hỏi kiểu "Chào đạo hữu".'
+    },
+    'genre': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1-2 câu mô tả thể loại và âm hưởng.'
+    },
+    'gameTitle': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1 dòng duy nhất, tên game.'
+    },
+    'mcName': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1 dòng "Tên (Thân phận)".'
+    },
+    'mcLevel': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1 dòng cảnh giới.'
+    },
+    'mcGameTime': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1 dòng thời gian.'
+    },
+    'difficultyCustom': {
+      type: 'short',
+      instruction: 'ĐỊNH DẠNG BẮT BUỘC: 1-2 câu ghi chú độ khó.'
+    }
+  };
+
+  const rule = formatRules[fieldId] || {
+    type: 'short',
+    instruction: 'ĐỊNH DẠNG: Văn bản ngắn gọn, súc tích. KHÔNG nhập vai, KHÔNG chào hỏi.'
+  };
+
+  const isRulesField = rule.type === 'rules';
+
+  // ✅ v2.5.9.2: Prompt cực mạnh cho field quy tắc
+  let strictPrompt;
+  if(isRulesField){
+    strictPrompt = `Nhiệm vụ: Viết danh sách quy tắc cho text RPG tu tiên Việt Nam.
+
+⛔ CẤM TUYỆT ĐỐI (VI PHẠM = KẾT QUẢ SAI HOÀN TOÀN):
+- KHÔNG bắt đầu bằng "Chào", "Kính chào", "Hỡi", "Chúc mừng", "Xin chào".
+- KHÔNG nhập vai, KHÔNG xưng "ta", "ngươi", "đạo hữu".
+- KHÔNG viết đoạn văn dài, KHÔNG kể chuyện.
+- KHÔNG giải thích, KHÔNG mở đầu, KHÔNG kết bài.
+- KHÔNG dùng ký tự Trung Quốc/Nhật/Hàn (丹, 神, 仙, 劫...).
+
+✅ ĐỊNH DẠNG BẮT BUỘC:
+${rule.instruction}
+- Dòng đầu tiên PHẢI là "1. ..."
+- Mỗi quy tắc 1 dòng, ngắn gọn, súc tích.
+- Viết hoàn toàn bằng tiếng Việt có dấu.
+
+📖 VÍ DỤ MẪU (bắt chước CHÍNH XÁC format này):
+"""
+${rule.example}
+"""
 
 📝 NỘI DUNG CẦN TẠO:
 ${promptMsg}
 
-Chỉ trả về nội dung hoàn chỉnh bằng tiếng Việt. KHÔNG giải thích, KHÔNG thêm ghi chú, KHÔNG dùng markdown code block.`;
+⚠️ BẮT BUỘC: Trả về CHỈ danh sách đánh số 1., 2., 3... KHÔNG có gì khác. Bắt đầu ngay bằng "1. ".`;
+  }else{
+    strictPrompt = `Viết nội dung cho cấu hình text RPG tu tiên Việt Nam.
+
+⛔ CẤM TUYỆT ĐỐI:
+- KHÔNG nhập vai, KHÔNG chào hỏi ("Chào đạo hữu", "Kính chào"...).
+- KHÔNG dùng ký tự Trung Quốc/Nhật/Hàn (丹, 神, 仙, 劫...).
+- KHÔNG thêm ghi chú, KHÔNG giải thích.
+
+✅ ${rule.instruction}
+✅ CHỈ VIẾT BẰNG TIẾNG VIỆT CÓ DẤU.
+✅ Viết "Kim Đan", "Hóa Thần", "Nguyên Anh", "Luyện Khí", "Trúc Cơ".
+
+📝 NỘI DUNG CẦN TẠO:
+${promptMsg}
+
+Chỉ trả về nội dung hoàn chỉnh. KHÔNG markdown code block. KHÔNG chào hỏi.`;
+  }
 
   try{
     let res = await callGemini(strictPrompt, false);
-    if(res){
-      // ✅ Hậu kiểm: đếm và filter CJK
-      const cjkCount = countCJK(res);
-      if(cjkCount > 0){
-        const uniqueChars = getUniqueCJK(res).join(' ');
-        log(`⚠️ AI Gen trả về ${cjkCount} ký tự CJK: ${uniqueChars}`);
-        // Filter CJK qua bảng map
-        res = filterCJKFromResponse(res);
-        const remainingCJK = countCJK(res);
-        if(remainingCJK > 0){
-          log(`🈶 Còn ${remainingCJK} ký tự CJK không có trong map.`);
-        }
-        log(`✅ Đã filter xong AI Gen.`);
+
+    // ✅ v2.5.9.2: Post-validation + retry cho field quy tắc
+    if(res && isRulesField){
+      let attempts = 0;
+      const maxAttempts = 2;
+      while(!isValidRulesFormat(res) && attempts < maxAttempts){
+        attempts++;
+        log(`⚠️ AI Gen ra sai format (lần ${attempts}) → retry với nhắc nhở mạnh hơn`);
+        const retryPrompt = `${strictPrompt}
+
+🚨 LẦN TRƯỚC SAI FORMAT. BẮT BUỘC:
+- Dòng đầu tiên PHẢI là "1. "
+- CHỈ viết danh sách số 1., 2., 3...
+- KHÔNG chào hỏi, KHÔNG nhập vai, KHÔNG giải thích.
+- Nếu viết "Chào..." → sai hoàn toàn.`;
+        res = await callGemini(retryPrompt, false);
       }
+
+      if(!isValidRulesFormat(res)){
+        log(`❌ AI Gen thất bại sau ${maxAttempts} lần retry. Kết quả vẫn sai format.`);
+        if(!confirm(`⚠️ AI Gen không tạo được format đúng sau ${maxAttempts} lần thử.\n\nBạn có muốn:\n• OK = Chấp nhận kết quả (có thể sai format)\n• Cancel = Bỏ qua, giữ giá trị cũ`)){
+          field.value = originalVal;
+          log("❌ Người dùng hủy kết quả AI Gen.");
+          return;
+        }
+      }else{
+        log(`✅ AI Gen đúng format sau ${attempts} lần.`);
+      }
+    }
+
+    if(res){
+      res = filterCJKFromResponse(res);
       field.value = res;
       log(`✅ AI Gen xong: ${fieldId} (${res.length} ký tự)`);
     }else{
@@ -1767,10 +2062,11 @@ Chỉ trả về nội dung hoàn chỉnh bằng tiếng Việt. KHÔNG giải t
       log("❌ AI Gen không nhận được phản hồi.");
     }
   }catch(e){
-    log("AI Gen lỗi: "+e.message);
-    field.value=originalVal;
+    log("AI Gen lỗi: " + e.message);
+    field.value = originalVal;
+    alert("❌ AI Gen thất bại:\n" + e.message + "\n\nKiểm tra:\n1. API Key còn quota không?\n2. Đã thêm nhiều key chưa?\n3. Xem log để biết chi tiết.");
   }finally{
-    isAiGenCall=false;
+    isAiGenCall = false;
   }
 }
 
@@ -1808,9 +2104,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
         const normalizedInventory = codexData.mcInventoryList.map(item => {
           if (typeof item === 'string') {
             const match = item.match(/^(\d+)\s+(.+)$/);
-            if (match) {
-              return { name: match[2], icon: '📦', quantity: parseInt(match[1]), quality: 'Chưa rõ', effect: 'Chưa rõ' };
-            }
+            if (match) return { name: match[2], icon: '📦', quantity: parseInt(match[1]), quality: 'Chưa rõ', effect: 'Chưa rõ' };
             return { name: item, icon: '📦', quantity: 1, quality: 'Chưa rõ', effect: 'Chưa rõ' };
           }
           return item;
@@ -1842,18 +2136,11 @@ function parseAndAutoUpdateCodex(fullResponseText){
             if(aiNpc.personality)exist.personality=aiNpc.personality;
             if(aiNpc.affinity!==undefined)exist.affinity=aiNpc.affinity;
             if(aiNpc.avatar)exist.avatar=aiNpc.avatar;
-
             if(aiNpc.npcRules !== undefined && aiNpc.npcRules !== null && String(aiNpc.npcRules).trim() !== ''){
-              if(!exist.lockedRules){
-                exist.npcRules = aiNpc.npcRules;
-              } else {
-                log(`🔒 Giữ nguyên quy tắc AI của [${exist.name}] (đã khóa)`);
-              }
+              if(!exist.lockedRules) exist.npcRules = aiNpc.npcRules;
+              else log(`🔒 Giữ nguyên quy tắc AI của [${exist.name}] (đã khóa)`);
             }
-
-            if(aiNpc.status !== undefined){
-              exist.status = aiNpc.status;
-            }
+            if(aiNpc.status !== undefined) exist.status = aiNpc.status;
           }else{
             npcList.push({
               id:aiNpc.id||generateNpcId(),
@@ -1863,9 +2150,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
               npcRules:aiNpc.npcRules||'Tuân thủ thiết lập.',
               avatar:aiNpc.avatar||generateAutoAvatar(aiNpc.name),
               affinity:aiNpc.affinity!==undefined?aiNpc.affinity:50,
-              pinned:false,
-              lockedRules:false,
-              status:aiNpc.status||''
+              pinned:false, lockedRules:false, status:aiNpc.status||''
             });
             log(`> Thêm NPC mới: [${aiNpc.id||'auto'}] ${aiNpc.name}`);
           }
@@ -1882,26 +2167,16 @@ function parseAndAutoUpdateCodex(fullResponseText){
 
       const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
       npcList = npcList.filter(npc => {
-        if(npc.pinned){
-          log(`📌 Giữ lại NPC [${npc.id}] ${npc.name} (đã tick xanh).`);
-          return true;
-        }
+        if(npc.pinned){log(`📌 Giữ lại NPC [${npc.id}] ${npc.name} (đã tick xanh).`);return true;}
         const haystack = [npc.status||'', npc.npcRules||'', npc.personality||'', npc.identity||''].join(' ').toLowerCase();
         const matchedKeyword = INACTIVE_KEYWORDS.find(kw => haystack.includes(kw));
-        if(matchedKeyword){
-          log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (trạng thái: "${matchedKeyword}").`);
-          return false;
-        }
+        if(matchedKeyword){log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (trạng thái: "${matchedKeyword}").`);return false;}
         const nName = npc.name.toLowerCase().trim();
-        if(nName && archiveLower.includes(nName)){
-          log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (có trong Archive).`);
-          return false;
-        }
+        if(nName && archiveLower.includes(nName)){log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (có trong Archive).`);return false;}
         return true;
       });
 
       renderNpcs();
-
       log("> Cập nhật Codex thành công!");
       let cleanText=fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i,'').trim();
       let formatted=formatSummaryBox(cleanText);
@@ -1918,7 +2193,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
 function openThienDao(){
   document.getElementById('thienDaoModal').classList.add('active');
   document.getElementById('thienDaoInput').value='';
-  document.getElementById('thienDaoResults').innerHTML='<div class="thiendao-empty">Nhập từ khóa và bấm TÌM để tra cứu.<br>💡 Không gọi AI → tiết kiệm token.</div>';
+  document.getElementById('thienDaoResults').innerHTML='<div class="thiendao-empty">Nhập từ khóa và bấm TÌM để tra cứu.</div>';
   setTimeout(()=>document.getElementById('thienDaoInput').focus(),100);
 }
 function closeThienDao(){document.getElementById('thienDaoModal').classList.remove('active');}
@@ -1960,21 +2235,17 @@ function thienDaoRecent(){
 function thienDaoStats(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
+  const keys = getGeminiKeys();
+  const models = getGeminiModels();
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Models</div><div class="thiendao-result-body">Gemini: ${CACHE_MODEL}<br>Summary: ${SUMMARY_MODEL}<br>OpenRouter: ${document.getElementById('openRouterModel').value}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚙️ Settings</div><div class="thiendao-result-body">Auto-switch: ${settings.autoSwitch?'✅':'❌'}<br>Auto-fallback: ${settings.autoFallback?'✅':'❌'}<br>Retry 5xx: ${settings.retry5xx?'✅':'❌'}<br>Periodic Rules: ${settings.periodicRules?'✅':'❌'}<br>Anti-Shortening: ${settings.antiShortening?'✅':'❌'}<br>CJK Filter: ${settings.cjkFilter?'✅':'❌'}<br>CJK Warn on Save: ${settings.cjkWarnOnSave?'✅':'❌'}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🛡️ Anti-Degradation</div><div class="thiendao-result-body">Resend rules: ${tokenStats.resendRulesCount||0} lần<br>Short-turn warnings: ${tokenStats.shortTurnWarnings||0}<br>Rules interval: mỗi ${RULES_RESEND_INTERVAL} lượt<br>Ngưỡng ngắn: ${SHORT_TURN_THRESHOLD} từ<br>Yêu cầu tối thiểu: ${MIN_TURN_WORDS} từ</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🈶 CJK Filter</div><div class="thiendao-result-body">Tổng CJK đã filter: ${tokenStats.cjkFilteredCount||0} ký tự</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔑 API Keys</div><div class="thiendao-result-body">Số key Gemini: ${keys.length}<br>Số model: ${models.length}<br>Tổ hợp: ${keys.length * models.length}<br>Key rotations: ${tokenStats.keyRotations||0}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚙️ Settings</div><div class="thiendao-result-body">Auto-switch: ${settings.autoSwitch?'✅':'❌'}<br>Auto-fallback: ${settings.autoFallback?'✅':'❌'}<br>Retry 5xx: ${settings.retry5xx?'✅':'❌'}<br>Periodic Rules: ${settings.periodicRules?'✅':'❌'}<br>Anti-Shortening: ${settings.antiShortening?'✅':'❌'}<br>CJK Filter: ${settings.cjkFilter?'✅':'❌'}<br>Auto-Rotate: ${settings.autoRotate?'✅':'❌'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🛡️ Anti-Degradation</div><div class="thiendao-result-body">Resend rules: ${tokenStats.resendRulesCount||0}<br>Short-turn warnings: ${tokenStats.shortTurnWarnings||0}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🈶 CJK Filter</div><div class="thiendao-result-body">Tổng CJK đã filter: ${tokenStats.cjkFilteredCount||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng scope: ${scopeRegistry.length}<br>Có exemplar: ${scopeRegistry.filter(s=>s.exemplar&&s.exemplar.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
-  let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📍 Địa danh</div><div class="thiendao-result-body">Tổng: ${locCount}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📜 Sự kiện</div><div class="thiendao-result-body">Tổng: ${eventList.length} (gửi AI: 5 gần nhất)</div></div>`;
-  let wepCount=0;try{wepCount=JSON.parse(document.getElementById('worldItems').value||'[]').length;}catch(e){}
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚔️ Pháp bảo</div><div class="thiendao-result-body">Tổng: ${wepCount}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin | Gửi AI: ${Math.min(chatHistory.length,MAX_RECENT_TURNS*2)} tin gần nhất</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📖 Tóm tắt</div><div class="thiendao-result-body">${storySummary?'Đã có ('+storySummary.length+' ký tự)':'Chưa có'}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Gemini: ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>OpenRouter: ${tokenStats.orReq} req | ${tokenStats.orIn.toLocaleString()} in / ${tokenStats.orOut.toLocaleString()} out<br>Fallback: ${tokenStats.fallbackCount} lần | Errors: ${tokenStats.errors}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Lịch sử chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 Token Stats</div><div class="thiendao-result-body">Gemini: ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>OpenRouter: ${tokenStats.orReq} req<br>Fallback: ${tokenStats.fallbackCount} | Errors: ${tokenStats.errors}</div></div>`;
   resultsDiv.innerHTML=html;
 }
 
@@ -1982,33 +2253,18 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9.1 (2026-10-10) - CJK FILTER + AI GEN LANGUAGE LOCK</div><div class="thiendao-result-body">
-✅ Fix AI Gen trả về ký tự Trung Quốc (丹, 神...) — ràng buộc prompt nghiêm ngặt.
-✅ Auto-filter CJK trong mọi response (chat + AI Gen) qua bảng map Hán-Việt.
-✅ Nút "🔍 Quét Ký Tự Trung" trong sidebar.
-✅ Nút "🧹 Tự Động Xóa CJK" — làm sạch mọi ô input/textarea.
-✅ Auto-warn CJK khi bấm "💾 Lưu Game".
-✅ Chỉ thị Hán-Việt rõ ràng trong system rules + Codex memory.
-✅ Giữ toàn bộ fix anti-degradation từ v2.5.9.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9.2 (2026-10-10) - MULTI-KEY + AI GEN FORMAT LOCK</div><div class="thiendao-result-body">
+✅ FIX AI Gen viết "Chào đạo hữu..." thay vì danh sách quy tắc.
+✅ Few-shot example + Post-validation + retry + banned words check.
+✅ API Key hiển thị (không ẩn) — dễ kiểm tra.
+✅ Hỗ trợ NHIỀU key, phân tách bằng dấu &lt;&gt;.
+✅ Auto-rotate: key1 hết quota model X → model Y → key2.
+✅ Hiển thị trạng thái key + model (healthy/exhausted).
+✅ Nút test tất cả keys + reset trạng thái.
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9 (2026-10-10) - ANTI-DEGRADATION PATCH</div><div class="thiendao-result-body">
-✅ Resend FULL rules mỗi ${RULES_RESEND_INTERVAL} lượt.
-✅ Tăng MAX_RECENT_TURNS từ 3 → 6.
-✅ Anti-shortening guard: phát hiện lượt trước < ${SHORT_TURN_THRESHOLD} từ.
-✅ Summary dùng ${SUMMARY_MODEL} thay vì flash-lite.
-✅ Nút "Force Full Rules" thủ công.
-✅ Giới hạn chatHistory trong RAM.
-✅ Yêu cầu độ dài tối thiểu ${MIN_TURN_WORDS} từ/lượt.
-</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM</div><div class="thiendao-result-body">
-✅ Thêm nhắc format vào prompt gọn mỗi lượt (2-4 lựa chọn).
-✅ Fix lỗi AI quên đưa lựa chọn hành động ở lượt 2+.
-✅ Bổ sung hệ thống tu vi đầy đủ.
-</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI</div><div class="thiendao-result-body">Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
-  html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.1 (2026-10-10) - CJK FILTER</div><div class="thiendao-result-body">Auto-filter CJK, quét CJK, cleanup CJK.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9 (2026-10-10) - ANTI-DEGRADATION</div><div class="thiendao-result-body">Resend rules, MAX_RECENT_TURNS 3→6, anti-shortening.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE</div><div class="thiendao-result-body">Nhắc format, tu vi system.</div></div>`;
   resultsDiv.innerHTML=html;
 }
 
@@ -2042,14 +2298,14 @@ ${document.getElementById('startScript').value}
 
 ${getCodexMemoryPrompt()}
 
-Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thiểu ${MIN_TURN_WORDS} từ), tuân thủ tuyệt đối các quy tắc đã thiết lập!
+Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thiểu ${MIN_TURN_WORDS} từ), tuân thủ tuyệt đối các quy tắc!
 🈶 NHỚ: CHỈ VIẾT TIẾNG VIỆT, KHÔNG DÙNG KÝ TỰ TRUNG QUỐC.`;
   const reply=await callAI(systemPrompt,true);
-  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key.</div>';}
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key & quota.</div>';}
 };
 
 // ============================================================
-// SEND ACTION - v2.5.9.1
+// SEND ACTION
 // ============================================================
 const sendAction=async()=>{
   const inputEl=document.getElementById('userInput');
@@ -2066,10 +2322,9 @@ const sendAction=async()=>{
   const needRulesResend=(chatHistory.length===0);
   const sceneScope=detectSceneScope(actionText);
   const styleReminder=getStyleExemplarBlock(sceneScope)
-    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar đã cung cấp.\n`
+    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar.\n`
     : '';
 
-  // v2.5.9: Anti-shortening guard
   let lengthGuard = '';
   if(settings.antiShortening){
     const lastAiMsg = [...chatHistory].reverse().find(m => m.role === 'model');
@@ -2079,7 +2334,7 @@ const sendAction=async()=>{
         tokenStats.shortTurnWarnings = (tokenStats.shortTurnWarnings||0) + 1;
         updateTokenStatsDisplay();
         document.getElementById('degradationWarning').style.display='block';
-        lengthGuard = `\n\n🚨🚨 CẢNH BÁO NGHIÊM TRỌNG: Lượt trước bạn chỉ viết ${lastWordCount} từ — QUÁ NGẮN so với yêu cầu tối thiểu ${MIN_TURN_WORDS} từ.\nLượt này BẮT BUỘC PHẢI dài hơn hẳn: tối thiểu ${MIN_TURN_WORDS} từ, miêu tả chi tiết không khí, cảm xúc, hành động, đối thoại. KHÔNG được viết tắt, KHÔNG được tóm tắt sự kiện.`;
+        lengthGuard = `\n\n🚨 CẢNH BÁO: Lượt trước chỉ ${lastWordCount} từ — QUÁ NGẮN. Lượt này BẮT BUỘC dài ≥${MIN_TURN_WORDS} từ, miêu tả chi tiết.`;
         log(`⚠️ Anti-shortening guard kích hoạt (lượt trước ${lastWordCount} từ).`);
       } else if(lastWordCount >= MIN_TURN_WORDS){
         document.getElementById('degradationWarning').style.display='none';
@@ -2089,24 +2344,24 @@ const sendAction=async()=>{
 
   const formatReminder = `${lengthGuard}
 
-⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT (KHÔNG ĐƯỢC THIẾU):
-1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ) — miêu tả chi tiết.
-2) [TÓM TẮT]: 2-3 câu tình thế hiện tại.
-3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.). KHÔNG ĐƯỢC THIẾU.
+⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:
+1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).
+2) [TÓM TẮT]: 2-3 câu.
+3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
 4) Khối \`\`\`json cập nhật Codex.
 
-🈶 QUY TẮC NGÔN NGỮ: CHỈ VIẾT TIẾNG VIỆT CÓ DẤU. TUYỆT ĐỐI KHÔNG dùng ký tự Trung Quốc/Nhật/Hàn (丹, 神, 仙, 劫...). Viết "Kim Đan", "Hóa Thần", "Nguyên Anh", "Luyện Khí", "Trúc Cơ".
+🈶 QUY TẮC NGÔN NGỮ: CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.
 
-❌ Nếu thiếu LỰA CHỌN HÀNH ĐỘNG → trả lời SAI HOÀN TOÀN.
-❌ Nếu dẫn chuyện < ${MIN_TURN_WORDS} từ → trả lời SAI HOÀN TOÀN.
-❌ Nếu dùng ký tự Trung Quốc → trả lời SAI HOÀN TOÀN.`;
+❌ Thiếu LỰA CHỌN → SAI.
+❌ Dẫn chuyện < ${MIN_TURN_WORDS} từ → SAI.
+❌ Dùng ký tự Trung → SAI.`;
 
   const promptWithCodex=needRulesResend
     ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
     : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
 
   const reply=await callAI(promptWithCodex,false);
-  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;}
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log — có thể tất cả key đã hết quota. Bấm "🔄 Reset Trạng Thái Key" để thử lại.</div>`;}
 };
 
 document.getElementById('userInput').addEventListener('keypress',function(e){if(e.key==='Enter')sendAction();});
@@ -2117,20 +2372,15 @@ document.getElementById('userInput').addEventListener('keypress',function(e){if(
 document.getElementById('modelSelect').addEventListener('change',function(e){
   CACHE_MODEL=e.target.value;
   updateTokenStatsDisplay();
-  log("🔄 Đổi Gemini model: "+CACHE_MODEL);
+  log("🔄 Đổi Gemini model (UI): "+CACHE_MODEL);
 });
 document.getElementById('openRouterModel').addEventListener('change',function(e){
   const customInput=document.getElementById('openRouterCustomModel');
   if(e.target.value==='custom'){
     if(customInput)customInput.style.display='block';
-    log("🔄 Chọn nhập model OpenRouter tùy chỉnh");
   }else{
     if(customInput)customInput.style.display='none';
-    log("🔄 Đổi OpenRouter model: "+e.target.value);
   }
-});
-document.getElementById('openRouterCustomModel')?.addEventListener('change',function(e){
-  log("🔄 Model custom OpenRouter: "+e.target.value);
 });
 </script>
 </body>

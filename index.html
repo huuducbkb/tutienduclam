@@ -3,24 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.6.0 - AI RPG (Full Rules)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9 - AI RPG (Format Reinforce + Stability Fix)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
-     v2.6.0 (2026-10-10) - TÍCH HỢP 4 BỘ QUY TẮC
+     v2.5.9 (2026-10-10) - STABILITY FIX
      ─────────────────────────────────────────────────────────
-     ✅ Tự động điền 4 bộ quy tắc vào textarea mặc định.
-     ✅ Bộ 1: QUY TẮC AI & PACING (nhịp độ, thời gian, không buff).
-     ✅ Bộ 2: HỆ THỐNG SỨC MẠNH (10 cảnh giới, thần thức, linh căn, đan dược).
-     ✅ Bộ 3: QUY TẮC THẾ GIỚI (bối cảnh, tài nguyên, phong tục).
-     ✅ Bộ 4: VĂN PHONG & NGÔI KỂ (ngôi "ngươi", đối thoại theo hảo cảm).
+     ✅ Tách systemRulesSent theo provider (Gemini / OpenRouter).
+     ✅ Inject exemplar mỗi lượt khi scope đổi.
+     ✅ Fix NSFW false positive (bỏ từ đơn ngắn, word-boundary EN).
+     ✅ Cap turnHtmlHistory (30 entry) tránh phình RAM.
+     ✅ Snapshot-based undo (chatHistory + turnCounter + summary + scope).
+     ✅ Chỉ slice chatHistory khi summary thành công.
+     ✅ Fallback model chain thực tế + ưu tiên model user.
+     ✅ Truyền precomputedScope vào callAI (tránh tính 2 lần).
      
-     v2.5.8 (2026-10-09) - FORMAT REINFORCE
+     v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM
      ─────────────────────────────────────────────────────────
-     ✅ Thêm nhắc format vào prompt gọn mỗi lượt.
-     ✅ Fix lỗi AI quên đưa lựa chọn hành động.
+     ✅ Thêm nhắc format vào prompt gọn mỗi lượt (2-4 lựa chọn).
+     ✅ Thêm nhắc format vào cuối Codex memory.
+     ✅ Fix lỗi AI quên đưa lựa chọn hành động ở lượt 2+.
+     ✅ Bổ sung hệ thống tu vi đầy đủ vào powerSystem.
+     
+     v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI
+     ─────────────────────────────────────────────────────────
+     ✅ Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.
+     
+     v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK
+     ─────────────────────────────────────────────────────────
+     ✅ Fix lỗi AI trả về mcInventoryList dạng mảng string.
+     
+     v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
+     ─────────────────────────────────────────────────────────
+     ✅ Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.
      
      ============================================================ -->
 
@@ -136,9 +153,8 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .btn-config{background:var(--accent-purple);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
 .btn-config.import{background:var(--accent-blue)}
 </style>
-</head><body>
-<div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.6.0</span></div>
+</head><body><div class="header">
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -149,9 +165,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group">
   <label class="label-title">Model Gemini:</label>
   <select id="modelSelect">
-    <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Nhanh, rẻ)</option>
-    <option value="gemini-3.6-flash">3.6 Flash (Toàn diện)</option>
-    <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Cũ)</option>
+    <option value="gemini-2.5-flash-lite" selected>2.5 Flash-Lite (Nhanh, rẻ)</option>
+    <option value="gemini-2.5-flash">2.5 Flash (Toàn diện)</option>
+    <option value="gemini-2.0-flash">2.0 Flash (Ổn định)</option>
   </select>
 </div>
 
@@ -242,7 +258,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUI TẮC TỐI CAO</div><div class="label-desc">AI căn cứ vào đây để duy trì mô tuýp truyện.</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Chỉ thị bắt buộc mô tuýp truyện gốc, viết ngắn gọn dưới 200 từ')">✨ AI GEN</button></div>
 <textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:70px" placeholder="VD: Phàm Nhân Tu Tiên chính tông..."></textarea>
 </div>
-
 <div class="form-group" style="background:#1c0e12;padding:10px;border-radius:6px;border:1px solid #a83250">
 <div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUI TẮC 18+</div><div class="label-desc">Bạn tự điền rule 18+ chi tiết tại đây.</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Quy tắc xử lý nội dung 18+, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div>
 <textarea id="rule18Plus" style="border-color:#a83250;min-height:120px" placeholder="Bạn tự điền rule 18+ chi tiết tại đây."></textarea>
@@ -267,670 +282,21 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div><div class="label-desc">Nhịp độ, tiêu hao, không buff.</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Chỉ thị AI Game Master chuẩn Phàm Nhân Tu Tiên, ngắn gọn dưới 300 từ')">✨ AI GEN</button></div>
-<textarea id="aiRules" style="border-color:#7d2828;min-height:200px"># QUY TẮC AI & PACING - PHÀM NHÂN LƯU CHÍNH TÔNG
-
-## I. NHỊP ĐỘ & THỜI GIAN
-
-### 1. Mỗi lượt chơi
-- 1 hành động chính + tối đa 2 hành động phụ.
-- Thời gian tối thiểu: 1 giờ. KHÔNG có "tức thời".
-- BẮT BUỘC ghi: "[⏰ Thời gian: X giờ/ngày/tháng/năm]" sau mỗi hành động.
-
-### 2. Cách ghi thời gian
-- Dưới 1 ngày: "[⏰ Thời gian: 6 giờ]"
-- 1-30 ngày: "[⏰ Thời gian: 3 ngày]"
-- 1-12 tháng: "[⏰ Thời gian: 2 tháng]"
-- Trên 1 năm: "[⏰ Thời gian: 1 năm 3 tháng]"
-
-### 3. Cập nhật thời gian
-- Cộng dồn vào "mcGameTime" trong Codex.
-- KHÔNG reset, KHÔNG nhảy cóc.
-
-## II. OUTPUT BẮT BUỘC MỖI LƯỢT
-
-### 1. Cấu trúc 4 phần
-1) Dẫn chuyện 4-7 đoạn (250-900 từ tùy cảnh).
-2) [TÓM TẮT]: 2-3 câu tình thế.
-3) 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
-4) Khối ```json cập nhật Codex.
-
-### 2. Độ dài dẫn chuyện
-- Cảnh thường (di chuyển, quan sát): 250-400 từ.
-- Cảnh quan trọng (gặp NPC, quyết định): 400-600 từ.
-- Cảnh cao trào (chiến đấu, đột phá, NSFW): 600-900 từ.
-- KHÔNG viết dưới 250 từ/lượt → coi như SAI.
-
-### 3. Chất lượng dẫn chuyện
-- MỖI ĐOẠN: 5-8 câu.
-- Miêu tả ít nhất 2 giác quan (nhìn, nghe, linh khí, xúc giác).
-- Có nội tâm NVC (suy nghĩ, tính toán, do dự).
-- Có hội thoại NPC nếu có tương tác.
-- Không mô tả lại bối cảnh cũ, không lặp ý.
-
-## III. KHÔNG BUFF NVC
-
-### 1. Chiến thắng
-- NVC thắng nhờ: chuẩn bị kỹ, tính toán, may mắn hợp lý.
-- KHÔNG thắng dễ trước địch mạnh hơn 2 đại cảnh giới.
-- KHÔNG có "main character aura" tự động thắng.
-- Thất bại là bình thường, có thể chết vĩnh viễn.
-
-### 2. Tu luyện
-- KHÔNG cho NVC học công pháp mới không có nguồn gốc.
-- KHÔNG để NVC đột phá khi chưa đủ thời gian + tài nguyên.
-- KHÔNG nhảy cóc cảnh giới.
-- PHẢI mô tả quá trình tích lũy.
-
-### 3. Tài nguyên
-- KHÔNG tự ý thêm linh thạch/đan dược cho NVC.
-- Trừ chính xác số lượng khi dùng, ghi rõ còn lại.
-- Tài nguyên phải có nguồn gốc (mua, cướp, ban thưởng, nhặt được).
-
-## IV. NGUY HIỂM THẬT
-
-### 1. Rủi ro
-- NVC CÓ THỂ chết, bị thương nặng, mất tu vi.
-- Mỗi quyết định lớn đều có rủi ro.
-- Tỷ lệ thành công khi làm việc nguy hiểm: 30-70%.
-
-### 2. Hậu quả
-- Mô tả hậu quả logic, có thể thất bại.
-- KHÔNG cứu vớt NVC bằng "may mắn".
-- Thất bại: mất thời gian, tài nguyên, hoặc tính mạng.
-
-## V. ÂM MƯU & NHÂN QUẢ
-
-### 1. NPC
-- Mỗi NPC đều có mục đích riêng.
-- KHÔNG ai vô cớ giúp NVC.
-- NPC giúp vì: lợi ích chung, ân tình, hoặc âm mưu sâu xa.
-- NPC có thể phản bội nếu có lợi hơn.
-
-### 2. Danh tiếng
-- Hành động của NVC ảnh hưởng danh tiếng (chính đạo/ma đạo/trung lập).
-- Hậu quả có thể đến trễ 3-10 lượt sau.
-- Làm ác: chính đạo truy sát (có thể sau nhiều năm).
-
-## VI. CODEX NHẤT QUÁN
-
-### 1. Nguyên tắc
-- Codex là nguồn sự thật. Tin Codex hơn lời kể.
-- KHÔNG tự ý xóa NPC/địa danh/sự kiện còn hoạt động.
-- KHÔNG tự ý thay đổi bối cảnh, cảnh giới, thời gian.
-
-### 2. NPC ID
-- Mỗi NPC có ID dạng "npc_xxx".
-- BẮT BUỘC giữ nguyên ID khi cập nhật.
-- Nếu NPC đổi tên: chỉ đổi "name", KHÔNG tạo ID mới.
-
-### 3. NPC không còn hoạt động
-- Nếu NPC CHẾT: ghi vào "npcArchive", XÓA khỏi "npcActiveList".
-- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC: thêm "status", VẪN giữ trong "npcActiveList".
-
-## VII. THỨ TỰ ƯU TIÊN KHI XUNG ĐỘT
-
-1. Codex > Lời kể
-2. Nhất quán cốt truyện > Sự kiện mới
-3. Rủi ro thật > Kịch tính
-4. Nhịp chậm > Nhanh gọn
-5. Logic > Cảm xúc
-6. Quy tắc 18+ > Quy tắc an toàn chung
-
-## VIII. CẤM TUYỆT ĐỐI
-
-- Nhảy cóc thời gian không giải thích.
-- Tự ý thêm tài nguyên cho NVC.
-- Cho NVC thắng dễ trước địch mạnh hơn.
-- NPC vô cớ giúp NVC.
-- Bỏ qua quá trình tu luyện, nhảy cảnh giới.
-- Thay đổi địa danh/sự kiện đã ghi trong Codex.
-- Tạo NPC trùng lặp hoặc ID mới cho NPC đã có.
-- Bỏ qua phần lựa chọn hành động.
-- Bỏ qua phần thời gian hành động.
-
-## IX. CẢM GIÁC CẦN TÁI HIỆN
-
-Người chơi phải cảm thấy:
-- Mỗi viên linh thạch đều quý giá.
-- Mỗi ngày tu luyện đều đáng giá.
-- Mỗi quyết định đều có rủi ro.
-- Mỗi NPC đều có thể phản bội.
-- Sự trưởng thành đến từ tích lũy, KHÔNG từ may mắn.</textarea>
+<textarea id="aiRules" style="border-color:#7d2828;min-height:120px" placeholder="1. Nhịp độ chậm, cẩn trọng.&#10;2. Trừ chính xác tài nguyên khi dùng.&#10;3. Không tự ý xóa NPC còn sống."></textarea>
 </div>
-
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.6.0</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên trò chơi tu tiên')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.9</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THIẾT LẬP ĐỘ KHÓ</div><button class="btn-aigen" onclick="aiGenField('difficultyCustom','Quy tắc độ khó ngắn gọn')">✨ AI GEN</button></div><select id="difficultySelect"><option value="SFW (AN TOÀN / THÔNG THƯỜNG)">SFW (An toàn)</option><option value="NSFW (NHẠY CẢM / NGƯỜI LỚN)" selected>NSFW (Người lớn)</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px" placeholder="Ghi chú thêm..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','Mô tả bối cảnh thế giới, ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldContext" placeholder="Mô tả bối cảnh thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startTime','Mốc thời gian mở đầu ngắn gọn')">✨ AI GEN</button></div><textarea id="startTime" placeholder="VD: Năm 3200, thời đại mạt pháp..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">KỊCH BẢN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startScript','Kịch bản khởi đầu ngắn gọn dưới 200 từ')">✨ AI GEN</button></div><textarea id="startScript" placeholder="Diễn biến khởi đầu..."></textarea></div>
-
-<div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','Quy tắc thế giới ngắn gọn dưới 150 từ')">✨ AI GEN</button></div>
-<textarea id="worldRules" style="min-height:200px"># QUY TẮC THẾ GIỚI - PHÀM NHÂN TU TIÊN
-
-## I. BỐI CẢNH CHUNG
-
-### 1. Thời đại
-- Tu tiên giới rộng lớn, chia thành nhiều khu vực.
-- Linh khí loãng dần theo thời gian (mạt pháp chi kiếp).
-- Các đại tông môn chiếm giữ linh mạch tốt nhất.
-
-### 2. Phân cấp thế lực
-- Đại tông môn: Có Hóa Thần trở lên trấn giữ.
-- Trung tông môn: Có Nguyên Anh trấn giữ.
-- Tiểu tông môn: Có Kim Đan trấn giữ.
-- Gia tộc: Có Trúc Cơ trấn giữ.
-- Tán tu: Tu sĩ không thuộc thế lực nào.
-
-### 3. Phân chia lãnh thổ
-- Nội vực: Linh khí đậm, đại tông môn kiểm soát.
-- Trung vực: Linh khí trung bình, tranh chấp.
-- Biên vực: Linh khí loãng, tán tu sinh sống.
-- Cấm địa: Nguy hiểm, ít người dám vào.
-
-## II. TU SĨ & PHÀM NHÂN
-
-### 1. Phàm nhân
-- Không có linh căn, không tu luyện được.
-- Tuổi thọ ~80 năm. Chiếm 99% dân số.
-
-### 2. Tu sĩ
-- Có linh căn, tu luyện được.
-- Tuổi thọ tăng theo cảnh giới. Chiếm ~1% dân số.
-
-### 3. Tỷ lệ linh căn
-- Ngũ Hành Tạp: 70% tu sĩ.
-- Đơn Linh Căn: 20%.
-- Song/Tam Linh Căn: 8%.
-- Thiên/Dị Linh Căn: 2%.
-
-## III. TÀI NGUYÊN
-
-### 1. Linh thạch
-- Hạ phẩm: 1 viên = 100 linh khí.
-- Trung phẩm: 1 viên = 100 hạ phẩm.
-- Thượng phẩm: 1 viên = 100 trung phẩm.
-- Cực phẩm: 1 viên = 100 thượng phẩm.
-
-### 2. Linh dược
-- Phân cấp: Phàm, Hạ, Trung, Thượng, Cực, Tiên.
-
-### 3. Đan dược
-- Hỗ trợ tu luyện, chữa thương, đột phá.
-
-### 4. Pháp bảo
-- Pháp khí: Cấp thấp nhất.
-- Pháp bảo: Hạ, Trung, Thượng phẩm.
-- Linh bảo: Cực phẩm trở lên.
-- Tiên khí: Cấp tiên.
-
-### 5. Phù lục
-- Phù lục Phàm, Hạ, Trung, Thượng, Cực phẩm.
-- Dùng 1 lần, tác dụng tức thời.
-
-### 6. Trận pháp
-- Trận pháp nhỏ (cá nhân), vừa (động phủ), lớn (tông môn).
-
-## IV. QUY TẮC SINH TỒN
-
-### 1. Nhân quả
-- Mỗi hành động có hậu quả.
-- Giết người: có thể bị truy sát.
-- Cướp bảo: có thể bị trả thù.
-- Ân tình: có thể được báo đáp.
-
-### 2. Danh tiếng
-- Chính đạo: Được chính đạo ủng hộ, ma đạo thù địch.
-- Ma đạo: Ngược lại.
-- Trung lập: Không ai ủng hộ, không ai thù địch.
-
-### 3. Cạm bẫy
-- Tán tu thường bị tông môn bắt nạt.
-- Đệ tử ngoại môn bị đệ tử nội môn bắt nạt.
-- Tu sĩ cấp thấp bị tu sĩ cấp cao bắt nạt.
-- Cướp bảo thường xuyên xảy ra ở nơi hoang vắng.
-
-### 4. Cơ duyên
-- Bí cảnh thượng cổ mở ra: tranh đoạt.
-- Linh dược quý mọc ở nơi nguy hiểm.
-- Công pháp cổ xuất hiện ở di tích.
-- Cần may mắn + thực lực để nắm bắt.
-
-## V. PHONG TỤC & VĂN HÓA
-
-### 1. Xưng hô
-- Đạo hữu: Gọi tu sĩ cùng cấp.
-- Tiền bối: Gọi tu sĩ cao hơn 1+ đại cảnh giới.
-- Hậu bối: Gọi tu sĩ thấp hơn 1+ đại cảnh giới.
-- Bần đạo: Tự xưng của đạo sĩ.
-- Lão phu: Tự xưng của người già.
-
-### 2. Lễ nghi
-- Gặp tiền bối: cúi chào, không nhìn thẳng.
-- Bái sư: quỳ 3 lạy.
-- Kết nghĩa: uống máu, thề độc.
-
-### 3. Tông môn
-- Ngoại môn đệ tử: Cấp thấp, làm việc vặt.
-- Nội môn đệ tử: Cấp trung, được truyền công pháp.
-- Chân truyền đệ tử: Cấp cao, được truyền bí thuật.
-- Trưởng lão: Quản lý sự vụ.
-- Chưởng môn: Đứng đầu tông môn.
-
-## VI. NGUY HIỂM & CẤM KỴ
-
-### 1. Nơi nguy hiểm
-- Yêu thú rừng: Yêu thú cấp cao.
-- Ma vực: Ma khí ăn mòn tu sĩ.
-- Bí cảnh thượng cổ: Cạm bẫy + yêu thú + tranh đoạt.
-- Đầm lầy độc: Độc khí + yêu thú.
-- Hàn băng cốc: Lạnh giá + băng thú.
-
-### 2. Cấm kỵ
-- KHÔNG nhìn trộm bí mật tông môn.
-- KHÔNG giết đồng môn.
-- KHÔNG phản bội sư phụ.
-- KHÔNG cướp đoạt trong tông môn.
-- KHÔNG tu luyện ma công trong chính đạo.
-
-### 3. Hình phạt
-- Nhẹ: Phạt linh thạch, cấm túc.
-- Trung: Phế tu vi, đuổi khỏi tông môn.
-- Nặng: Giết, tru sát cả họ.
-
-## VII. MA ĐẠO vs CHÍNH ĐẠO
-
-### 1. Chính đạo
-- Tu luyện chính công, nhịp chậm.
-- Coi trọng đạo đức, danh tiếng.
-- Nhưng không thiếu kẻ giả tạo.
-
-### 2. Ma đạo
-- Tu luyện ma công, tốc độ nhanh.
-- Sát nhân đoạt bảo, song tu, luyện thi.
-- Nhưng có quy tắc riêng.
-
-### 3. Yêu tộc
-- Không phải người, sống ở yêu giới.
-- Có thể tu luyện, cảnh giới tương đương.
-- Thường thù địch với nhân tộc.
-
-## VIII. CÔNG PHÁP & BÍ THUẬT
-
-### 1. Công pháp
-- Hoàng cấp: Cấp thấp.
-- Huyền cấp: Trung.
-- Địa cấp: Cao.
-- Thiên cấp: Cực cao.
-- Tiên cấp: Truyền thuyết.
-
-### 2. Bí thuật
-- Hô phong hoán vũ.
-- Độn địa.
-- Phi hành.
-- Tàng hình.
-- Huyễn thuật.
-- Đoạt xá (Ma đạo).
-
-### 3. Thần thông
-- Chỉ Hóa Thần trở lên mới dùng được.
-
-## IX. PHÁP BẢO & LINH KHÍ
-
-### 1. Phân cấp
-- Pháp khí: Dùng 1 lần hoặc cấp thấp.
-- Pháp bảo: Hạ, Trung, Thượng phẩm.
-- Linh bảo: Cực phẩm, có linh tính.
-- Tiên khí: Cấp tiên, cực hiếm.
-
-### 2. Tế luyện
-- Nhỏ máu nhận chủ.
-- Thần thức ôn dưỡng.
-- Càng lâu: càng mạnh.
-
-### 3. Pháp bảo bản mệnh
-- Mỗi tu sĩ chỉ có 1-2 cái.
-- Có thể tiến hóa theo chủ nhân.
-- Mất: bị thương nặng.
-
-## X. TÓM TẮT NGUYÊN TẮC
-
-- Chậm: Nhịp chậm, tích lũy từng ngày.
-- Khó: Đột phá khó, tài nguyên khan hiếm.
-- Nguy: Có thể chết, mất đồ, bị phản bội.
-- Logic: Mọi thứ có nhân quả.
-- Nhất quán: Codex là nguồn sự thật.</textarea>
-</div>
-
+<div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','Quy tắc thế giới ngắn gọn dưới 150 từ')">✨ AI GEN</button></div><textarea id="worldRules" placeholder="Luật lệ thế giới..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC ĐẶT TÊN</div><button class="btn-aigen" onclick="aiGenField('namingRules','Quy tắc đặt tên ngắn gọn')">✨ AI GEN</button></div><textarea id="namingRules" placeholder="Quy tắc đặt tên..."></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">THỂ LOẠI & ÂM HƯỞNG</div><button class="btn-aigen" onclick="aiGenField('genre','Thể loại và âm hưởng ngắn gọn')">✨ AI GEN</button></div><textarea id="genre" placeholder="Thể loại..."></textarea></div>
-
-<div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','Hệ thống cảnh giới ngắn gọn')">✨ AI GEN</button></div>
-<textarea id="powerSystem" style="min-height:300px"># HỆ THỐNG SỨC MẠNH - PHÀM NHÂN LƯU
-
-## I. 10 ĐẠI CẢNH GIỚI
-
-1. Luyện Khí Kỳ (13 tầng) - Tuổi thọ ~120 năm
-2. Trúc Cơ Kỳ (Sơ/Trung/Hậu/Đỉnh) - Tuổi thọ ~250 năm
-3. Kim Đan Kỳ - Tuổi thọ ~500 năm
-4. Nguyên Anh Kỳ - Tuổi thọ ~1000 năm
-5. Hóa Thần Kỳ - Tuổi thọ ~2000 năm
-6. Luyện Hư Kỳ - Tuổi thọ ~3000 năm
-7. Hợp Thể Kỳ - Tuổi thọ ~5000 năm
-8. Đại Thừa Kỳ - Tuổi thọ ~10000 năm
-9. Độ Kiếp Kỳ - Vượt thiên kiếp
-10. Chân Tiên - Cảnh giới Tiên giới
-
-## II. THỜI GIAN ĐỘT PHÁ (CƠ BẢN)
-
-### Luyện Khí Kỳ
-- T1-T2: 3-6 tháng
-- T2-T3: 6-12 tháng
-- T3-T4: 1-2 năm
-- T4-T5: 2-3 năm
-- T5-T6: 3-5 năm
-- T6-T7: 5-8 năm
-- T7-T8: 8-12 năm
-- T8-T9: 12-20 năm
-- T9-T10: 20-30 năm
-- T10-T11: 30-50 năm
-- T11-T12: 50-80 năm
-- T12-T13: 80-150 năm
-- T13-Trúc Cơ: 150-300 năm
-
-### Trúc Cơ Kỳ
-- Sơ-Trung: 20-40 năm
-- Trung-Hậu: 40-80 năm
-- Hậu-Đỉnh: 80-150 năm
-- Đỉnh-Kim Đan: 150-300 năm
-
-### Kim Đan Kỳ
-- Sơ-Trung: 80-150 năm
-- Trung-Hậu: 150-300 năm
-- Hậu-Đỉnh: 300-500 năm
-- Đỉnh-Nguyên Anh: 500-1000 năm
-
-### Nguyên Anh Kỳ
-- Sơ-Trung: 200-400 năm
-- Trung-Hậu: 400-800 năm
-- Hậu-Đỉnh: 800-1500 năm
-- Đỉnh-Hóa Thần: 1500-3000 năm
-
-### Hóa Thần trở lên
-- Mỗi tiểu cấp: 1000-3000 năm
-- Mỗi đại cấp: 3000-10000 năm
-
-## III. LINH CĂN (HỆ SỐ NHÂN THỜI GIAN)
-
-- Ngũ Hành Tạp: x4 (chậm), tỷ lệ 30-50%
-- Đơn Linh Căn: x1 (bình thường), tỷ lệ 50-70%
-- Song Linh Căn: x0.7 (nhanh), tỷ lệ 60-80%
-- Tam Linh Căn: x0.5 (nhanh), tỷ lệ 70-85%
-- Thiên Linh Căn: x0.2 (cực nhanh), tỷ lệ 90-99%
-- Dị Linh Căn: x0.1-0.3 (biến dị), tỷ lệ 80-95%
-
-## IV. ĐAN DƯỢC (HỆ SỐ RÚT NGẮN)
-
-### Tiểu cảnh giới
-- Phàm phẩm: x0.9
-- Hạ phẩm: x0.8
-- Trung phẩm: x0.6
-- Thượng phẩm: x0.4
-- Cực phẩm: x0.2
-- Tiên phẩm: x0.05
-
-### Đại cảnh giới
-- Phàm phẩm: x0.95
-- Hạ phẩm: x0.9
-- Trung phẩm: x0.7
-- Thượng phẩm: x0.5
-- Cực phẩm: x0.3
-- Tiên phẩm: x0.1
-
-### Đan dược phổ biến
-- Tụ Khí Đan: Hỗ trợ Luyện Khí.
-- Trúc Cơ Đan: BẮT BUỘC đột phá Trúc Cơ.
-- Kết Đan Đan: BẮT BUỘC đột phá Kim Đan.
-- Hóa Anh Đan: BẮT BUỘC đột phá Nguyên Anh.
-- Hóa Thần Đan: BẮT BUỘC đột phá Hóa Thần.
-
-## V. CÔNG THỨC TÍNH THỜI GIAN THỰC
-
-Thời gian thực = Thời gian cơ bản x Hệ số linh căn x Hệ số đan dược
-
-Ví dụ: T1-T2 (cơ bản 6 tháng)
-- Tạp linh căn + Không đan: 6 x 4 x 1 = 24 tháng (2 năm)
-- Tạp linh căn + Trung phẩm đan: 6 x 4 x 0.6 = 14.4 tháng
-- Thiên linh căn + Cực phẩm đan: 6 x 0.2 x 0.2 = 0.24 tháng
-
-## VI. THỜI GIAN HÀNH ĐỘNG KHÁC
-
-### Tu luyện & Bế quan
-- Thiền định 1 buổi: 2-4 giờ
-- Tu luyện 1 ngày: 8-12 giờ
-- Bế quan ngắn: 1-7 ngày
-- Bế quan trung: 1-4 tuần
-- Bế quan dài: 1-12 tháng
-- Củng cố sau đột phá: 7-30 ngày
-
-### Luyện đan & Luyện khí
-- Luyện đan Phàm phẩm: 4-12 giờ
-- Luyện đan Hạ phẩm: 1-3 ngày
-- Luyện đan Trung phẩm: 3-7 ngày
-- Luyện đan Thượng phẩm: 7-30 ngày
-- Luyện đan Cực phẩm: 1-6 tháng
-- Rèn pháp khí: 1-7 ngày
-- Rèn pháp bảo: 7-30 ngày
-
-### Di chuyển
-- Đi bộ trong thành: 1-4 giờ
-- Đi bộ 100 dặm: 2-3 ngày
-- Đi bộ 300 dặm: 5-10 ngày
-- Ngự kiếm (Kim Đan): 500-2000 dặm/ngày
-- Truyền tống trận: tức thời
-
-### Nhiệm vụ / Sai khiến
-- Thu mua gần (trong tông): 4-12 giờ
-- Thu mua xa (phường thị): 1-2 ngày
-- Điều tra tin tức: 1-3 ngày
-- Ám sát mục tiêu: 1-7 ngày
-- Trinh sát: 1-3 ngày
-
-### Chiến đấu
-- Cùng cấp: 5 phút - 2 giờ
-- Chênh 1-2 tầng: 30 phút - 6 giờ
-- Chênh đại cảnh giới: 10 giây - 5 phút
-- Truy sát: 1-7 ngày
-- Đại chiến tông môn: 3-30 ngày
-
-### Hồi phục
-- Nghỉ ngơi: 4-12 giờ
-- Hấp thu đan dược: 1-4 giờ
-- Chữa thương nhẹ: 1-7 ngày
-- Chữa thương nặng: 1-6 tháng
-- Chữa tẩu hỏa: 1-5 năm
-
-## VII. PHẠM VI THẦN THỨC (BÌNH THƯỜNG)
-
-- Luyện Khí T1-T3: 1-5m (mờ)
-- Luyện Khí T4-T6: 10-30m
-- Luyện Khí T7-T9: 30-100m
-- Luyện Khí T10-T12: 100-300m
-- Luyện Khí T13: 300-500m
-- Trúc Cơ Sơ: 500m-1km
-- Trúc Cơ Trung: 1-3km
-- Trúc Cơ Hậu: 3-10km
-- Kim Đan Sơ: 10-30km
-- Kim Đan Trung: 30-100km
-- Kim Đan Hậu: 100-300km
-- Nguyên Anh Sơ: 300-1000km
-- Nguyên Anh Trung: 1000-3000km
-- Nguyên Anh Hậu: 3000-10000km
-- Hóa Thần+: 1 vạn km trở lên
-
-### Trường hợp ĐẶC BIỆT
-
-- Bình thường: x1 (VD: Luyện Khí T1 = 100m)
-- Thiên kiêu: x2-5 (200-500m)
-- Thánh thể: x10-50 (1-5km)
-- Biến dị thần thức: x100 (10km)
-- Hỗn Độn thể: x100-1000 (10-100km)
-
-## VIII. LƯU Ý CHUNG
-
-- Thời gian trên là TỐI THIỂU cho tu sĩ bình thường.
-- Có thể RÚT NGẮN bằng đan dược, linh mạch, cơ duyên.
-- Có thể KÉO DÀI nếu tẩu hỏa, bị thương, thiếu tài nguyên.
-- Đột phá THẤT BẠI: mất 50-80% thời gian tích lũy + bị thương.</textarea>
+<div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','Hệ thống cảnh giới ngắn gọn')">✨ AI GEN</button></div><textarea id="powerSystem" style="min-height:300px" placeholder="Các bậc năng lực..."></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">VĂN PHONG & NGÔI KỂ</div><button class="btn-aigen" onclick="aiGenField('writingStyle','Định hướng văn phong ngắn gọn')">✨ AI GEN</button></div><textarea id="writingStyle" placeholder="Văn phong..."></textarea></div>
 </div>
 
-<div class="form-group"><div class="input-header"><div class="label-title">VĂN PHONG & NGÔI KỂ</div><button class="btn-aigen" onclick="aiGenField('writingStyle','Định hướng văn phong ngắn gọn')">✨ AI GEN</button></div>
-<textarea id="writingStyle" style="min-height:300px"># QUY TẮC VĂN PHONG & NGÔI KỂ - NHẬP VAI TU TIÊN
-
-## I. NGÔI KỂ - NGƯỜI CHƠI LÀ NVC
-
-### 1. Ngôi thứ 2 - "Ngươi"
-- Người chơi CHÍNH LÀ NVC, KHÔNG phải đọc về NVC.
-- LUÔN dùng "ngươi" làm chủ ngữ khi mô tả hành động của NVC.
-- KHÔNG BAO GIỜ dùng: "Lục Trầm", "hắn", "gã", "y", "nhân vật" khi chỉ NVC.
-
-### 2. Nội tâm NVC
-- Suy nghĩ của NVC hiển thị trực tiếp, KHÔNG qua người dẫn truyện.
-- Dùng dấu ngoặc kép hoặc in nghiêng cho suy nghĩ.
-
-### 3. KHÔNG có người dẫn truyện
-- KHÔNG có "Người kể chuyện:", "Narrator:", "GM:" trong output.
-- KHÔNG có đoạn văn kiểu: "Câu chuyện bắt đầu khi...", "Sau đó, mọi chuyện diễn ra như sau...".
-
-### 4. Chuyển cảnh tự nhiên
-- KHÔNG dùng "Sau đó", "Tiếp theo", "Rồi thì".
-- Chuyển cảnh bằng hành động của NVC hoặc sự kiện tự nhiên.
-
-## II. GIÁC QUAN ĐA TẦNG
-
-### 1. BẮT BUỘC miêu tả ít nhất 2 giác quan mỗi lượt
-- Thị giác: cảnh vật, màu sắc, chuyển động.
-- Thính giác: âm thanh gần/xa, tiếng bước chân.
-- Khứu giác: mùi hương, mùi máu, mùi linh dược.
-- Xúc giác: nhiệt độ, độ ẩm, cảm giác linh khí trên da.
-- Linh giác: cảm nhận linh khí, sát khí, thần thức.
-
-### 2. Cảm giác vật lý cụ thể
-- Tim đập: nhanh, chậm, loạn nhịp.
-- Hơi thở: gấp, chậm, nghẹn.
-- Mồ hôi: lạnh, nóng, rịn ra.
-- Nhiệt độ: nóng, lạnh, ẩm.
-- Cảm giác trên da: nhói, tê, nặng.
-
-### 3. CẢM GIÁC TU TIÊN đặc trưng
-- Linh khí đậm/nhạt trong không gian.
-- Thần thức quét qua như thế nào.
-- Uy áp của tu sĩ cao hơn ra sao.
-- Sự khan hiếm của linh thạch, đan dược.
-- Sự nguy hiểm rình rập khắp nơi.
-
-## III. HỘI THOẠI NPC - CẢM XÚC THEO HẢO CẢM
-
-### 1. Nguyên tắc chung
-- Mỗi NPC có GIỌNG RIÊNG, không đều đều.
-- Hội thoại thể hiện: tính cách + hảo cảm + ngữ cảnh.
-- Có hành động kèm theo lời nói (nhíu mày, cười lạnh, vuốt râu).
-- Có ẩn ý, không nói thẳng hết.
-
-### 2. Hảo cảm thấp (dưới 20) - Thù Địch
-- Giọng điệu: Lạnh lùng, khinh miệt, mỉa mai.
-- Đại từ: "ngươi", "kẻ kia", "tiểu tử".
-- Từ ngữ: Ngắn gọn, cộc lốc, đe dọa.
-- Hành động: Tránh né, không nhìn thẳng, tay đặt lên vũ khí.
-
-### 3. Hảo cảm 20-40 - Lạnh Nhạt
-- Giọng điệu: Trung lập, lịch sự xã giao.
-- Đại từ: "đạo hữu", "ngươi".
-- Từ ngữ: Ngắn gọn, không cảm xúc.
-- Hành động: Giữ khoảng cách, không thân thiết.
-
-### 4. Hảo cảm 40-60 - Thân Thiết
-- Giọng điệu: Ấm áp, có chút quan tâm.
-- Đại từ: "ngươi", "ta".
-- Từ ngữ: Dài hơn, có lời khuyên.
-- Hành động: Gật đầu, mỉm cười nhẹ, có thể đưa đồ.
-
-### 5. Hảo cảm 60-80 - Tin Tưởng
-- Giọng điệu: Thân mật, sẵn sàng giúp đỡ.
-- Đại từ: "ngươi", "ta", có thể gọi tên.
-- Từ ngữ: Chia sẻ bí mật, kế hoạch.
-- Hành động: Đi sát, thì thầm, truyền tin.
-
-### 6. Hảo cảm 80-100 - Tri Kỷ / Nô Lệ
-- Giọng điệu: Thân mật tuyệt đối, hy sinh, phục tùng.
-- Đại từ: "chủ nhân", "ta - ngươi".
-- Từ ngữ: Không giấu diếm, sẵn sàng dâng hiến.
-- Hành động: Cúi đầu, quỳ, dâng đồ, hy sinh bản thân.
-
-### 7. Đối thoại theo tính cách NPC
-
-NPC chính đạo:
-- Từ tốn, lễ độ, nhưng có thể giả tạo.
-- Đại từ: "tại hạ", "tiền bối", "các hạ".
-
-NPC ma đạo:
-- Thô bạo, tà mị, mỉa mai.
-- Đại từ: "ngươi", "kẻ kia", "tiểu bối".
-
-NPC thương nhân:
-- Khéo léo, thăm dò, tính toán.
-- Đại từ: "khách quan", "đạo hữu".
-
-NPC lạnh lùng:
-- Ngắn gọn, không cảm xúc.
-- Đại từ: "ta", "ngươi".
-
-## IV. NHỊP ĐIỆU CHẬM
-
-### 1. Miêu tả trước hành động
-- Trước khi NVC làm gì, miêu tả cảnh vật xung quanh.
-- Miêu tả cảm giác, suy nghĩ trước khi quyết định.
-- KHÔNG vội vàng nhảy sang sự kiện tiếp theo.
-
-### 2. Khoảng lặng
-- Đôi khi có khoảng lặng: NVC quan sát xung quanh.
-- NVC dừng lại suy nghĩ, do dự.
-- Miêu tả cảm giác chờ đợi, căng thẳng.
-
-### 3. Cảnh lớn
-- Chiến đấu, đột phá, NSFW: mô tả TỪ TỪ, từng nhịp.
-- Không tóm tắt qua loa.
-- Từng hành động nhỏ đều quan trọng.
-
-## V. CẤM TUYỆT ĐỐI
-
-- Cấm dùng ngôi thứ 3 cho NVC.
-- Cấm người dẫn truyện.
-- Cấm mô tả một chiều (chỉ thị giác).
-- Cấm hội thoại đều đều.
-- Cấm bỏ qua hảo cảm (hảo cảm thấp =/= hảo cảm cao).
-- Cấm nhảy cảnh đột ngột.
-
-## VI. CẢM GIÁC CẦN TÁI HIỆN
-
-Người chơi phải cảm thấy:
-- "Ta" đang ở trong thế giới tu tiên.
-- Mỗi hành động đều có hệ quả.
-- Mỗi NPC đều có cá tính riêng.
-- Mỗi hội thoại đều có cảm xúc.
-- Thời gian trôi qua chậm rãi, có thật.
-
-## VII. TÓM TẮT
-
-- Ngôi kể: "Ngươi" - người chơi là NVC.
-- Nội tâm: Hiển thị trực tiếp, không qua narrator.
-- Người dẫn truyện: KHÔNG có.
-- Giác quan: Ít nhất 2 mỗi lượt.
-- Hảo cảm NPC: Ảnh hưởng lời thoại.
-- Tính cách NPC: Giọng riêng, không đều đều.
-- Nhịp điệu: Chậm, không nhảy cảnh.
-- Thời gian: Ghi rõ mỗi hành động.</textarea>
-</div>
-</div><div id="mc" class="tab-content">
+<div id="mc" class="tab-content">
 <div class="section-tag">🖼️ ẢNH ĐẠI DIỆN & THÔNG TIN NVC</div>
 <div class="profile-card">
 <div class="avatar-box" id="avatarPreviewBox"><span class="avatar-placeholder" id="avatarPlaceholder">🧙‍♂️</span><img id="avatarImg" src="" style="display:none" alt="NVC"></div>
@@ -999,7 +365,7 @@ Người chơi phải cảm thấy:
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.6.0 (Full Rules) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.9 (Stability Fix) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -1020,13 +386,18 @@ Người chơi phải cảm thấy:
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=260;
+const DB_VERSION=259;
 
 const MAX_RECENT_TURNS=3;
 const SUMMARY_TRIGGER_TURNS=4;
 
-const DEFAULT_MODEL='gemini-3.5-flash-lite';
-const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash'];
+// ✅ v2.5.9: Fallback chain model thực tế
+const DEFAULT_MODEL='gemini-2.5-flash-lite';
+const FALLBACK_MODELS=[
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash'
+];
 
 let CACHE_MODEL=DEFAULT_MODEL;
 
@@ -1050,7 +421,19 @@ let tokenStats={
   fallbackCount:0
 };
 
-let systemRulesSentThisSession=false;
+// ✅ v2.5.9: Tách flag theo provider
+let systemRulesSent = {
+  gemini: false,
+  openrouter: false
+};
+
+// ✅ v2.5.9: Track scene scope + snapshot cho undo
+let lastSceneScope = null;
+let turnSnapshots = [];
+
+const MAX_TURN_HTML = 30;
+const MAX_SNAPSHOTS = 20;
+
 let isAiGenCall=false;
 
 // ============================================================
@@ -1104,17 +487,18 @@ const inputIds=['apiKey','modelSelect','openRouterKey','openRouterModel','openRo
 
 // ============================================================
 // NSFW INTENT DETECTION
+// ✅ v2.5.9: Bỏ từ đơn ngắn, dùng word-boundary cho EN
 // ============================================================
 const NSFW_KEYWORDS_VI = [
   'song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái',
-  'thân mật','hôn','ôm','vuốt ve','cởi','lột','hở hang','khỏa thân',
+  'thân mật','vuốt ve','hở hang','khỏa thân',
   'lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa',
   'thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm',
   'sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ',
-  'chém giết','giết','tàn sát','đồ sát','chém','đâm','chặt','moi tim',
+  'chém giết','tàn sát','đồ sát','moi tim',
   'lột da','tra tấn','hành hạ','ngược đãi','huyết tinh','máu me',
   'sát nhân','đoạt bảo','cướp','hiếp','giết chóc','sát phạt','đồ diệt',
-  'cưỡng','bắt cóc','giam cầm','trói','khống chế','nô lệ','nô gia',
+  'cưỡng','bắt cóc','giam cầm','khống chế','nô lệ','nô gia',
   'chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức',
   'cưỡng hiếp','cưỡng đoạt','cưỡng chế'
 ];
@@ -1123,19 +507,39 @@ const NSFW_KEYWORDS_EN = [
   'kill','murder','slaughter','torture','slave','capture'
 ];
 
+// ✅ v2.5.9: Pre-compile regex word-boundary cho tiếng Anh
+const NSFW_REGEX_EN = NSFW_KEYWORDS_EN.map(kw => new RegExp(`\\b${kw}\\b`, 'i'));
+
 function detectNsfwIntent(actionText){
-  if(!actionText)return false;
-  const lower=actionText.toLowerCase();
-  const normalized=lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(!actionText) return false;
+  const lower = actionText.toLowerCase();
+  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
   for(const kw of NSFW_KEYWORDS_VI){
-    if(lower.includes(kw))return true;
-    const kwNorm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    if(normalized.includes(kwNorm))return true;
+    if(lower.includes(kw)) return true;
+    const kwNorm = kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(normalized.includes(kwNorm)) return true;
   }
-  for(const kw of NSFW_KEYWORDS_EN){
-    if(lower.includes(kw))return true;
+
+  for(const re of NSFW_REGEX_EN){
+    if(re.test(actionText)) return true;
   }
   return false;
+}
+
+// ============================================================
+// ✅ v2.5.9: SNAPSHOT HELPERS CHO UNDO NHẤT QUÁN
+// ============================================================
+function pushTurnSnapshot(){
+  turnSnapshots.push({
+    chatHistory: JSON.parse(JSON.stringify(chatHistory)),
+    turnCounter: turnCounter,
+    storySummary: storySummary,
+    lastSceneScope: lastSceneScope
+  });
+  if(turnSnapshots.length > MAX_SNAPSHOTS){
+    turnSnapshots = turnSnapshots.slice(-MAX_SNAPSHOTS);
+  }
 }
 
 // ============================================================
@@ -1243,10 +647,10 @@ function getStyleExemplarBlock(scopeId){
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Đoạn văn dưới đây là MẪU VĂN PHONG CHUẨN cho scope "${scope.label || scope.id}".
 Khi viết trong scope này, PHẢI bắt chước:
-  - Từ vựng, ẩn dụ, hình ảnh
-  - Nhịp câu, độ dài đoạn
-  - Cách chuyển cảnh, tả cảm xúc
-  - Mức độ trực diện / ẩn dụ
+  • Từ vựng, ẩn dụ, hình ảnh
+  • Nhịp câu, độ dài đoạn
+  • Cách chuyển cảnh, tả cảm xúc
+  • Mức độ trực diện / ẩn dụ
 
 ⚠️ Scope isolation: NGOÀI scope "${scope.label || scope.id}", dùng writingStyle bình thường.
 
@@ -1264,7 +668,7 @@ ${sample}
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.6.0', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.9', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -1438,11 +842,11 @@ function renderNpcs(){
     if(DEATH_KEYWORDS.some(kw => combined.includes(kw))){
       statusBadge = `<span style="background:rgba(218,54,51,.2);color:#f85149;border:1px solid #da3633;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">💀 Đã chết</span>`;
     } else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))){
-      statusBadge = `<span style="background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">⚠️ Đã phế</span>`;
+      statusBadge = `<span style="background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">⚠️ Đã phế${npc.pinned?'':' (sẽ xóa nếu không tick xanh)'}</span>`;
     }
 
     const pinBtn = `<button style="background:none;border:none;color:${npc.pinned?'#3fb950':'#666'};cursor:pointer;font-size:14px;padding:0 4px" onclick="togglePinNpc(${index})" title="${npc.pinned?'Bỏ ghim':'Ghim lên đầu'}">${npc.pinned?'📌':'📍'}</button>`;
-    const lockBtn = `<button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:11px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa quy tắc':'Khóa quy tắc'}">${npc.lockedRules?'🔒':'🔓'}</button>`;
+    const lockBtn = `<button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:11px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa quy tắc':'Khóa quy tắc (AI không ghi đè)'}">${npc.lockedRules?'🔒':'🔓'}</button>`;
 
     let cardBorderColor = '';
     if(npc.pinned){
@@ -1477,7 +881,7 @@ function renderNpcs(){
       <div class="form-group" style="margin-bottom:8px">
         <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;display:flex;justify-content:space-between;align-items:center">
           <span>⚙️ QUY TẮC AI: ${npc.lockedRules?'<span style="color:#d29922">(ĐÃ KHÓA)</span>':''}</span>
-          <button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:12px;padding:0 4px" onclick="toggleLockRules(${index})">${npc.lockedRules?'🔒':'🔓'}</button>
+          <button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:12px;padding:0 4px" onclick="toggleLockRules(${index})" title="${npc.lockedRules?'Mở khóa':'Khóa để AI không ghi đè'}">${npc.lockedRules?'🔒':'🔓'}</button>
         </div>
         <textarea style="min-height:40px;font-size:11px;padding:6px;${npc.lockedRules?'border-color:#d29922;':''}" placeholder="Quy tắc điều khiển NPC..." onchange="updateNpcField(${index},'npcRules',this.value)">${npc.npcRules||''}</textarea>
       </div>
@@ -1557,8 +961,7 @@ function renderWeaponsVisual(weaponArray){const grid=document.getElementById('we
 // ============================================================
 // INVENTORY
 // ============================================================
-function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
-// ============================================================
+function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}// ============================================================
 // TEST OPENROUTER KEY
 // ============================================================
 async function testOpenRouterKey(){
@@ -1567,9 +970,11 @@ async function testOpenRouterKey(){
   log("🔍 Đang test OpenRouter key...");
   log(`   - Độ dài: ${k.length} ký tự`);
   log(`   - Prefix: ${k.substring(0,10)}...`);
+  log(`   - Có khoảng trắng đầu: ${k.startsWith(' ')?'CÓ (LỖI!)':'Không'}`);
+  log(`   - Có khoảng trắng cuối: ${k.endsWith(' ')?'CÓ (LỖI!)':'Không'}`);
   if(!k.startsWith('sk-or-v1-')){
     log("❌ Key KHÔNG đúng định dạng! Phải bắt đầu bằng 'sk-or-v1-'");
-    alert("❌ Key sai định dạng!\n\nKey OpenRouter phải bắt đầu bằng:\nsk-or-v1-...");
+    alert("❌ Key sai định dạng!\n\nKey OpenRouter phải bắt đầu bằng:\nsk-or-v1-...\n\nKey bạn nhập bắt đầu bằng:\n"+k.substring(0,15)+"...\n\n→ Vào openrouter.ai → Keys → tạo key mới.");
     return;
   }
   try{
@@ -1580,6 +985,8 @@ async function testOpenRouterKey(){
     const data=await res.json();
     if(res.ok&&data.data){
       log("✅ Key hợp lệ!");
+      log(`   - Label: ${data.data.label||'N/A'}`);
+      log(`   - Usage: ${data.data.usage||0} / ${data.data.limit||'∞'}`);
       alert("✅ Key OpenRouter HỢP LỆ!\n\nLabel: "+(data.data.label||'N/A')+"\nUsage: "+(data.data.usage||0)+" / "+(data.data.limit||'∞'));
     }else{
       log("❌ Key không hợp lệ: "+(data.error?.message||JSON.stringify(data)));
@@ -1594,106 +1001,19 @@ async function testOpenRouterKey(){
 // ============================================================
 // RESET
 // ============================================================
-async function resetAllFields(){
-  if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;
-  fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  scopeRegistry.forEach(s=>{s.exemplar='';});
-  renderScopeRegistry();
-  stopTTS();
-  chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];
-  turnCounter=0;storySummary="";systemRulesSentThisSession=false;
-  removeMcAvatar();renderNpcs();renderEventsVisual();
-  document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';
-  document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';
-  document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';
-  document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';
-  document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';
-  await deleteFromIDB('HONDUC_TU_TIEN_SAVE');
-  resetTokenStats();
-  log("Đã reset toàn bộ.");
-  alert("🧹 Đã làm sạch!");
-  toggleSidebar();openTab('world');
-}
+async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});scopeRegistry.forEach(s=>{s.exemplar='';});renderScopeRegistry();stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";turnSnapshots=[];lastSceneScope=null;systemRulesSent={gemini:false,openrouter:false};removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
 
 // ============================================================
 // SAVE / LOAD
 // ============================================================
-async function saveGame(isManual=false){
-  const gameData={
-    chatHistory:chatHistory,
-    turnHtmlHistory:turnHtmlHistory,
-    scopeRegistry:scopeRegistry,
-    turnCounter:turnCounter,
-    storySummary:storySummary,
-    storyBoxContent:document.getElementById('story-box').innerHTML,
-    inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,
-    locVisualHTML:document.getElementById('locVisualGrid').innerHTML,
-    eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,
-    weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,
-    mcAvatarBase64:mcAvatarBase64,
-    npcList:npcList,
-    eventList:eventList,
-    tokenStats:tokenStats,
-    currentModel:CACHE_MODEL,
-    settings:settings,
-    inputs:{}
-  };
-  inputIds.forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)gameData.inputs[id]=el.value;
-  });
-  try{
-    await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);
-    log("Game saved.");
-    if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}
-  }catch(e){alert("Lỗi lưu: "+e);}
-}
+async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,scopeRegistry:scopeRegistry,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
-async function loadGame(){
-  try{
-    const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');
-    if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}
-    if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){
-      scopeRegistry = gameData.scopeRegistry;
-      renderScopeRegistry();
-    }
-    chatHistory=gameData.chatHistory||[];
-    turnHtmlHistory=gameData.turnHtmlHistory||[];
-    turnCounter=gameData.turnCounter||0;
-    storySummary=gameData.storySummary||"";
-    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});
-    if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;
-    if(gameData.settings)settings=Object.assign(settings,gameData.settings);
-    document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";
-    if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;
-    if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;
-    if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;
-    if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;
-    if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);
-    if(gameData.npcList){
-      npcList=gameData.npcList;
-      npcList.forEach(n=>{
-        if(!n.id)n.id=generateNpcId();
-        if(n.pinned===undefined)n.pinned=false;
-        if(n.lockedRules===undefined)n.lockedRules=false;
-        if(n.status===undefined)n.status='';
-      });
-      renderNpcs();
-    }
-    if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}
-    if(gameData.inputs){
-      Object.keys(gameData.inputs).forEach(id=>{
-        const el=document.getElementById(id);
-        if(el)el.value=gameData.inputs[id];
-      });
-    }
-    updateTokenStatsDisplay();
-    syncToggleUI();
-    log("Game loaded.");
-    alert("📂 Khôi phục thành công!");
-    toggleSidebar();openTab('play');
-  }catch(e){alert("Lỗi tải: "+e);}
-}
+async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});
+// ✅ v2.5.9: Reset session state khi load
+lastSceneScope = null;
+turnSnapshots = [];
+systemRulesSent = { gemini: false, openrouter: false };
+if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
 function syncToggleUI(){
   ['autoSwitch','autoFallback','retry5xx'].forEach(name=>{
@@ -1702,93 +1022,32 @@ function syncToggleUI(){
   });
 }
 
-async function exportSaveFile(){
-  await saveGame(false);
-  const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');
-  if(!gameData)return;
-  const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="hongduc_tutien_v2.6.0_save.json";
-  a.click();
-  log("Xuất file save thành công.");
-}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.9_save.json";a.click();log("Xuất file save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
-function handleFileSelect(event){
-  const file=event.target.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async function(e){
-    try{
-      const content=JSON.parse(e.target.result);
-      await saveToIDB('HONDUC_TU_TIEN_SAVE',content);
-      await loadGame();
-      alert("📥 Nhập file save thành công!");
-    }catch(err){alert("❌ File save không hợp lệ!");}
-  };
-  reader.readAsText(file);
-}
+function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{
-  try{
-    const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');
-    if(gameData){
-      if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){
-        scopeRegistry = gameData.scopeRegistry;
-      }
-      if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;
-      if(gameData.settings)settings=Object.assign(settings,gameData.settings);
-      if(gameData.inputs){
-        Object.keys(gameData.inputs).forEach(id=>{
-          const el=document.getElementById(id);
-          if(el)el.value=gameData.inputs[id];
-        });
-      }
-      if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);
-      if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;
-      if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;
-      if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;
-      if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;
-      if(gameData.npcList){
-        npcList=gameData.npcList;
-        npcList.forEach(n=>{
-          if(!n.id)n.id=generateNpcId();
-          if(n.pinned===undefined)n.pinned=false;
-          if(n.lockedRules===undefined)n.lockedRules=false;
-          if(n.status===undefined)n.status='';
-        });
-      }
-      if(gameData.eventList)eventList=gameData.eventList;
-      if(gameData.storySummary)storySummary=gameData.storySummary;
-      if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);
-    }
-  }catch(e){}
-  npcList.forEach(n=>{
-    if(!n.id)n.id=generateNpcId();
-    if(n.pinned===undefined)n.pinned=false;
-    if(n.lockedRules===undefined)n.lockedRules=false;
-    if(n.status===undefined)n.status='';
-  });
-  renderNpcs();
-  renderEventsVisual();
-  renderScopeRegistry();
-  updateTokenStatsDisplay();
-  syncToggleUI();
-});
+window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
 
 // ============================================================
-// UNDO
+// ✅ v2.5.9: UNDO SNAPSHOT-BASED
 // ============================================================
 function undoLastTurn(){
   stopTTS();
-  if(chatHistory.length<=2){alert("⚠️ Không thể quay lại thêm!");return;}
-  chatHistory.pop();chatHistory.pop();
-  if(turnHtmlHistory.length>1){
-    turnHtmlHistory.pop();
-    const previousHtmlState=turnHtmlHistory[turnHtmlHistory.length-1];
-    document.getElementById('story-box').innerHTML=previousHtmlState;
+  if(turnSnapshots.length === 0){
+    alert("⚠️ Không thể quay lại thêm!");
+    return;
   }
-  log("Undo executed.");
+  const snap = turnSnapshots.pop();
+  chatHistory = snap.chatHistory;
+  turnCounter = snap.turnCounter;
+  storySummary = snap.storySummary;
+  lastSceneScope = snap.lastSceneScope;
+
+  if(turnHtmlHistory.length > 1){
+    turnHtmlHistory.pop();
+    document.getElementById('story-box').innerHTML = turnHtmlHistory[turnHtmlHistory.length-1];
+  }
+  log("↩ Undo executed (snapshot restored).");
   alert("↩ Đã quay lại lượt trước!");
 }
 
@@ -1820,14 +1079,16 @@ Chỉ trả về đoạn tóm tắt tổng hợp.`;
     if(data.candidates&&data.candidates[0]?.content?.parts[0]?.text){
       storySummary=data.candidates[0].content.parts[0].text.trim();
       log(`✅ Đã cập nhật tóm tắt (${storySummary.length} ký tự).`);
+      // ✅ v2.5.9: Chỉ cắt history SAU KHI summary thành công
       chatHistory=chatHistory.slice(-MAX_RECENT_TURNS*2);
       await saveGame(false);
-    }else if(data.error){log("❌ Lỗi tóm tắt: "+(data.error.message||'unknown'));}
+    }else if(data.error){
+      // ✅ v2.5.9: Không cắt history khi lỗi
+      log("❌ Lỗi tóm tắt (giữ nguyên history): "+(data.error.message||'unknown'));
+    }
   }catch(e){log("❌ Lỗi tóm tắt: "+e.message);}
-}
-
-// ============================================================
-// CODEX MEMORY
+}// ============================================================
+// CODEX MEMORY - v2.5.9
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -1891,16 +1152,11 @@ ${npcSummary}
 ⚠️ NHẮC LẠI FORMAT OUTPUT (BẮT BUỘC - KHÔNG ĐƯỢC THIẾU):
 Sau khi dẫn chuyện, PHẢI có đầy đủ 3 phần:
 1. [TÓM TẮT]: 2-3 câu tình thế hiện tại
-2. 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
+2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
 3. Khối \`\`\`json cập nhật Codex
 
-⚠️ DẪN CHUYỆN DÀI 250-900 TỪ (tùy tầm quan trọng cảnh).
-⚠️ BẮT BUỘC ghi rõ [⏰ Thời gian: X giờ/ngày/tháng/năm] cho mỗi hành động.
-⚠️ DÙNG NGÔI "NGƯƠI" cho NVC. KHÔNG dùng "hắn/gã/y".
-⚠️ KHÔNG có người dẫn truyện.
-
 TUYỆT ĐỐI KHÔNG được bỏ qua phần lựa chọn hành động.
-TUYỆT ĐỐI KHÔNG được bỏ qua phần thời gian hành động.`;
+KHÔNG được viết tiếp nếu chưa đưa đủ 2-4 lựa chọn.`;
 }
 
 // ============================================================
@@ -1918,41 +1174,32 @@ ${v('supremeMotifRule')||'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logi
 # QUY TẮC 18+
 ${v('rule18Plus')||'Cho phép khai thác song tu, sắc hiệp, tâm lý nhạy cảm khi phù hợp.'}
 
-# QUY TẮC AI & PACING
-${v('aiRules')||'Xem rule chi tiết trong tab World.'}
+# QUY TẮC BẮT BUỘC
+${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
+2. Trừ chính xác linh thạch/đan dược khi dùng, ghi rõ còn lại.
+3. KHÔNG tự xóa NPC/địa danh/sự kiện/vật phẩm khỏi Codex.
+4. Tin Codex hơn lời kể nếu mâu thuẫn.
+5. Mô tả hậu quả logic, có thể thất bại.
+6. Không tự đột phá cảnh giới khi chưa đủ điều kiện.`}
 
-# QUY TẮC THẾ GIỚI
-${v('worldRules')||'Xem rule chi tiết trong tab World.'}
-
-# HỆ THỐNG SỨC MẠNH
-${v('powerSystem')||'Xem rule chi tiết trong tab World.'}
-
-# VĂN PHONG & NGÔI KỂ
-${v('writingStyle')||'Xem rule chi tiết trong tab World.'}
-
-# THÔNG TIN THẾ GIỚI
+# THẾ GIỚI
 - Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom')||'mặc định'}
 - Bối cảnh: ${v('worldContext')||'Tu tiên giới cổ điển'}
 - Thời gian gốc: ${v('startTime')||'Không xác định'}
+- Quy tắc TG: ${v('worldRules')||'Logic tu tiên'}
 - Đặt tên: ${v('namingRules')||'Hán Việt cổ phong'}
 - Thể loại: ${v('genre')||'Tiên hiệp'}
+- Cảnh giới: ${v('powerSystem')||'Luyện Khí → Trúc Cơ → Kim Đan → Nguyên Anh → Hóa Thần'}
+- Văn phong: ${v('writingStyle')||'Miêu tả tỉ mỉ'}
 
 # ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT (KHÔNG ĐƯỢC BỎ QUA)
 Mỗi lượt trả lời PHẢI có đầy đủ 4 phần:
-1) Dẫn chuyện 4-7 đoạn (250-900 từ tùy cảnh).
-   - MỖI ĐOẠN 5-8 CÂU. Miêu tả ít nhất 2 giác quan.
-   - Có nội tâm NVC. Có hội thoại NPC nếu tương tác.
-   - DÙNG NGÔI "NGƯƠI" cho NVC. KHÔNG dùng "hắn/gã/y".
-   - KHÔNG có người dẫn truyện.
-2) [TÓM TẮT]: 2-3 câu tình thế hiện tại.
-3) 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
+1) Dẫn chuyện 3-6 đoạn cuốn hút logic.
+2) \`[TÓM TẮT]:\` 2-3 câu tình thế hiện tại.
+3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
 4) Khối \`\`\`json cập nhật Codex.
 
-⏰ BẮT BUỘC ghi rõ [⏰ Thời gian: X giờ/ngày/tháng/năm] cho mỗi hành động.
-
 NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
-NẾU THIẾU THỜI GIAN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
-NẾU DÙNG "HẮN/GÃ" CHO NVC → COI NHƯ TRẢ LỜI SAI.
 
 # CẤU TRÚC JSON CODEX
 \`\`\`json
@@ -1967,14 +1214,19 @@ NẾU DÙNG "HẮN/GÃ" CHO NVC → COI NHƯ TRẢ LỜI SAI.
 }
 \`\`\`
 
-# QUY TẮC NPC ID
+# ⚠️ QUY TẮC ĐỊNH DẠNG mcInventoryList (CỰC KỲ QUAN TRỌNG - KHÔNG ĐƯỢC SAI)
+- TUYỆT ĐỐI KHÔNG trả về mảng string như: ["10 Hạ phẩm Linh thạch", "Tụ Khí Đan (2 viên)"].
+- BẮT BUỘC trả về mảng OBJECT, mỗi phần tử có cấu trúc:
+  {"name":"Hạ phẩm Linh thạch","icon":"💎","quantity":10,"quality":"Hạ phẩm","effect":"Tiền tệ tu tiên"}
+
+# QUY TẮC NPC ID (CỰC KỲ QUAN TRỌNG)
 - Mỗi NPC trong Codex có ID dạng "npc_xxx".
-- BẮT BUỘC giữ nguyên "id" của NPC đã có.
-- Nếu NPC đổi tên: chỉ đổi "name", KHÔNG tạo ID mới.
+- Khi trả về "npcActiveList", BẮT BUỘC giữ nguyên "id" của NPC đã có.
+- Nếu NPC đổi tên → CHỈ đổi "name", KHÔNG tạo ID mới.
 
 # QUY TẮC NPC KHÔNG CÒN HOẠT ĐỘNG
-- Nếu NPC CHẾT: ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
-- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC: thêm trường "status".
+- Nếu NPC CHẾT → ghi vào "npcArchive" và XÓA khỏi "npcActiveList".
+- Nếu NPC BỊ PHẾ / TẨU HỎA / SI NGỐC → thêm trường "status".
 
 # NGUYÊN TẮC MẠCH LẠC
 - Trước khi viết, ĐỌC LẠI Codex + Tóm tắt để đảm bảo nhất quán.
@@ -1984,7 +1236,7 @@ NẾU DÙNG "HẮN/GÃ" CHO NVC → COI NHƯ TRẢ LỜI SAI.
 }
 
 // ============================================================
-// CALL GEMINI
+// CALL GEMINI - v2.5.9
 // ============================================================
 async function callGemini(promptText,isFirstCall=false,scope='default'){
   const key=document.getElementById('apiKey').value.trim();
@@ -2003,17 +1255,20 @@ async function callGemini(promptText,isFirstCall=false,scope='default'){
     ]
   };
 
-  if(isFirstCall||!systemRulesSentThisSession){
+  // ✅ v2.5.9: full rules nếu lần đầu provider này hoặc force
+  const shouldSendFullRules = isFirstCall || !systemRulesSent.gemini;
+  if(shouldSendFullRules){
     const wrappedPrompt=`${buildSystemRules(scope)}\n\n---\n\n${promptText}`;
     requestPayload.contents=[...recentHistory,{role:"user",parts:[{text:wrappedPrompt}]}];
-    log("📤 Gemini: FULL rules (lượt đầu)");
-    systemRulesSentThisSession=true;
+    log("📤 Gemini: FULL rules");
+    systemRulesSent.gemini = true;
   }else{
     requestPayload.contents=[...recentHistory,currentMessage];
     log("📤 Gemini: prompt gọn");
   }
 
-  const models=FALLBACK_MODELS;
+  // ✅ v2.5.9: User model trước, sau đó fallback chain (loại trùng)
+  const models = [CACHE_MODEL, ...FALLBACK_MODELS.filter(m => m !== CACHE_MODEL)];
   for(let i=0;i<models.length;i++){
     const modelName=models[i];
     const url=`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
@@ -2032,8 +1287,8 @@ async function callGemini(promptText,isFirstCall=false,scope='default'){
         if(data.usageMetadata){
           const inT=data.usageMetadata.promptTokenCount||0;
           const outT=data.usageMetadata.candidatesTokenCount||0;
-          tokenStats.input+=inT;tokenStats.output+=outT;tokenStats.requests++;
-          tokenStats.geminiIn+=inT;tokenStats.geminiOut+=outT;tokenStats.geminiReq++;
+          tokenStats.input+=inT; tokenStats.output+=outT; tokenStats.requests++;
+          tokenStats.geminiIn+=inT; tokenStats.geminiOut+=outT; tokenStats.geminiReq++;
           updateTokenStatsDisplay();
         }
         if(!isAiGenCall){
@@ -2051,13 +1306,16 @@ async function callGemini(promptText,isFirstCall=false,scope='default'){
 }
 
 // ============================================================
-// CALL OPENROUTER
+// CALL OPENROUTER - v2.5.9
 // ============================================================
 async function callOpenRouter(promptText,scope='default'){
   const rawKey=document.getElementById('openRouterKey').value;
   const key=rawKey.trim();
   if(!key){throw new Error("Chưa nhập OpenRouter API Key");}
-  if(!key.startsWith('sk-or-v1-')){throw new Error("OpenRouter Key sai định dạng");}
+
+  if(!key.startsWith('sk-or-v1-')){
+    throw new Error("OpenRouter Key sai định dạng (phải bắt đầu sk-or-v1-)");
+  }
 
   let model=document.getElementById('openRouterModel').value;
   if(model==='custom'){
@@ -2073,17 +1331,29 @@ async function callOpenRouter(promptText,scope='default'){
   }));
 
   let messages;
-  if(!systemRulesSentThisSession){
-    messages=[{role:"system",content:buildSystemRules(scope)},...recentHistory,currentMessage];
-    log("📤 OpenRouter: FULL rules (lượt đầu)");
-    systemRulesSentThisSession=true;
+  // ✅ v2.5.9: OpenRouter LUÔN gửi system rules vì đây là provider NSFW
+  const shouldSendSystem = !systemRulesSent.openrouter;
+  if(shouldSendSystem){
+    messages=[
+      {role:"system",content:buildSystemRules(scope)},
+      ...recentHistory,
+      currentMessage
+    ];
+    log("📤 OpenRouter: FULL rules");
+    systemRulesSent.openrouter = true;
   }else{
     messages=[...recentHistory,currentMessage];
     log("📤 OpenRouter: prompt gọn");
   }
 
   const url="https://openrouter.ai/api/v1/chat/completions";
-  const body={model:model,messages:messages,temperature:0.9,max_tokens:4000};
+  const body={
+    model: model,
+    messages: messages,
+    temperature: 0.9,
+    max_tokens: 4000
+  };
+
   const headers={
     "Content-Type": "application/json",
     "Authorization": "Bearer "+key,
@@ -2093,36 +1363,46 @@ async function callOpenRouter(promptText,scope='default'){
 
   let attempt=0;
   const maxAttempts=settings.retry5xx?2:1;
+
   while(attempt<maxAttempts){
     attempt++;
     try{
       const response=await fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body)});
+
       if(!response.ok){
         const errText=await response.text();
         const status=response.status;
         log(`❌ OpenRouter HTTP ${status}: ${errText.substring(0,200)}`);
+
         if(status>=500&&status<600&&settings.retry5xx&&attempt<maxAttempts){
           log(`⏳ OpenRouter 5xx, thử lại lần ${attempt+1}...`);
           await new Promise(r=>setTimeout(r,2000));
           continue;
         }
+
         tokenStats.errors++;
         throw new Error(`OpenRouter HTTP ${status}`);
       }
+
       const data=await response.json();
+
       if(data.error){
         log(`❌ OpenRouter: ${data.error.message||JSON.stringify(data.error)}`);
         tokenStats.errors++;
         throw new Error(data.error.message||"OpenRouter error");
       }
+
       if(data.choices&&data.choices[0]&&data.choices[0].message){
         const aiReply=data.choices[0].message.content;
-        if(!aiReply||aiReply.trim()===''){throw new Error("Empty response");}
+        if(!aiReply||aiReply.trim()===''){
+          log("⚠️ OpenRouter trả về rỗng");
+          throw new Error("Empty response");
+        }
         if(data.usage){
           const inT=data.usage.prompt_tokens||0;
           const outT=data.usage.completion_tokens||0;
-          tokenStats.input+=inT;tokenStats.output+=outT;tokenStats.requests++;
-          tokenStats.orIn+=inT;tokenStats.orOut+=outT;tokenStats.orReq++;
+          tokenStats.input+=inT; tokenStats.output+=outT; tokenStats.requests++;
+          tokenStats.orIn+=inT; tokenStats.orOut+=outT; tokenStats.orReq++;
           updateTokenStatsDisplay();
         }
         if(!isAiGenCall){
@@ -2132,21 +1412,27 @@ async function callOpenRouter(promptText,scope='default'){
         }
         return aiReply;
       }
+
       throw new Error("OpenRouter response không hợp lệ");
+
     }catch(e){
-      if(attempt>=maxAttempts){tokenStats.errors++;throw e;}
+      if(attempt>=maxAttempts){
+        tokenStats.errors++;
+        throw e;
+      }
     }
   }
   throw new Error("OpenRouter fail after retries");
 }
 
 // ============================================================
-// CALL AI - UNIFIED VỚI FALLBACK
+// CALL AI - v2.5.9 (nhận precomputedScope)
 // ============================================================
-async function callAI(promptText, isFirstCall=false){
+async function callAI(promptText, isFirstCall=false, precomputedScope=null){
   const actionText=promptText.substring(0,500);
   const isNsfw=detectNsfwIntent(actionText);
-  const scope=detectSceneScope(actionText);
+  // ✅ v2.5.9: Nhận scope đã tính sẵn để tránh tính 2 lần
+  const scope = precomputedScope || detectSceneScope(actionText);
   const orKey=document.getElementById('openRouterKey').value.trim();
   const geminiKey=document.getElementById('apiKey').value.trim();
 
@@ -2157,19 +1443,31 @@ async function callAI(promptText, isFirstCall=false){
   if(useOpenRouter){
     log("🎯 Phát hiện NSFW → dùng OpenRouter");
     try{
-      return await callOpenRouter(promptText,scope);
+      const reply=await callOpenRouter(promptText,scope);
+      return reply;
     }catch(e){
       log(`❌ OpenRouter fail: ${e.message}`);
+
       if(settings.autoFallback && geminiKey){
         log("🔄 Fallback về Gemini...");
+        log("⚠️ Nội dung NSFW có thể bị filter");
         tokenStats.fallbackCount++;
         updateTokenStatsDisplay();
-        try{return await callGemini(promptText, isFirstCall, scope);}
-        catch(e2){log(`❌ Gemini cũng fail: ${e2.message}`);return null;}
-      }else{return null;}
+        try{
+          return await callGemini(promptText, isFirstCall, scope);
+        }catch(e2){
+          log(`❌ Gemini cũng fail: ${e2.message}`);
+          return null;
+        }
+      }else{
+        log("❌ Không fallback (đã tắt hoặc thiếu Gemini key)");
+        return null;
+      }
     }
   }else{
-    if(isNsfw){log("⚠️ NSFW nhưng autoSwitch tắt hoặc thiếu OR key → dùng Gemini");}
+    if(isNsfw){
+      log("⚠️ NSFW nhưng autoSwitch tắt hoặc thiếu OR key → dùng Gemini");
+    }
     log("🎯 Dùng Gemini");
     try{
       return await callGemini(promptText, isFirstCall, scope);
@@ -2177,15 +1475,17 @@ async function callAI(promptText, isFirstCall=false){
       log(`❌ Gemini fail: ${e.message}`);
       if(orKey){
         log("🔄 Gemini fail, thử OpenRouter...");
-        try{return await callOpenRouter(promptText,scope);}
-        catch(e2){log(`❌ OpenRouter cũng fail: ${e2.message}`);return null;}
+        try{
+          return await callOpenRouter(promptText,scope);
+        }catch(e2){
+          log(`❌ OpenRouter cũng fail: ${e2.message}`);
+          return null;
+        }
       }
       return null;
     }
   }
-}
-
-// ============================================================
+}// ============================================================
 // AI GEN
 // ============================================================
 async function aiGenField(fieldId,promptMsg){
@@ -2194,9 +1494,10 @@ async function aiGenField(fieldId,promptMsg){
   const originalVal=field.value;
   field.value="AI đang suy nghĩ...";
   const geminiKey=document.getElementById('apiKey').value.trim();
-  if(!geminiKey){field.value=originalVal;alert("Cần Gemini API Key!");return;}
+  if(!geminiKey){field.value=originalVal;alert("Cần Gemini API Key để dùng AI Gen!");return;}
 
   isAiGenCall=true;
+
   try{
     const res=await callGemini(`Đóng vai Game Master tu tiên, tạo nội dung ngắn gọn cho mục: ${promptMsg}. Chỉ trả về text, không giải thích.`,false);
     if(res){field.value=res;}else{field.value=originalVal;}
@@ -2222,10 +1523,7 @@ function buildTurnHtml(rawText){
   let summaryIndex=rawText.indexOf('<div class="summary-box">');
   let mainNarrative=rawText;
   let summaryPart='';
-  if(summaryIndex!==-1){
-    mainNarrative=rawText.substring(0,summaryIndex).trim();
-    summaryPart=rawText.substring(summaryIndex);
-  }
+  if(summaryIndex!==-1){mainNarrative=rawText.substring(0,summaryIndex).trim();summaryPart=rawText.substring(summaryIndex);}
   return `<div id="${textId}">${mainNarrative}</div><div class="tts-btn-container"><button class="btn-tts" onclick="playFemaleTTS(document.getElementById('${textId}').innerText, this)">🔊 Đọc giọng nữ</button><button class="btn-tts btn-tts-stop" onclick="stopTTS()">🛑 Dừng đọc</button></div>${summaryPart}`;
 }
 
@@ -2239,22 +1537,24 @@ function parseAndAutoUpdateCodex(fullResponseText){
       const codexData=JSON.parse(jsonMatch[1].trim());
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!=="")document.getElementById('mcGameTime').value=codexData.mcGameTime;
-      if(codexData.mcSkills!==undefined){
-        document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);
-      }
+      if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
+
       if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
-        const normalizedInventory=codexData.mcInventoryList.map(item=>{
-          if(typeof item==='string'){
-            const match=item.match(/^(\d+)\s+(.+)$/);
-            if(match){return {name:match[2],icon:'📦',quantity:parseInt(match[1]),quality:'Chưa rõ',effect:'Chưa rõ'};}
-            return {name:item,icon:'📦',quantity:1,quality:'Chưa rõ',effect:'Chưa rõ'};
+        const normalizedInventory = codexData.mcInventoryList.map(item => {
+          if (typeof item === 'string') {
+            const match = item.match(/^(\d+)\s+(.+)$/);
+            if (match) {
+              return { name: match[2], icon: '📦', quantity: parseInt(match[1]), quality: 'Chưa rõ', effect: 'Chưa rõ' };
+            }
+            return { name: item, icon: '📦', quantity: 1, quality: 'Chưa rõ', effect: 'Chưa rõ' };
           }
           return item;
         });
-        const validInventory=normalizedInventory.filter(item=>(item.quantity===undefined||item.quantity>0));
+        const validInventory = normalizedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
         renderInventoryVisual(validInventory);
-        document.getElementById('mcInventory').value=JSON.stringify(validInventory,null,2);
+        document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
       }
+
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
           if(!aiNpc||!aiNpc.name)return;
@@ -2277,11 +1577,18 @@ function parseAndAutoUpdateCodex(fullResponseText){
             if(aiNpc.personality)exist.personality=aiNpc.personality;
             if(aiNpc.affinity!==undefined)exist.affinity=aiNpc.affinity;
             if(aiNpc.avatar)exist.avatar=aiNpc.avatar;
-            if(aiNpc.npcRules!==undefined&&aiNpc.npcRules!==null&&String(aiNpc.npcRules).trim()!==''){
-              if(!exist.lockedRules){exist.npcRules=aiNpc.npcRules;}
-              else{log(`🔒 Giữ nguyên quy tắc AI của [${exist.name}] (đã khóa)`);}
+
+            if(aiNpc.npcRules !== undefined && aiNpc.npcRules !== null && String(aiNpc.npcRules).trim() !== ''){
+              if(!exist.lockedRules){
+                exist.npcRules = aiNpc.npcRules;
+              } else {
+                log(`🔒 Giữ nguyên quy tắc AI của [${exist.name}] (đã khóa)`);
+              }
             }
-            if(aiNpc.status!==undefined){exist.status=aiNpc.status;}
+
+            if(aiNpc.status !== undefined){
+              exist.status = aiNpc.status;
+            }
           }else{
             npcList.push({
               id:aiNpc.id||generateNpcId(),
@@ -2291,76 +1598,45 @@ function parseAndAutoUpdateCodex(fullResponseText){
               npcRules:aiNpc.npcRules||'Tuân thủ thiết lập.',
               avatar:aiNpc.avatar||generateAutoAvatar(aiNpc.name),
               affinity:aiNpc.affinity!==undefined?aiNpc.affinity:50,
-              pinned:false,lockedRules:false,status:aiNpc.status||''
+              pinned:false,
+              lockedRules:false,
+              status:aiNpc.status||''
             });
             log(`> Thêm NPC mới: [${aiNpc.id||'auto'}] ${aiNpc.name}`);
           }
         });
       }
-      if(codexData.locationsList!==undefined&&Array.isArray(codexData.locationsList)){
-        let currentLocsText=document.getElementById('locations').value;
-        let existingLocs=[];
-        try{if(currentLocsText.trim().startsWith('['))existingLocs=JSON.parse(currentLocsText);}catch(e){}
-        codexData.locationsList.forEach(newLoc=>{
-          if(!newLoc||!newLoc.name)return;
-          let found=existingLocs.find(l=>l.name.toLowerCase().trim()===newLoc.name.toLowerCase().trim());
-          if(found){
-            if(newLoc.danger)found.danger=newLoc.danger;
-            if(newLoc.position)found.position=newLoc.position;
-            if(newLoc.desc)found.desc=newLoc.desc;
-            if(newLoc.icon)found.icon=newLoc.icon;
-          }else{existingLocs.push(newLoc);}
-        });
-        renderLocationsVisual(existingLocs);
-        document.getElementById('locations').value=JSON.stringify(existingLocs,null,2);
-      }
-      if(codexData.eventsList!==undefined&&Array.isArray(codexData.eventsList)){
-        codexData.eventsList.forEach(newEv=>{
-          let found=eventList.find(e=>e.name.toLowerCase().trim()===newEv.name.toLowerCase().trim());
-          if(found){
-            if(newEv.events)found.events=newEv.events;
-            if(newEv.timeNote)found.timeNote=newEv.timeNote;
-            if(newEv.accessRules)found.accessRules=newEv.accessRules;
-            if(newEv.aiRules&&(!found.aiRules||found.aiRules==='Tuân thủ cốt truyện.'))found.aiRules=newEv.aiRules;
-          }else{
-            eventList.push({name:newEv.name||'Sự kiện mới',timeNote:newEv.timeNote||'Không thời hạn',accessRules:newEv.accessRules||'Tự do',events:newEv.events||'Nội dung...',aiRules:newEv.aiRules||'Tuân thủ cốt truyện.'});
-          }
-        });
-        renderEventsVisual();
-        syncEventsToTextarea();
-      }
-      if(codexData.weaponsList!==undefined&&Array.isArray(codexData.weaponsList)){
-        renderWeaponsVisual(codexData.weaponsList);
-        document.getElementById('worldItems').value=JSON.stringify(codexData.weaponsList,null,2);
-      }
-      if(codexData.npcArchive!==undefined){
-        let archiveStr='';
-        if(typeof codexData.npcArchive==='object'){
-          if(Array.isArray(codexData.npcArchive))archiveStr=codexData.npcArchive.map(item=>typeof item==='string'?item:JSON.stringify(item)).join('\n');
-          else archiveStr=JSON.stringify(codexData.npcArchive,null,2);
-        }else archiveStr=String(codexData.npcArchive);
-        document.getElementById('npcArchive').value=archiveStr;
-      }
-      const archiveLower=(document.getElementById('npcArchive').value||'').toLowerCase();
-      npcList=npcList.filter(npc=>{
+
+      if(codexData.locationsList!==undefined&&Array.isArray(codexData.locationsList)){let currentLocsText=document.getElementById('locations').value;let existingLocs=[];try{if(currentLocsText.trim().startsWith('['))existingLocs=JSON.parse(currentLocsText);}catch(e){}codexData.locationsList.forEach(newLoc=>{if(!newLoc||!newLoc.name)return;let found=existingLocs.find(l=>l.name.toLowerCase().trim()===newLoc.name.toLowerCase().trim());if(found){if(newLoc.danger)found.danger=newLoc.danger;if(newLoc.position)found.position=newLoc.position;if(newLoc.desc)found.desc=newLoc.desc;if(newLoc.icon)found.icon=newLoc.icon;}else{existingLocs.push(newLoc);}});renderLocationsVisual(existingLocs);document.getElementById('locations').value=JSON.stringify(existingLocs,null,2);}
+
+      if(codexData.eventsList!==undefined&&Array.isArray(codexData.eventsList)){codexData.eventsList.forEach(newEv=>{let found=eventList.find(e=>e.name.toLowerCase().trim()===newEv.name.toLowerCase().trim());if(found){if(newEv.events)found.events=newEv.events;if(newEv.timeNote)found.timeNote=newEv.timeNote;if(newEv.accessRules)found.accessRules=newEv.accessRules;if(newEv.aiRules&&(!found.aiRules||found.aiRules==='Tuân thủ cốt truyện.'))found.aiRules=newEv.aiRules;}else{eventList.push({name:newEv.name||'Sự kiện mới',timeNote:newEv.timeNote||'Không thời hạn',accessRules:newEv.accessRules||'Tự do',events:newEv.events||'Nội dung...',aiRules:newEv.aiRules||'Tuân thủ cốt truyện.'});}});renderEventsVisual();syncEventsToTextarea();}
+
+      if(codexData.weaponsList!==undefined&&Array.isArray(codexData.weaponsList)){renderWeaponsVisual(codexData.weaponsList);document.getElementById('worldItems').value=JSON.stringify(codexData.weaponsList,null,2);}
+
+      if(codexData.npcArchive!==undefined){let archiveStr='';if(typeof codexData.npcArchive==='object'){if(Array.isArray(codexData.npcArchive))archiveStr=codexData.npcArchive.map(item=>typeof item==='string'?item:JSON.stringify(item)).join('\n');else archiveStr=JSON.stringify(codexData.npcArchive,null,2);}else archiveStr=String(codexData.npcArchive);document.getElementById('npcArchive').value=archiveStr;}
+
+      const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
+      npcList = npcList.filter(npc => {
         if(npc.pinned){
           log(`📌 Giữ lại NPC [${npc.id}] ${npc.name} (đã tick xanh).`);
           return true;
         }
-        const haystack=[npc.status||'',npc.npcRules||'',npc.personality||'',npc.identity||''].join(' ').toLowerCase();
-        const matchedKeyword=INACTIVE_KEYWORDS.find(kw=>haystack.includes(kw));
+        const haystack = [npc.status||'', npc.npcRules||'', npc.personality||'', npc.identity||''].join(' ').toLowerCase();
+        const matchedKeyword = INACTIVE_KEYWORDS.find(kw => haystack.includes(kw));
         if(matchedKeyword){
           log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (trạng thái: "${matchedKeyword}").`);
           return false;
         }
-        const nName=npc.name.toLowerCase().trim();
-        if(nName&&archiveLower.includes(nName)){
+        const nName = npc.name.toLowerCase().trim();
+        if(nName && archiveLower.includes(nName)){
           log(`🗑️ Loại bỏ NPC [${npc.id}] ${npc.name} (có trong Archive).`);
           return false;
         }
         return true;
       });
+
       renderNpcs();
+
       log("> Cập nhật Codex thành công!");
       let cleanText=fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i,'').trim();
       let formatted=formatSummaryBox(cleanText);
@@ -2439,19 +1715,20 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.6.0 (2026-10-10) - TÍCH HỢP 4 BỘ QUY TẮC</div><div class="thiendao-result-body">
-✅ Tự động điền 4 bộ quy tắc vào textarea mặc định.
-✅ Bộ 1: QUY TẮC AI & PACING.
-✅ Bộ 2: HỆ THỐNG SỨC MẠNH.
-✅ Bộ 3: QUY TẮC THẾ GIỚI.
-✅ Bộ 4: VĂN PHONG & NGÔI KỂ.
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9 (2026-10-10) - STABILITY FIX</div><div class="thiendao-result-body">
+✅ Tách systemRulesSent theo provider (Gemini / OpenRouter).
+✅ Inject exemplar mỗi lượt khi scope đổi.
+✅ Fix NSFW false positive (bỏ từ đơn ngắn, word-boundary EN).
+✅ Cap turnHtmlHistory (30 entry) tránh phình RAM.
+✅ Snapshot-based undo (chatHistory + turnCounter + summary + scope).
+✅ Chỉ slice chatHistory khi summary thành công.
+✅ Fallback model chain thực tế + ưu tiên model user.
+✅ Truyền precomputedScope vào callAI (tránh tính 2 lần).
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE</div><div class="thiendao-result-body">Nhắc format vào prompt gọn mỗi lượt.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS</div><div class="thiendao-result-body">Chỉ gửi 5 sự kiện gần nhất.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY</div><div class="thiendao-result-body">Normalize mcInventoryList dạng string.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT</div><div class="thiendao-result-body">Xuất/nhập cấu hình World.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE</div><div class="thiendao-result-body">Nhắc format output mỗi lượt + Codex memory.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS</div><div class="thiendao-result-body">Chỉ gửi 5 sự kiện gần nhất trong Codex memory.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
   html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
   resultsDiv.innerHTML=html;
 }
@@ -2459,7 +1736,7 @@ function showVersionLog(){
 document.getElementById('thienDaoModal').addEventListener('click',function(e){if(e.target===this)closeThienDao();});
 
 // ============================================================
-// START GAME
+// START GAME - v2.5.9
 // ============================================================
 const confirmAndStartGame=()=>{const confirmReset=confirm("⚠️ Xóa tiến trình cũ và KHỞI TẠO GAME MỚI?");if(confirmReset){openTab('play');startGame();}};
 
@@ -2467,7 +1744,10 @@ const startGame=async()=>{
   stopTTS();
   const storyBox=document.getElementById('story-box');
   chatHistory=[];turnHtmlHistory=[];turnCounter=0;storySummary="";
-  systemRulesSentThisSession=false;
+  // ✅ v2.5.9: Reset snapshot + flags + scope
+  turnSnapshots = [];
+  lastSceneScope = null;
+  systemRulesSent = { gemini: false, openrouter: false };
   resetTokenStats();
   storyBox.innerHTML='<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   const systemPrompt=`Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value||'HỒNG ĐỨC TU TIÊN LỘ'}".
@@ -2498,13 +1778,17 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, tuân thủ
 };
 
 // ============================================================
-// SEND ACTION
+// SEND ACTION - v2.5.9
 // ============================================================
 const sendAction=async()=>{
   const inputEl=document.getElementById('userInput');
   const actionText=inputEl.value.trim();
   if(!actionText)return;
   stopTTS();
+
+  // ✅ v2.5.9: Snapshot trước khi thực hiện lượt mới
+  pushTurnSnapshot();
+
   const storyBox=document.getElementById('story-box');
   inputEl.value='';
   const actionId='action_'+Date.now();
@@ -2514,35 +1798,37 @@ const sendAction=async()=>{
 
   const needRulesResend=(chatHistory.length===0);
   const sceneScope=detectSceneScope(actionText);
-  const styleReminder=getStyleExemplarBlock(sceneScope)
-    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar đã cung cấp.\n`
-    : '';
+
+  // ✅ v2.5.9: Chỉ inject exemplar khi scope ĐỔI (tiết kiệm token)
+  const scopeChanged = (sceneScope !== lastSceneScope);
+  const exemplarBlock = (sceneScope !== 'default' && scopeChanged) ? getStyleExemplarBlock(sceneScope) : '';
+  const styleReminder = exemplarBlock
+    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar dưới đây.\n`
+    : (sceneScope !== 'default' ? `\n⚡ Đang ở scope "${sceneScope}" — giữ văn phong exemplar đã cung cấp.\n` : '');
+  lastSceneScope = sceneScope;
 
   const formatReminder = `\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT (KHÔNG ĐƯỢC THIẾU):
-1) Dẫn chuyện 4-7 đoạn (250-900 từ tùy tầm quan trọng cảnh).
-   - Miêu tả ít nhất 2 giác quan, có nội tâm NVC, có hội thoại NPC.
-   - DÙNG NGÔI "NGƯƠI" cho NVC. KHÔNG dùng "hắn/gã/y".
-   - KHÔNG có người dẫn truyện.
-2) [TÓM TẮT]: 2-3 câu tình thế.
-3) 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
-4) Khối \`\`\`json cập nhật Codex.
+1) Dẫn chuyện (2-4 đoạn)
+2) [TÓM TẮT]: 2-3 câu tình thế
+3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
+4) Khối \`\`\`json cập nhật Codex
 
-⏰ BẮT BUỘC ghi rõ [⏰ Thời gian: X giờ/ngày/tháng/năm] cho mỗi hành động.
-
-NẾU DẪN CHUYỆN DƯỚI 250 TỪ → COI NHƯ TRẢ LỜI SAI.
-NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
-NẾU THIẾU THỜI GIAN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
-NẾU DÙNG "HẮN/GÃ" CHO NVC → COI NHƯ TRẢ LỜI SAI.`;
+NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.`;
 
   const promptWithCodex=needRulesResend
-    ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
-    : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
+    ? `${buildSystemRules(sceneScope)}\n\n---\n\n${exemplarBlock}\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
+    : `${exemplarBlock}\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
 
-  const reply=await callAI(promptWithCodex,false);
+  // ✅ v2.5.9: Truyền sceneScope đã tính sẵn
+  const reply=await callAI(promptWithCodex,false,sceneScope);
   if(reply){
     const formattedHtml=parseAndAutoUpdateCodex(reply);
     storyBox.innerHTML+=formattedHtml;
     turnHtmlHistory.push(storyBox.innerHTML);
+    // ✅ v2.5.9: Cap turnHtmlHistory
+    if(turnHtmlHistory.length > MAX_TURN_HTML){
+      turnHtmlHistory = turnHtmlHistory.slice(-MAX_TURN_HTML);
+    }
     await saveGame(false);
   }else{
     storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;

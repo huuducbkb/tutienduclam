@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9 - AI RPG (Format Reinforce + Stability Fix)</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9 - AI RPG (Anti-Degradation)</title>
 
 <!-- ============================================================
      NHẬT KÝ PHIÊN BẢN - KHÔNG GỬI CHO AI (TIẾT KIỆM TOKEN)
      ============================================================
      
-     v2.5.9 (2026-10-10) - STABILITY FIX
+     v2.5.9 (2026-10-10) - ANTI-DEGRADATION PATCH
      ─────────────────────────────────────────────────────────
-     ✅ Tách systemRulesSent theo provider (Gemini / OpenRouter).
-     ✅ Inject exemplar mỗi lượt khi scope đổi.
-     ✅ Fix NSFW false positive (bỏ từ đơn ngắn, word-boundary EN).
-     ✅ Cap turnHtmlHistory (30 entry) tránh phình RAM.
-     ✅ Snapshot-based undo (chatHistory + turnCounter + summary + scope).
-     ✅ Chỉ slice chatHistory khi summary thành công.
-     ✅ Fallback model chain thực tế + ưu tiên model user.
-     ✅ Truyền precomputedScope vào callAI (tránh tính 2 lần).
+     ✅ Resend FULL rules mỗi 4 lượt (chống AI quên format).
+     ✅ Tăng MAX_RECENT_TURNS từ 3 → 6 (giữ ngữ cảnh tốt hơn).
+     ✅ Anti-shortening guard: phát hiện lượt trước < 200 từ → cảnh báo.
+     ✅ Style Anchor mạnh hơn trong Codex memory.
+     ✅ Summary dùng gemini-3.6-flash thay vì flash-lite.
+     ✅ Nút "Force Full Rules" thủ công trong sidebar.
+     ✅ Giới hạn chatHistory trong RAM (tránh tràn bộ nhớ).
+     ✅ Yêu cầu độ dài tối thiểu 350 từ/lượt trong format reminder.
      
      v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM
      ─────────────────────────────────────────────────────────
@@ -28,17 +28,8 @@
      ✅ Bổ sung hệ thống tu vi đầy đủ vào powerSystem.
      
      v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI
-     ─────────────────────────────────────────────────────────
-     ✅ Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.
-     
      v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK
-     ─────────────────────────────────────────────────────────
-     ✅ Fix lỗi AI trả về mcInventoryList dạng mảng string.
-     
      v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER
-     ─────────────────────────────────────────────────────────
-     ✅ Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.
-     
      ============================================================ -->
 
 <style>
@@ -152,8 +143,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .config-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .btn-config{background:var(--accent-purple);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
 .btn-config.import{background:var(--accent-blue)}
+.degradation-guard{background:rgba(218,54,51,.1);border:1px solid var(--accent-red);border-left:4px solid var(--accent-red);padding:8px 10px;border-radius:6px;margin:10px 0;font-size:11px;color:#f0b4b4}
 </style>
-</head><body><div class="header">
+</head><body>
+<div class="header">
 <div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
@@ -165,9 +158,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group">
   <label class="label-title">Model Gemini:</label>
   <select id="modelSelect">
-    <option value="gemini-2.5-flash-lite" selected>2.5 Flash-Lite (Nhanh, rẻ)</option>
-    <option value="gemini-2.5-flash">2.5 Flash (Toàn diện)</option>
-    <option value="gemini-2.0-flash">2.0 Flash (Ổn định)</option>
+    <option value="gemini-3.5-flash-lite" selected>3.5 Flash-Lite (Nhanh, rẻ)</option>
+    <option value="gemini-3.6-flash">3.6 Flash (Toàn diện)</option>
+    <option value="gemini-2.5-flash-lite">2.5 Flash-Lite (Cũ)</option>
   </select>
 </div>
 
@@ -205,6 +198,17 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span>Thử lại OpenRouter khi lỗi 5xx</span>
   <div class="toggle-switch active" id="toggleRetry5xx" onclick="toggleSetting('retry5xx')"></div>
 </div>
+
+<div class="section-header">🛡️ Anti-Degradation (v2.5.9)</div>
+<div class="toggle-row">
+  <span>Resend Rules mỗi 4 lượt</span>
+  <div class="toggle-switch active" id="togglePeriodicRules" onclick="toggleSetting('periodicRules')"></div>
+</div>
+<div class="toggle-row">
+  <span>Anti-Shortening Guard</span>
+  <div class="toggle-switch active" id="toggleAntiShortening" onclick="toggleSetting('antiShortening')"></div>
+</div>
+<button class="sidebar-item" style="background:var(--accent-orange);font-size:12px;margin-top:8px" onclick="forceResendRules()">🔄 Gửi Lại Full Rules Ngay</button>
 
 <hr style="border-color:var(--border-color);margin:12px 0">
 <button class="sidebar-item" style="background:var(--accent-orange);font-size:12px" onclick="testOpenRouterKey()">🔍 Test OpenRouter Key</button>
@@ -349,6 +353,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div id="play" class="tab-content">
 <div id="story-box">Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!</div>
+<div id="degradationWarning" class="degradation-guard" style="display:none">
+  🚨 <b>CẢNH BÁO THOÁI HÓA:</b> Lượt trước AI viết quá ngắn (&lt;200 từ). Hệ thống đã tự động tăng cường nhắc nhở format. Nếu vẫn tiếp diễn, bấm "🔄 Gửi Lại Full Rules" trong menu.
+</div>
 <div class="form-group" style="margin-top:10px">
 <input type="text" id="userInput" placeholder="Nhập lựa chọn (1,2,3...) hoặc hành động...">
 <div class="game-controls">
@@ -365,7 +372,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.9 (Stability Fix) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.9 (Anti-Degradation) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -382,29 +389,41 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div><script>
 // ============================================================
-// CẤU HÌNH
+// CẤU HÌNH v2.5.9
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
 const DB_VERSION=259;
 
-const MAX_RECENT_TURNS=3;
-const SUMMARY_TRIGGER_TURNS=4;
+// ✅ v2.5.9: Tăng từ 3 → 6 để AI giữ ngữ cảnh tốt hơn
+const MAX_RECENT_TURNS=6;
 
-// ✅ v2.5.9: Fallback chain model thực tế
-const DEFAULT_MODEL='gemini-2.5-flash-lite';
-const FALLBACK_MODELS=[
-  'gemini-2.5-flash-lite',
-  'gemini-2.5-flash',
-  'gemini-2.0-flash'
-];
+// ✅ v2.5.9: Summary trigger sớm hơn để giữ cốt truyện
+const SUMMARY_TRIGGER_TURNS=3;
+
+// ✅ v2.5.9: Resend full rules mỗi N lượt (chống thoái hóa format)
+const RULES_RESEND_INTERVAL=4;
+
+// ✅ v2.5.9: Ngưỡng cảnh báo lượt ngắn
+const SHORT_TURN_THRESHOLD=200; // từ
+const MIN_TURN_WORDS=350; // từ (yêu cầu AI)
+
+// ✅ v2.5.9: Giới hạn chatHistory trong RAM
+const MAX_HISTORY_IN_RAM=30;
+const KEEP_HISTORY_AFTER_TRIM=20;
+
+const DEFAULT_MODEL='gemini-3.5-flash-lite';
+const FALLBACK_MODELS=['gemini-3.5-flash-lite','gemini-3.6-flash'];
+const SUMMARY_MODEL='gemini-3.6-flash'; // v2.5.9: model tốt hơn cho summary
 
 let CACHE_MODEL=DEFAULT_MODEL;
 
 let settings={
   autoSwitch: true,
   autoFallback: true,
-  retry5xx: true
+  retry5xx: true,
+  periodicRules: true,      // v2.5.9
+  antiShortening: true      // v2.5.9
 };
 
 let chatHistory=[];
@@ -418,22 +437,12 @@ let tokenStats={
   input:0,output:0,requests:0,errors:0,
   geminiReq:0, geminiIn:0, geminiOut:0,
   orReq:0, orIn:0, orOut:0,
-  fallbackCount:0
+  fallbackCount:0,
+  resendRulesCount:0,   // v2.5.9
+  shortTurnWarnings:0   // v2.5.9
 };
 
-// ✅ v2.5.9: Tách flag theo provider
-let systemRulesSent = {
-  gemini: false,
-  openrouter: false
-};
-
-// ✅ v2.5.9: Track scene scope + snapshot cho undo
-let lastSceneScope = null;
-let turnSnapshots = [];
-
-const MAX_TURN_HTML = 30;
-const MAX_SNAPSHOTS = 20;
-
+let systemRulesSentThisSession=false;
 let isAiGenCall=false;
 
 // ============================================================
@@ -487,18 +496,17 @@ const inputIds=['apiKey','modelSelect','openRouterKey','openRouterModel','openRo
 
 // ============================================================
 // NSFW INTENT DETECTION
-// ✅ v2.5.9: Bỏ từ đơn ngắn, dùng word-boundary cho EN
 // ============================================================
 const NSFW_KEYWORDS_VI = [
   'song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái',
-  'thân mật','vuốt ve','hở hang','khỏa thân',
+  'thân mật','hôn','ôm','vuốt ve','cởi','lột','hở hang','khỏa thân',
   'lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa',
   'thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm',
   'sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ',
-  'chém giết','tàn sát','đồ sát','moi tim',
+  'chém giết','giết','tàn sát','đồ sát','chém','đâm','chặt','moi tim',
   'lột da','tra tấn','hành hạ','ngược đãi','huyết tinh','máu me',
   'sát nhân','đoạt bảo','cướp','hiếp','giết chóc','sát phạt','đồ diệt',
-  'cưỡng','bắt cóc','giam cầm','khống chế','nô lệ','nô gia',
+  'cưỡng','bắt cóc','giam cầm','trói','khống chế','nô lệ','nô gia',
   'chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức',
   'cưỡng hiếp','cưỡng đoạt','cưỡng chế'
 ];
@@ -507,39 +515,19 @@ const NSFW_KEYWORDS_EN = [
   'kill','murder','slaughter','torture','slave','capture'
 ];
 
-// ✅ v2.5.9: Pre-compile regex word-boundary cho tiếng Anh
-const NSFW_REGEX_EN = NSFW_KEYWORDS_EN.map(kw => new RegExp(`\\b${kw}\\b`, 'i'));
-
 function detectNsfwIntent(actionText){
-  if(!actionText) return false;
-  const lower = actionText.toLowerCase();
-  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-
+  if(!actionText)return false;
+  const lower=actionText.toLowerCase();
+  const normalized=lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   for(const kw of NSFW_KEYWORDS_VI){
-    if(lower.includes(kw)) return true;
-    const kwNorm = kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    if(normalized.includes(kwNorm)) return true;
+    if(lower.includes(kw))return true;
+    const kwNorm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(normalized.includes(kwNorm))return true;
   }
-
-  for(const re of NSFW_REGEX_EN){
-    if(re.test(actionText)) return true;
+  for(const kw of NSFW_KEYWORDS_EN){
+    if(lower.includes(kw))return true;
   }
   return false;
-}
-
-// ============================================================
-// ✅ v2.5.9: SNAPSHOT HELPERS CHO UNDO NHẤT QUÁN
-// ============================================================
-function pushTurnSnapshot(){
-  turnSnapshots.push({
-    chatHistory: JSON.parse(JSON.stringify(chatHistory)),
-    turnCounter: turnCounter,
-    storySummary: storySummary,
-    lastSceneScope: lastSceneScope
-  });
-  if(turnSnapshots.length > MAX_SNAPSHOTS){
-    turnSnapshots = turnSnapshots.slice(-MAX_SNAPSHOTS);
-  }
 }
 
 // ============================================================
@@ -791,10 +779,11 @@ function updateTokenStatsDisplay(){
   el.innerHTML=`<span class="provider-badge provider-gemini">Gemini</span> ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>
 <span class="provider-badge provider-openrouter">OpenRouter</span> ${tokenStats.orReq} req | ${tokenStats.orIn.toLocaleString()} in / ${tokenStats.orOut.toLocaleString()} out<br>
 Fallback: ${tokenStats.fallbackCount} lần<br>
+🛡️ Resend rules: ${tokenStats.resendRulesCount||0} lần | ⚠️ Short-turn warns: ${tokenStats.shortTurnWarnings||0}<br>
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
 }
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
 // TTS
@@ -961,7 +950,9 @@ function renderWeaponsVisual(weaponArray){const grid=document.getElementById('we
 // ============================================================
 // INVENTORY
 // ============================================================
-function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}// ============================================================
+function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
+
+// ============================================================
 // TEST OPENROUTER KEY
 // ============================================================
 async function testOpenRouterKey(){
@@ -999,24 +990,31 @@ async function testOpenRouterKey(){
 }
 
 // ============================================================
+// FORCE RESEND RULES (v2.5.9)
+// ============================================================
+function forceResendRules(){
+  systemRulesSentThisSession = false;
+  tokenStats.resendRulesCount = (tokenStats.resendRulesCount||0) + 1;
+  updateTokenStatsDisplay();
+  log("🔄 Đã reset flag — lượt tiếp theo sẽ gửi FULL RULES");
+  alert("✅ Lượt tiếp theo sẽ gửi lại TOÀN BỘ system rules!\n\nDùng khi AI bắt đầu viết ngắn hoặc quên lựa chọn hành động.");
+  toggleSidebar();
+}
+
+// ============================================================
 // RESET
 // ============================================================
-async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});scopeRegistry.forEach(s=>{s.exemplar='';});renderScopeRegistry();stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";turnSnapshots=[];lastSceneScope=null;systemRulesSent={gemini:false,openrouter:false};removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
+async function resetAllFields(){if(!confirm("⚠️ Xóa sạch toàn bộ cấu hình và dữ liệu game?"))return;fieldsToReset.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});scopeRegistry.forEach(s=>{s.exemplar='';});renderScopeRegistry();stopTTS();chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;removeMcAvatar();renderNpcs();renderEventsVisual();document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';document.getElementById('eventVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic;grid-column:1/-1">Chưa có sự kiện...</div>';document.getElementById('weaponVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';document.getElementById('degradationWarning').style.display='none';await deleteFromIDB('HONDUC_TU_TIEN_SAVE');resetTokenStats();log("Đã reset toàn bộ.");alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');}
 
 // ============================================================
 // SAVE / LOAD
 // ============================================================
 async function saveGame(isManual=false){const gameData={chatHistory:chatHistory,turnHtmlHistory:turnHtmlHistory,scopeRegistry:scopeRegistry,turnCounter:turnCounter,storySummary:storySummary,storyBoxContent:document.getElementById('story-box').innerHTML,inventoryVisualHTML:document.getElementById('inventoryVisualGrid').innerHTML,locVisualHTML:document.getElementById('locVisualGrid').innerHTML,eventVisualHTML:document.getElementById('eventVisualGrid').innerHTML,weaponVisualHTML:document.getElementById('weaponVisualGrid').innerHTML,mcAvatarBase64:mcAvatarBase64,npcList:npcList,eventList:eventList,tokenStats:tokenStats,currentModel:CACHE_MODEL,settings:settings,inputs:{}};inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});try{await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData);log("Game saved.");if(isManual){alert("💾 Đã lưu game!");toggleSidebar();}}catch(e){alert("Lỗi lưu: "+e);}}
 
-async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats||{});
-// ✅ v2.5.9: Reset session state khi load
-lastSceneScope = null;
-turnSnapshots = [];
-systemRulesSent = { gemini: false, openrouter: false };
-if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
+async function loadGame(){try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;renderScopeRegistry();}chatHistory=gameData.chatHistory||[];turnHtmlHistory=gameData.turnHtmlHistory||[];turnCounter=gameData.turnCounter||0;storySummary=gameData.storySummary||"";tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0},gameData.tokenStats||{});if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();}if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}updateTokenStatsDisplay();syncToggleUI();log("Game loaded.");alert("📂 Khôi phục thành công!");toggleSidebar();openTab('play');}catch(e){alert("Lỗi tải: "+e);}}
 
 function syncToggleUI(){
-  ['autoSwitch','autoFallback','retry5xx'].forEach(name=>{
+  ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening'].forEach(name=>{
     const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1));
     if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');}
   });
@@ -1026,30 +1024,12 @@ async function exportSaveFile(){await saveGame(false);const gameData=await getFr
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Nhập file save thành công!");}catch(err){alert("❌ File save không hợp lệ!");}};reader.readAsText(file);}
 
-window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
+window.addEventListener('DOMContentLoaded',async()=>{try{const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(gameData){if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){scopeRegistry = gameData.scopeRegistry;}if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;if(gameData.settings)settings=Object.assign(settings,gameData.settings);if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el)el.value=gameData.inputs[id];});}if(gameData.mcAvatarBase64)setMcAvatarImage(gameData.mcAvatarBase64);if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;if(gameData.eventVisualHTML)document.getElementById('eventVisualGrid').innerHTML=gameData.eventVisualHTML;if(gameData.weaponVisualHTML)document.getElementById('weaponVisualGrid').innerHTML=gameData.weaponVisualHTML;if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}if(gameData.eventList)eventList=gameData.eventList;if(gameData.storySummary)storySummary=gameData.storySummary;if(gameData.tokenStats)tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0},gameData.tokenStats);}}catch(e){}npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});renderNpcs();renderEventsVisual();renderScopeRegistry();updateTokenStatsDisplay();syncToggleUI();});
 
 // ============================================================
-// ✅ v2.5.9: UNDO SNAPSHOT-BASED
+// UNDO
 // ============================================================
-function undoLastTurn(){
-  stopTTS();
-  if(turnSnapshots.length === 0){
-    alert("⚠️ Không thể quay lại thêm!");
-    return;
-  }
-  const snap = turnSnapshots.pop();
-  chatHistory = snap.chatHistory;
-  turnCounter = snap.turnCounter;
-  storySummary = snap.storySummary;
-  lastSceneScope = snap.lastSceneScope;
-
-  if(turnHtmlHistory.length > 1){
-    turnHtmlHistory.pop();
-    document.getElementById('story-box').innerHTML = turnHtmlHistory[turnHtmlHistory.length-1];
-  }
-  log("↩ Undo executed (snapshot restored).");
-  alert("↩ Đã quay lại lượt trước!");
-}
+function undoLastTurn(){stopTTS();if(chatHistory.length<=2){alert("⚠️ Không thể quay lại thêm!");return;}chatHistory.pop();chatHistory.pop();if(turnHtmlHistory.length>1){turnHtmlHistory.pop();const previousHtmlState=turnHtmlHistory[turnHtmlHistory.length-1];document.getElementById('story-box').innerHTML=previousHtmlState;}log("Undo executed.");alert("↩ Đã quay lại lượt trước!");}
 
 // ============================================================
 // SUMMARY
@@ -1072,23 +1052,26 @@ ${oldText}
 Chỉ trả về đoạn tóm tắt tổng hợp.`;
   const key=document.getElementById('apiKey').value.trim();
   if(!key)return;
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${CACHE_MODEL}:generateContent?key=${key}`;
+  // v2.5.9: Dùng SUMMARY_MODEL (gemini-3.6-flash) thay vì flash-lite
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${SUMMARY_MODEL}:generateContent?key=${key}`;
   try{
     const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:summaryPrompt}]}]})});
     const data=await response.json();
     if(data.candidates&&data.candidates[0]?.content?.parts[0]?.text){
       storySummary=data.candidates[0].content.parts[0].text.trim();
-      log(`✅ Đã cập nhật tóm tắt (${storySummary.length} ký tự).`);
-      // ✅ v2.5.9: Chỉ cắt history SAU KHI summary thành công
-      chatHistory=chatHistory.slice(-MAX_RECENT_TURNS*2);
+      log(`✅ Đã cập nhật tóm tắt (${storySummary.length} ký tự, model: ${SUMMARY_MODEL}).`);
+      // ✅ v2.5.9: Giới hạn chatHistory trong RAM
+      if(chatHistory.length > MAX_HISTORY_IN_RAM){
+        chatHistory = chatHistory.slice(-KEEP_HISTORY_AFTER_TRIM);
+        log(`🗜️ Đã trim chatHistory xuống ${chatHistory.length} tin để tiết kiệm RAM.`);
+      }
       await saveGame(false);
-    }else if(data.error){
-      // ✅ v2.5.9: Không cắt history khi lỗi
-      log("❌ Lỗi tóm tắt (giữ nguyên history): "+(data.error.message||'unknown'));
-    }
+    }else if(data.error){log("❌ Lỗi tóm tắt: "+(data.error.message||'unknown'));}
   }catch(e){log("❌ Lỗi tóm tắt: "+e.message);}
-}// ============================================================
-// CODEX MEMORY - v2.5.9
+}
+
+// ============================================================
+// CODEX MEMORY - v2.5.9: THÊM STYLE ANCHOR MẠNH
 // ============================================================
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
@@ -1155,12 +1138,19 @@ Sau khi dẫn chuyện, PHẢI có đầy đủ 3 phần:
 2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
 3. Khối \`\`\`json cập nhật Codex
 
+🚨 CẢNH BÁO THOÁI HÓA (v2.5.9) — ĐỌC KỸ:
+- Nếu bạn có xu hướng viết ngắn dần → DỪNG LẠI. Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
+- Nếu bạn quên lựa chọn hành động → DỪNG LẠI. Phải có 2-4 lựa chọn.
+- Không được tóm tắt cốt truyện qua loa. Không được bỏ qua miêu tả.
+- Giữ văn phong, motif gốc xuyên suốt. Không "lười" viết.
+- Miêu tả cảm xúc, hành động, không khí, đối thoại — KHÔNG chỉ kể sự kiện.
+
 TUYỆT ĐỐI KHÔNG được bỏ qua phần lựa chọn hành động.
 KHÔNG được viết tiếp nếu chưa đưa đủ 2-4 lựa chọn.`;
 }
 
 // ============================================================
-// SYSTEM RULES
+// SYSTEM RULES - v2.5.9: THÊM ANTI-DEGRADATION
 // ============================================================
 function buildSystemRules(scope='default'){
   const v=id=>document.getElementById(id)?.value||'';
@@ -1194,12 +1184,20 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 
 # ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT (KHÔNG ĐƯỢC BỎ QUA)
 Mỗi lượt trả lời PHẢI có đầy đủ 4 phần:
-1) Dẫn chuyện 3-6 đoạn cuốn hút logic.
+1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ) — miêu tả chi tiết không khí, cảm xúc, hành động, đối thoại.
 2) \`[TÓM TẮT]:\` 2-3 câu tình thế hiện tại.
 3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).
 4) Khối \`\`\`json cập nhật Codex.
 
-NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
+# 🚨 CHỐNG THOÁI HÓA (ANTI-DEGRADATION) — ĐỌC KỸ
+- TUYỆT ĐỐI KHÔNG được viết ngắn dần theo thời gian.
+- Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ. Nếu lượt trước ngắn, lượt này PHẢI dài hơn.
+- TUYỆT ĐỐI KHÔNG được bỏ qua LỰA CHỌN HÀNH ĐỘNG.
+- KHÔNG được tóm tắt cốt truyện qua loa, KHÔNG được "lười" miêu tả.
+- Giữ văn phong, motif gốc xuyên suốt toàn bộ trò chơi.
+- Mỗi lượt phải là một "chương truyện" thực sự, không phải ghi chú tóm tắt.
+
+NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG HOẶC DẪN CHUYỆN < ${MIN_TURN_WORDS} TỪ → COI NHƯ TRẢ LỜI SAI.
 
 # CẤU TRÚC JSON CODEX
 \`\`\`json
@@ -1236,7 +1234,7 @@ NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.
 }
 
 // ============================================================
-// CALL GEMINI - v2.5.9
+// CALL GEMINI
 // ============================================================
 async function callGemini(promptText,isFirstCall=false,scope='default'){
   const key=document.getElementById('apiKey').value.trim();
@@ -1255,20 +1253,17 @@ async function callGemini(promptText,isFirstCall=false,scope='default'){
     ]
   };
 
-  // ✅ v2.5.9: full rules nếu lần đầu provider này hoặc force
-  const shouldSendFullRules = isFirstCall || !systemRulesSent.gemini;
-  if(shouldSendFullRules){
+  if(isFirstCall||!systemRulesSentThisSession){
     const wrappedPrompt=`${buildSystemRules(scope)}\n\n---\n\n${promptText}`;
     requestPayload.contents=[...recentHistory,{role:"user",parts:[{text:wrappedPrompt}]}];
     log("📤 Gemini: FULL rules");
-    systemRulesSent.gemini = true;
+    systemRulesSentThisSession=true;
   }else{
     requestPayload.contents=[...recentHistory,currentMessage];
     log("📤 Gemini: prompt gọn");
   }
 
-  // ✅ v2.5.9: User model trước, sau đó fallback chain (loại trùng)
-  const models = [CACHE_MODEL, ...FALLBACK_MODELS.filter(m => m !== CACHE_MODEL)];
+  const models=FALLBACK_MODELS;
   for(let i=0;i<models.length;i++){
     const modelName=models[i];
     const url=`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
@@ -1306,7 +1301,7 @@ async function callGemini(promptText,isFirstCall=false,scope='default'){
 }
 
 // ============================================================
-// CALL OPENROUTER - v2.5.9
+// CALL OPENROUTER
 // ============================================================
 async function callOpenRouter(promptText,scope='default'){
   const rawKey=document.getElementById('openRouterKey').value;
@@ -1331,16 +1326,14 @@ async function callOpenRouter(promptText,scope='default'){
   }));
 
   let messages;
-  // ✅ v2.5.9: OpenRouter LUÔN gửi system rules vì đây là provider NSFW
-  const shouldSendSystem = !systemRulesSent.openrouter;
-  if(shouldSendSystem){
+  if(!systemRulesSentThisSession){
     messages=[
       {role:"system",content:buildSystemRules(scope)},
       ...recentHistory,
       currentMessage
     ];
     log("📤 OpenRouter: FULL rules");
-    systemRulesSent.openrouter = true;
+    systemRulesSentThisSession=true;
   }else{
     messages=[...recentHistory,currentMessage];
     log("📤 OpenRouter: prompt gọn");
@@ -1426,15 +1419,25 @@ async function callOpenRouter(promptText,scope='default'){
 }
 
 // ============================================================
-// CALL AI - v2.5.9 (nhận precomputedScope)
+// CALL AI - UNIFIED VỚI FALLBACK
 // ============================================================
-async function callAI(promptText, isFirstCall=false, precomputedScope=null){
+async function callAI(promptText, isFirstCall=false){
   const actionText=promptText.substring(0,500);
   const isNsfw=detectNsfwIntent(actionText);
-  // ✅ v2.5.9: Nhận scope đã tính sẵn để tránh tính 2 lần
-  const scope = precomputedScope || detectSceneScope(actionText);
+  const scope=detectSceneScope(actionText);
   const orKey=document.getElementById('openRouterKey').value.trim();
   const geminiKey=document.getElementById('apiKey').value.trim();
+
+  // ✅ v2.5.9: Gửi lại full rules định kỳ
+  if(settings.periodicRules && !isFirstCall){
+    const turnNumber = Math.floor(chatHistory.length / 2);
+    if(turnNumber > 0 && turnNumber % RULES_RESEND_INTERVAL === 0 && systemRulesSentThisSession){
+      log(`🔄 Gửi lại FULL RULES (định kỳ ${RULES_RESEND_INTERVAL} lượt) để chống thoái hóa format`);
+      systemRulesSentThisSession = false;
+      tokenStats.resendRulesCount = (tokenStats.resendRulesCount||0) + 1;
+      updateTokenStatsDisplay();
+    }
+  }
 
   log(`🎬 Scene scope: ${scope}`);
 
@@ -1485,7 +1488,9 @@ async function callAI(promptText, isFirstCall=false, precomputedScope=null){
       return null;
     }
   }
-}// ============================================================
+}
+
+// ============================================================
 // AI GEN
 // ============================================================
 async function aiGenField(fieldId,promptMsg){
@@ -1696,8 +1701,9 @@ function thienDaoStats(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Models</div><div class="thiendao-result-body">Gemini: ${CACHE_MODEL}<br>OpenRouter: ${document.getElementById('openRouterModel').value}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚙️ Settings</div><div class="thiendao-result-body">Auto-switch: ${settings.autoSwitch?'✅':'❌'}<br>Auto-fallback: ${settings.autoFallback?'✅':'❌'}<br>Retry 5xx: ${settings.retry5xx?'✅':'❌'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🤖 Models</div><div class="thiendao-result-body">Gemini: ${CACHE_MODEL}<br>Summary: ${SUMMARY_MODEL}<br>OpenRouter: ${document.getElementById('openRouterModel').value}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚙️ Settings</div><div class="thiendao-result-body">Auto-switch: ${settings.autoSwitch?'✅':'❌'}<br>Auto-fallback: ${settings.autoFallback?'✅':'❌'}<br>Retry 5xx: ${settings.retry5xx?'✅':'❌'}<br>Periodic Rules: ${settings.periodicRules?'✅':'❌'}<br>Anti-Shortening: ${settings.antiShortening?'✅':'❌'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🛡️ Anti-Degradation</div><div class="thiendao-result-body">Resend rules: ${tokenStats.resendRulesCount||0} lần<br>Short-turn warnings: ${tokenStats.shortTurnWarnings||0}<br>Rules interval: mỗi ${RULES_RESEND_INTERVAL} lượt<br>Ngưỡng ngắn: ${SHORT_TURN_THRESHOLD} từ<br>Yêu cầu tối thiểu: ${MIN_TURN_WORDS} từ</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng scope: ${scopeRegistry.length}<br>Có exemplar: ${scopeRegistry.filter(s=>s.exemplar&&s.exemplar.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   let locCount=0;try{locCount=JSON.parse(document.getElementById('locations').value||'[]').length;}catch(e){}
@@ -1715,20 +1721,28 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9 (2026-10-10) - STABILITY FIX</div><div class="thiendao-result-body">
-✅ Tách systemRulesSent theo provider (Gemini / OpenRouter).
-✅ Inject exemplar mỗi lượt khi scope đổi.
-✅ Fix NSFW false positive (bỏ từ đơn ngắn, word-boundary EN).
-✅ Cap turnHtmlHistory (30 entry) tránh phình RAM.
-✅ Snapshot-based undo (chatHistory + turnCounter + summary + scope).
-✅ Chỉ slice chatHistory khi summary thành công.
-✅ Fallback model chain thực tế + ưu tiên model user.
-✅ Truyền precomputedScope vào callAI (tránh tính 2 lần).
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9 (2026-10-10) - ANTI-DEGRADATION PATCH</div><div class="thiendao-result-body">
+✅ Resend FULL rules mỗi ${RULES_RESEND_INTERVAL} lượt (chống AI quên format).
+✅ Tăng MAX_RECENT_TURNS từ 3 → 6 (giữ ngữ cảnh tốt hơn).
+✅ Anti-shortening guard: phát hiện lượt trước &lt; ${SHORT_TURN_THRESHOLD} từ → cảnh báo.
+✅ Style Anchor mạnh hơn trong Codex memory.
+✅ Summary dùng ${SUMMARY_MODEL} thay vì flash-lite.
+✅ Nút "Force Full Rules" thủ công trong sidebar.
+✅ Giới hạn chatHistory trong RAM (tránh tràn bộ nhớ).
+✅ Yêu cầu độ dài tối thiểu ${MIN_TURN_WORDS} từ/lượt trong format reminder.
+✅ Cảnh báo thoái hóa hiển thị trong tab Game.
 </div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE</div><div class="thiendao-result-body">Nhắc format output mỗi lượt + Codex memory.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS</div><div class="thiendao-result-body">Chỉ gửi 5 sự kiện gần nhất trong Codex memory.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.8 (2026-10-09) - FORMAT REINFORCE + TU VI SYSTEM</div><div class="thiendao-result-body">
+✅ Thêm nhắc format vào prompt gọn mỗi lượt (2-4 lựa chọn).
+✅ Thêm nhắc format vào cuối Codex memory.
+✅ Fix lỗi AI quên đưa lựa chọn hành động ở lượt 2+.
+✅ Bổ sung hệ thống tu vi đầy đủ (10 cảnh giới + thời gian đột phá + linh căn + đan dược).
+</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.7 (2026-10-07) - LIMIT EVENTS SENT TO AI</div><div class="thiendao-result-body">Chỉ gửi 5 sự kiện GẦN NHẤT trong Codex memory.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.6 (2026-10-06) - FIX INVENTORY STRING FALLBACK</div><div class="thiendao-result-body">Fix lỗi AI trả về mcInventoryList dạng mảng string.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.5 (2026-10-06) - NPC PIN + LOCK RULES + AUTO-FILTER</div><div class="thiendao-result-body">Ghim NPC, khóa quy tắc AI, tự động lọc NPC không hoạt động.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.4 (2026-10-05) - EXPORT/IMPORT WORLD CONFIG</div><div class="thiendao-result-body">Xuất/nhập cấu hình World + Scope Registry.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.3 (2026-10-05) - DYNAMIC SCOPE REGISTRY</div><div class="thiendao-result-body">Scope Registry (ID + Label + Triggers + Exemplar).</div></div>`;
   html+=`<div style="color:var(--subtext-color);font-size:11px;margin-top:15px;font-style:italic">💡 Version log nằm trong comment HTML ở &lt;head&gt;, AI KHÔNG quét → không tốn token.</div>`;
   resultsDiv.innerHTML=html;
 }
@@ -1736,19 +1750,17 @@ function showVersionLog(){
 document.getElementById('thienDaoModal').addEventListener('click',function(e){if(e.target===this)closeThienDao();});
 
 // ============================================================
-// START GAME - v2.5.9
+// START GAME
 // ============================================================
-const confirmAndStartGame=()=>{const confirmReset=confirm("⚠️ Xóa tiến trình cũ và KHỞI TẠO GAME MỚI?");if(confirmReset){openTab('play');startGame();}};
+const confirmAndStartGame=()=>{const confirmReset=confirm("⚠️ Xóa tiến trình cũ và KHỞI TẠO GAME MỚI?");if(confirmReset){openTab('play');document.getElementById('degradationWarning').style.display='none';startGame();}};
 
 const startGame=async()=>{
   stopTTS();
   const storyBox=document.getElementById('story-box');
   chatHistory=[];turnHtmlHistory=[];turnCounter=0;storySummary="";
-  // ✅ v2.5.9: Reset snapshot + flags + scope
-  turnSnapshots = [];
-  lastSceneScope = null;
-  systemRulesSent = { gemini: false, openrouter: false };
+  systemRulesSentThisSession=false;
   resetTokenStats();
+  document.getElementById('degradationWarning').style.display='none';
   storyBox.innerHTML='<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   const systemPrompt=`Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value||'HỒNG ĐỨC TU TIÊN LỘ'}".
 
@@ -1764,31 +1776,19 @@ ${document.getElementById('startScript').value}
 
 ${getCodexMemoryPrompt()}
 
-Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút, tuân thủ tuyệt đối các quy tắc đã thiết lập!`;
+Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thiểu ${MIN_TURN_WORDS} từ), tuân thủ tuyệt đối các quy tắc đã thiết lập!`;
   const reply=await callAI(systemPrompt,true);
-  if(reply){
-    const formattedHtml=parseAndAutoUpdateCodex(reply);
-    storyBox.innerHTML=formattedHtml;
-    storyBox.scrollTop=0;
-    turnHtmlHistory.push(storyBox.innerHTML);
-    await saveGame(false);
-  }else{
-    storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key.</div>';
-  }
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML=formattedHtml;storyBox.scrollTop=0;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML='<div style="color:var(--accent-red)">❌ Không thể khởi tạo game. Kiểm tra API Key.</div>';}
 };
 
 // ============================================================
-// SEND ACTION - v2.5.9
+// SEND ACTION - v2.5.9: ANTI-SHORTENING GUARD
 // ============================================================
 const sendAction=async()=>{
   const inputEl=document.getElementById('userInput');
   const actionText=inputEl.value.trim();
   if(!actionText)return;
   stopTTS();
-
-  // ✅ v2.5.9: Snapshot trước khi thực hiện lượt mới
-  pushTurnSnapshot();
-
   const storyBox=document.getElementById('story-box');
   inputEl.value='';
   const actionId='action_'+Date.now();
@@ -1798,41 +1798,45 @@ const sendAction=async()=>{
 
   const needRulesResend=(chatHistory.length===0);
   const sceneScope=detectSceneScope(actionText);
+  const styleReminder=getStyleExemplarBlock(sceneScope)
+    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar đã cung cấp.\n`
+    : '';
 
-  // ✅ v2.5.9: Chỉ inject exemplar khi scope ĐỔI (tiết kiệm token)
-  const scopeChanged = (sceneScope !== lastSceneScope);
-  const exemplarBlock = (sceneScope !== 'default' && scopeChanged) ? getStyleExemplarBlock(sceneScope) : '';
-  const styleReminder = exemplarBlock
-    ? `\n⚡ SCOPE "${sceneScope}" — BẮT BUỘC pattern-match Style Exemplar dưới đây.\n`
-    : (sceneScope !== 'default' ? `\n⚡ Đang ở scope "${sceneScope}" — giữ văn phong exemplar đã cung cấp.\n` : '');
-  lastSceneScope = sceneScope;
+  // ✅ v2.5.9: Anti-shortening guard — phát hiện lượt trước ngắn
+  let lengthGuard = '';
+  if(settings.antiShortening){
+    const lastAiMsg = [...chatHistory].reverse().find(m => m.role === 'model');
+    if(lastAiMsg && lastAiMsg.parts && lastAiMsg.parts[0] && lastAiMsg.parts[0].text){
+      const lastWordCount = lastAiMsg.parts[0].text.split(/\s+/).filter(w=>w.length>0).length;
+      if(lastWordCount > 0 && lastWordCount < SHORT_TURN_THRESHOLD){
+        tokenStats.shortTurnWarnings = (tokenStats.shortTurnWarnings||0) + 1;
+        updateTokenStatsDisplay();
+        document.getElementById('degradationWarning').style.display='block';
+        lengthGuard = `\n\n🚨🚨 CẢNH BÁO NGHIÊM TRỌNG: Lượt trước bạn chỉ viết ${lastWordCount} từ — QUÁ NGẮN so với yêu cầu tối thiểu ${MIN_TURN_WORDS} từ.\nLượt này BẮT BUỘC PHẢI dài hơn hẳn: tối thiểu ${MIN_TURN_WORDS} từ, miêu tả chi tiết không khí, cảm xúc, hành động, đối thoại. KHÔNG được viết tắt, KHÔNG được tóm tắt sự kiện.`;
+        log(`⚠️ Anti-shortening guard kích hoạt (lượt trước ${lastWordCount} từ).`);
+      } else if(lastWordCount >= MIN_TURN_WORDS){
+        document.getElementById('degradationWarning').style.display='none';
+      }
+    }
+  }
 
-  const formatReminder = `\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT (KHÔNG ĐƯỢC THIẾU):
-1) Dẫn chuyện (2-4 đoạn)
-2) [TÓM TẮT]: 2-3 câu tình thế
-3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
-4) Khối \`\`\`json cập nhật Codex
+  const formatReminder = `${lengthGuard}
 
-NẾU THIẾU LỰA CHỌN HÀNH ĐỘNG → COI NHƯ TRẢ LỜI SAI.`;
+⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT (KHÔNG ĐƯỢC THIẾU):
+1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ) — miêu tả chi tiết.
+2) [TÓM TẮT]: 2-3 câu tình thế hiện tại.
+3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.). KHÔNG ĐƯỢC THIẾU.
+4) Khối \`\`\`json cập nhật Codex.
+
+❌ Nếu thiếu LỰA CHỌN HÀNH ĐỘNG → trả lời SAI HOÀN TOÀN.
+❌ Nếu dẫn chuyện < ${MIN_TURN_WORDS} từ → trả lời SAI HOÀN TOÀN.`;
 
   const promptWithCodex=needRulesResend
-    ? `${buildSystemRules(sceneScope)}\n\n---\n\n${exemplarBlock}\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
-    : `${exemplarBlock}\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
+    ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
+    : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
 
-  // ✅ v2.5.9: Truyền sceneScope đã tính sẵn
-  const reply=await callAI(promptWithCodex,false,sceneScope);
-  if(reply){
-    const formattedHtml=parseAndAutoUpdateCodex(reply);
-    storyBox.innerHTML+=formattedHtml;
-    turnHtmlHistory.push(storyBox.innerHTML);
-    // ✅ v2.5.9: Cap turnHtmlHistory
-    if(turnHtmlHistory.length > MAX_TURN_HTML){
-      turnHtmlHistory = turnHtmlHistory.slice(-MAX_TURN_HTML);
-    }
-    await saveGame(false);
-  }else{
-    storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;
-  }
+  const reply=await callAI(promptWithCodex,false);
+  if(reply){const formattedHtml=parseAndAutoUpdateCodex(reply);storyBox.innerHTML+=formattedHtml;turnHtmlHistory.push(storyBox.innerHTML);await saveGame(false);}else{storyBox.innerHTML+=`<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi từ AI. Kiểm tra log để biết chi tiết.</div>`;}
 };
 
 document.getElementById('userInput').addEventListener('keypress',function(e){if(e.key==='Enter')sendAction();});

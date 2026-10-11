@@ -139,8 +139,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .archetype-badge{display:inline-block;font-size:9px;padding:2px 5px;border-radius:3px;background:linear-gradient(135deg,#8957e5,#388bfd);color:#fff;margin-left:4px;font-weight:bold}
 .scope-nsfw-highlight{background:rgba(218,54,51,.08)!important;border-color:#da3633!important}
 </style>
-</head><body>
-<div class="header">
+</head><body><div class="header">
 <div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.5</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
@@ -247,11 +246,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   </div>
 </div>
 <div class="form-group" style="background:#1c150c;padding:10px;border-radius:6px;border:1px solid #b8860b">
-<div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUI TẮC TỐI CAO</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Viết 5-6 chỉ thị đánh số về mô tuýp truyện tu tiên.')">✨ AI GEN</button></div>
+<div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUY TẮC TỐI CAO</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Viết 5-6 chỉ thị đánh số về mô tuýp truyện tu tiên.')">✨ AI GEN</button></div>
 <textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:120px"></textarea>
 </div>
 <div class="form-group" style="background:#1c0e12;padding:10px;border-radius:6px;border:1px solid #a83250">
-<div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUI TẮC 18+</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Viết 6-8 quy tắc đánh số xử lý nội dung 18+ tâm lý.')">✨ AI GEN</button></div>
+<div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUY TẮC 18+</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Viết 6-8 quy tắc đánh số xử lý nội dung 18+ tâm lý.')">✨ AI GEN</button></div>
 <textarea id="rule18Plus" style="border-color:#a83250;min-height:150px"></textarea>
 </div>
 <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
@@ -799,7 +798,9 @@ function getStyleExemplarBlock(scopeId){
   const sample = (scope.exemplar || '').trim();
   if(!sample) return '';
   return `\n# 🎨 SCOPE EXEMPLAR — ${scope.label || scope.id}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sample}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-}// ============================================================
+}
+
+// ============================================================
 // EXPORT / IMPORT CONFIG
 // ============================================================
 function exportWorldConfig(){
@@ -1126,7 +1127,71 @@ function syncEventsToTextarea(){const ta=document.getElementById('gameEvents');i
 
 function renderWeaponsVisual(weaponArray){const grid=document.getElementById('weaponVisualGrid');if(!weaponArray||!Array.isArray(weaponArray)||weaponArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';return;}let html='';weaponArray.forEach(wp=>{const icon=wp.icon||'🗡️';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${wp.name}">`:icon;const isUnknown=(wp.rank&&wp.rank.includes('?'))||(wp.usage&&wp.usage.includes('Chờ cơ duyên'));const cardStyle=isUnknown?'border-color:#7d2828;':'';const iconStyle=isUnknown?'color:#f85149;font-weight:bold;':'';const nameStyle=isUnknown?'color:#f85149;':'';const usageStyle=isUnknown?'color:#f85149;font-style:italic;':'';let badgeClass='loc-danger-low';let badgeRank=wp.rank||'Hạ Phẩm';const rLower=(wp.rank||'').toLowerCase();if(rLower.includes('cao')||rLower.includes('thần khí')||rLower.includes('linh bảo')||rLower.includes('?')){badgeClass='loc-danger-high';}else if(rLower.includes('trung')||rLower.includes('thượng')){badgeClass='loc-danger-mid';}html+=`<div class="weapon-card" style="${cardStyle}"><div class="item-icon-box" style="${iconStyle}">${iconContent}</div><div class="weapon-info"><div class="weapon-name" style="${nameStyle}">${wp.name||'Pháp bảo lạ'}</div><span class="loc-badge ${badgeClass}">Cấp bậc: ${badgeRank}</span><div class="loc-detail-text" style="${usageStyle}">🛠️ ${wp.usage||'Chưa rõ công dụng.'}</div></div></div>`;});grid.innerHTML=html;}
 
-function renderInventoryVisual(itemsArray){const grid=document.getElementById('inventoryVisualGrid');if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}let html='';const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));if(activeItems.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';return;}activeItems.forEach(item=>{const icon=item.icon||'📦';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));const effectClass=isUnknown?'item-effect item-unknown':'item-effect';html+=`<div class="item-card"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name||'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity||1}</span></div><div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div><div class="${effectClass}">${item.effect||'Chưa rõ.'}</div></div></div>`;});grid.innerHTML=html;}
+// 🔥 SỬA: renderInventoryVisual có nút ✂️ tách phẩm chất
+function renderInventoryVisual(itemsArray){
+  const grid=document.getElementById('inventoryVisualGrid');
+  if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){
+    grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';
+    return;
+  }
+  const activeItems=itemsArray.filter(item=>(item.quantity===undefined||item.quantity>0));
+  if(activeItems.length===0){
+    grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';
+    return;
+  }
+  let html='';
+  activeItems.forEach(item=>{
+    const icon=item.icon||'📦';
+    const isImage=icon.startsWith('http')||icon.startsWith('data:');
+    const iconContent=isImage?`<img src="${icon}" alt="${item.name}">`:icon;
+    const isUnknown=item.effect&&(item.effect.includes('???')||item.effect.includes('Chưa đủ kiến thức'));
+    const effectClass=isUnknown?'item-effect item-unknown':'item-effect';
+    const q = (item.quality || '');
+    const canSplit = /và|\/|,|&/i.test(q);
+    const safeName = (item.name||'').replace(/'/g,"\\'");
+    const safeQuality = (item.quality||'').replace(/'/g,"\\'");
+    html+=`<div class="item-card" style="position:relative">
+      <div class="item-icon-box">${iconContent}</div>
+      <div class="item-details">
+        <div class="item-title-row">
+          <span class="item-name">${item.name||'Vật phẩm lạ'}</span>
+          <span class="item-qty">x${item.quantity||1}</span>
+        </div>
+        <div class="item-quality">Phẩm chất: ${item.quality||'Thường'}</div>
+        <div class="${effectClass}">${item.effect||'Chưa rõ.'}</div>
+      </div>
+      ${canSplit?`<button onclick="splitInventoryItem('${safeName}','${safeQuality}')" title="Tách phẩm chất" style="position:absolute;top:6px;right:6px;background:rgba(137,87,229,.85);border:none;color:#fff;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:12px">✂️</button>`:''}
+    </div>`;
+  });
+  grid.innerHTML=html;
+}
+
+// 🔥 SỬA: Hàm tách phẩm chất thủ công
+function splitInventoryItem(name, quality){
+  try {
+    const inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
+    const idx = inv.findIndex(i => i.name === name && i.quality === quality);
+    if (idx === -1) { alert("⚠️ Không tìm thấy vật phẩm!"); return; }
+    const item = inv[idx];
+    const q = (item.quality || '');
+    const parts = q.split(/\s*(?:và|\/|,|&)\s*/).map(s => s.trim()).filter(s => s.length > 0);
+    if (parts.length < 2) { alert("⚠️ Vật phẩm này không có phẩm chất hỗn hợp!"); return; }
+    const totalQty = item.quantity || 1;
+    const perQty = Math.max(1, Math.floor(totalQty / parts.length));
+    let remain = totalQty;
+    inv.splice(idx, 1);
+    parts.forEach((qPart, i) => {
+      const isLast = i === parts.length - 1;
+      const thisQty = isLast ? remain : perQty;
+      remain -= thisQty;
+      if (thisQty <= 0) return;
+      inv.push({ ...item, quality: qPart, quantity: thisQty });
+    });
+    renderInventoryVisual(inv);
+    document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
+    log(`✂️ Tách thủ công: "${name}" [${q}] → ${parts.length} phần.`);
+  } catch(e) { alert("❌ Lỗi: " + e.message); }
+}
 
 // ============================================================
 // TEST KEYS
@@ -1476,8 +1541,17 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 }
 \`\`\`
 
-# QUY TẮC mcInventoryList
+# QUY TẮC mcInventoryList (CỰC KỲ QUAN TRỌNG)
 - BẮT BUỘC mảng OBJECT, KHÔNG string.
+- MỖI PHẨM CHẤT KHÁC NHAU = 1 OBJECT RIÊNG BIỆT.
+- KHÔNG ĐƯỢC gộp nhiều phẩm chất vào 1 object.
+- Ví dụ SAI: {"name":"Tụ Khí Đan","quality":"Thượng phẩm và Cực phẩm","quantity":11}
+- Ví dụ ĐÚNG:
+  {"name":"Tụ Khí Đan","icon":"💊","quantity":8,"quality":"Thượng phẩm","effect":"..."},
+  {"name":"Tụ Khí Đan","icon":"💊","quantity":3,"quality":"Cực phẩm","effect":"..."}
+- Nếu quantity = 0 → XÓA khỏi mảng.
+- Trường "quality" CHỈ chứa 1 phẩm chất duy nhất: "Hạ phẩm", "Trung phẩm", "Thượng phẩm", "Cực phẩm", "Tiên phẩm".
+- TUYỆT ĐỐI KHÔNG dùng "và", "/", ",", "&" trong trường quality.
 
 # QUY TẮC NPC ID
 - BẮT BUỘC giữ nguyên "id". Đổi tên → chỉ đổi "name".
@@ -1809,6 +1883,8 @@ function parseAndAutoUpdateCodex(fullResponseText){
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!=="")document.getElementById('mcGameTime').value=codexData.mcGameTime;
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
+
+      // 🔥 SỬA: Logic tách + gộp phẩm chất
       if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
         const normalizedInventory = codexData.mcInventoryList.map(item => {
           if (typeof item === 'string') {
@@ -1818,10 +1894,55 @@ function parseAndAutoUpdateCodex(fullResponseText){
           }
           return item;
         });
-        const validInventory = normalizedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
+
+        // Tách phẩm chất bị gộp (vd: "Thượng phẩm và Cực phẩm")
+        const splitInventory = [];
+        normalizedInventory.forEach(item => {
+          if (!item || !item.name) return;
+          const q = (item.quality || '').toLowerCase();
+          const hasMixedQuality = q.includes(' và ') || q.includes('/') || q.includes(',') || q.includes(' & ');
+          if (hasMixedQuality) {
+            const parts = (item.quality || '').split(/\s*(?:và|\/|,|&)\s*/).map(s => s.trim()).filter(s => s.length > 0);
+            const totalQty = item.quantity || 1;
+            const perQty = Math.max(1, Math.floor(totalQty / parts.length));
+            let remain = totalQty;
+            parts.forEach((qPart, idx) => {
+              const isLast = idx === parts.length - 1;
+              const thisQty = isLast ? remain : perQty;
+              remain -= thisQty;
+              if (thisQty <= 0) return;
+              splitInventory.push({ ...item, quality: qPart, quantity: thisQty });
+            });
+            log(`🔀 Tách phẩm chất: "${item.name}" [${item.quality}] x${totalQty} → ${parts.length} object`);
+          } else {
+            splitInventory.push(item);
+          }
+        });
+
+        // Gộp các object trùng name+quality
+        const mergedInventory = [];
+        splitInventory.forEach(item => {
+          if (!item || !item.name) return;
+          const qty = item.quantity === undefined ? 1 : item.quantity;
+          if (qty <= 0) return;
+          const key = (item.name || '').toLowerCase().trim() + '||' + (item.quality || '').toLowerCase().trim();
+          const existing = mergedInventory.find(x => 
+            ((x.name || '').toLowerCase().trim() + '||' + (x.quality || '').toLowerCase().trim()) === key
+          );
+          if (existing) {
+            existing.quantity = (existing.quantity || 1) + qty;
+            if (!existing.effect && item.effect) existing.effect = item.effect;
+            if (!existing.icon && item.icon) existing.icon = item.icon;
+          } else {
+            mergedInventory.push({ ...item, quantity: qty });
+          }
+        });
+
+        const validInventory = mergedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
         renderInventoryVisual(validInventory);
         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
       }
+
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
           if(!aiNpc||!aiNpc.name)return;
@@ -1939,7 +2060,7 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9.5 (2026-10-10) - SCOPE 18+ TÍCH HỢP</div><div class="thiendao-result-body">✅ Thêm scope 18+ (exemplar TRỐNG, bạn tự điền).<br>✅ Trigger keywords 18+ đầy đủ.<br>✅ 16 scope tổng cộng.<br>✅ Giữ toàn bộ v2.5.9.4.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9.5 (2026-10-10) - SCOPE 18+ TÍCH HỢP + FIX TÚI ĐỒ</div><div class="thiendao-result-body">✅ Thêm scope 18+ (exemplar TRỐNG, bạn tự điền).<br>✅ Trigger keywords 18+ đầy đủ.<br>✅ 16 scope tổng cộng.<br>✅ Fix lỗi gộp phẩm chất trong túi đồ.<br>✅ Sửa QUI → QUY.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.4 - VĂN PHONG NHẬP VAI + AUTO NPC RULES</div><div class="thiendao-result-body">5 patch nhớ 90-95%. Auto-inject NPC rules. 11 archetypes.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.3 - 15 SCOPE PRESET</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.2 - MULTI-KEY + AI GEN FORMAT LOCK</div></div>`;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.5</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.6</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -138,9 +138,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .scope-preset-info strong{color:var(--accent-blue)}
 .archetype-badge{display:inline-block;font-size:9px;padding:2px 5px;border-radius:3px;background:linear-gradient(135deg,#8957e5,#388bfd);color:#fff;margin-left:4px;font-weight:bold}
 .scope-nsfw-highlight{background:rgba(218,54,51,.08)!important;border-color:#da3633!important}
+.transaction-log{background:rgba(35,134,54,.1);border-left:3px solid #3fb950;padding:4px 8px;font-size:11px;color:#3fb950;margin:4px 0;border-radius:4px}
 </style>
 </head><body><div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.5</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.5.9.6</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 <div id="sidebar" class="sidebar">
@@ -267,7 +268,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Viết danh sách 24 quy tắc đánh số. Cuối có 5 quy tắc đối thoại NPC theo hảo cảm và 2-3 đoạn nội tâm NVC.')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:250px"></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.9.5</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.5.9.6</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
@@ -343,7 +344,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.5.9.5 (Scope 18+ Integrated) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.5.9.6 (Scope 18+ Integrated + Transaction Auto) initialized... Ready.</div>
 </div>
 <div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
@@ -359,11 +360,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div><script>
 // ============================================================
-// CẤU HÌNH v2.5.9.5
+// CẤU HÌNH v2.5.9.6 (TRANSACTION AUTO-UPDATE)
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=2595;
+const DB_VERSION=2596;
 
 const MAX_RECENT_TURNS=6;
 const SUMMARY_TRIGGER_TURNS=3;
@@ -411,13 +412,55 @@ let tokenStats={
   shortTurnWarnings:0,
   cjkFilteredCount:0,
   keyRotations:0,
-  npcRulesGenerated:0
+  npcRulesGenerated:0,
+  transactionsProcessed:0
 };
 
 let systemRulesSentThisSession=false;
 let isAiGenCall=false;
 let keyStatus = {};
 let currentKeyIndex = 0;
+
+// ============================================================
+// BẢNG GIÁ THAM KHẢO (dùng cho AI tính toán giao dịch)
+// ============================================================
+const PRICE_REFERENCE = {
+  'Tụ Khí Đan': {
+    'Hạ phẩm': 3,
+    'Trung phẩm': 7,
+    'Thượng phẩm': 15,
+    'Cực phẩm': 35,
+    'Tiên phẩm': 100
+  },
+  'Thanh Tâm Đan': {
+    'Hạ phẩm': 5,
+    'Trung phẩm': 12,
+    'Thượng phẩm': 25,
+    'Cực phẩm': 60,
+    'Tiên phẩm': 180
+  },
+  'Trúc Cơ Đan': {
+    'Hạ phẩm': 50,
+    'Trung phẩm': 120,
+    'Thượng phẩm': 300,
+    'Cực phẩm': 800,
+    'Tiên phẩm': 2500
+  },
+  'Hồi Khí Đan': {
+    'Hạ phẩm': 2,
+    'Trung phẩm': 5,
+    'Thượng phẩm': 12,
+    'Cực phẩm': 30,
+    'Tiên phẩm': 90
+  },
+  'Nguyên liệu Tụ Khí Đan': 2,
+  'Nguyên liệu Thanh Tâm Đan': 3,
+  'Nguyên liệu Trúc Cơ Đan': 25,
+  'Thạch Linh Thảo': 1,
+  'Huyết Cỏ': 1,
+  'Dung Tâm Thảo': 1,
+  'Thanh Tâm Thảo': 2
+};
 
 // ============================================================
 // NPC ARCHETYPES
@@ -806,7 +849,7 @@ function getStyleExemplarBlock(scopeId){
 function exportWorldConfig(){
   try{
     const config = {
-      _meta: { app:'HongDucTuTien', version:'v2.5.9.5', type:'world_config', exportedAt:new Date().toISOString() },
+      _meta: { app:'HongDucTuTien', version:'v2.5.9.6', type:'world_config', exportedAt:new Date().toISOString() },
       fields: {},
       scopeRegistry: JSON.parse(JSON.stringify(scopeRegistry)),
       currentModel: CACHE_MODEL,
@@ -898,10 +941,11 @@ Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}
 🛡️ Resend: ${tokenStats.resendRulesCount||0} | ⚠️ Short: ${tokenStats.shortTurnWarnings||0}<br>
 🎭 NPC Rules sinh: ${tokenStats.npcRulesGenerated||0}<br>
 🈶 CJK filtered: ${tokenStats.cjkFilteredCount||0}<br>
+💰 Giao dịch: ${tokenStats.transactionsProcessed||0}<br>
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
 }
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
 // TTS
@@ -1127,7 +1171,6 @@ function syncEventsToTextarea(){const ta=document.getElementById('gameEvents');i
 
 function renderWeaponsVisual(weaponArray){const grid=document.getElementById('weaponVisualGrid');if(!weaponArray||!Array.isArray(weaponArray)||weaponArray.length===0){grid.innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có pháp bảo...</div>';return;}let html='';weaponArray.forEach(wp=>{const icon=wp.icon||'🗡️';const isImage=icon.startsWith('http')||icon.startsWith('data:');const iconContent=isImage?`<img src="${icon}" alt="${wp.name}">`:icon;const isUnknown=(wp.rank&&wp.rank.includes('?'))||(wp.usage&&wp.usage.includes('Chờ cơ duyên'));const cardStyle=isUnknown?'border-color:#7d2828;':'';const iconStyle=isUnknown?'color:#f85149;font-weight:bold;':'';const nameStyle=isUnknown?'color:#f85149;':'';const usageStyle=isUnknown?'color:#f85149;font-style:italic;':'';let badgeClass='loc-danger-low';let badgeRank=wp.rank||'Hạ Phẩm';const rLower=(wp.rank||'').toLowerCase();if(rLower.includes('cao')||rLower.includes('thần khí')||rLower.includes('linh bảo')||rLower.includes('?')){badgeClass='loc-danger-high';}else if(rLower.includes('trung')||rLower.includes('thượng')){badgeClass='loc-danger-mid';}html+=`<div class="weapon-card" style="${cardStyle}"><div class="item-icon-box" style="${iconStyle}">${iconContent}</div><div class="weapon-info"><div class="weapon-name" style="${nameStyle}">${wp.name||'Pháp bảo lạ'}</div><span class="loc-badge ${badgeClass}">Cấp bậc: ${badgeRank}</span><div class="loc-detail-text" style="${usageStyle}">🛠️ ${wp.usage||'Chưa rõ công dụng.'}</div></div></div>`;});grid.innerHTML=html;}
 
-// 🔥 SỬA: renderInventoryVisual có nút ✂️ tách phẩm chất
 function renderInventoryVisual(itemsArray){
   const grid=document.getElementById('inventoryVisualGrid');
   if(!itemsArray||!Array.isArray(itemsArray)||itemsArray.length===0){
@@ -1166,7 +1209,6 @@ function renderInventoryVisual(itemsArray){
   grid.innerHTML=html;
 }
 
-// 🔥 SỬA: Hàm tách phẩm chất thủ công
 function splitInventoryItem(name, quality){
   try {
     const inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
@@ -1191,6 +1233,94 @@ function splitInventoryItem(name, quality){
     document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
     log(`✂️ Tách thủ công: "${name}" [${q}] → ${parts.length} phần.`);
   } catch(e) { alert("❌ Lỗi: " + e.message); }
+}
+
+// ============================================================
+// 💰 TRANSACTION PROCESSOR (MỚI v2.5.9.6)
+// ============================================================
+function processTransactions(transactionsList){
+  if(!transactionsList || !Array.isArray(transactionsList) || transactionsList.length === 0) return null;
+  
+  let inv = [];
+  try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch(e) { inv = []; }
+  
+  let processedCount = 0;
+  const logs = [];
+  
+  transactionsList.forEach(tx => {
+    if(!tx || !tx.type || !tx.name) return;
+    const qty = parseInt(tx.quantity) || 0;
+    if(qty <= 0) return;
+    
+    const txName = String(tx.name).trim();
+    const txQuality = tx.quality ? String(tx.quality).trim() : '';
+    const unitPrice = parseFloat(tx.unitPrice) || 0;
+    const totalPrice = parseFloat(tx.totalPrice) || (unitPrice * qty);
+    
+    if(tx.type === 'sell'){
+      // BÁN: tìm item trong inventory (theo tên + phẩm chất nếu có)
+      let idx = -1;
+      if(txQuality){
+        idx = inv.findIndex(i => 
+          (i.name||'').toLowerCase().trim() === txName.toLowerCase() &&
+          (i.quality||'').toLowerCase().trim() === txQuality.toLowerCase()
+        );
+      }
+      if(idx === -1){
+        idx = inv.findIndex(i => (i.name||'').toLowerCase().trim() === txName.toLowerCase());
+      }
+      if(idx !== -1){
+        const currentQty = inv[idx].quantity || 1;
+        const soldQty = Math.min(qty, currentQty);
+        inv[idx].quantity = currentQty - soldQty;
+        if(inv[idx].quantity <= 0){
+          inv.splice(idx, 1);
+          logs.push(`💰 BÁN: ${soldQty}x ${txName}${txQuality?` [${txQuality}]`:''} → +${totalPrice} linh thạch (HẾT HÀNG)`);
+        } else {
+          logs.push(`💰 BÁN: ${soldQty}x ${txName}${txQuality?` [${txQuality}]`:''} → +${totalPrice} linh thạch (còn ${inv[idx].quantity})`);
+        }
+        processedCount++;
+      } else {
+        logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}" trong túi!`);
+      }
+    } else if(tx.type === 'buy'){
+      // MUA: tìm item có sẵn (theo tên + phẩm chất), nếu có thì cộng, nếu không thì tạo mới
+      let idx = -1;
+      if(txQuality){
+        idx = inv.findIndex(i => 
+          (i.name||'').toLowerCase().trim() === txName.toLowerCase() &&
+          (i.quality||'').toLowerCase().trim() === txQuality.toLowerCase()
+        );
+      }
+      if(idx === -1){
+        idx = inv.findIndex(i => (i.name||'').toLowerCase().trim() === txName.toLowerCase());
+      }
+      if(idx !== -1){
+        inv[idx].quantity = (inv[idx].quantity || 1) + qty;
+        logs.push(`🛒 MUA: ${qty}x ${txName}${txQuality?` [${txQuality}]`:''} → -${totalPrice} linh thạch (tổng ${inv[idx].quantity})`);
+      } else {
+        inv.push({
+          name: txName,
+          icon: tx.icon || '📦',
+          quantity: qty,
+          quality: txQuality || 'Thường',
+          effect: tx.effect || 'Nguyên liệu'
+        });
+        logs.push(`🛒 MUA MỚI: ${qty}x ${txName}${txQuality?` [${txQuality}]`:''} → -${totalPrice} linh thạch`);
+      }
+      processedCount++;
+    }
+  });
+  
+  if(processedCount > 0){
+    document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
+    renderInventoryVisual(inv);
+    tokenStats.transactionsProcessed = (tokenStats.transactionsProcessed||0) + processedCount;
+    updateTokenStatsDisplay();
+    logs.forEach(l => log(l));
+  }
+  
+  return { inventory: inv, count: processedCount, logs };
 }
 
 // ============================================================
@@ -1293,7 +1423,7 @@ async function loadGame(){
     turnHtmlHistory=gameData.turnHtmlHistory||[];
     turnCounter=gameData.turnCounter||0;
     storySummary=gameData.storySummary||"";
-    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0},gameData.tokenStats||{});
+    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0},gameData.tokenStats||{});
     if(gameData.currentModel)CACHE_MODEL=gameData.currentModel;
     if(gameData.settings)settings=Object.assign(settings,gameData.settings);
     if(gameData.keyStatus)keyStatus=gameData.keyStatus;
@@ -1331,7 +1461,7 @@ function updateKeyCountInfo(){
   if(el){ el.textContent = `📌 ${keys.length} key | ${models.length} model | ${keys.length * models.length} tổ hợp`; }
 }
 
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.9.5_save.json";a.click();log("Xuất save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.5.9.6_save.json";a.click();log("Xuất save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Import thành công!");}catch(err){alert("❌ File không hợp lệ!");}};reader.readAsText(file);}
 
@@ -1352,7 +1482,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
       if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}
       if(gameData.eventList) eventList=gameData.eventList;
       if(gameData.storySummary) storySummary=gameData.storySummary;
-      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0},gameData.tokenStats);
+      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0},gameData.tokenStats);
       if(gameData.keyStatus) keyStatus=gameData.keyStatus;
       if(gameData.currentKeyIndex !== undefined) currentKeyIndex=gameData.currentKeyIndex;
     }
@@ -1402,8 +1532,22 @@ async function generateStorySummary(){
 }
 
 // ============================================================
-// CODEX MEMORY
+// CODEX MEMORY (CẬP NHẬT v2.5.9.6 — có hướng dẫn giao dịch)
 // ============================================================
+function getPriceReferenceString(){
+  let txt = '[BẢNG GIÁ THAM KHẢO — Dùng để tính toán giao dịch]\n';
+  for(const [item, prices] of Object.entries(PRICE_REFERENCE)){
+    if(typeof prices === 'object'){
+      txt += `- ${item}: `;
+      const parts = Object.entries(prices).map(([q,p]) => `${q}=${p}LS`);
+      txt += parts.join(' | ') + '\n';
+    } else {
+      txt += `- ${item}: ${prices} linh thạch\n`;
+    }
+  }
+  return txt;
+}
+
 function getCodexMemoryPrompt(){
   const mcName=document.getElementById('mcName').value||'Hồng Đức';
   const mcLevel=document.getElementById('mcLevel').value||'Luyện Khí sơ kỳ';
@@ -1422,6 +1566,7 @@ function getCodexMemoryPrompt(){
   let invSummary='';
   try{const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');invSummary=inv.length>0?inv.map(i=>`• ${i.name}x${i.quantity||1}(${i.quality||'Thường'})`).join('\n'):'Trống';}catch(e){invSummary=document.getElementById('mcInventory').value||'Trống';}
   const archive=document.getElementById('npcArchive').value||'Chưa có';
+  
   return `【CODEX】
 [NVC] ${mcName} | Cảnh giới: ${mcLevel} | Time: ${mcTime}
 [Kỹ năng] ${mcSkills}
@@ -1435,10 +1580,30 @@ ${npcSummary}
 [TÓM TẮT CỐT TRUYỆN] ${storySummary||'Game mới bắt đầu.'}
 【END CODEX】
 
+${getPriceReferenceString()}
+
+⚠️ QUY TẮC GIAO DỊCH (CỰC KỲ QUAN TRỌNG — ĐỌC KỸ):
+Khi người chơi bán HOẶC mua vật phẩm, AI BẮT BUỘC phải tính toán và thêm mảng "transactionsList" vào JSON Codex.
+Format mỗi giao dịch:
+{"type":"sell" hoặc "buy", "name":"Tên vật phẩm", "quality":"Phẩm chất (nếu có)", "quantity":số_lượng, "unitPrice":giá_1_đơn_vị, "totalPrice":tổng_giá}
+
+VÍ DỤ: Người chơi bán 3 viên Tụ Khí Đan Thượng phẩm (15LS/viên) và mua 20 Thạch Linh Thảo (2LS/phần):
+"transactionsList":[
+  {"type":"sell","name":"Tụ Khí Đan","quality":"Thượng phẩm","quantity":3,"unitPrice":15,"totalPrice":45},
+  {"type":"buy","name":"Thạch Linh Thảo","quality":"Thô","quantity":20,"unitPrice":2,"totalPrice":40}
+]
+
+🚨 LƯU Ý:
+- HỆ THỐNG SẼ TỰ ĐỘNG trừ/cộng vào mcInventoryList. AI KHÔNG cần sửa mcInventoryList thủ công nữa.
+- Nếu người chơi bán/mua nhiều thứ, thêm nhiều object vào mảng.
+- Nếu không có giao dịch, có thể bỏ qua mảng này.
+- Phải tính unitPrice dựa trên BẢNG GIÁ THAM KHẢO ở trên. Nếu người chơi thương lượng giá khác, dùng giá thương lượng.
+- Nếu bán hàng không có trong túi → vẫn ghi vào transactionsList, hệ thống sẽ cảnh báo.
+
 ⚠️ NHẮC LẠI FORMAT OUTPUT (BẮT BUỘC):
 1. [TÓM TẮT]: 2-3 câu tình thế hiện tại
 2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
-3. Khối \`\`\`json cập nhật Codex
+3. Khối \`\`\`json cập nhật Codex (bao gồm transactionsList nếu có giao dịch)
 
 🎭 NHẮC LẠI VĂN PHONG (mỗi lượt BẮT BUỘC):
 - Ngôi thứ 2 (ngươi). NVC là bạn.
@@ -1458,7 +1623,7 @@ TUYỆT ĐỐI KHÔNG được bỏ qua phần lựa chọn hành động.`;
 }
 
 // ============================================================
-// SYSTEM RULES
+// SYSTEM RULES (CẬP NHẬT v2.5.9.6)
 // ============================================================
 function buildSystemRules(scope='default'){
   const v=id=>document.getElementById(id)?.value||'';
@@ -1521,7 +1686,17 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 2) 2-3 đoạn nội tâm 《...》.
 3) \`[TÓM TẮT]:\` 2-3 câu.
 4) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG.
-5) Khối \`\`\`json cập nhật Codex.
+5) Khối \`\`\`json cập nhật Codex (bao gồm transactionsList nếu có giao dịch).
+
+# 💰 QUY TẮC GIAO DỊCH (MỚI — CỰC KỲ QUAN TRỌNG)
+Khi người chơi bán/mua vật phẩm, AI BẮT BUỘC phải thêm mảng "transactionsList" vào JSON Codex.
+Format mỗi giao dịch:
+{"type":"sell"|"buy","name":"...","quality":"...","quantity":N,"unitPrice":X,"totalPrice":Y}
+
+⚠️ HỆ THỐNG SẼ TỰ ĐỘNG cập nhật mcInventoryList dựa trên transactionsList.
+⚠️ AI KHÔNG cần (và KHÔNG nên) sửa mcInventoryList thủ công khi có giao dịch — chỉ cần ghi transactionsList.
+⚠️ Phải tính giá dựa trên BẢNG GIÁ THAM KHẢO trong Codex Memory.
+⚠️ Nếu người chơi thương lượng giá khác, dùng giá thương lượng.
 
 # 🚨 CHỐNG THOÁI HÓA
 - KHÔNG viết ngắn dần.
@@ -1531,6 +1706,10 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 # CẤU TRÚC JSON CODEX
 \`\`\`json
 {
+  "transactionsList":[
+    {"type":"sell","name":"Tụ Khí Đan","quality":"Thượng phẩm","quantity":3,"unitPrice":15,"totalPrice":45},
+    {"type":"buy","name":"Thạch Linh Thảo","quality":"Thô","quantity":20,"unitPrice":2,"totalPrice":40}
+  ],
   "mcLevel":"...","mcGameTime":"...","mcSkills":"...",
   "mcInventoryList":[{"name":"...","icon":"📦","quantity":10,"quality":"...","effect":"..."}],
   "npcActiveList":[{"id":"npc_xxx","name":"...","identity":"...","personality":"...","npcRules":"...","affinity":50,"status":"Bình thường"}],
@@ -1552,6 +1731,7 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Nếu quantity = 0 → XÓA khỏi mảng.
 - Trường "quality" CHỈ chứa 1 phẩm chất duy nhất: "Hạ phẩm", "Trung phẩm", "Thượng phẩm", "Cực phẩm", "Tiên phẩm".
 - TUYỆT ĐỐI KHÔNG dùng "và", "/", ",", "&" trong trường quality.
+- ⚠️ KHI CÓ GIAO DỊCH: Bỏ qua mcInventoryList, chỉ ghi transactionsList. Hệ thống sẽ tự xử lý.
 
 # QUY TẮC NPC ID
 - BẮT BUỘC giữ nguyên "id". Đổi tên → chỉ đổi "name".
@@ -1860,7 +2040,7 @@ async function aiGenField(fieldId, promptMsg){
 }
 
 // ============================================================
-// FORMAT + PARSE CODEX
+// FORMAT + PARSE CODEX (CẬP NHẬT v2.5.9.6)
 // ============================================================
 function formatSummaryBox(text){
   const summaryRegex=/\[TÓM TẮT\]:\s*([\s\S]*?)(?=\n\n|\n[0-9]+\.|\nNgười sẽ|\nNgươi sẽ|$)/i;
@@ -1880,11 +2060,21 @@ function parseAndAutoUpdateCodex(fullResponseText){
     const jsonMatch=fullResponseText.match(/```json\s*([\s\S]*?)\s*```/i);
     if(jsonMatch&&jsonMatch[1]){
       const codexData=JSON.parse(jsonMatch[1].trim());
+      
+      // 🔥 BƯỚC 1: XỬ LÝ GIAO DỊCH TRƯỚC (nếu có)
+      if(codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList) && codexData.transactionsList.length > 0){
+        const result = processTransactions(codexData.transactionsList);
+        if(result && result.count > 0){
+          log(`💰 Đã xử lý ${result.count} giao dịch.`);
+        }
+      }
+      
+      // 🔥 BƯỚC 2: Cập nhật các trường khác
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!=="")document.getElementById('mcGameTime').value=codexData.mcGameTime;
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
 
-      // 🔥 SỬA: Logic tách + gộp phẩm chất
+      // 🔥 BƯỚC 3: Xử lý mcInventoryList (chỉ khi KHÔNG có giao dịch, hoặc để AI override)
       if(codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
         const normalizedInventory = codexData.mcInventoryList.map(item => {
           if (typeof item === 'string') {
@@ -1895,7 +2085,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
           return item;
         });
 
-        // Tách phẩm chất bị gộp (vd: "Thượng phẩm và Cực phẩm")
         const splitInventory = [];
         normalizedInventory.forEach(item => {
           if (!item || !item.name) return;
@@ -1919,7 +2108,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
           }
         });
 
-        // Gộp các object trùng name+quality
         const mergedInventory = [];
         splitInventory.forEach(item => {
           if (!item || !item.name) return;
@@ -2051,6 +2239,7 @@ function thienDaoStats(){
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng: ${scopeRegistry.length}<br>Mặc định: ${scopeRegistry.filter(s=>DEFAULT_SCOPES.find(d=>d.id===s.id)).length}/${DEFAULT_SCOPES.length}<br>Tự tạo: ${scopeRegistry.filter(s=>!DEFAULT_SCOPES.find(d=>d.id===s.id)).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎭 NPC Rules</div><div class="thiendao-result-body">Đã sinh: ${tokenStats.npcRulesGenerated||0}<br>NPC có rules: ${npcList.filter(n=>n.npcRules && n.npcRules.length > 50).length}/${npcList.length}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0} giao dịch</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔑 API Keys</div><div class="thiendao-result-body">Keys: ${keys.length} | Models: ${models.length} | Tổ hợp: ${keys.length * models.length}<br>Rotations: ${tokenStats.keyRotations||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
@@ -2060,12 +2249,11 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9.5 (2026-10-10) - SCOPE 18+ TÍCH HỢP + FIX TÚI ĐỒ</div><div class="thiendao-result-body">✅ Thêm scope 18+ (exemplar TRỐNG, bạn tự điền).<br>✅ Trigger keywords 18+ đầy đủ.<br>✅ 16 scope tổng cộng.<br>✅ Fix lỗi gộp phẩm chất trong túi đồ.<br>✅ Sửa QUI → QUY.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.4 - VĂN PHONG NHẬP VAI + AUTO NPC RULES</div><div class="thiendao-result-body">5 patch nhớ 90-95%. Auto-inject NPC rules. 11 archetypes.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.5.9.6 (2026-10-11) - TRANSACTION AUTO-UPDATE</div><div class="thiendao-result-body">✅ Thêm module xử lý giao dịch tự động (transactionsList).<br>✅ AI tự động tính toán bán/mua dựa trên BẢNG GIÁ THAM KHẢO.<br>✅ Hệ thống tự động trừ/cộng vào túi đồ.<br>✅ Log giao dịch ra System Logs.<br>✅ Thêm thống kê giao dịch trong Token Stats.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-blue)"><div class="thiendao-result-title">v2.5.9.5 - SCOPE 18+ TÍCH HỢP + FIX TÚI ĐỒ</div><div class="thiendao-result-body">Thêm scope 18+ (exemplar TRỐNG). Fix lỗi gộp phẩm chất.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.4 - VĂN PHONG NHẬP VAI + AUTO NPC RULES</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.3 - 15 SCOPE PRESET</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.2 - MULTI-KEY + AI GEN FORMAT LOCK</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9.1 - CJK FILTER</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.5.9 - ANTI-DEGRADATION</div></div>`;
   resultsDiv.innerHTML=html;
 }
 document.getElementById('thienDaoModal').addEventListener('click',function(e){if(e.target===this)closeThienDao();});
@@ -2141,7 +2329,7 @@ const sendAction=async()=>{
     }
   }
   const styleReminderEnd = settings.styleReminder ? `\n\n🎭 NHẮC LẠI VĂN PHONG (BẮT BUỘC):\n- Ngôi thứ 2 (ngươi). NVC là bạn.\n- 2-3 đoạn nội tâm NVC đặt trong 《...》.\n- Show don't tell — miêu tả hành động.\n- NPC nói chuyện theo hảo cảm:\n  • ❤<0: lạnh nhạt, "ngươi", câu ngắn.\n  • ❤0-50: khách sáo, "đạo hữu".\n  • ❤50-80: thân thiết, gọi tên, "huynh/muội".\n  • ❤>80: hoàn toàn tin tưởng.\n- Từ ngữ cổ phong: đạo hữu, tiền bối, các hạ, bổn tọa.\n- TRÁNH: từ hiện đại, tiếng lóng.` : '';
-  const formatReminder = `${lengthGuard}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex.${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.\n\n❌ Thiếu LỰA CHỌN → SAI.\n❌ Dẫn chuyện < ${MIN_TURN_WORDS} từ → SAI.\n❌ Không có nội tâm 《...》 → SAI.`;
+  const formatReminder = `${lengthGuard}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex (có thể bao gồm transactionsList nếu có giao dịch).${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.\n\n❌ Thiếu LỰA CHỌN → SAI.\n❌ Dẫn chuyện < ${MIN_TURN_WORDS} từ → SAI.\n❌ Không có nội tâm 《...》 → SAI.`;
   const promptWithCodex=needRulesResend
     ? `${buildSystemRules(sceneScope)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
     : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;

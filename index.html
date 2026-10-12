@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.6.3</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.6.4</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -154,7 +154,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .model-auto-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(63,185,80,.2);color:#3fb950;border:1px solid #238636;margin-left:4px;font-weight:bold}
 </style>
 </head><body><div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.6.3</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.6.4</span></div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 
@@ -169,7 +169,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div class="form-group">
   <label class="label-title">Danh sách Model: <span class="model-auto-badge" id="modelAutoBadge">AUTO-SAVE</span></label>
-  <div class="label-desc">💾 Tự động lưu khi thay đổi. Lần sau mở app tự load. Không cần sửa code khi Google ra model mới.</div>
+  <div class="label-desc">💾 Tự động lưu khi thay đổi. Lần sau mở app tự load.</div>
   <textarea id="modelListInput" style="min-height:50px;font-family:monospace;font-size:11px">gemini-3.8-flash, gemini-3.5-flash, gemini-3.6-flash, gemini-3.1-flash-lite, gemini-3.5-flash-lite</textarea>
   <div style="display:flex;gap:6px;margin-top:6px">
     <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px;flex:1;margin:0" onclick="saveModelListToLocal()">💾 Lưu Model</button>
@@ -291,7 +291,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Viết danh sách 24 quy tắc đánh số. Cuối có 5 quy tắc đối thoại NPC theo hảo cảm và 2-3 đoạn nội tâm NVC.')">✨ AI GEN</button></div>
 <textarea id="aiRules" style="border-color:#7d2828;min-height:250px"></textarea>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.6.3</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.6.4</textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
@@ -388,7 +388,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.6.3 (Post-Validate + Pre-Validate Dual Layer) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.6.4 (Give-Guard Hard Block) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -405,14 +405,13 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div><script>
 // ============================================================
-// HỒNG ĐỨC TU TIÊN LỘ v2.6.3
-// - Gemini 3.x models + Auto-save Model List
-// - Scope Hán Việt
-// - DUAL-LAYER TRANSACTION GUARD: Pre-validate + Post-validate
+// HỒNG ĐỨC TU TIÊN LỘ v2.6.4
+// - GIVE-GUARD: chặn cứng "cho/tặng" thiếu vật phẩm ngay từ LỚP 1
+// - DUAL-LAYER: Pre-validate (chặn trước AI) + Post-validate (rollback)
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=2603;
+const DB_VERSION=2604;
 
 const MAX_RECENT_TURNS=6;
 const SUMMARY_TRIGGER_TURNS=3;
@@ -464,7 +463,8 @@ let tokenStats={
   npcRulesGenerated:0,
   transactionsProcessed:0,
   prevalidationBlocked:0,
-  postvalidationBlocked:0
+  postvalidationBlocked:0,
+  giveGuardBlocked:0
 };
 
 let systemRulesSentThisSession=false;
@@ -533,27 +533,27 @@ function detectNpcArchetype(npc){
 
 const DEFAULT_SCOPES = [
   { id: 'scope_nsfw', label: '18+ — Cảnh đặc biệt (TỰ ĐIỀN)', triggers: ['song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái','thân mật','hôn','ôm','vuốt ve','cởi','lột','khỏa thân','lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa','thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm','sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ','sủng hạnh','phòng the','giường chiếu','chiếm hữu thân thể','cưỡng hiếp','cưỡng dâm','dâm loạn','tình nhân','sủng phi','sủng thiếp','thị thiếp','song tu đại pháp','âm dương song tu','đỉnh lô','thái âm bổ trợ','động phòng','giao hợp','hoan lạc','ái tình','tình sự','mây mưa sương gió','khỏa lõa','ái ân mặn nồng'], exemplar: '' },
-  { id: 'scope_tu_luyen', label: 'Tu luyện & Đột phá', triggers: ['tu luyện','bế quan','đột phá','luyện công','tĩnh tọa','thiền định','đả tọa','vận công','hành công','luyện hóa','kết đan','kết anh','phá cảnh','tấn cấp','tăng tu vi','viên mãn'], exemplar: 'Công thức: Thời gian = (Cơ bản × Cảnh giới × Đan × Linh địa × Linh thạch × Cơ duyên × Cộng hưởng) ÷ Linh căn. Hệ số linh căn: Đơn:1.0|Song:0.7|Tam:0.5|Tứ:0.3|Ngũ:0.15|Dị:1.5. Hệ số cảnh giới: LK1-5:1.0|LK6-9:1.2|LK10-13:1.5|TC:2.0|KĐ:3.0|NA:5.0|HT:8.0|LH+:12.0. Luyện Khí 1→13: 6,8,12,14,18,22,24,28,32,36,42,48 tháng. LK→TC:180|TC S→T:240|T→H:360|TC→KĐ:480|KĐ S→T:720|T→H:1080|KĐ→NA:1200|NA S→T:1800|T→H:3000|NA→HT:2400.' },
-  { id: 'scope_dan_duoc', label: 'Đan dược', triggers: ['đan dược','uống đan','dùng đan','luyện đan','đan phương','đan lô','luyện chế','tụ khí đan','trúc cơ đan','kim nguyên đan','ngưng anh đan','hóa thần đan','đan độc','kháng đan'], exemplar: 'Phẩm: Hạ:0.9|Trung:0.75|Thượng:0.6|Cực:0.45|Tiên:0.25. Số viên: 1×1.0|2×0.9|3×0.82|5×0.76|10+×0.73. Trúc Cơ Đan Thượng:0.30|Cực:0.20. Dùng sai cấp ×0.2-0.3 (bạo thể). Kháng đan 4-10/năm ×0.9.' },
-  { id: 'scope_linh_thach', label: 'Linh thạch', triggers: ['linh thạch','đốt linh thạch','giao dịch','mua bán','đấu giá','trả tiền','nhận thưởng','kiếm linh thạch','thu nhập','chi tiêu','mua đan','mua pháp bảo','thuê linh địa','nợ','vay'], exemplar: 'Hạ(×1)<Trung(×10)<Thượng(×100)<Cực(×1000)<Tiên(×10.000). Thu nhập/tháng: LK sơ:10-50|LK hậu:200-800|TC:2-100K|KĐ:100K-10M|NA:10-100M|HT:100M-1B. Chi phí đột phá: LK→TC:~500K|TC→KĐ:10-30M|KĐ→NA:1-3B|NA→HT:100-500B.' },
-  { id: 'scope_di_chuyen', label: 'Di chuyển', triggers: ['di chuyển','đi đến','phi hành','phi độn','bay','chạy','ngự kiếm','độn quang','na di','truyền tống','hành trình','rời khỏi','đến nơi','xuất phát','trở về','đi về','về'], exemplar: 'Tốc độ (dặm/ngày): Phàm:30-40|Ngựa:100-150|LK:300-500|TC:1-2K|KĐ:5-10K|NA:30-50K|HT:100K+. Địa hình: Mưa ×1.5|Hiểm trở ×2.0|Nguy hiểm ×1.3|Bay cao ×0.8.' },
-  { id: 'scope_nhiem_vu', label: 'Nhiệm vụ', triggers: ['nhiệm vụ','tạp dịch','trồng rau','trồng linh dược','dọn dẹp','tưới cây','tuần tra','canh gác','làm việc','lao động','nhặt củi','hộ tống','khai thác','sinh hoạt','ăn uống','ngủ nghỉ'], exemplar: 'Tưới linh tuyền 1-2 canh|Dọn động phủ 3-5 canh|Tuần tra 1 ngày. Chu kỳ linh dược: Hạ 1 tháng|Trung 6 tháng|Thượng 2 năm|Cực 10 năm. Thù lao: Tạp dịch nhỏ 10-50 Hạ|Vừa 50-200|Đặc biệt 2-8K.' },
-  { id: 'scope_chien_dau', label: 'Chiến đấu', triggers: ['đánh','chém','giết','chiến','đấu','giao chiến','đối đầu','tập kích','phục kích','đánh lén','chạy trốn','bỏ chạy','ám sát','truy sát','đuổi giết','đấu pháp'], exemplar: 'Vượt 1 tiểu: thắng nếu pháp bảo tốt|Vượt 1 đại: cần chí bảo+cơ duyên|Vượt 2+ đại: phải chạy. Yếu tố: Cảnh giới 60%|Pháp bảo 20%|Kinh nghiệm 10%|Địa hình 10%. Thương: Nhẹ 1-7 ngày|Vừa 15-30|Nặng 3-6 tháng|Chí mạng 1-3 năm.' },
-  { id: 'scope_luyen_khi', label: 'Luyện khí', triggers: ['luyện khí','rèn pháp bảo','đúc kiếm','rèn đao','đúc khí','rèn bảo','luyện khí lô','tinh luyện khoáng thạch','tôi luyện','khai lô','tế luyện pháp bảo'], exemplar: 'Phàm→Linh→Bảo→Cổ→Tiên. Thời gian: Phàm 3-30 ngày|Linh 1-24 tháng|Bảo 2-50 năm. Nguyên liệu: Huyền Thiết (Linh Hạ)|Tinh Cương (Linh Trung)|Tử Kim (Bảo Hạ)|Huyền Ngọc (Bảo Trung). Tỷ lệ: LK 20-40%|TC 40-60%|KĐ 60-75%|NA 75-85%.' },
-  { id: 'scope_luyen_phu', label: 'Luyện phù', triggers: ['luyện phù','vẽ phù','chế phù','phù lục','phù bút','phù chỉ','chu sa','linh mực','hỏa phù','lôi phù','tốc hành phù','độn địa phù'], exemplar: 'Nhất (LK): Hỏa Cầu, Tốc Hành|Nhị (TC): Lôi Đình, Hộ Thân|Tam (KĐ): Thiên Lôi, Độn Địa. Thời gian: Nhất 1-3 canh|Nhị 1-3 ngày|Tam 3-7 ngày|Tứ 7-15 ngày. Tỷ lệ: LK Nhất 50-70%|TC Nhất 80-90%.' },
-  { id: 'scope_tran_phap', label: 'Trận pháp', triggers: ['trận pháp','bày trận','phá trận','trận bàn','trận kỳ','trận văn','trận nhãn','khốn trận','sát trận','huyễn trận','mê trận','cấm trận','tụ linh trận','phòng ngự trận'], exemplar: 'Thời gian bày: Nhất (LK) 1-7 ngày|Nhị (TC) 3-30 ngày|Tam (KĐ) 15 ngày-6 tháng|Tứ (NA) 1-36 tháng. Phá: Nhất 1-3 canh|Nhị 1-3 ngày|Tam 3-15 ngày.' },
-  { id: 'scope_linh_thu', label: 'Linh thú', triggers: ['linh thú','khế ước','thu phục','sủng vật','linh sủng','yêu thú','yêu tộc','hóa hình','tấn cấp linh thú','nuôi linh thú','triệu hồi linh thú'], exemplar: 'Nhất (LK)→Cửu (ĐK)→Tiên. Khế ước: Chủ tớ (-20-30%)|Bình đẳng|Sinh tử (+30-50%)|Linh hồn (chia sẻ tu vi). Thu phục: Cùng cấp 1-3 ngày|Cao hơn 1 cấp 7-30 ngày. Nuôi/tháng: Nhất 100-500|Nhị 1-5K|Tam 10-50K.' },
-  { id: 'scope_phi_thang', label: 'Phi thăng', triggers: ['phi thăng','độ kiếp','thiên kiếp','lôi kiếp','lôi vân','kiếp vân','vượt kiếp','đại kiếp','tiểu kiếp','tâm ma','độc kiếp','phi thăng đài'], exemplar: 'Lôi kiếp: TC→KĐ:3|KĐ→NA:6|NA→HT:9|HT→LH:12. Uy lực: 1-3 trắng|4-6 vàng|7-9 tím|10-12 hắc (×10)|13+ tử (×100). Hồi phục: thành công 1-12 tháng|thất bại nặng 10-50 năm.' },
-  { id: 'scope_tau_hoa', label: 'Tẩu hỏa', triggers: ['tẩu hỏa','nhập ma','tẩu hỏa nhập ma','tâm ma','nội ma','ngoại ma','phát cuồng','mất trí','bị thương đan điền','hủy tu vi','phế tu vi','bạo thể','đan toái','cảnh giới tụt'], exemplar: 'Nguyên nhân: Đột phá cưỡng ép 50%|Tâm cảnh bất ổn +30%|Tà công +20-50%. Hậu quả: Nhẹ 1-3 tháng, mất 5-10%|Vừa 1-3 năm, 20-50%|Nặng 10-30 năm, tụt 1-2 bậc|Hoàn toàn chết hoặc biến ma.' },
-  { id: 'scope_tong_mon', label: 'Tông môn', triggers: ['tông môn','gia nhập','đệ tử','trưởng lão','tông chủ','nội môn','ngoại môn','chân truyền','thái thượng','tông môn đại chiến','gia tộc','thế lực','liên minh','chiến tranh','phái','môn','các'], exemplar: 'Tiểu (100-1K, 1 KĐ)|Trung (1-10K, 1 NA)|Đại (10-100K, nhiều NA+1 HT). Thứ bậc: Tạp dịch→Ngoại môn→Nội môn→Chân truyền→Thân truyền→Trưởng lão→Đại trưởng lão→Thái thượng→Tông chủ. Tài nguyên: Ngoại môn 10-50 Hạ/tháng|Nội môn 100-500|Chân truyền 1-10K.' },
-  { id: 'scope_di_tich', label: 'Di tích', triggers: ['di tích','bí cảnh','cổ mộ','thượng cổ di tích','cấm địa','linh địa','phúc địa','động phủ','mật cảnh','không gian độc lập','cơ duyên','nhặt bảo','thám hiểm','khám phá'], exemplar: 'Nhỏ (1-10 người, LK-TC, 1-7 ngày)|Trung (50-100, TC-KĐ, 7-30 ngày)|Lớn (500-1K, KĐ-NA, 1-6 tháng)|Thượng cổ (10K+, NA-HT, 1-10 năm). Phần thưởng: Thường LS 100-10M|Quý: Bảo khí thượng, đan cực|Vô giá: Cổ bảo, tiên khí.' },
-  { id: 'scope_linh_dia', label: 'Linh địa', triggers: ['linh địa','động phủ','linh mạch','phúc địa','động thiên','linh tuyền','linh khí','tu luyện địa','mua động phủ','thuê động phủ','xây động phủ'], exemplar: 'C1 Động phủ thường (×1, 1-5K, 0.95)|C2 Linh mạch thấp (×1.5, 50-200K, 0.85)|C3 Trung (×2-3, 1-5M, 0.70)|C4 Cao (×5-10, 50-200M, 0.50)|C5 Cực (×10-50, 1-10B, 0.30)|C6 Tiên (×50-100, vô giá, 0.15).' }
+  { id: 'scope_tu_luyen', label: 'Tu luyện & Đột phá', triggers: ['tu luyện','bế quan','đột phá','luyện công','tĩnh tọa','thiền định','đả tọa','vận công','hành công','luyện hóa','kết đan','kết anh','phá cảnh','tấn cấp','tăng tu vi','viên mãn'], exemplar: 'Công thức: Thời gian = (Cơ bản × Cảnh giới × Đan × Linh địa × Linh thạch × Cơ duyên × Cộng hưởng) ÷ Linh căn. Hệ số linh căn: Đơn:1.0|Song:0.7|Tam:0.5|Tứ:0.3|Ngũ:0.15|Dị:1.5.' },
+  { id: 'scope_dan_duoc', label: 'Đan dược', triggers: ['đan dược','uống đan','dùng đan','luyện đan','đan phương','đan lô','luyện chế','tụ khí đan','trúc cơ đan','kim nguyên đan','ngưng anh đan','hóa thần đan','đan độc','kháng đan'], exemplar: 'Phẩm: Hạ:0.9|Trung:0.75|Thượng:0.6|Cực:0.45|Tiên:0.25.' },
+  { id: 'scope_linh_thach', label: 'Linh thạch', triggers: ['linh thạch','đốt linh thạch','giao dịch','mua bán','đấu giá','trả tiền','nhận thưởng','kiếm linh thạch','thu nhập','chi tiêu','mua đan','mua pháp bảo','thuê linh địa','nợ','vay'], exemplar: 'Hạ(×1)<Trung(×10)<Thượng(×100)<Cực(×1000)<Tiên(×10.000).' },
+  { id: 'scope_di_chuyen', label: 'Di chuyển', triggers: ['di chuyển','đi đến','phi hành','phi độn','bay','chạy','ngự kiếm','độn quang','na di','truyền tống','hành trình','rời khỏi','đến nơi','xuất phát','trở về','đi về','về'], exemplar: 'Tốc độ (dặm/ngày): Phàm:30-40|Ngựa:100-150|LK:300-500|TC:1-2K|KĐ:5-10K|NA:30-50K|HT:100K+.' },
+  { id: 'scope_nhiem_vu', label: 'Nhiệm vụ', triggers: ['nhiệm vụ','tạp dịch','trồng rau','trồng linh dược','dọn dẹp','tưới cây','tuần tra','canh gác','làm việc','lao động','nhặt củi','hộ tống','khai thác','sinh hoạt','ăn uống','ngủ nghỉ'], exemplar: 'Tưới linh tuyền 1-2 canh|Dọn động phủ 3-5 canh|Tuần tra 1 ngày.' },
+  { id: 'scope_chien_dau', label: 'Chiến đấu', triggers: ['đánh','chém','giết','chiến','đấu','giao chiến','đối đầu','tập kích','phục kích','đánh lén','chạy trốn','bỏ chạy','ám sát','truy sát','đuổi giết','đấu pháp'], exemplar: 'Yếu tố: Cảnh giới 60%|Pháp bảo 20%|Kinh nghiệm 10%|Địa hình 10%.' },
+  { id: 'scope_luyen_khi', label: 'Luyện khí', triggers: ['luyện khí','rèn pháp bảo','đúc kiếm','rèn đao','đúc khí','rèn bảo','luyện khí lô','tinh luyện khoáng thạch','tôi luyện','khai lô','tế luyện pháp bảo'], exemplar: 'Phàm→Linh→Bảo→Cổ→Tiên.' },
+  { id: 'scope_luyen_phu', label: 'Luyện phù', triggers: ['luyện phù','vẽ phù','chế phù','phù lục','phù bút','phù chỉ','chu sa','linh mực','hỏa phù','lôi phù','tốc hành phù','độn địa phù'], exemplar: 'Nhất (LK): Hỏa Cầu, Tốc Hành|Nhị (TC): Lôi Đình, Hộ Thân|Tam (KĐ): Thiên Lôi, Độn Địa.' },
+  { id: 'scope_tran_phap', label: 'Trận pháp', triggers: ['trận pháp','bày trận','phá trận','trận bàn','trận kỳ','trận văn','trận nhãn','khốn trận','sát trận','huyễn trận','mê trận','cấm trận','tụ linh trận','phòng ngự trận'], exemplar: 'Thời gian bày: Nhất (LK) 1-7 ngày|Nhị (TC) 3-30 ngày|Tam (KĐ) 15 ngày-6 tháng.' },
+  { id: 'scope_linh_thu', label: 'Linh thú', triggers: ['linh thú','khế ước','thu phục','sủng vật','linh sủng','yêu thú','yêu tộc','hóa hình','tấn cấp linh thú','nuôi linh thú','triệu hồi linh thú'], exemplar: 'Nhất (LK)→Cửu (ĐK)→Tiên.' },
+  { id: 'scope_phi_thang', label: 'Phi thăng', triggers: ['phi thăng','độ kiếp','thiên kiếp','lôi kiếp','lôi vân','kiếp vân','vượt kiếp','đại kiếp','tiểu kiếp','tâm ma','độc kiếp','phi thăng đài'], exemplar: 'Lôi kiếp: TC→KĐ:3|KĐ→NA:6|NA→HT:9|HT→LH:12.' },
+  { id: 'scope_tau_hoa', label: 'Tẩu hỏa', triggers: ['tẩu hỏa','nhập ma','tẩu hỏa nhập ma','tâm ma','nội ma','ngoại ma','phát cuồng','mất trí','bị thương đan điền','hủy tu vi','phế tu vi','bạo thể','đan toái','cảnh giới tụt'], exemplar: 'Hậu quả: Nhẹ 1-3 tháng, mất 5-10%|Vừa 1-3 năm, 20-50%|Nặng 10-30 năm.' },
+  { id: 'scope_tong_mon', label: 'Tông môn', triggers: ['tông môn','gia nhập','đệ tử','trưởng lão','tông chủ','nội môn','ngoại môn','chân truyền','thái thượng','tông môn đại chiến','gia tộc','thế lực','liên minh','chiến tranh','phái','môn','các'], exemplar: 'Thứ bậc: Tạp dịch→Ngoại môn→Nội môn→Chân truyền→Thân truyền→Trưởng lão→Đại trưởng lão→Thái thượng→Tông chủ.' },
+  { id: 'scope_di_tich', label: 'Di tích', triggers: ['di tích','bí cảnh','cổ mộ','thượng cổ di tích','cấm địa','linh địa','phúc địa','động phủ','mật cảnh','không gian độc lập','cơ duyên','nhặt bảo','thám hiểm','khám phá'], exemplar: 'Nhỏ (1-10 người, LK-TC, 1-7 ngày)|Trung (50-100, TC-KĐ, 7-30 ngày)|Lớn (500-1K, KĐ-NA, 1-6 tháng).' },
+  { id: 'scope_linh_dia', label: 'Linh địa', triggers: ['linh địa','động phủ','linh mạch','phúc địa','động thiên','linh tuyền','linh khí','tu luyện địa','mua động phủ','thuê động phủ','xây động phủ'], exemplar: 'C1 Động phủ thường (×1, 1-5K, 0.95)|C2 Linh mạch thấp (×1.5, 50-200K, 0.85)|C3 Trung (×2-3).' }
 ];
 
 let scopeRegistry = [];
 
 // ══════════════════════════════════════════════════════════════
-// NORMALIZE + POST-VALIDATE HELPERS
+// NORMALIZE + ITEM MATCHING HELPERS
 // ══════════════════════════════════════════════════════════════
 function normalizeVN(str){
   return (str || '')
@@ -568,7 +568,7 @@ function normalizeVN(str){
 const ITEM_STOPWORDS = new Set([
   'cho','tang','bieu','dua','gui','trao','ban','nhan','mua','sell','buy','give','receive',
   'toi','ta','minh','tao','to','em','anh','chi','no','ho','nguoi','ban','ay','do','kia',
-  'ly','ho','hong','duc','npc','vi','mot','hai','ba','bon','nam','sau','bay','tam','chin','muoi',
+  'vi','mot','hai','ba','bon','nam','sau','bay','tam','chin','muoi',
   'cai','chiec','tam','la','vien','cuc','thanh','bo','hop','goi','phan','manh','khuc',
   'linh','thach','ls','v','k','nghin','ngan','trieu','tr',
   'trong','tu','cua','va','voi','de','roi','day','nay','ra','vao','lai','di','ve','den',
@@ -576,43 +576,95 @@ const ITEM_STOPWORDS = new Set([
   'phap','bao','dao','kiem','khi','phu','luc','dan','duoc','hoa','thuoc'
 ]);
 
+// Danh sách tiền tố chỉ NPC — bỏ khỏi tên item khi bắt được
+const NPC_PREFIX_STOPWORDS = new Set([
+  'ly','ho','vuong','trieu','tran','le','nguyen','pham','dang','bui','do','hoang','phan',
+  'lao','tien','su','muoi','ty','de','huynh','muoi','ong','ba','thang','con','nha','chu',
+  'npc','ten','ga','y','thi','thi','cac','vi','cac'
+]);
+
+// Nếu token chỉ xuất hiện đầu câu và theo sau "cho/tặng" → khả năng cao là tên NPC
+function stripNpcPhrase(rawText){
+  // Tách theo "cho|tặng|biếu|đưa|gửi|trao" rồi lấy phần sau
+  const giveRegex = /(?:cho|tặng|tang|biếu|bieu|đưa|dua|gửi|gui|trao)\s+(.+)/i;
+  const m = rawText.match(giveRegex);
+  if(!m) return rawText;
+  let after = m[1].trim();
+  // Bỏ tên NPC: cụm từ viết hoa hoặc chữ thường liền nhau ở đầu, TRƯỚC số
+  // VD: "Lý Hổ 20 tấm thần hành phù" → "20 tấm thần hành phù"
+  const numIdx = after.search(/\d/);
+  if(numIdx > 0){
+    // Kiểm tra phần đầu có phải số không, nếu không thì khả năng là NPC
+    const before = after.substring(0, numIdx).trim();
+    // Nếu phần đầu có <= 4 từ và không chứa số → coi là NPC
+    const wordsBefore = before.split(/\s+/).filter(w => w.length > 0);
+    if(wordsBefore.length <= 4 && wordsBefore.length >= 1){
+      after = after.substring(numIdx);
+    }
+  }
+  return after;
+}
+
 function extractItemCandidate(rawText){
   if(!rawText) return '';
-  let s = normalizeVN(rawText);
-  // Bỏ số
+  // Bước 1: strip NPC phrase nếu có
+  const stripped = stripNpcPhrase(rawText);
+  let s = normalizeVN(stripped);
+
+  // Bước 2: bỏ số
   s = s.replace(/\d[\d.,]*/g, ' ');
-  // Bỏ đơn vị
-  s = s.replace(/\b(vien|cai|chiec|tam|la|cuc|thanh|bo|hop|goi|phan|manh|v|k|nghin|ngan|trieu|tr|ls)\b/g, ' ');
-  // Bỏ hư từ
-  s = s.replace(/\b(cho|tang|bieu|dua|gui|trao|toi|ta|minh|tao|to|em|anh|chi|no|ho|nguoi|trong|tu|cua|va|voi|de|roi|day|nay|kia|do|ra|vao)\b/g, ' ');
-  s = s.replace(/\s+/g, ' ').trim();
+  // Bước 3: bỏ đơn vị đo lường
+  s = s.replace(/\b(vien|cai|chiec|tam|la|cuc|thanh|bo|hop|goi|phan|manh|khuc|binh|lo|chai|cuon|tap|xap|chong|nham|nam|dot|v|k|nghin|ngan|trieu|tr|ls)\b/g, ' ');
+  // Bước 4: bỏ động từ give
+  s = s.replace(/\b(cho|tang|bieu|dua|gui|trao)\b/g, ' ');
+  // Bước 5: bỏ hư từ
+  s = s.replace(/\b(toi|ta|minh|tao|to|em|anh|chi|no|ho|nguoi|trong|tu|cua|va|voi|de|roi|day|nay|kia|do|ra|vao|khong|co|duoc|se|da|dang)\b/g, ' ');
+  // Bước 6: bỏ tiền tố NPC còn sót (chỉ ở đầu)
+  let tokens = s.split(/\s+/).filter(t => t.length > 0);
+  while(tokens.length > 0 && NPC_PREFIX_STOPWORDS.has(tokens[0]) && tokens.length > 2){
+    tokens.shift();
+  }
+  s = tokens.join(' ').trim();
   return s;
 }
 
 function findMatchingInventoryItem(nameToFind, inv){
   if(!inv || inv.length === 0) return null;
-  const needle = normalizeVN(nameToFind);
+  let needle = normalizeVN(nameToFind);
   if(!needle || needle.length < 2) return null;
 
   // 1. Khớp chính xác
   let match = inv.find(i => normalizeVN(i.name) === needle);
   if(match) return match;
 
-  // 2. Khớp chứa nhau
+  // 2. Khớp chứa nhau (toàn chuỗi)
   match = inv.find(i => {
     const n = normalizeVN(i.name);
     return n.length >= 2 && (n.includes(needle) || needle.includes(n));
   });
   if(match) return match;
 
-  // 3. Khớp token
-  const tokens = needle.split(/\s+/).filter(t => t.length >= 3 && !ITEM_STOPWORDS.has(t));
+  // 3. Khớp token — chỉ dùng token ≥3 ký tự, không phải stopword
+  let tokens = needle.split(/\s+/).filter(t => t.length >= 3 && !ITEM_STOPWORDS.has(t));
   if(tokens.length === 0) return null;
+
   match = inv.find(i => {
     const n = normalizeVN(i.name);
     return tokens.every(t => n.includes(t));
   });
-  return match;
+  if(match) return match;
+
+  // 4. Fallback: ≥60% token khớp
+  if(tokens.length >= 2){
+    const minMatch = Math.max(2, Math.ceil(tokens.length * 0.6));
+    match = inv.find(i => {
+      const n = normalizeVN(i.name);
+      const hitCount = tokens.filter(t => n.includes(t)).length;
+      return hitCount >= minMatch;
+    });
+    if(match) return match;
+  }
+  return null;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -626,11 +678,9 @@ function saveModelListToLocal(silent=false){
   if(!el) return;
   try{
     localStorage.setItem(LS_MODEL_KEY, el.value);
-    if(!silent) log(`💾 Đã lưu model list vào localStorage.`);
+    if(!silent) log(`💾 Đã lưu model list.`);
     updateModelStatusInfo();
-  }catch(e){
-    if(!silent) alert('❌ Không lưu được: ' + e.message);
-  }
+  }catch(e){ if(!silent) alert('❌ ' + e.message); }
 }
 function loadModelListFromLocal(){
   const el = document.getElementById('modelListInput');
@@ -639,25 +689,23 @@ function loadModelListFromLocal(){
     const saved = localStorage.getItem(LS_MODEL_KEY);
     if(saved){
       el.value = saved;
-      log(`📂 Đã load model list từ localStorage.`);
+      log(`📂 Đã load model list.`);
       updateModelStatusInfo();
       ensureKeyStatusStructure();
       updateKeyCountInfo();
       renderKeyStatus();
-      alert('📂 Đã load model list!');
-    } else {
-      alert('⚠️ Chưa có model list nào được lưu. Đang dùng mặc định.');
-    }
-  }catch(e){ alert('❌ Lỗi load: ' + e.message); }
+      alert('📂 Đã load!');
+    } else { alert('⚠️ Chưa có model list lưu.'); }
+  }catch(e){ alert('❌ ' + e.message); }
 }
 function clearModelListFromLocal(){
-  if(!confirm('🗑️ Xóa model list đã lưu?')) return;
+  if(!confirm('🗑️ Xóa model list?')) return;
   try{
     localStorage.removeItem(LS_MODEL_KEY);
-    log('🗑️ Đã xóa model list localStorage.');
+    log('🗑️ Đã xóa.');
     updateModelStatusInfo();
     alert('🗑️ Đã xóa!');
-  }catch(e){ alert('❌ Lỗi: ' + e.message); }
+  }catch(e){ alert('❌ ' + e.message); }
 }
 function autoRestoreModelList(){
   const el = document.getElementById('modelListInput');
@@ -666,15 +714,13 @@ function autoRestoreModelList(){
     const saved = localStorage.getItem(LS_MODEL_KEY);
     if(saved && saved.trim()){
       el.value = saved;
-      log(`📂 Auto-load model list (${saved.length} ký tự).`);
+      log(`📂 Auto-load model list.`);
     } else {
       el.value = getDefaultModelListString();
       localStorage.setItem(LS_MODEL_KEY, el.value);
-      log(`📌 Khởi tạo model list mặc định.`);
+      log(`📌 Khởi tạo model list.`);
     }
-  }catch(e){
-    el.value = getDefaultModelListString();
-  }
+  }catch(e){ el.value = getDefaultModelListString(); }
   updateModelStatusInfo();
 }
 function updateModelStatusInfo(){
@@ -684,10 +730,10 @@ function updateModelStatusInfo(){
     const saved = localStorage.getItem(LS_MODEL_KEY);
     if(saved){
       const models = saved.split(',').map(s=>s.trim()).filter(s=>s);
-      el.innerHTML = `✅ Auto-save: BẬT | Đã lưu ${models.length} model | Tự load.`;
+      el.innerHTML = `✅ Auto-save: BẬT | Đã lưu ${models.length} model.`;
       el.style.color = '#3fb950';
     } else {
-      el.innerHTML = `⚠️ Chưa lưu model list. Bấm "💾 Lưu Model".`;
+      el.innerHTML = `⚠️ Chưa lưu model list.`;
       el.style.color = '#d29922';
     }
   }catch(e){ el.textContent = 'localStorage bị chặn'; el.style.color = '#f85149'; }
@@ -793,7 +839,7 @@ function renderKeyStatus(){
 }
 
 // ============================================================
-// CJK FILTER (giữ nguyên logic, thu gọn map)
+// CJK FILTER
 // ============================================================
 const CJK_VIET_MAP = {
   '丹':'Đan','药':'Dược','丸':'Hoàn','散':'Tán','膏':'Cao','汤':'Thang',
@@ -887,9 +933,9 @@ function filterCJKFromResponse(text){
   tokenStats.cjkFilteredCount = (tokenStats.cjkFilteredCount||0) + (cjkCount - remainingAfter);
   updateTokenStatsDisplay();
   if(unmappedChars.size > 0){
-    log(`🈶 CJK: convert ${convertedCount} ký tự. Còn ${unmappedChars.size} chưa map.`);
+    log(`🈶 CJK: convert ${convertedCount}. Còn ${unmappedChars.size} chưa map.`);
   } else {
-    log(`🈶 CJK: convert ${cjkCount} ký tự (đã sạch).`);
+    log(`🈶 CJK: convert ${cjkCount} ký tự.`);
   }
   return cleaned;
 }
@@ -1152,6 +1198,45 @@ function resetExp(){
 }
 
 // ============================================================
+// UTILITIES
+// ============================================================
+function generateAutoAvatar(name){return "https://api.dicebear.com/7.x/adventurer/svg?seed="+encodeURIComponent(name||'NPC');}
+function generateNpcId(){return 'npc_'+Date.now().toString(36)+Math.random().toString(36).substr(2,6);}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('active');}
+function openTab(tabId){document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));document.getElementById(tabId).classList.add('active');const btn=Array.from(document.querySelectorAll('.tab-btn')).find(b=>b.getAttribute('onclick').includes(tabId));if(btn)btn.classList.add('active');}
+function log(msg){const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML+=`<br>> ${msg}`;logBox.scrollTop=logBox.scrollHeight;}}
+function copySystemLogs(){const logBox=document.getElementById('sysLogs');if(!logBox){alert("⚠️ Không có log!");return;}const text=logBox.innerText||logBox.textContent;if(!text||text.trim()===''){alert("⚠️ Log trống!");return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert("📋 Đã copy log!")).catch(e=>{fallbackCopyText(text);});}else{fallbackCopyText(text);}}
+function fallbackCopyText(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert("📋 Đã copy log!");}catch(err){alert("❌ Lỗi copy");}document.body.removeChild(ta);}
+function clearSystemLogs(){if(!confirm("🗑️ Xóa log?"))return;const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML='> Logs cleared at '+new Date().toLocaleTimeString('vi-VN');}}
+function jumpToBottom(){const storyBox=document.getElementById('story-box');if(storyBox){storyBox.scrollTop=storyBox.scrollHeight;}}
+function copyGameStory(){const t=document.getElementById('story-box').innerText;if(!t||t.includes('Chưa có dữ liệu')){alert("⚠️ Chưa có nội dung!");return;}navigator.clipboard.writeText(t).then(()=>alert("📋 Đã sao chép!")).catch(e=>alert("❌ Lỗi: "+e));}
+
+function toggleSetting(name){
+  settings[name]=!settings[name];
+  const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1));
+  if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');}
+  log(`⚙️ ${name}: ${settings[name]?'BẬT':'TẮT'}`);
+}
+function updateTokenStatsDisplay(){
+  const el=document.getElementById('tokenStats');if(!el)return;
+  const avgIn=tokenStats.requests>0?Math.round(tokenStats.input/tokenStats.requests):0;
+  const avgOut=tokenStats.requests>0?Math.round(tokenStats.output/tokenStats.requests):0;
+  el.innerHTML=`<span class="provider-badge provider-gemini">Gemini</span> ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>
+<span class="provider-badge provider-openrouter">OpenRouter</span> ${tokenStats.orReq} req<br>
+Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}<br>
+🛡️ Resend: ${tokenStats.resendRulesCount||0} | ⚠️ Short: ${tokenStats.shortTurnWarnings||0}<br>
+🎭 NPC Rules sinh: ${tokenStats.npcRulesGenerated||0}<br>
+🈶 CJK filtered: ${tokenStats.cjkFilteredCount||0}<br>
+💰 Giao dịch: ${tokenStats.transactionsProcessed||0}<br>
+🚫 Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>
+🛑 Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>
+🚧 Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}<br>
+Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
+Errors: ${tokenStats.errors}`;
+}
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+
+// ============================================================
 // STATE SNAPSHOTS
 // ============================================================
 function captureStateSnapshot(){
@@ -1203,44 +1288,6 @@ function restoreStateSnapshot(snap){
   const taEv = document.getElementById('gameEvents');
   if(taEv) taEv.value = JSON.stringify(eventList, null, 2);
 }
-
-// ============================================================
-// UTILITIES
-// ============================================================
-function generateAutoAvatar(name){return "https://api.dicebear.com/7.x/adventurer/svg?seed="+encodeURIComponent(name||'NPC');}
-function generateNpcId(){return 'npc_'+Date.now().toString(36)+Math.random().toString(36).substr(2,6);}
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('active');}
-function openTab(tabId){document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));document.getElementById(tabId).classList.add('active');const btn=Array.from(document.querySelectorAll('.tab-btn')).find(b=>b.getAttribute('onclick').includes(tabId));if(btn)btn.classList.add('active');}
-function log(msg){const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML+=`<br>> ${msg}`;logBox.scrollTop=logBox.scrollHeight;}}
-function copySystemLogs(){const logBox=document.getElementById('sysLogs');if(!logBox){alert("⚠️ Không có log!");return;}const text=logBox.innerText||logBox.textContent;if(!text||text.trim()===''){alert("⚠️ Log trống!");return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert("📋 Đã copy log!")).catch(e=>{fallbackCopyText(text);});}else{fallbackCopyText(text);}}
-function fallbackCopyText(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert("📋 Đã copy log!");}catch(err){alert("❌ Lỗi copy");}document.body.removeChild(ta);}
-function clearSystemLogs(){if(!confirm("🗑️ Xóa log?"))return;const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML='> Logs cleared at '+new Date().toLocaleTimeString('vi-VN');}}
-function jumpToBottom(){const storyBox=document.getElementById('story-box');if(storyBox){storyBox.scrollTop=storyBox.scrollHeight;}}
-function copyGameStory(){const t=document.getElementById('story-box').innerText;if(!t||t.includes('Chưa có dữ liệu')){alert("⚠️ Chưa có nội dung!");return;}navigator.clipboard.writeText(t).then(()=>alert("📋 Đã sao chép!")).catch(e=>alert("❌ Lỗi: "+e));}
-
-function toggleSetting(name){
-  settings[name]=!settings[name];
-  const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1));
-  if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');}
-  log(`⚙️ ${name}: ${settings[name]?'BẬT':'TẮT'}`);
-}
-function updateTokenStatsDisplay(){
-  const el=document.getElementById('tokenStats');if(!el)return;
-  const avgIn=tokenStats.requests>0?Math.round(tokenStats.input/tokenStats.requests):0;
-  const avgOut=tokenStats.requests>0?Math.round(tokenStats.output/tokenStats.requests):0;
-  el.innerHTML=`<span class="provider-badge provider-gemini">Gemini</span> ${tokenStats.geminiReq} req | ${tokenStats.geminiIn.toLocaleString()} in / ${tokenStats.geminiOut.toLocaleString()} out<br>
-<span class="provider-badge provider-openrouter">OpenRouter</span> ${tokenStats.orReq} req<br>
-Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}<br>
-🛡️ Resend: ${tokenStats.resendRulesCount||0} | ⚠️ Short: ${tokenStats.shortTurnWarnings||0}<br>
-🎭 NPC Rules sinh: ${tokenStats.npcRulesGenerated||0}<br>
-🈶 CJK filtered: ${tokenStats.cjkFilteredCount||0}<br>
-💰 Giao dịch: ${tokenStats.transactionsProcessed||0}<br>
-🚫 Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>
-🛑 Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>
-Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
-Errors: ${tokenStats.errors}`;
-}
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
 // TTS
@@ -1400,7 +1447,7 @@ function togglePinNpc(index){if(npcList[index]){npcList[index].pinned = !npcList
 function toggleLockRules(index){if(npcList[index]){npcList[index].lockedRules = !npcList[index].lockedRules;log(`${npcList[index].lockedRules?'🔒 Khóa':'🔓 Mở'} [${npcList[index].name}]`);renderNpcs();}}
 
 // ============================================================
-// TRANSACTION PARSING (parseQty + intent detect)
+// PARSE QTY
 // ============================================================
 function parseQty(raw){
   if(raw === undefined || raw === null) return 0;
@@ -1428,6 +1475,9 @@ function getCurrentLinhThach(){
   } catch(e) { return 0; }
 }
 
+// ============================================================
+// DETECT PURCHASE INTENT — BẢN MỚI
+// ============================================================
 function detectPurchaseIntent(actionText){
   if(!actionText) return null;
   const raw = actionText.toLowerCase().trim();
@@ -1436,9 +1486,9 @@ function detectPurchaseIntent(actionText){
   const textNorm = normalized;
   const tryMatch = (re) => textRaw.match(re) || textNorm.match(re);
 
-  // CHO / TẶNG linh thạch
+  // 1) CHO/TẶNG LINH THẠCH
   const giveLSPatterns = [
-    /(?:cho|tang|bieu|dua|gui|trao)\s+(?:[a-zà-ỹ]+\s+){0,4}?(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i,
+    /(?:cho|tang|bieu|dua|gui|trao)\s+(?:[a-zà-ỹ]+\s+){0,5}?(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i,
     /(?:cho|tang|bieu|dua|gui|trao)\s+(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i
   ];
   for(const re of giveLSPatterns){
@@ -1449,36 +1499,40 @@ function detectPurchaseIntent(actionText){
     }
   }
 
-  // CHO / TẶNG vật phẩm bất kỳ — MỞ RỘNG regex
+  // 2) CHO/TẶNG VẬT PHẨM
+  // Dạng A: cho [số] [đơn vị] [item]
+  const unit = '(?:vien|cai|chiec|tam|la|cuc|thanh|bo|hop|goi|phan|manh|khuc|binh|lo|chai|cuon|tap|xap|chong|nham|nam|dot)';
   const giveItemPatterns = [
-    // Cho X [số] [đơn vị] [tên item]
-    /(?:cho|tang|bieu|dua|gui|trao)\s+(?:[a-zà-ỹ]+\s+){0,4}?(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+|cai\s+|chiec\s+|tam\s+|la\s+|cuc\s+|thanh\s+|bo\s+|hop\s+)?([a-zà-ỹ][a-zà-ỹ0-9\s]{2,40}?)(?:\s+(?:cho|cua|roi|va|de|,|\.|$))/i,
-    /(?:cho|tang|bieu|dua|gui|trao)\s+(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+|cai\s+|chiec\s+|tam\s+|la\s+|cuc\s+|thanh\s+|bo\s+|hop\s+)?([a-zà-ỹ][a-zà-ỹ0-9\s]{2,40}?)(?:\s+(?:cho|cua|roi|va|de|,|\.|$))/i,
-    // Cho X [tên item] (không có số)
-    /(?:cho|tang|bieu|dua|gui|trao)\s+(?:[a-zà-ỹ]+\s+){0,4}?([a-zà-ỹ][a-zà-ỹ0-9\s]{3,40}?)(?:\s+(?:cho|cua|roi|va|de|,|\.|$))/i
+    new RegExp(`(?:cho|tang|bieu|dua|gui|trao)\\s+(?:[a-zà-ỹ]+\\s+){0,5}?(\\d[\\d.,]*\\s*[vk]?)\\s+${unit}\\s+([a-zà-ỹ][a-zà-ỹ0-9\\s]{2,50}?)(?:\\s+(?:cho|cua|roi|va|de|,|\\.|$))`, 'i'),
+    new RegExp(`(?:cho|tang|bieu|dua|gui|trao)\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+${unit}\\s+([a-zà-ỹ][a-zà-ỹ0-9\\s]{2,50}?)(?:\\s+(?:cho|cua|roi|va|de|,|\\.|$))`, 'i'),
+    new RegExp(`(?:cho|tang|bieu|dua|gui|trao)\\s+(?:[a-zà-ỹ]+\\s+){0,5}?(\\d[\\d.,]*\\s*[vk]?)\\s+([a-zà-ỹ][a-zà-ỹ0-9\\s]{2,50}?)(?:\\s+(?:cho|cua|roi|va|de|,|\\.|$))`, 'i')
   ];
   for(const re of giveItemPatterns){
     const m = tryMatch(re);
     if(m){
-      const groups = m.slice(1).filter(x => x !== undefined);
-      let qty = 1, itemName = '';
-      for(const g of groups){
-        const q = parseQty(g);
-        if(q > 0 && !itemName){ qty = q; }
-        else if(!q || q === 0){
-          const candidate = (g || '').trim();
-          if(candidate.length >= 2 && !/^\d+$/.test(candidate)) itemName = candidate;
-        }
-      }
-      if(!itemName) itemName = groups[groups.length - 1] || '';
-      itemName = (itemName || '').trim();
-      if(itemName && !/^(linh\s*thach|linh\s*thạch|\bls\b)$/i.test(itemName)){
+      const qty = parseQty(m[1]);
+      let itemName = (m[2] || '').trim();
+      if(/linh\s*thach|linh\s*thạch|\bls\b/i.test(itemName)) continue;
+      itemName = itemName.replace(new RegExp(`^${unit}\\s+`, 'i'), '').trim();
+      if(qty > 0 && itemName.length >= 2){
         return { action: 'give', qty, itemName, raw: m[0] };
       }
     }
   }
 
-  // NHẬN linh thạch
+  // Fallback: có "cho/tặng" → extract candidate
+  if(/(?:^|\s)(cho|tang|bieu|dua|gui|trao)(?:\s|$)/i.test(textRaw) || /(?:^|\s)(cho|tang|bieu|dua|gui|trao)(?:\s|$)/i.test(textNorm)){
+    const candidate = extractItemCandidate(textRaw);
+    if(candidate && candidate.length >= 2){
+      const numMatch = textRaw.match(/(\d[\d.,]*\s*[vk]?)/);
+      const qty = numMatch ? parseQty(numMatch[1]) : 1;
+      if(qty > 0){
+        return { action: 'give', qty, itemName: candidate, raw: textRaw };
+      }
+    }
+  }
+
+  // 3) NHẬN LINH THẠCH
   const receivePatterns = [
     /(?:nhan|duoc\s+cho|duoc\s+tang|duoc\s+bieu|linh)\s+(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i
   ];
@@ -1490,7 +1544,7 @@ function detectPurchaseIntent(actionText){
     }
   }
 
-  // BÁN
+  // 4) BÁN
   const sellPatterns = [
     /ban\s+(\d[\d.,]*\s*[vk]?)\s+(?:vien\s+|cai\s+|tam\s+)?(.+?)\s+(?:duoc|voi|gia)\s+(\d[\d.,]*\s*[vk]?)/i
   ];
@@ -1502,7 +1556,7 @@ function detectPurchaseIntent(actionText){
     }
   }
 
-  // MUA
+  // 5) MUA
   const buyPatterns = [
     /(?:mua|tau|sam|thu\s*mua)\s+(\d[\d.,]*\s*[vk]?)\s+(?:vien\s+|cai\s+|tam\s+)?(.+?)\s+(?:gia|voi|het|mat|ton)\s+(\d[\d.,]*\s*[vk]?)/i,
     /(?:mua|tau|sam)\s+(.+?)\s+(?:gia|voi|het|mat|ton)\s+(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i,
@@ -1547,76 +1601,75 @@ function prevalidateTransaction(actionText){
     return ls ? (ls.quantity || 0) : 0;
   })();
 
-  // ── MUA
+  // MUA
   if(intent.action === 'buy'){
     if(currentLS < intent.totalCost){
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
       updateTokenStatsDisplay();
       return {
-        ok: false,
-        type: 'buy',
+        ok: false, type: 'buy',
         message: `❌ KHÔNG ĐỦ LINH THẠCH!\n\n💰 Bạn có: ${currentLS.toLocaleString()} linh thạch\n💸 Cần: ${intent.totalCost.toLocaleString()} linh thạch\n⚠️ Thiếu: ${(intent.totalCost - currentLS).toLocaleString()} linh thạch\n\n🚫 Không thể thực hiện giao dịch này.\n\n👉 Hãy chọn hành động khác:\n  • Kiếm thêm linh thạch (bán đồ, làm nhiệm vụ)\n  • Mặc cả giảm giá\n  • Hủy mua\n  • Vay mượn (nếu có NPC phù hợp)`
       };
     }
     return { ok: true };
   }
 
-  // ── CHO / TẶNG
+  // CHO / TẶNG
   if(intent.action === 'give'){
     const rawText = (intent.raw || actionText || '').toLowerCase();
     const itemNameRaw = (intent.itemName || '').trim();
     const isGivingLS = /linh\s*thach|linh\s*thạch|\bls\b/i.test(itemNameRaw)
-                    || /linh\s*thach|linh\s*thạch|\bls\b/i.test(rawText)
-                    || /linh\s*thach|linh\s*thạch|\bls\b/i.test(extractItemCandidate(rawText));
+                    || /linh\s*thach|linh\s*thạch|\bls\b/i.test(rawText);
 
-    // 2a) Cho LINH THẠCH
     if(isGivingLS){
       if(currentLS < intent.qty){
         tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
         updateTokenStatsDisplay();
         return {
-          ok: false,
-          type: 'give',
+          ok: false, type: 'give',
           message: `❌ KHÔNG ĐỦ LINH THẠCH ĐỂ CHO!\n\n💰 Bạn có: ${currentLS.toLocaleString()} linh thạch\n🎁 Muốn cho: ${intent.qty.toLocaleString()} linh thạch\n⚠️ Thiếu: ${(intent.qty - currentLS).toLocaleString()} linh thạch\n\n🚫 Không thể cho số linh thạch lớn hơn số đang có.\n\n👉 Hãy chọn:\n  • Giảm số lượng cho\n  • Kiếm thêm linh thạch trước\n  • Hủy hành động`
         };
       }
       return { ok: true };
     }
 
-    // 2b) Cho VẬT PHẨM CỤ THỂ — check tên item
-    const candidateFromName = itemNameRaw ? extractItemCandidate(itemNameRaw) : '';
-    const candidateFromRaw  = extractItemCandidate(rawText);
-    const candidates = [candidateFromName, candidateFromRaw].filter(s => s && s.length >= 2);
+    // Cho VẬT PHẨM CỤ THỂ
+    const candidates = [];
+    if(itemNameRaw){
+      candidates.push(normalizeVN(itemNameRaw));
+      candidates.push(extractItemCandidate(itemNameRaw));
+    }
+    candidates.push(extractItemCandidate(rawText));
+
+    const uniqCandidates = [...new Set(candidates.filter(s => s && s.length >= 2))];
 
     let matchedItem = null;
-    for(const c of candidates){
+    for(const c of uniqCandidates){
       matchedItem = findMatchingInventoryItem(c, inv);
       if(matchedItem) break;
     }
 
-    // KHÔNG TÌM THẤY → CHẶN
     if(!matchedItem){
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
+      tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked||0) + 1;
       updateTokenStatsDisplay();
-      const itemShown = itemNameRaw || candidateFromRaw || '(không rõ)';
+      const itemShown = itemNameRaw || uniqCandidates[uniqCandidates.length-1] || '(không rõ)';
       const invList = inv.length > 0
         ? inv.map(i => `  • ${i.name}${i.quality?` [${i.quality}]`:''} x${i.quantity||1}`).join('\n')
         : '  (túi đồ trống)';
       return {
-        ok: false,
-        type: 'give',
-        message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Bạn muốn cho: "${itemShown}"\n📦 Nhưng túi đồ của bạn không có vật phẩm này.\n\n📋 Túi đồ hiện tại:\n${invList}\n\n🚫 Không thể cho/tặng vật phẩm mà bạn KHÔNG sở hữu.\n\n👉 Hãy chọn:\n  • Kiểm tra lại túi đồ (tab NVC)\n  • Cho vật phẩm khác đang có\n  • Đi kiếm vật phẩm trước\n  • Hủy hành động`
+        ok: false, type: 'give',
+        message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Bạn muốn cho: "${itemShown}"\n📦 Nhưng túi đồ của bạn KHÔNG có vật phẩm này.\n\n📋 Túi đồ hiện tại:\n${invList}\n\n🚫 Không thể cho/tặng vật phẩm mà bạn KHÔNG sở hữu.\n\n👉 Hãy chọn:\n  • Kiểm tra lại túi đồ (tab NVC)\n  • Cho vật phẩm khác đang có\n  • Đi kiếm vật phẩm trước\n  • Hủy hành động`
       };
     }
 
-    // Có item nhưng KHÔNG ĐỦ SỐ LƯỢNG
     const available = matchedItem.quantity || 1;
     if(intent.qty > available){
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
+      tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked||0) + 1;
       updateTokenStatsDisplay();
       return {
-        ok: false,
-        type: 'give',
+        ok: false, type: 'give',
         message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}${matchedItem.quality?` [${matchedItem.quality}]`:''}\n📦 Bạn có: ${available}\n🎁 Muốn cho: ${intent.qty}\n⚠️ Thiếu: ${intent.qty - available}\n\n🚫 Không thể cho nhiều hơn số đang có.\n\n👉 Hãy chọn:\n  • Giảm số lượng cho xuống ≤ ${available}\n  • Kiếm thêm vật phẩm\n  • Hủy hành động`
       };
     }
@@ -1730,9 +1783,6 @@ function processTransactions(transactionsList){
   let processedCount = 0;
   const logs = [];
 
-  const findItem = (name, quality) => {
-    return findMatchingInventoryItem(name, inv);
-  };
   const addItem = (name, quality, qty, icon, effect) => {
     const m = findMatchingInventoryItem(name, inv);
     if(m){ m.quantity = (m.quantity || 1) + qty; return { isNew: false, newQty: m.quantity }; }
@@ -1899,11 +1949,9 @@ function openDB(){
         db.createObjectStore(STORE_NAME);
         log(`✅ Đã tạo store "${STORE_NAME}"`);
       } else {
-        log(`♻️ Store "${STORE_NAME}" đã tồn tại — giữ nguyên data cũ.`);
+        log(`♻️ Store "${STORE_NAME}" đã tồn tại.`);
       }
-      if(oldVersion < 2601){ log(`🔧 Migration v<2601.`); }
-      if(oldVersion < 2602){ log(`🔧 Migration v<2602 (Gemini 3.x + Hán Việt Scopes).`); }
-      if(oldVersion < 2603){ log(`🔧 Migration v<2603 (Post-Validate Dual Layer).`); }
+      if(oldVersion < 2604){ log(`🔧 Migration v<2604 (Give-Guard Hard Block).`); }
     };
     req.onsuccess = (evt) => {
       _dbInstance = evt.target.result;
@@ -1961,7 +2009,7 @@ async function saveGame(isManual=false){
     mcExp, mcExpMax, mcLinhCan,
     currentModel: CACHE_MODEL, settings,
     keyStatus, currentKeyIndex,
-    _saveVersion: 'v2.6.3',
+    _saveVersion: 'v2.6.4',
     inputs: {}
   };
   inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});
@@ -1984,7 +2032,7 @@ async function loadGame(){
     turnHtmlHistory=gameData.turnHtmlHistory||[];
     turnCounter=gameData.turnCounter||0;
     storySummary=gameData.storySummary||"";
-    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0},gameData.tokenStats||{});
+    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0},gameData.tokenStats||{});
     if(gameData.mcExp !== undefined) mcExp = gameData.mcExp;
     if(gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
     if(gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
@@ -2024,7 +2072,7 @@ function updateKeyCountInfo(){
   const el = document.getElementById('keyCountInfo');
   if(el){ el.textContent = `📌 ${keys.length} key | ${models.length} model | ${keys.length * models.length} tổ hợp`; }
 }
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.6.3_save.json";a.click();log("Xuất save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.6.4_save.json";a.click();log("Xuất save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Import thành công!");}catch(err){alert("❌ File không hợp lệ!");}};reader.readAsText(file);}
 
@@ -2033,12 +2081,12 @@ function handleFileSelect(event){const file=event.target.files[0];if(!file)retur
 // ============================================================
 function exportWorldConfig(){
   const worldIds = ['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultySelect','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle'];
-  const cfg = { _version: 'v2.6.3', _type: 'worldConfig', scopes: scopeRegistry, fields: {} };
+  const cfg = { _version: 'v2.6.4', _type: 'worldConfig', scopes: scopeRegistry, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if(el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], {type: 'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'hongduc_world_config_v2.6.3.json';
+  a.download = 'hongduc_world_config_v2.6.4.json';
   a.click();
   log('📤 Xuất World Config thành công.');
   alert('📤 Đã xuất World Config!');
@@ -2133,7 +2181,7 @@ async function callGeminiInternal(promptText, preferredModel, maxTokens=1000){
       }catch(e){ lastError = e.message; }
     }
   }
-  throw new Error(`Summary thất bại toàn bộ key × model. Lỗi cuối: ${lastError||'unknown'}`);
+  throw new Error(`Summary thất bại. Lỗi cuối: ${lastError||'unknown'}`);
 }
 async function generateStorySummary(){
   if(chatHistory.length < SUMMARY_TRIGGER_TURNS*2+2) return;
@@ -2220,9 +2268,14 @@ Khi NVC giao dịch, AI BẮT BUỘC thêm mảng "transactionsList" vào JSON C
 - NVC nhờ NPC bán hộ → vật phẩm rời túi NVC (ghi "give"). 
   Nếu NPC GIỮ TIỀN → KHÔNG cộng linh thạch. Nếu NPC đưa lại tiền → "receive".
 
-🚫 CHẶN GIAO DỊCH THIẾU TIỀN / THIẾU ĐỒ:
-- TRƯỚC KHI kể "mua thành công" hoặc "cho thành công", AI PHẢI kiểm tra túi đồ trong [Túi] Codex.
-- Nếu KHÔNG ĐỦ linh thạch hoặc KHÔNG CÓ vật phẩm → KHÔNG kể thành công, mô tả thiếu thốn, DỪNG LẠI.
+🚫 CHẶN GIAO DỊCH THIẾU TIỀN / THIẾU ĐỒ (CỰC KỲ QUAN TRỌNG):
+- TRƯỚC KHI kể "cho thành công" / "mua thành công", AI PHẢI kiểm tra túi đồ trong [Túi] Codex.
+- Nếu KHÔNG CÓ vật phẩm trong túi → KHÔNG kể cho thành công. Mô tả: NVC lục túi nhưng KHÔNG có vật phẩm đó, hoặc mô tả NVC phát hiện mình không có.
+- Nếu KHÔNG ĐỦ linh thạch → KHÔNG kể mua thành công.
+- TUYỆT ĐỐI KHÔNG được viết "ngươi lấy ra 20 tấm Thần Hành Phù" nếu [Túi] không có "Thần Hành Phù".
+
+⚠️ HỆ THỐNG SẼ TỰ ĐỘNG HỦY MỌI GIAO DỊCH give/sell KHÔNG CÓ VẬT PHẨM TRONG TÚI.
+Nếu bạn (AI) cố kể về giao dịch đó, hệ thống sẽ chèn cảnh báo đỏ và bạn sẽ bị coi là "bịa".
 
 📊 QUY TẮC EXP (BẮT BUỘC):
 Mỗi lượt AI ước lượng EXP NVC nhận được:
@@ -2279,18 +2332,15 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 6. Không tự đột phá cảnh giới khi chưa đủ điều kiện.
 11. Mọi hành động PHẢI tiêu tốn thời gian. Cộng dồn vào mcGameTime.
 12. Đột phá cảnh giới PHẢI tính theo công thức scope_tu_luyen.
-13-17. Hệ số đan dược, linh thạch, thu nhập phải khớp scope.
 18. NPC phải có cách nói chuyện riêng theo tính cách + hảo cảm.
-19. Hảo cảm <0: NPC lạnh nhạt, xưng "ngươi", câu ngắn.
-20. Hảo cảm 0-50: NPC khách sáo, xưng "đạo hữu".
-21. Hảo cảm 50-80: NPC thân thiết, gọi tên, "huynh/muội".
-22. Hảo cảm >80: NPC hoàn toàn tin tưởng.
 23. Mỗi lượt có 2-3 đoạn nội tâm NVC đặt trong 《...》.
 24. Show don't tell — miêu tả hành động, không nói cảm xúc.
 25. Khi NVC CHO/TẶNG vật phẩm → ghi "give", KHÔNG BAO GIỜ ghi "sell".
 26. Khi NVC nhờ NPC bán hộ → vật phẩm rời túi NVC (dùng "give").
-    Nếu NPC GIỮ TIỀN → KHÔNG cộng linh thạch. Nếu NPC đưa lại tiền → "receive".
-27. Khi NVC cho/tặng linh thạch/vật phẩm mà số lượng VƯỢT số đang có → DỪNG, không kể thành công, mô tả thiếu thốn.`}
+27. ⚠️ TRƯỚC KHI kể "cho thành công" vật phẩm → PHẢI kiểm tra [Túi] trong Codex.
+    - Nếu túi KHÔNG có vật phẩm đó → KHÔNG kể cho thành công. Mô tả NVC lục túi, phát hiện không có.
+    - Nếu túi có ít hơn số muốn cho → KHÔNG kể cho hết số đó. Mô tả thiếu.
+    - TUYỆT ĐỐI KHÔNG bịa ra vật phẩm không tồn tại.`}
 
 # THẾ GIỚI
 - Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom')||'mặc định'}
@@ -2307,17 +2357,9 @@ Khi NVC thực hiện CHUỖI hành động (VD: "đi về động phủ tu luy�
 1. AI PHẢI tách thành các bước con theo thứ tự thời gian.
 2. Tính thời gian TỪNG bước dựa trên scope tương ứng.
 3. CỘNG DỒN vào mcGameTime.
-VD: "Đi về động phủ tu luyện" (A→B mất 3 ngày, tu luyện 6 tháng):
-- Bước 1 (scope_di_chuyen): Di chuyển A→B = 3 ngày.
-- Bước 2 (scope_tu_luyen): Tu luyện tại động phủ = 6 tháng.
-- Tổng: 6 tháng 3 ngày. EXP: chỉ tính cho bước 2.
 
 # 📊 QUY TẮC EXP (BẮT BUỘC)
-Mỗi lượt AI phải ước lượng EXP NVC nhận được:
-- Tu luyện bình thường: +10-30 EXP/tháng
-- Đan dược: Tụ Khí Đan +50, Trúc Cơ Đan +500
-- Linh khí: Động phủ thường ×1, Linh mạch ×1.5
-- Cơ duyên / ngộ đạo: ×2-10 | Chiến đấu: ×1.5-3 | Tẩu hỏa: trừ EXP
+Mỗi lượt AI phải ước lượng EXP NVC nhận được.
 Khi mcExp >= mcExpMax → đột phá, cập nhật "mcLevel", reset mcExp = 0.
 Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason": "..."
 
@@ -2343,16 +2385,21 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 4) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG.
 5) Khối \`\`\`json cập nhật Codex.
 
-# 💰 QUY TẮC GIAO DỊCH
+# 💰 QUY TẮC GIAO DỊCH (CỰC KỲ QUAN TRỌNG)
 Khi NVC giao dịch, AI BẮT BUỘC thêm mảng "transactionsList" vào JSON Codex.
 1. "sell" — BÁN: trừ vật phẩm, CỘNG linh thạch.
 2. "buy" — MUA: CỘNG vật phẩm, TRỪ linh thạch.
 3. "give" — CHO/TẶNG: trừ vật phẩm, KHÔNG nhận linh thạch.
 4. "receive" — NHẬN QUÀ: cộng vật phẩm, KHÔNG trừ linh thạch.
 
-🚨 NVC cho linh thạch/vật phẩm nhiều hơn số đang có → DỪNG, mô tả thiếu thốn, KHÔNG ghi giao dịch.
-⚠️ HỆ THỐNG TỰ ĐỘNG cập nhật mcInventoryList dựa trên transactionsList.
-⚠️ AI KHÔNG cần sửa mcInventoryList khi có giao dịch — chỉ ghi transactionsList.
+🚨🚨🚨 CHỐNG BỊA VẬT PHẨM (SIÊU QUAN TRỌNG):
+- Khi NVC muốn CHO/TẶNG vật phẩm, bạn PHẢI ĐỌC KỸ [Túi] trong Codex trước.
+- Nếu [Túi] KHÔNG có tên vật phẩm đó → BẠN KHÔNG ĐƯỢC KỂ việc cho thành công.
+  → Mô tả: NVC lục túi, không tìm thấy, hoặc NVC nhận ra mình không có.
+  → KHÔNG ghi transactionsList.
+- Nếu [Túi] chỉ có ít hơn số muốn cho → cũng KHÔNG kể cho hết, chỉ cho được số có.
+- TUYỆT ĐỐI KHÔNG bịa "Thần Hành Phù", "Huyết Sát Kiếm", "đan dược" nếu không thấy trong [Túi].
+- HỆ THỐNG SẼ TỰ ĐỘNG HỦY mọi giao dịch give/sell không hợp lệ và chèn cảnh báo đỏ vào story.
 
 # 🚨 CHỐNG THOÁI HÓA
 - KHÔNG viết ngắn dần. Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
@@ -2725,20 +2772,16 @@ function parseAndAutoUpdateCodex(fullResponseText){
         return buildTurnHtml(formatSummaryBox(fullResponseText.replace(/```json[\s\S]*?```/i,'')));
       }
       
-      // ═══════════════════════════════════════════════════════
-      // 🔥 POST-VALIDATE + TRANSACTION PROCESSING
-      // ═══════════════════════════════════════════════════════
+      // POST-VALIDATE + TRANSACTION PROCESSING
       let postValidateWarningHtml = '';
       let hasTransactions = false;
       if(codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList) && codexData.transactionsList.length > 0){
         hasTransactions = true;
-        // Đọc inventory hiện tại
         let currentInv = [];
         try { currentInv = JSON.parse(document.getElementById('mcInventory').value || '[]'); }
         catch(e){ currentInv = []; }
         currentInv = currentInv.filter(i => i && i.name && (i.quantity === undefined || i.quantity > 0));
 
-        // HẬU KIỂM
         const { valid, invalid } = postValidateTransactions(codexData.transactionsList, currentInv);
 
         if(invalid.length > 0){
@@ -2766,25 +2809,21 @@ ${lines}
 </div>`;
         }
 
-        // Chỉ apply giao dịch HỢP LỆ
         if(valid.length > 0){
           const result = processTransactions(valid);
           if(result && result.count > 0){ log(`💰 Đã xử lý ${result.count}/${codexData.transactionsList.length} giao dịch hợp lệ.`); }
         } else if(invalid.length === 0){
-          log(`ℹ️ transactionsList rỗng hoặc không hợp lệ — bỏ qua.`);
+          log(`ℹ️ transactionsList rỗng hoặc không hợp lệ.`);
         }
 
-        // Vô hiệu hóa mcInventoryList khi có giao dịch (tránh AI ghi đè)
         codexData.mcInventoryList = undefined;
       }
       
-      // Cập nhật mcLevel / mcGameTime / mcSkills
       const oldLevel = document.getElementById('mcLevel').value;
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!=="")document.getElementById('mcGameTime').value=codexData.mcGameTime;
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
       
-      // EXP
       if(codexData.mcExpGain !== undefined){
         const gain = parseInt(codexData.mcExpGain) || 0;
         if(gain > 0){ mcExp += gain; log(`✨ +${gain} EXP (${codexData.mcExpReason || 'tu luyện'})`); }
@@ -2801,7 +2840,6 @@ ${lines}
       }
       updateExpUI();
       
-      // mcInventoryList — chỉ apply nếu KHÔNG có giao dịch
       if(!hasTransactions && codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
         const normalizedInventory = codexData.mcInventoryList.map(item => {
           if (typeof item === 'string') {
@@ -2849,7 +2887,6 @@ ${lines}
         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
       }
       
-      // NPC active
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
           if(!aiNpc||!aiNpc.name)return;
@@ -2884,7 +2921,6 @@ ${lines}
         });
       }
       
-      // Locations
       if(codexData.locationsList!==undefined&&Array.isArray(codexData.locationsList)){
         let currentLocsText=document.getElementById('locations').value;
         let existingLocs=[];
@@ -2903,7 +2939,6 @@ ${lines}
         document.getElementById('locations').value=JSON.stringify(existingLocs,null,2);
       }
       
-      // Events
       if(codexData.eventsList!==undefined&&Array.isArray(codexData.eventsList)){
         codexData.eventsList.forEach(newEv=>{
           let found=eventList.find(e=>e.name.toLowerCase().trim()===newEv.name.toLowerCase().trim());
@@ -2920,13 +2955,11 @@ ${lines}
         syncEventsToTextarea();
       }
       
-      // Weapons
       if(codexData.weaponsList!==undefined&&Array.isArray(codexData.weaponsList)){
         renderWeaponsVisual(codexData.weaponsList);
         document.getElementById('worldItems').value=JSON.stringify(codexData.weaponsList,null,2);
       }
       
-      // NPC Archive
       if(codexData.npcArchive!==undefined){
         let archiveStr='';
         if(typeof codexData.npcArchive==='object'){
@@ -2936,7 +2969,6 @@ ${lines}
         document.getElementById('npcArchive').value=archiveStr;
       }
       
-      // Lọc NPC chết khỏi list
       const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
       npcList = npcList.filter(npc => {
         if(npc.pinned) return true;
@@ -2952,7 +2984,6 @@ ${lines}
       let cleanText=fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i,'').trim();
       let formatted=formatSummaryBox(cleanText);
       let html = buildTurnHtml(formatted);
-      // Chèn cảnh báo post-validate vào cuối turn HTML
       if(postValidateWarningHtml){
         html = html.replace('</div><div class="tts-btn-container"', postValidateWarningHtml + '</div><div class="tts-btn-container"');
         if(!html.includes(postValidateWarningHtml)){
@@ -3038,15 +3069,15 @@ function splitInventoryItem(name, quality){
 // ============================================================
 async function generateNpcRulesByNpcId(npcId, isSilent=false){
   const idx = npcList.findIndex(n => n.id === npcId);
-  if(idx === -1){ log(`⚠️ NPC [${npcId}] không còn tồn tại — bỏ qua.`); return; }
+  if(idx === -1){ log(`⚠️ NPC [${npcId}] không còn tồn tại.`); return; }
   await generateNpcRules(idx, isSilent);
 }
 async function generateNpcRules(index, isSilent=false){
   const npc = npcList[index];
   if(!npc){ alert("⚠️ NPC không tồn tại!"); return; }
   if(pendingNpcRules.has(npc.id)){
-    log(`⏳ NPC [${npc.name}] đang sinh rules — bỏ qua yêu cầu trùng.`);
-    if(!isSilent) alert(`⏳ NPC "${npc.name}" đang được sinh rules, vui lòng đợi...`);
+    log(`⏳ NPC [${npc.name}] đang sinh rules.`);
+    if(!isSilent) alert(`⏳ Đang sinh rules...`);
     return;
   }
   if(npc.lockedRules){ if(!isSilent) alert("🔒 Quy tắc NPC này đã bị KHÓA."); return; }
@@ -3100,11 +3131,11 @@ Trả về CHỈ nội dung theo format. KHÔNG thêm gì khác.`;
         res = filterCJKFromResponse(res);
       }
       const stillIdx = npcList.findIndex(n => n.id === npc.id);
-      if(stillIdx === -1){ log(`⚠️ NPC [${npc.name}] đã bị xóa trong lúc sinh rules — hủy.`); return; }
+      if(stillIdx === -1){ log(`⚠️ NPC [${npc.name}] đã bị xóa. Hủy.`); return; }
       npcList[stillIdx].npcRules = res.trim();
       tokenStats.npcRulesGenerated = (tokenStats.npcRulesGenerated||0) + 1;
       updateTokenStatsDisplay();
-      log(`✅ Đã sinh npcRules cho [${npc.name}] (${res.length} ký tự).`);
+      log(`✅ Đã sinh npcRules cho [${npc.name}].`);
       renderNpcs();
       if(!isSilent) alert(`✅ Đã sinh rules cho NPC "${npc.name}"!`);
     }else{
@@ -3188,10 +3219,10 @@ function thienDaoStats(){
   const models = getGeminiModels();
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔧 Models hiện tại</div><div class="thiendao-result-body">${models.join('\n')}<br><em>(auto-save localStorage)</em></div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng: ${scopeRegistry.length}<br>Mặc định: ${scopeRegistry.filter(s=>DEFAULT_SCOPES.find(d=>d.id===s.id)).length}/${DEFAULT_SCOPES.length}<br>Tự tạo: ${scopeRegistry.filter(s=>!DEFAULT_SCOPES.find(d=>d.id===s.id)).length}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng: ${scopeRegistry.length}<br>Mặc định: ${scopeRegistry.filter(s=>DEFAULT_SCOPES.find(d=>d.id===s.id)).length}/${DEFAULT_SCOPES.length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 EXP</div><div class="thiendao-result-body">Hiện tại: ${mcExp}/${mcExpMax}<br>Linh căn: ${mcLinhCan}<br>Cảnh giới: ${document.getElementById('mcLevel').value||'?'}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎭 NPC Rules</div><div class="thiendao-result-body">Đã sinh: ${tokenStats.npcRulesGenerated||0}<br>NPC có rules: ${npcList.filter(n=>n.npcRules && n.npcRules.length > 50).length}/${npcList.length}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0}<br>Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>Post-validate chặn: ${tokenStats.postvalidationBlocked||0}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0}<br>Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔑 API Keys</div><div class="thiendao-result-body">Keys: ${keys.length} | Models: ${models.length} | Tổ hợp: ${keys.length * models.length}<br>Rotations: ${tokenStats.keyRotations||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
@@ -3201,8 +3232,9 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.6.3 (2026-10-12)</div><div class="thiendao-result-body">🛡️ <b>DUAL-LAYER TRANSACTION GUARD</b>:<br>• LỚP 1 — Pre-validate: chặn TRƯỚC khi gọi AI khi user cho/tặng vật phẩm KHÔNG CÓ trong túi (phù lục, pháp bảo, đan dược,...) hoặc vượt số lượng.<br>• LỚP 2 — Post-validate: hậu kiểm JSON AI trả về, rollback giao dịch bịa, chèn cảnh báo đỏ vào story box.<br>• Chuẩn hóa tiếng Việt không dấu (NFD + đ→d).<br>• So khớp tên vật phẩm 3 tầng (chính xác → chứa nhau → token).<br>• Mở rộng regex bắt "cho/tặng/gửi/trao" + đơn vị (viên/cái/tấm/chiếc/...).</div></div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-blue)"><div class="thiendao-result-title">v2.6.2 (2026-10-12)</div><div class="thiendao-result-body">Gemini 3.x models, Hán Việt Scopes, Auto-save Model List.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.6.4 (2026-10-12)</div><div class="thiendao-result-body">🚧 <b>GIVE-GUARD HARD BLOCK</b>:<br>• Sửa lỗi "cho Lý Hổ 20 tấm Thần Hành Phù" không bị chặn ở LỚP 1.<br>• Thêm hàm <code>stripNpcPhrase()</code> loại bỏ tên NPC khỏi tên vật phẩm.<br>• Cải tiến <code>extractItemCandidate()</code> bỏ số + đơn vị + tên NPC + hư từ.<br>• Cải tiến <code>findMatchingInventoryItem()</code> khớp token ≥60%.<br>• Regex mới chính xác hơn cho give/sell/buy.<br>• Thêm thống kê <code>giveGuardBlocked</code>.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-blue)"><div class="thiendao-result-title">v2.6.3</div><div class="thiendao-result-body">Dual-layer transaction guard (Pre + Post).</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.2</div><div class="thiendao-result-body">Gemini 3.x models, Hán Việt Scopes, Auto-save Model List.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.1</div><div class="thiendao-result-body">Pre-validate linh thạch, parseQty hiểu "v","k","nghìn","triệu".</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.0</div><div class="thiendao-result-body">Undo FULL STATE + 4-loại giao dịch + Thanh EXP + Multi-scope.</div></div>`;
   resultsDiv.innerHTML=html;
@@ -3266,9 +3298,7 @@ const sendAction=async()=>{
   stopTTS();
   const storyBox=document.getElementById('story-box');
   
-  // ═══════════════════════════════════════════════════════════
-  // 🔥 LỚP 1 — PRE-VALIDATE: chặn trước khi gọi AI
-  // ═══════════════════════════════════════════════════════════
+  // LỚP 1 — PRE-VALIDATE
   const precheck = prevalidateTransaction(actionText);
   if(!precheck.ok){
     inputEl.value = '';
@@ -3295,8 +3325,8 @@ const sendAction=async()=>{
   
   const hasRealScope = sceneScopes.some(s => s !== 'default');
   const styleReminder = sceneScopes.length > 1
-    ? `\n⛓️ CHUỖI HÀNH ĐỘNG (theo thứ tự thời gian): ${scopeChain}\n→ AI PHẢI tính thời gian TÍCH LŨY cho TỪNG scope, KHÔNG bỏ qua scope nào.\n`
-    : (hasRealScope ? `\n⚡ SCOPE "${primaryScope}" — áp dụng số liệu + quy tắc trong scope.\n` : '');
+    ? `\n⛓️ CHUỖI HÀNH ĐỘNG (theo thứ tự thời gian): ${scopeChain}\n→ AI PHẢI tính thời gian TÍCH LŨY cho TỪNG scope.\n`
+    : (hasRealScope ? `\n⚡ SCOPE "${primaryScope}" — áp dụng số liệu + quy tắc.\n` : '');
   
   let lengthGuard = '';
   if(settings.antiShortening){
@@ -3372,7 +3402,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
       if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}
       if(gameData.eventList) eventList=gameData.eventList;
       if(gameData.storySummary) storySummary=gameData.storySummary;
-      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0},gameData.tokenStats);
+      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0},gameData.tokenStats);
       if(gameData.mcExp !== undefined) mcExp = gameData.mcExp;
       if(gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
       if(gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
@@ -3404,7 +3434,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
   const apiKeyEl = document.getElementById('apiKey');
   if(apiKeyEl){ apiKeyEl.addEventListener('input', () => { ensureKeyStatusStructure(); updateKeyCountInfo(); renderKeyStatus(); }); }
   
-  log("✅ v2.6.3 loaded. DUAL-LAYER TRANSACTION GUARD ready (Pre-validate + Post-validate).");
+  log("✅ v2.6.4 loaded. GIVE-GUARD HARD BLOCK ready (chặn bịa vật phẩm ở LỚP 1).");
 });
 </script>
 </body>

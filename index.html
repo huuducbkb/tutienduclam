@@ -1,4 +1,421 @@
-<script>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.7.0</title>
+<style>
+:root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+html{scroll-behavior:smooth}
+body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px}
+.header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--panel-bg);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color)}
+.header-title{font-size:16px;font-weight:bold;color:var(--accent-blue);display:flex;align-items:center;gap:8px}
+.menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px}
+.restart-btn{background:var(--accent-green);border-color:#388e3c}
+.restart-btn:hover{background:#2e7d32}
+.sidebar{position:fixed;top:0;left:-340px;width:330px;height:100%;background:var(--panel-bg);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto}
+.sidebar.active{left:0}
+.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:16px;font-weight:bold}
+.sidebar-item{display:block;width:100%;padding:10px 12px;background:#21262d;border:1px solid var(--border-color);color:#fff;text-align:left;border-radius:6px;margin-bottom:8px;font-weight:bold;cursor:pointer;font-size:13px}
+.section-header{background:#0d1117;border-left:3px solid var(--accent-orange);padding:6px 8px;font-size:11px;font-weight:bold;color:var(--accent-orange);margin:12px 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;margin-bottom:6px;font-size:12px}
+.toggle-switch{position:relative;width:44px;height:24px;background:#21262d;border-radius:12px;cursor:pointer;transition:.3s;flex-shrink:0}
+.toggle-switch.active{background:var(--accent-green)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.3s}
+.toggle-switch.active::after{left:22px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;background:var(--panel-bg);padding:6px;border-radius:8px;-webkit-overflow-scrolling:touch;white-space:nowrap}
+.tab-btn{flex:0 0 auto;min-width:65px;padding:8px 10px;border:none;background:transparent;color:var(--subtext-color);font-weight:bold;border-radius:6px;font-size:12px;cursor:pointer;text-align:center}
+.tab-btn.active{background:var(--input-bg);color:var(--accent-blue);border:1px solid var(--border-color)}
+.tab-content{display:none;background:var(--panel-bg);padding:14px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:12px}
+.tab-content.active{display:block}
+.form-group{margin-bottom:16px}
+.label-title{color:#fff;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px}
+.label-desc{color:var(--subtext-color);font-size:11px;margin-top:2px;margin-bottom:6px;line-height:1.3}
+input,select{width:100%;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;color:#fff;padding:10px;font-size:14px;font-family:inherit}
+textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;color:#fff;padding:10px;font-size:14px;line-height:1.5;font-family:inherit;resize:vertical;min-height:80px}
+.profile-card{display:flex;gap:14px;background:var(--input-bg);border:1px solid var(--border-color);padding:12px;border-radius:8px;margin-bottom:16px;align-items:center}
+.avatar-box{width:85px;height:85px;border-radius:8px;border:2px solid var(--accent-gold);background:#1c2128;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative}
+.avatar-box img{width:100%;height:100%;object-fit:cover}
+.avatar-placeholder{font-size:36px;color:var(--subtext-color)}
+.avatar-controls{display:flex;flex-direction:column;gap:6px;flex:1}
+.btn-upload-file{background:var(--accent-blue);border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;text-align:center;display:inline-block}
+.btn-remove-avatar{background:#21262d;border:1px solid var(--border-color);color:var(--accent-red);padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;width:fit-content}
+.inventory-grid,.loc-grid,.event-grid,.weapon-grid,.npc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px;max-height:none;overflow-y:visible}
+.item-card{background:var(--input-bg);border:1px solid var(--border-color);border-radius:8px;padding:10px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.item-icon-box{width:50px;height:50px;background:#1c2128;border:1px solid var(--border-color);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden}
+.item-icon-box img{width:100%;height:100%;object-fit:cover}
+.item-details{flex:1;min-width:0}
+.item-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.item-name{font-weight:bold;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-qty{background:var(--accent-blue);color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:10px;flex-shrink:0}
+.item-quality{font-size:11px;color:var(--accent-gold);margin-bottom:4px;font-weight:600}
+.item-effect{font-size:11px;color:var(--subtext-color);line-height:1.3;word-wrap:break-word}
+.item-unknown{color:#f85149!important;font-style:italic}
+.loc-card,.event-card,.weapon-card{background:var(--input-bg);border:1px solid var(--border-color);border-radius:8px;padding:12px;position:relative;display:flex;gap:12px;align-items:flex-start}
+.loc-info,.event-info,.weapon-info{flex:1;min-width:0}
+.loc-name,.event-name,.weapon-name{font-weight:bold;font-size:13px;color:#fff;margin-bottom:4px}
+.loc-badge{display:inline-block;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;margin-bottom:4px}
+.loc-danger-low{background:rgba(35,134,54,.2);color:#3fb950;border:1px solid #238636}
+.loc-danger-mid{background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922}
+.loc-danger-high{background:rgba(218,54,51,.2);color:#f85149;border:1px solid #da3633}
+.loc-detail-text{font-size:11px;color:var(--subtext-color);margin-top:3px;line-height:1.3}
+.npc-card{background:var(--input-bg);border:1px solid var(--border-color);border-radius:8px;padding:12px;position:relative}
+.npc-header{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.affinity-container{background:#161b22;padding:8px;border-radius:6px;border:1px solid var(--border-color);margin-top:8px}
+.affinity-bar-bg{width:100%;background:#21262d;height:10px;border-radius:5px;overflow:hidden;margin:6px 0}
+.affinity-bar-fill{height:100%;width:50%;background:var(--accent-gold);transition:width .3s,background-color .3s}
+.affinity-btns{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.btn-aff{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold;cursor:pointer}
+.btn-aff-minus{color:#f85149}
+.btn-aff-plus{color:#3fb950}
+.input-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.btn-aigen{background:var(--accent-purple);color:#fff;border:none;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:bold;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.btn-npc-rules{background:linear-gradient(135deg,#8957e5,#388bfd);color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:10px;font-weight:bold;cursor:pointer;flex:1;white-space:nowrap}
+.btn-npc-rules:hover{opacity:.9}
+.btn-npc-rules:disabled{opacity:.5;cursor:not-allowed}
+.game-controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.btn-action{flex:1;min-width:90px;padding:10px;border-radius:6px;border:1px solid var(--border-color);color:#fff;font-weight:bold;cursor:pointer;font-size:13px;text-align:center}
+.btn-send{background:var(--accent-purple)}
+.btn-undo{background:#30363d;color:#f0f6fc}
+.btn-copy{background:#1f6beb}
+.btn-bottom{background:var(--accent-gold);color:#000}
+#story-box{background:var(--input-bg);height:450px;overflow-y:auto;padding:12px;border-radius:6px;border:1px solid var(--border-color);white-space:pre-wrap;margin-bottom:12px;font-size:14px;line-height:1.6}
+.player-action-highlight{color:#ff5555;font-weight:bold;background:rgba(255,85,85,.12);padding:6px 10px;border-left:4px solid #ff5555;border-radius:4px;margin:12px 0;display:block}
+.summary-box{background:rgba(210,153,34,.1);border:1px solid var(--accent-gold);border-left:4px solid var(--accent-gold);color:#f0e6d2;padding:10px 12px;border-radius:6px;margin:12px 0;font-size:13px;line-height:1.5}
+.summary-title{color:var(--accent-gold);font-weight:bold;text-transform:uppercase;font-size:12px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.tts-btn-container{margin:8px 0 14px 0;display:flex;gap:8px;align-items:center}
+.btn-tts{background:#238636;border:1px solid var(--border-color);color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;display:inline-flex;align-items:center;gap:4px}
+.btn-tts-stop{background:#da3633}
+.btn-tts.speaking{background:#8957e5}
+.log-box{background:#000;color:#7cb342;font-family:monospace;font-size:11px;padding:8px;border-radius:6px;height:120px;overflow-y:auto;margin-top:10px}
+.log-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.log-header .label-title{margin:0}
+.log-controls{display:flex;gap:6px}
+.btn-log{padding:3px 8px;font-size:11px;border-radius:4px;border:1px solid var(--border-color);cursor:pointer;font-weight:bold;color:#fff}
+.btn-log-copy{background:var(--accent-blue)}
+.btn-log-clear{background:var(--accent-red)}
+.section-tag{background:#21262d;border-left:3px solid var(--accent-gold);padding:4px 8px;font-size:12px;font-weight:bold;margin-bottom:8px;color:var(--accent-gold);display:flex;justify-content:space-between;align-items:center}
+.thiendao-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:200;justify-content:center;align-items:center;padding:15px}
+.thiendao-modal.active{display:flex}
+.thiendao-content{background:var(--panel-bg);border:2px solid var(--accent-gold);border-radius:10px;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;padding:20px;box-shadow:0 0 30px rgba(210,153,34,.5)}
+.thiendao-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;border-bottom:1px solid var(--border-color);padding-bottom:10px}
+.thiendao-title{font-size:16px;font-weight:bold;color:var(--accent-gold)}
+.thiendao-close{background:var(--accent-red);border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:bold}
+.thiendao-search-box{display:flex;gap:8px;margin-bottom:15px}
+.thiendao-search-box input{flex:1}
+.thiendao-result{background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:12px;margin-bottom:10px}
+.thiendao-result-title{color:var(--accent-gold);font-weight:bold;font-size:13px;margin-bottom:6px}
+.thiendao-result-body{font-size:12px;color:var(--text-color);line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.thiendao-result-source{font-size:10px;color:var(--subtext-color);font-style:italic;margin-top:6px;border-top:1px dashed var(--border-color);padding-top:4px}
+.thiendao-empty{color:var(--subtext-color);font-style:italic;text-align:center;padding:20px}
+.npc-id-badge{font-size:9px;color:#666;font-family:monospace;margin-left:4px}
+.provider-badge{display:inline-block;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;margin-left:6px}
+.provider-gemini{background:rgba(56,139,253,.2);color:#388bfd;border:1px solid #388bfd}
+.provider-openrouter{background:rgba(227,112,45,.2);color:#e3702d;border:1px solid #e3702d}
+.key-warning{font-size:10px;color:var(--accent-gold);margin-top:2px}
+.config-box{background:#0d1a0d;padding:10px;border-radius:6px;border:1px solid #238636;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.config-info{flex:1;min-width:200px}
+.config-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn-config{background:var(--accent-purple);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:12px}
+.btn-config.import{background:var(--accent-blue)}
+.degradation-guard{background:rgba(218,54,51,.1);border:1px solid var(--accent-red);border-left:4px solid var(--accent-red);padding:8px 10px;border-radius:6px;margin:10px 0;font-size:11px;color:#f0b4b4}
+.cjk-warning{background:rgba(210,153,34,.1);border:1px solid var(--accent-gold);border-left:4px solid var(--accent-gold);padding:8px 10px;border-radius:6px;margin:10px 0;font-size:11px;color:#f0e6d2}
+.cjk-highlight{background:rgba(218,54,51,.3);color:#f85149;font-weight:bold;padding:0 3px;border-radius:2px}
+.key-status-box{background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:8px;margin-top:8px;font-size:11px;font-family:monospace}
+.key-item{padding:4px 6px;margin:3px 0;border-radius:4px;border-left:3px solid #666;background:#0a0d13}
+.key-item.healthy{border-left-color:var(--accent-green)}
+.key-item.exhausted{border-left-color:var(--accent-red);opacity:.6}
+.key-item.current{border-left-color:var(--accent-gold);background:#1c150c}
+.key-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold}
+.key-badge.healthy{background:rgba(35,134,54,.2);color:#3fb950}
+.key-badge.exhausted{background:rgba(218,54,51,.2);color:#f85149}
+.key-badge.current{background:rgba(210,153,34,.2);color:#d29922}
+.model-status{font-size:10px;color:var(--subtext-color);margin-left:8px}
+.model-tag{display:inline-block;padding:1px 4px;border-radius:3px;background:#21262d;margin-right:3px;font-size:9px}
+.model-tag.exhausted{background:rgba(218,54,51,.2);color:#f85149;text-decoration:line-through}
+.model-tag.healthy{background:rgba(35,134,54,.2);color:#3fb950}
+.scope-preset-info{background:rgba(56,139,253,.1);border:1px solid var(--accent-blue);border-radius:6px;padding:8px 10px;font-size:11px;color:#c9d1d9;margin-bottom:10px}
+.scope-preset-info strong{color:var(--accent-blue)}
+.archetype-badge{display:inline-block;font-size:9px;padding:2px 5px;border-radius:3px;background:linear-gradient(135deg,#8957e5,#388bfd);color:#fff;margin-left:4px;font-weight:bold}
+.scope-nsfw-highlight{background:rgba(218,54,51,.08)!important;border-color:#da3633!important}
+.transaction-log{background:rgba(35,134,54,.1);border-left:3px solid #3fb950;padding:4px 8px;font-size:11px;color:#3fb950;margin:4px 0;border-radius:4px}
+.exp-container{background:#0d1a0d;padding:10px;border-radius:6px;border:1px solid #238636;margin-bottom:16px}
+.exp-bar-bg{background:#21262d;height:16px;border-radius:8px;overflow:hidden;border:1px solid var(--border-color);margin:6px 0}
+.exp-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#238636,#3fb950);transition:width .4s}
+.exp-row{display:flex;justify-content:space-between;font-size:12px;font-weight:bold;margin:4px 0}
+.exp-detail{font-size:10px;color:var(--subtext-color);margin-top:6px}
+.exp-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.exp-btns button{background:var(--accent-blue);color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold}
+.exp-btns button.green{background:var(--accent-green)}
+.exp-btns button.gray{background:#444}
+.prevalidation-block{color:#f85149;background:rgba(218,54,51,.12);border-left:4px solid #f85149;padding:12px 16px;border-radius:6px;margin:12px 0;white-space:pre-wrap;font-weight:bold;line-height:1.6}
+.scope-chain-badge{display:inline-block;background:linear-gradient(135deg,#8957e5,#388bfd);color:#fff;font-size:10px;padding:3px 8px;border-radius:4px;margin:4px 0;font-weight:bold}
+.model-auto-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(63,185,80,.2);color:#3fb950;border:1px solid #238636;margin-left:4px;font-weight:bold}
+.sync-log{background:rgba(137,87,229,.1);border-left:3px solid #8957e5;padding:4px 8px;font-size:11px;color:#b392f0;margin:4px 0;border-radius:4px}
+.item-cat-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold}
+.cat-phap-bao{background:rgba(137,87,229,.2);color:#b392f0;border:1px solid #8957e5}
+.cat-tran-ban{background:rgba(56,139,253,.2);color:#388bfd;border:1px solid #388bfd}
+.cat-phu-reuse{background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922}
+.cat-phu-consumable{background:rgba(227,112,45,.2);color:#e3702d;border:1px solid #e3702d}
+.cat-dan-duoc{background:rgba(63,185,80,.2);color:#3fb950;border:1px solid #238636}
+.cat-nguyen-lieu{background:rgba(35,134,54,.15);color:#7ee787;border:1px solid #238636}
+.cat-linh-thach{background:rgba(56,139,253,.25);color:#79c0ff;border:1px solid #1f6feb}
+.cat-bi-tich{background:rgba(139,148,158,.2);color:#c9d1d9;border:1px solid #8b949e}
+.cat-khac{background:rgba(139,148,158,.15);color:#8b949e;border:1px solid #30363d}
+.refine-status-refined{background:rgba(63,185,80,.2);color:#3fb950;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #238636}
+.refine-status-pending{background:rgba(210,153,34,.2);color:#d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #d29922}
+.refine-status-consumable{background:rgba(56,139,253,.2);color:#388bfd;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #388bfd}
+.refine-status-passive{background:rgba(139,148,158,.15);color:#8b949e;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #30363d}
+</style>
+</head><body><div class="header">
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.7.0</span></div>
+<button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
+</div><div id="sidebar" class="sidebar">
+<div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
+<div class="section-header">🔵 Gemini (Multi-Key)</div>
+<div class="form-group">
+  <label class="label-title">Danh sách API Key:</label>
+  <div class="key-warning" style="color:#3fb950;margin-bottom:4px">💡 Nhiều key phân tách bằng &lt; &gt;</div>
+  <textarea id="apiKey" placeholder="Key1<>Key2<>Key3" style="min-height:70px;font-family:monospace;font-size:11px"></textarea>
+  <div style="font-size:10px;color:var(--subtext-color);margin-top:3px" id="keyCountInfo">Chưa có key</div>
+</div>
+<div class="form-group">
+  <label class="label-title">Danh sách Model: <span class="model-auto-badge" id="modelAutoBadge">AUTO-SAVE</span></label>
+  <div class="label-desc">💾 Tự động lưu khi thay đổi. Lần sau mở app tự load.</div>
+  <textarea id="modelListInput" style="min-height:50px;font-family:monospace;font-size:11px">gemini-3.8-flash, gemini-3.5-flash, gemini-3.6-flash, gemini-3.1-flash-lite, gemini-3.5-flash-lite</textarea>
+  <div style="display:flex;gap:6px;margin-top:6px">
+    <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px;flex:1;margin:0" onclick="saveModelListToLocal()">💾 Lưu Model</button>
+    <button class="sidebar-item" style="background:#444;font-size:11px;flex:1;margin:0" onclick="loadModelListFromLocal()">📂 Load Model</button>
+    <button class="sidebar-item" style="background:var(--accent-red);font-size:11px;flex:0 0 auto;margin:0;width:auto;padding:10px 12px" onclick="clearModelListFromLocal()">🗑️</button>
+  </div>
+  <div style="font-size:10px;color:var(--subtext-color);margin-top:4px" id="modelStatusInfo">Model list: auto-save BẬT</div>
+</div>
+<div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:8px;margin-bottom:10px">
+  <div style="font-size:11px;font-weight:bold;color:var(--accent-gold);margin-bottom:6px">📊 TRẠNG THÁI KEY</div>
+  <div id="keyStatusDisplay" class="key-status-box">Chưa có key.</div>
+  <button class="sidebar-item" style="background:#444;font-size:11px;margin-top:8px" onclick="resetKeyStatus()">🔄 Reset Key</button>
+</div>
+<div class="section-header">🟠 OpenRouter (NSFW)</div>
+<div class="form-group">
+  <label class="label-title">API Key:</label>
+  <input type="text" id="openRouterKey" placeholder="sk-or-v1-..." style="font-family:monospace;font-size:11px">
+</div>
+<div class="form-group">
+  <label class="label-title">Model:</label>
+  <select id="openRouterModel">
+    <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition:free" selected>Dolphin Mistral 24B (free)</option>
+    <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition">Dolphin Mistral 24B (paid)</option>
+    <option value="google/gemma-2-27b-it:free">Gemma 2 27B (free)</option>
+    <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B (free)</option>
+    <option value="nvidia/nemotron-4-340b-instruct:free">Nemotron 340B (free)</option>
+    <option value="openrouter/free">Auto Router</option>
+    <option value="custom">-- Nhập tay --</option>
+  </select>
+  <input type="text" id="openRouterCustomModel" placeholder="Model ID..." style="margin-top:6px;display:none">
+</div>
+<div class="section-header">⚙️ Provider</div>
+<div class="toggle-row"><span>Tự động chuyển NSFW</span><div class="toggle-switch active" id="toggleAutoSwitch" onclick="toggleSetting('autoSwitch')"></div></div>
+<div class="toggle-row"><span>Auto fallback Gemini</span><div class="toggle-switch active" id="toggleAutoFallback" onclick="toggleSetting('autoFallback')"></div></div>
+<div class="toggle-row"><span>Retry 5xx</span><div class="toggle-switch active" id="toggleRetry5xx" onclick="toggleSetting('retry5xx')"></div></div>
+<div class="toggle-row"><span>Auto-rotate Key</span><div class="toggle-switch active" id="toggleAutoRotate" onclick="toggleSetting('autoRotate')"></div></div>
+<div class="section-header">🛡️ Anti-Degradation</div>
+<div class="toggle-row"><span>Resend Rules 4 lượt</span><div class="toggle-switch active" id="togglePeriodicRules" onclick="toggleSetting('periodicRules')"></div></div>
+<div class="toggle-row"><span>Anti-Shortening</span><div class="toggle-switch active" id="toggleAntiShortening" onclick="toggleSetting('antiShortening')"></div></div>
+<div class="toggle-row"><span>Nhắc văn phong cuối prompt</span><div class="toggle-switch active" id="toggleStyleReminder" onclick="toggleSetting('styleReminder')"></div></div>
+<button class="sidebar-item" style="background:var(--accent-orange);font-size:12px;margin-top:8px" onclick="forceResendRules()">🔄 Gửi Lại Full Rules</button>
+<div class="section-header">🎭 Auto NPC Rules</div>
+<div class="toggle-row"><span>Auto sinh npcRules</span><div class="toggle-switch active" id="toggleAutoNpcRules" onclick="toggleSetting('autoNpcRules')"></div></div>
+<div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
+<button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
+<div class="section-header">🈶 CJK Filter</div>
+<div class="toggle-row"><span>Auto-filter CJK</span><div class="toggle-switch active" id="toggleCjkFilter" onclick="toggleSetting('cjkFilter')"></div></div>
+<div class="toggle-row"><span>Warn khi Save</span><div class="toggle-switch active" id="toggleCjkWarnOnSave" onclick="toggleSetting('cjkWarnOnSave')"></div></div>
+<button class="sidebar-item" style="background:#7d2828;font-size:12px;margin-top:8px" onclick="scanChineseChars()">🔍 Quét CJK</button>
+<button class="sidebar-item" style="background:#8b2020;font-size:12px" onclick="autoCleanCJK()">🧹 Xóa CJK</button>
+<div class="section-header">🎨 Scope Registry</div>
+<button class="sidebar-item" style="background:var(--accent-purple);font-size:12px" onclick="restoreDefaultScopes()">🔄 Khôi Phục 16 Scope</button>
+<button class="sidebar-item" style="background:var(--accent-blue);font-size:11px" onclick="showScopeStats()">📊 Thống Kê Scope</button>
+<hr style="border-color:var(--border-color);margin:12px 0">
+<button class="sidebar-item" style="background:var(--accent-orange);font-size:12px" onclick="testOpenRouterKey()">🔍 Test OpenRouter</button>
+<button class="sidebar-item" style="background:var(--accent-blue);font-size:12px" onclick="testAllGeminiKeys()">🔍 Test Gemini Keys</button>
+<hr style="border-color:var(--border-color);margin:12px 0">
+<div class="section-header">💾 Tiến Trình</div>
+<button class="sidebar-item" style="background:var(--accent-green)" onclick="saveGame(true)">💾 Lưu Game</button>
+<button class="sidebar-item" style="background:var(--accent-blue)" onclick="loadGame()">📂 Tải Game</button>
+<button class="sidebar-item" style="background:var(--accent-purple)" onclick="exportSaveFile()">📥 Xuất Save</button>
+<button class="sidebar-item" style="background:#1f6beb" onclick="importSaveFile()">📤 Nhập Save</button>
+<input type="file" id="fileInput" style="display:none" accept=".json" onchange="handleFileSelect(event)">
+<hr style="border-color:var(--border-color);margin:10px 0">
+<div class="label-title" style="font-size:11px;color:var(--accent-gold);margin-bottom:6px">📊 TOKEN STATS</div>
+<div style="font-size:11px;color:var(--subtext-color)" id="tokenStats">Chưa có</div>
+<button class="sidebar-item" style="background:#444;font-size:11px;margin-top:8px" onclick="resetTokenStats()">🔄 Reset Token</button>
+<hr style="border-color:var(--border-color);margin:10px 0">
+<div class="section-header">🔍 Thiên Đạo</div>
+<button class="sidebar-item" style="background:#8b4513;font-size:12px" onclick="thienDaoSearch()">🔍 Tra Cứu</button>
+<button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="thienDaoRecent()">📜 Lịch Sử</button>
+<button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="thienDaoStats()">📊 Thống Kê</button>
+<button class="sidebar-item" style="background:#3a2a1a;font-size:11px" onclick="showVersionLog()">📋 Version Log</button>
+<hr style="border-color:var(--border-color);margin:10px 0">
+<button class="sidebar-item" style="background:var(--accent-red);margin-top:15px" onclick="resetAllFields()">🧹 RESET TẤT CẢ</button>
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
+<button class="tab-btn" onclick="openTab('mc')">👤 NVC</button>
+<button class="tab-btn" onclick="openTab('npc')">👥 NPCs</button>
+<button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh</button>
+<button class="tab-btn" onclick="openTab('events')">📜 Sự Kiện</button>
+<button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
+<button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
+</div>
+
+<div id="world" class="tab-content active">
+<div class="config-box">
+  <div class="config-info">
+    <div class="label-title" style="color:#3fb950">📦 QUẢN LÝ CẤU HÌNH</div>
+    <div class="label-desc">Xuất/nhập toàn bộ cấu hình World + Scope.</div>
+  </div>
+  <div class="config-actions">
+    <button class="btn-config" onclick="exportWorldConfig()">📤 Xuất</button>
+    <button class="btn-config import" onclick="importWorldConfig()">📥 Nhập</button>
+    <input type="file" id="worldConfigFileInput" style="display:none" accept=".json" onchange="handleWorldConfigImport(event)">
+  </div>
+</div>
+<div class="form-group" style="background:#1c150c;padding:10px;border-radius:6px;border:1px solid #b8860b">
+<div class="input-header"><div><div class="label-title" style="color:var(--accent-gold)">👑 QUY TẮC TỐI CAO</div></div><button class="btn-aigen" style="background:var(--accent-gold);color:#000" onclick="aiGenField('supremeMotifRule','Viết 5-6 chỉ thị đánh số về mô tuýp truyện tu tiên.')">✨ AI GEN</button></div>
+<textarea id="supremeMotifRule" style="border-color:#b8860b;min-height:120px"></textarea>
+</div>
+<div class="form-group" style="background:#1c0e12;padding:10px;border-radius:6px;border:1px solid #a83250">
+<div class="input-header"><div><div class="label-title" style="color:#ff5577">🔥 QUY TẮC 18+</div></div><button class="btn-aigen" style="background:#a83250" onclick="aiGenField('rule18Plus','Viết 6-8 quy tắc đánh số xử lý nội dung 18+ tâm lý.')">✨ AI GEN</button></div>
+<textarea id="rule18Plus" style="border-color:#a83250;min-height:150px"></textarea>
+</div>
+<div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
+  <div class="input-header">
+    <div>
+      <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY (16 Preset — Hán Việt)</div>
+      <div class="label-desc">16 scope: <b>18+ (tự điền)</b> · Tu luyện · Đan dược · Linh thạch · Di chuyển · Nhiệm vụ · Chiến đấu · Luyện khí · Luyện phù · Trận pháp · Linh thú · Phi thăng · Tẩu hỏa · Tông môn · Di tích · Linh địa.</div>
+    </div>
+    <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM</button>
+  </div>
+  <div id="scopeRegistryContainer" style="display:flex;flex-direction:column;gap:10px;margin-top:10px"></div>
+</div>
+<div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
+<div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Viết danh sách 24 quy tắc đánh số. Cuối có 5 quy tắc đối thoại NPC theo hảo cảm và 2-3 đoạn nội tâm NVC.')">✨ AI GEN</button></div>
+<textarea id="aiRules" style="border-color:#7d2828;min-height:250px"></textarea>
+</div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.7.0</textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">KỊCH BẢN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startScript','Kịch bản mở đầu 3-5 câu.')">✨ AI GEN</button></div><textarea id="startScript" style="min-height:150px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','10-12 quy tắc đánh số.')">✨ AI GEN</button></div><textarea id="worldRules" style="min-height:300px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC ĐẶT TÊN</div><button class="btn-aigen" onclick="aiGenField('namingRules','8-10 quy tắc đặt tên.')">✨ AI GEN</button></div><textarea id="namingRules" style="min-height:150px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">THỂ LOẠI</div><button class="btn-aigen" onclick="aiGenField('genre','5-6 câu thể loại và âm hưởng.')">✨ AI GEN</button></div><textarea id="genre" style="min-height:120px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','7 cảnh giới chính tu tiên.')">✨ AI GEN</button></div><textarea id="powerSystem" style="min-height:300px"></textarea></div>
+<div class="form-group" style="background:#0d1a24;padding:12px;border-radius:6px;border:1px solid #388bfd">
+<div class="input-header"><div><div class="label-title" style="color:#388bfd">🎭 VĂN PHONG & NGÔI KỂ</div><div class="label-desc">Ngôi thứ 2, có nội tâm 《...》, NPC nói theo hảo cảm.</div></div><button class="btn-aigen" style="background:#1f6beb" onclick="aiGenField('writingStyle','8-10 đặc điểm văn phong nhập vai.')">✨ AI GEN</button></div>
+<textarea id="writingStyle" style="border-color:#388bfd;min-height:400px"></textarea>
+</div>
+</div><div id="mc" class="tab-content">
+<div class="section-tag">🖼️ ẢNH & THÔNG TIN NVC</div>
+<div class="profile-card">
+<div class="avatar-box" id="avatarPreviewBox"><span class="avatar-placeholder" id="avatarPlaceholder">🧙‍♂️</span><img id="avatarImg" src="" style="display:none" alt="NVC"></div>
+<div class="avatar-controls">
+<div class="label-title" style="font-size:12px">ẢNH ĐẠI DIỆN</div>
+<label class="btn-upload-file">📁 Chọn ảnh...<input type="file" id="avatarFileInput" style="display:none" accept="image/*" onchange="uploadMcAvatarFile(event)"></label>
+<button class="btn-remove-avatar" id="btnRemoveAvatar" style="display:none" onclick="removeMcAvatar()">❌ Xóa ảnh</button>
+</div>
+</div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN & THÂN PHẬN NVC</div><button class="btn-aigen" onclick="aiGenField('mcName','Tên và thân phận NVC.')">✨ AI GEN</button></div><textarea id="mcName" style="min-height:50px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title" style="color:var(--accent-gold)">⭐ CẢNH GIỚI HIỆN TẠI</div><button class="btn-aigen" onclick="aiGenField('mcLevel','Cảnh giới hiện tại.')">✨ AI GEN</button></div><input type="text" id="mcLevel" style="border-color:var(--accent-gold)" onchange="updateExpUI()"></div>
+<div class="exp-container">
+  <div class="label-title" style="color:#3fb950">📊 KINH NGHIỆM TU LUYỆN</div>
+  <div class="exp-row">
+    <span id="expLabel">0 / 100 EXP</span>
+    <span id="expLevelLabel" style="color:var(--accent-gold)">Luyện Khí sơ kỳ</span>
+  </div>
+  <div class="exp-bar-bg"><div id="expBarFill" class="exp-bar-fill"></div></div>
+  <div class="exp-detail" id="expDetail">Linh căn: Ngũ | Hệ số: 0.15 | Cần: 100 EXP</div>
+  <div class="exp-btns">
+    <input type="number" id="mcExpManual" placeholder="EXP" style="flex:1;min-width:80px;font-size:11px;padding:5px;background:var(--input-bg);border:1px solid var(--border-color);color:#fff;border-radius:4px">
+    <button class="green" onclick="addManualExp()">+ EXP</button>
+    <button onclick="setLinhCan()">🔮 Linh Căn</button>
+    <button class="gray" onclick="resetExp()">🔄 Reset</button>
+  </div>
+</div>
+<div class="form-group"><div class="input-header"><div class="label-title" style="color:#388bfd">⏳ TỔNG THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('mcGameTime','Tổng thời gian.')">✨ AI GEN</button></div><input type="text" id="mcGameTime" style="border-color:#388bfd"></div>
+<div class="form-group"><div class="input-header"><div class="label-title" style="color:var(--accent-purple)">🔥 KĨ NĂNG</div><button class="btn-aigen" onclick="aiGenField('mcSkills','Danh sách kỹ năng.')">✨ AI GEN</button></div><textarea id="mcSkills"></textarea></div>
+<hr style="border-color:var(--border-color);margin:15px 0">
+<div class="section-tag">🎒 TÚI ĐỒ</div>
+<div id="inventoryVisualGrid" class="inventory-grid"></div>
+<div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e"></textarea></div>
+</div>
+
+<div id="npc" class="tab-content">
+<div class="section-tag"><span>👥 NPCs</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
+<div class="label-desc">⚡ Mỗi NPC có ID riêng. 📌 Ghim. 🔒 Khóa rules. 🎭 Auto sinh npcRules.</div>
+<div id="npcContainer" class="npc-grid"></div>
+<hr style="border-color:var(--border-color);margin:15px 0">
+<div class="section-tag">🔴 NPC ARCHIVE</div>
+<div class="form-group"><textarea id="npcArchive" style="min-height:90px"></textarea></div>
+</div>
+
+<div id="loc" class="tab-content">
+<div class="section-tag">📍 ĐỊA DANH</div>
+<div id="locVisualGrid" class="loc-grid"></div>
+<div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="locations" style="min-height:120px;font-size:12px;color:#8b949e"></textarea></div>
+</div>
+
+<div id="events" class="tab-content">
+<div class="section-tag"><span>📜 SỰ KIỆN</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewEventCard()">➕ THÊM</button></div>
+<div id="eventVisualGrid" class="event-grid"></div>
+<div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="gameEvents" style="min-height:120px;font-size:12px;color:#8b949e"></textarea></div>
+</div>
+
+<div id="items" class="tab-content">
+<div class="section-tag">⚔️ PHÁP BẢO / ĐỒ VẬT THẾ GIỚI</div>
+<div class="label-desc" style="margin-bottom:8px">💡 Vật phẩm trong tab này là đồ vật TỒN TẠI trong thế giới. Bấm "➕ Thêm vào túi" nếu NVC đã sở hữu.</div>
+<div id="weaponVisualGrid" class="weapon-grid"></div>
+<div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="worldItems" style="min-height:120px;font-size:12px;color:#8b949e"></textarea></div>
+</div>
+
+<div id="play" class="tab-content">
+<div id="story-box">Chưa có dữ liệu. Điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!</div>
+<div id="degradationWarning" class="degradation-guard" style="display:none">🚨 <b>THOÁI HÓA:</b> Lượt trước AI viết ngắn.</div>
+<div id="cjkWarningBox" class="cjk-warning" style="display:none">🈶 <b>CJK:</b> Phát hiện ký tự Trung.</div>
+<div class="form-group" style="margin-top:10px">
+<input type="text" id="userInput" placeholder="Nhập lựa chọn hoặc hành động...">
+<div class="game-controls">
+<button class="btn-action btn-send" onclick="sendAction()">GỬI ➔</button>
+<button class="btn-action btn-undo" onclick="undoLastTurn()">↩ QUAY LẠI</button>
+<button class="btn-action btn-bottom" onclick="jumpToBottom()">↓ CUỐI</button>
+<button class="btn-action btn-copy" onclick="copyGameStory()">📋 COPY</button>
+</div>
+</div>
+<div class="log-header">
+  <div class="label-title">SYSTEM LOGS</div>
+  <div class="log-controls">
+    <button class="btn-log btn-log-copy" onclick="copySystemLogs()">📋 Copy</button>
+    <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
+  </div>
+</div>
+<div id="sysLogs" class="log-box">> System v2.7.0 (Item Category + Refine Mechanic) initialized... Ready.</div>
+</div>
+
+<div id="thienDaoModal" class="thiendao-modal">
+<div class="thiendao-content">
+<div class="thiendao-header">
+<div class="thiendao-title">🔍 THIÊN ĐẠO</div>
+<button class="thiendao-close" onclick="closeThienDao()">✕ ĐÓNG</button>
+</div>
+<div class="thiendao-search-box">
+<input type="text" id="thienDaoInput" placeholder="Nhập từ khóa..." onkeypress="if(event.key==='Enter')thienDaoExecute()">
+<button class="btn-action btn-send" style="flex:0 0 auto;min-width:80px" onclick="thienDaoExecute()">🔍 TÌM</button>
+</div>
+<div id="thienDaoResults"></div>
+</div>
+</div><script>
 // ============================================================
 // HỒNG ĐỨC TU TIÊN LỘ v2.7.0
 // - ITEM CATEGORY SYSTEM: 9 nhóm đồ vật tu tiên

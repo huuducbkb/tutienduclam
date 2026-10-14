@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.7.1</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.7.2</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -193,9 +193,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .music-list-item .music-list-title{flex:1;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .music-list-item .music-list-del{background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px}
 .music-list-item .music-list-play{background:var(--accent-blue);border:none;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;flex-shrink:0}
+.ingredient-warning{background:rgba(210,153,34,.12);border-left:3px solid #d29922;padding:6px 10px;font-size:11px;color:#f0e6d2;margin:4px 0;border-radius:4px}
 </style>
 </head><body><div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.7.1</span></div>
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.7.2</span></div>
 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
 <div class="music-controls">
 <button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
@@ -404,7 +405,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.7.1</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.7.2</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
@@ -528,7 +529,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.7.1 (Item Category + Refine + Price Memory) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.7.2 (Ingredient Split Fix) initialized... Ready.</div>
 </div>
 
 <!-- ═══════════════ MODAL THIÊN ĐẠO ═══════════════ -->
@@ -546,20 +547,16 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div><script>
 // ============================================================
-// HỒNG ĐỨC TU TIÊN LỘ v2.7.1
-// - ITEM CATEGORY SYSTEM: 9 nhóm đồ vật tu tiên
-// - REFINE MECHANIC: luyện hoá pháp bảo/trận bàn/phù tái sử dụng
-// - GIVE-GUARD AUTO-SYNC: cho vật phẩm có trong worldItems → tự sync vào túi
-// - WORLD-ITEM AUTO-SYNC: receive → tự chuyển từ Pháp Bảo → túi
-// - EXTENDED VERBS: cho/tặng/nhận/bán/mua mở rộng
-// - v2.7.1 NEW: PRICE MEMORY SYSTEM (AI nhớ giá cả)
-// - v2.7.1 NEW: TIME NORMALIZER (chuẩn hóa thời gian)
-// - v2.7.1 FIX: Fuzzy matching chính xác (Tụ Khí Đan ≠ Hồi Khí Đan)
-// - v2.7.1 NEW: BACKGROUND MUSIC (playlist + volume + auto-play)
+// HỒNG ĐỨC TU TIÊN LỘ v2.7.2
+// - v2.7.2 NEW: INGREDIENT GUARD — Chống gộp nhầm nguyên liệu
+//   (VD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan")
+// - v2.7.1: ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC
+// - v2.7.0: Give-Guard Auto-Sync + World-Item Auto-Sync
+// - v2.6.x: Extended Verbs + Multi-scope + Undo Full State
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=2701;
+const DB_VERSION=2702;
 
 const MAX_RECENT_TURNS=6;
 const SUMMARY_TRIGGER_TURNS=3;
@@ -617,7 +614,8 @@ let tokenStats={
   worldItemAutoSync:0,
   itemsRefined:0,
   itemsAddedToInv:0,
-  pricesRecorded:0
+  pricesRecorded:0,
+  ingredientGuardBlocked:0
 };
 
 let systemRulesSentThisSession=false;
@@ -629,6 +627,80 @@ const MAX_SNAPSHOTS = 20;
 let mcExp = 0;
 let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
+
+// ══════════════════════════════════════════════════════════════
+// v2.7.2: INGREDIENT GUARD — Chống gộp nhầm nguyên liệu
+// ══════════════════════════════════════════════════════════════
+// Map: tên nguyên liệu → sản phẩm đích (recipe key)
+// Mục đích: "Nguyên liệu Tụ Khí Đan" và "Nguyên liệu Thanh Tâm Đan"
+// tuy cùng hậu tố "Đan" nhưng là 2 nguyên liệu KHÁC NHAU.
+const INGREDIENT_RECIPE_MAP = {
+  'tu khi': 'tu_khi_dan',
+  'tụ khí': 'tu_khi_dan',
+  'thanh tam': 'thanh_tam_dan',
+  'thanh tâm': 'thanh_tam_dan',
+  'truc co': 'truc_co_dan',
+  'trúc cơ': 'truc_co_dan',
+  'kim nguyen': 'kim_nguyen_dan',
+  'kim nguyên': 'kim_nguyen_dan',
+  'ngung anh': 'ngung_anh_dan',
+  'ngưng anh': 'ngung_anh_dan',
+  'hoa than': 'hoa_than_dan',
+  'hóa thần': 'hoa_than_dan',
+  'hoi khi': 'hoi_khi_dan',
+  'hồi khí': 'hoi_khi_dan',
+  'boi nguyen': 'boi_nguyen_dan',
+  'bồi nguyên': 'boi_nguyen_dan',
+  'tay tuy': 'tay_tuy_dan',
+  'tẩy tủy': 'tay_tuy_dan',
+  'pha canh': 'pha_canh_dan',
+  'phá cảnh': 'pha_canh_dan',
+  'tu linh': 'tu_linh_dan',
+  'tụ linh': 'tu_linh_dan'
+};
+
+/**
+ * Trích xuất recipe key từ tên nguyên liệu.
+ * VD: "Nguyên liệu Tụ Khí Đan" → "tu_khi_dan"
+ *     "Nguyên liệu Thanh Tâm Đan" → "thanh_tam_dan"
+ * Trả về null nếu không phải nguyên liệu luyện đan.
+ */
+function extractIngredientRecipeKey(name){
+  if(!name) return null;
+  const lower = normalizeVN(name);
+  // Phải có tiền tố "nguyen lieu" mới tính là nguyên liệu
+  if(!lower.startsWith('nguyen lieu') && !lower.includes('nguyen lieu')) return null;
+  // Nếu có "dan" ở cuối → tìm recipe key
+  if(!lower.includes('dan')) return null;
+  for(const [prefix, recipeKey] of Object.entries(INGREDIENT_RECIPE_MAP)){
+    const prefixNorm = normalizeVN(prefix);
+    if(lower.includes(prefixNorm)) return recipeKey;
+  }
+  return null;
+}
+
+/**
+ * Kiểm tra 2 tên nguyên liệu có phải là nguyên liệu cho 2 recipe KHÁC NHAU không.
+ * Nếu khác recipe → KHÔNG được merge/gộp chung.
+ */
+function isIngredientForDifferentRecipe(nameA, nameB){
+  const keyA = extractIngredientRecipeKey(nameA);
+  const keyB = extractIngredientRecipeKey(nameB);
+  // Nếu cả 2 đều là nguyên liệu nhưng khác recipe → true (khác nhau, không merge)
+  if(keyA && keyB && keyA !== keyB) return true;
+  // Nếu 1 cái là nguyên liệu, 1 cái không phải → false (không conflict, để logic khác xử lý)
+  return false;
+}
+
+/**
+ * Kiểm tra 2 tên có phải cùng recipe nguyên liệu không.
+ */
+function isSameIngredientRecipe(nameA, nameB){
+  const keyA = extractIngredientRecipeKey(nameA);
+  const keyB = extractIngredientRecipeKey(nameB);
+  if(!keyA || !keyB) return false;
+  return keyA === keyB;
+}
 
 // ══════════════════════════════════════════════════════════════
 // v2.7.1: PRICE MEMORY SYSTEM
@@ -927,7 +999,9 @@ const DEFAULT_SCOPES = [
   { id: 'scope_linh_dia', label: 'Linh địa', triggers: ['linh địa','động phủ','linh mạch','phúc địa','động thiên','linh tuyền','linh khí','tu luyện địa','mua động phủ','thuê động phủ','xây động phủ'], exemplar: 'C1 Động phủ thường (×1, 1-5K, 0.95)|C2 Linh mạch thấp (×1.5, 50-200K, 0.85)|C3 Trung (×2-3).' }
 ];
 
-let scopeRegistry = [];// ══════════════════════════════════════════════════════════════
+let scopeRegistry = [];
+
+// ══════════════════════════════════════════════════════════════
 // PHÂN LOẠI ĐỒ VẬT TU TIÊN
 // ══════════════════════════════════════════════════════════════
 const ITEM_CATEGORIES = {
@@ -962,7 +1036,7 @@ const ITEM_CATEGORIES = {
   NGUYEN_LIEU: {
     id: 'nguyen_lieu', label: 'Nguyên Liệu', icon: '🌿',
     needsRefine: false, consumable: true, badgeClass: 'cat-nguyen-lieu',
-    keywords: ['thảo','hoa','quả','củ','rễ','lá','khoáng','thạch','tinh','thiết','đồng','ngân','kim','mộc','thủy','hỏa','thổ','linh thảo','linh dược','yêu đan','nội đan','tinh hạch','tinh thạch','khoáng thạch','linh mộc','long huyết','phượng huyết']
+    keywords: ['thảo','hoa','quả','củ','rễ','lá','khoáng','thạch','tinh','thiết','đồng','ngân','kim','mộc','thủy','hỏa','thổ','linh thảo','linh dược','yêu đan','nội đan','tinh hạch','tinh thạch','khoáng thạch','linh mộc','long huyết','phượng huyết','nguyên liệu']
   },
   LINH_THACH: {
     id: 'linh_thach', label: 'Linh Thạch', icon: '💎',
@@ -982,7 +1056,10 @@ const ITEM_CATEGORIES = {
 
 function detectItemCategory(name, quality, effect){
   const text = ((name || '') + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
+  // ⚠️ QUAN TRỌNG: "Nguyên liệu ..." phải được nhận diện là NGUYÊN LIỆU
+  // NGAY CẢ KHI tên có chứa "Đan" (VD: "Nguyên liệu Tụ Khí Đan")
   if(/^nguyên liệu/i.test((name||'').trim())) return 'NGUYEN_LIEU';
+  if(/^nguyen lieu/i.test((name||'').trim())) return 'NGUYEN_LIEU';
   for(const [key, cat] of Object.entries(ITEM_CATEGORIES)){
     if(key === 'KHAC') continue;
     for(const kw of cat.keywords){ if(text.includes(kw.toLowerCase())) return key; }
@@ -1052,7 +1129,7 @@ function extractItemCandidate(rawText){
 }
 
 // ══════════════════════════════════════════════════════════════
-// FUZZY MATCHING
+// FUZZY MATCHING (v2.7.2 — FIX INGREDIENT GUARD)
 // ══════════════════════════════════════════════════════════════
 const ITEM_NAME_BLACKLIST_PAIRS = [
   ['tu khi dan', 'hoi khi dan'],
@@ -1064,6 +1141,16 @@ const ITEM_NAME_BLACKLIST_PAIRS = [
   ['linh thach ha pham', 'linh thach trung pham'],
   ['linh thach trung pham', 'linh thach thuong pham'],
   ['linh thach thuong pham', 'linh thach cuc pham'],
+  // v2.7.2: blacklist nguyên liệu
+  ['nguyen lieu tu khi dan', 'nguyen lieu thanh tam dan'],
+  ['nguyen lieu tu khi dan', 'nguyen lieu truc co dan'],
+  ['nguyen lieu thanh tam dan', 'nguyen lieu truc co dan'],
+  ['nguyen lieu tu khi dan', 'nguyen lieu hoi khi dan'],
+  ['nguyen lieu thanh tam dan', 'nguyen lieu hoi khi dan'],
+  ['nguyen lieu tu khi dan', 'nguyen lieu kim nguyen dan'],
+  ['nguyen lieu tu khi dan', 'nguyen lieu ngung anh dan'],
+  ['nguyen lieu tu khi dan', 'nguyen lieu hoa than dan'],
+  ['nguyen lieu tu khi', 'nguyen lieu thanh tam'],
 ];
 
 function _isConflictingName(a, b){
@@ -1071,6 +1158,8 @@ function _isConflictingName(a, b){
   for(const [x, y] of ITEM_NAME_BLACKLIST_PAIRS){
     if((na.includes(x) && nb.includes(y)) || (na.includes(y) && nb.includes(x))) return true;
   }
+  // v2.7.2: Ingredient Guard — 2 nguyên liệu khác recipe KHÔNG được match
+  if(isIngredientForDifferentRecipe(a, b)) return true;
   return false;
 }
 
@@ -1157,18 +1246,25 @@ function autoSyncReceivedItem(tx){
   const fullName = quality ? `${txName} ${quality}` : txName;
   const existing = findMatchingInventoryItem(fullName, inv) || findMatchingInventoryItem(txName, inv);
   if(existing){
-    const existQuality = (existing.quality || '').toLowerCase().trim();
-    const newQuality = (quality || '').toLowerCase().trim();
-    if(existQuality && newQuality && existQuality !== newQuality){
-      log(`⚠️ Quality khác ("${existing.quality}" vs "${quality}") → tạo item mới.`);
-    } else {
-      existing.quantity = (existing.quantity || 1) + qty;
-      document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
-      renderInventoryVisual(inv);
-      log(`🎁 Auto-sync: cộng ${qty}x "${existing.name}" vào túi.`);
-      tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync||0) + 1;
+    // v2.7.2: Double-check ingredient guard trước khi cộng dồn
+    if(isIngredientForDifferentRecipe(existing.name, txName)){
+      log(`🛡️ Ingredient Guard: "${txName}" KHÁC recipe với "${existing.name}" → tạo item mới.`);
+      tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked||0) + 1;
       updateTokenStatsDisplay();
-      return true;
+    } else {
+      const existQuality = (existing.quality || '').toLowerCase().trim();
+      const newQuality = (quality || '').toLowerCase().trim();
+      if(existQuality && newQuality && existQuality !== newQuality){
+        log(`⚠️ Quality khác ("${existing.quality}" vs "${quality}") → tạo item mới.`);
+      } else {
+        existing.quantity = (existing.quantity || 1) + qty;
+        document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
+        renderInventoryVisual(inv);
+        log(`🎁 Auto-sync: cộng ${qty}x "${existing.name}" vào túi.`);
+        tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync||0) + 1;
+        updateTokenStatsDisplay();
+        return true;
+      }
     }
   }
   const newItem = {
@@ -1191,9 +1287,7 @@ function autoSyncReceivedItem(tx){
   tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync||0) + 1;
   updateTokenStatsDisplay();
   return true;
-}
-
-// ============================================================
+}// ============================================================
 // MODEL LIST AUTO-SAVE
 // ============================================================
 function getDefaultModelListString(){ return 'gemini-3.8-flash, gemini-3.5-flash, gemini-3.6-flash, gemini-3.1-flash-lite, gemini-3.5-flash-lite'; }
@@ -1520,7 +1614,9 @@ function getStyleExemplarBlockMulti(scopeIds){
     blocks.push(`# 🎨 SCOPE "${scope.label || scope.id}"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sample}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   }
   return blocks.length > 0 ? '\n' + blocks.join('\n\n') + '\n' : '';
-}// ============================================================
+}
+
+// ============================================================
 // EXP SYSTEM
 // ============================================================
 function parseRealmLevel(levelStr){
@@ -1616,11 +1712,12 @@ Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}
 🚫 Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>
 🛑 Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>
 🚧 Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}<br>
+🛡️ Ingredient Guard: ${tokenStats.ingredientGuardBlocked||0}<br>
 🔗 World-Item Auto-Sync: ${tokenStats.worldItemAutoSync||0}<br>
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
 }
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
 
 // ============================================================
 // STATE SNAPSHOTS
@@ -1695,7 +1792,7 @@ function playFemaleTTS(text, btnElement){
 function stopTTS(){ if('speechSynthesis' in window){ try { window.speechSynthesis.cancel(); } catch(e) {} } if(currentTTSButton){ _resetTTSButton(currentTTSButton); } currentTTSUtterance = null; currentTTSButton = null; document.querySelectorAll('#story-box .btn-tts:not(.btn-tts-stop)').forEach(btn => { _resetTTSButton(btn); }); }
 
 // ============================================================
-// AVATAR (v2.7.1 FIX: crop ưu tiên phần trên + 200x200)
+// AVATAR
 // ============================================================
 function setMcAvatarImage(src){const img=document.getElementById('avatarImg');const placeholder=document.getElementById('avatarPlaceholder');const btnRemove=document.getElementById('btnRemoveAvatar');if(src&&src.trim()!==''){img.src=src;img.style.display='block';placeholder.style.display='none';if(btnRemove)btnRemove.style.display='inline-block';mcAvatarBase64=src;}else{img.src='';img.style.display='none';placeholder.style.display='block';if(btnRemove)btnRemove.style.display='none';mcAvatarBase64="";}}
 function removeMcAvatar(){setMcAvatarImage('');document.getElementById('avatarFileInput').value='';}
@@ -1710,11 +1807,8 @@ function uploadMcAvatarFile(event){
       canvas.width=200;canvas.height=200;
       const minSide=Math.min(img.width,img.height);
       let sx, sy;
-      if(img.width > img.height){
-        sx = (img.width - minSide)/2; sy = 0;
-      } else {
-        sx = 0; sy = Math.min((img.height - minSide) * 0.25, (img.height - minSide));
-      }
+      if(img.width > img.height){ sx = (img.width - minSide)/2; sy = 0; }
+      else { sx = 0; sy = Math.min((img.height - minSide) * 0.25, (img.height - minSide)); }
       ctx.drawImage(img,sx,sy,minSide,minSide,0,0,200,200);
       const resizedBase64=canvas.toDataURL('image/jpeg',0.9);
       setMcAvatarImage(resizedBase64);
@@ -1776,11 +1870,8 @@ function uploadNpcAvatar(event,index){
       canvas.width=200;canvas.height=200;
       const minSide=Math.min(img.width,img.height);
       let sx, sy;
-      if(img.width > img.height){
-        sx = (img.width - minSide)/2; sy = 0;
-      } else {
-        sx = 0; sy = Math.min((img.height - minSide) * 0.25, (img.height - minSide));
-      }
+      if(img.width > img.height){ sx = (img.width - minSide)/2; sy = 0; }
+      else { sx = 0; sy = Math.min((img.height - minSide) * 0.25, (img.height - minSide)); }
       ctx.drawImage(img,sx,sy,minSide,minSide,0,0,200,200);
       npcList[index].avatar=canvas.toDataURL('image/jpeg',0.9);
       renderNpcs();
@@ -1885,7 +1976,7 @@ function detectPurchaseIntent(actionText){
 }
 
 // ============================================================
-// PRE-VALIDATE
+// PRE-VALIDATE (v2.7.2 — bổ sung Ingredient Guard)
 // ============================================================
 function prevalidateTransaction(actionText){
   const intent = detectPurchaseIntent(actionText);
@@ -1961,7 +2052,7 @@ function prevalidateTransaction(actionText){
 }
 
 // ============================================================
-// POST-VALIDATE
+// POST-VALIDATE (v2.7.2 — bổ sung Ingredient Guard)
 // ============================================================
 function postValidateTransactions(txList, currentInv){
   const valid = []; const invalid = [];
@@ -1972,6 +2063,10 @@ function postValidateTransactions(txList, currentInv){
   const deductVirtual = (name, quality, qty) => {
     const m = findMatchingInventoryItem(name, virtualInv);
     if(!m) return { ok: false, reason: 'not_found' };
+    // v2.7.2: Ingredient Guard — không cho phép trừ nhầm nguyên liệu khác recipe
+    if(isIngredientForDifferentRecipe(m.name, name)){
+      return { ok: false, reason: 'different_recipe' };
+    }
     const avail = m.quantity || 1;
     if(qty > avail) return { ok: false, reason: 'insufficient', have: avail, need: qty };
     m.quantity = avail - qty;
@@ -1979,7 +2074,11 @@ function postValidateTransactions(txList, currentInv){
   };
   const addVirtual = (name, quality, qty, isRefined) => {
     const m = findMatchingInventoryItem(name, virtualInv);
-    if(m){ m.quantity = (m.quantity || 1) + qty; return; }
+    // v2.7.2: Ingredient Guard — nếu là nguyên liệu khác recipe, PHẢI tạo item mới
+    if(m && !isIngredientForDifferentRecipe(m.name, name)){
+      m.quantity = (m.quantity || 1) + qty;
+      return;
+    }
     const catKey = detectItemCategory(name, quality, '');
     const catInfo = getItemCategoryInfo(catKey);
     const newItem = { name, quality: quality || 'Thường', quantity: qty, icon: catInfo.icon, effect: '', category: catKey };
@@ -1997,7 +2096,12 @@ function postValidateTransactions(txList, currentInv){
     if(tx.type === 'sell'){
       if(isLS){ invalid.push({ tx, reason: 'Không thể BÁN linh thạch (đây là tiền tệ).' }); continue; }
       const r = deductVirtual(txName, tx.quality, qty);
-      if(!r.ok){ invalid.push({ tx, reason: r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để bán.` : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể bán ${qty}.` }); continue; }
+      if(!r.ok){
+        const msg = r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để bán.`
+          : (r.reason === 'different_recipe' ? `AI bịa: "${txName}" là nguyên liệu KHÁC recipe với item trong túi.`
+          : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể bán ${qty}.`);
+        invalid.push({ tx, reason: msg }); continue;
+      }
       valid.push({ ...tx, _validatedName: r.matchedName });
     }
     else if(tx.type === 'give'){
@@ -2006,7 +2110,12 @@ function postValidateTransactions(txList, currentInv){
         lsBalance -= qty; valid.push(tx); continue;
       }
       const r = deductVirtual(txName, tx.quality, qty);
-      if(!r.ok){ invalid.push({ tx, reason: r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để cho/tặng.` : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể cho ${qty}.` }); continue; }
+      if(!r.ok){
+        const msg = r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để cho/tặng.`
+          : (r.reason === 'different_recipe' ? `AI bịa: "${txName}" là nguyên liệu KHÁC recipe với item trong túi.`
+          : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể cho ${qty}.`);
+        invalid.push({ tx, reason: msg }); continue;
+      }
       valid.push({ ...tx, _validatedName: r.matchedName });
     }
     else if(tx.type === 'buy'){
@@ -2028,7 +2137,7 @@ function postValidateTransactions(txList, currentInv){
 }
 
 // ============================================================
-// TRANSACTION PROCESSOR
+// TRANSACTION PROCESSOR (v2.7.2 — bổ sung Ingredient Guard)
 // ============================================================
 function processTransactions(transactionsList){
   if(!transactionsList || !Array.isArray(transactionsList) || transactionsList.length === 0) return null;
@@ -2039,7 +2148,15 @@ function processTransactions(transactionsList){
 
   const addItem = (name, quality, qty, icon, effect) => {
     const m = findMatchingInventoryItem(name, inv);
-    if(m){ m.quantity = (m.quantity || 1) + qty; return { isNew: false, newQty: m.quantity }; }
+    // v2.7.2: Ingredient Guard — không gộp nguyên liệu khác recipe
+    if(m && isIngredientForDifferentRecipe(m.name, name)){
+      log(`🛡️ Ingredient Guard: "${name}" KHÁC recipe với "${m.name}" → tạo item mới.`);
+      tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked||0) + 1;
+      updateTokenStatsDisplay();
+    } else if(m){
+      m.quantity = (m.quantity || 1) + qty;
+      return { isNew: false, newQty: m.quantity };
+    }
     const catKey = detectItemCategory(name, quality, effect);
     const catInfo = getItemCategoryInfo(catKey);
     const newItem = { name: name, icon: icon || catInfo.icon, quantity: qty, quality: quality || 'Thường', effect: effect || '', category: catKey };
@@ -2050,6 +2167,9 @@ function processTransactions(transactionsList){
   const removeItem = (name, quality, qty) => {
     const m = findMatchingInventoryItem(name, inv);
     if(!m) return { ok: false, reason: 'Không tìm thấy' };
+    if(isIngredientForDifferentRecipe(m.name, name)){
+      return { ok: false, reason: 'Khác recipe nguyên liệu' };
+    }
     const current = m.quantity || 1;
     const removed = Math.min(qty, current);
     m.quantity = current - removed;
@@ -2070,7 +2190,7 @@ function processTransactions(transactionsList){
     if(tx.type === 'sell'){
       const r = removeItem(txName, txQuality, qty);
       if(r.ok){ logs.push(`💰 BÁN: ${r.removed}x ${txName}${txQuality?` [${txQuality}]`:''} → +${totalPrice} linh thạch${r.emptied?' (HẾT HÀNG)':` (còn ${r.remain})`}`); addItem('Linh thạch', '', totalPrice, '💎', 'Tiền tệ tu tiên'); processedCount++; }
-      else { logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}" trong túi!`); }
+      else { logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}" trong túi! (${r.reason})`); }
     }
     else if(tx.type === 'buy'){
       const lsItem = inv.find(i => normalizeVN(i.name).includes('linh thach'));
@@ -2085,7 +2205,7 @@ function processTransactions(transactionsList){
     else if(tx.type === 'give'){
       const r = removeItem(txName, txQuality, qty);
       if(r.ok){ logs.push(`🎁 CHO/TẶNG: ${r.removed}x ${txName}${txQuality?` [${txQuality}]`:''} (KHÔNG nhận linh thạch)${r.emptied?' (HẾT HÀNG)':` (còn ${r.remain})`}`); processedCount++; }
-      else { logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}" trong túi!`); }
+      else { logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}" trong túi! (${r.reason})`); }
     }
     else if(tx.type === 'receive'){
       const catKey = detectItemCategory(txName, txQuality, tx.effect || '');
@@ -2202,7 +2322,7 @@ async function deleteFromIDB(key){ const db = await openDB(); return new Promise
 // ============================================================
 async function saveGame(isManual=false){
   if(isManual && !checkCJKOnSave()) return;
-  const gameData={ chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary, storyBoxContent: document.getElementById('story-box').innerHTML, inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML, locVisualHTML: document.getElementById('locVisualGrid').innerHTML, eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML, weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML, mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex, priceMemory, musicPlaylist, currentMusicIndex, _saveVersion: 'v2.7.1', inputs: {} };
+  const gameData={ chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary, storyBoxContent: document.getElementById('story-box').innerHTML, inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML, locVisualHTML: document.getElementById('locVisualGrid').innerHTML, eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML, weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML, mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex, priceMemory, musicPlaylist, currentMusicIndex, _saveVersion: 'v2.7.2', inputs: {} };
   inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});
   try{ await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData); log("Game saved."); if(isManual){alert("💾 Đã lưu game!");toggleSidebar();} }
   catch(e){alert("Lỗi lưu: "+e);}
@@ -2213,7 +2333,7 @@ async function loadGame(){
     if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}
     if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){ scopeRegistry = gameData.scopeRegistry; migrateScopes(); renderScopeRegistry(); }
     chatHistory=gameData.chatHistory||[]; turnHtmlHistory=gameData.turnHtmlHistory||[]; turnCounter=gameData.turnCounter||0; storySummary=gameData.storySummary||"";
-    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0},gameData.tokenStats||{});
+    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0},gameData.tokenStats||{});
     if(gameData.mcExp !== undefined) mcExp = gameData.mcExp;
     if(gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
     if(gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
@@ -2243,7 +2363,7 @@ async function loadGame(){
 }
 function syncToggleUI(){ ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave','autoRotate','styleReminder','autoNpcRules','showArchetype','autoMusic'].forEach(name=>{ const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1)); if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');} }); }
 function updateKeyCountInfo(){ const keys = getGeminiKeys(); const models = getGeminiModels(); const el = document.getElementById('keyCountInfo'); if(el){ el.textContent = `📌 ${keys.length} key | ${models.length} model | ${keys.length * models.length} tổ hợp`; } }
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.7.1_save.json";a.click();log("Xuất save thành công.");}
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.7.2_save.json";a.click();log("Xuất save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Import thành công!");}catch(err){alert("❌ File không hợp lệ!");}};reader.readAsText(file);}
 
@@ -2252,10 +2372,10 @@ function handleFileSelect(event){const file=event.target.files[0];if(!file)retur
 // ============================================================
 function exportWorldConfig(){
   const worldIds = ['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultySelect','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle'];
-  const cfg = { _version: 'v2.7.1', _type: 'worldConfig', scopes: scopeRegistry, fields: {} };
+  const cfg = { _version: 'v2.7.2', _type: 'worldConfig', scopes: scopeRegistry, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if(el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], {type: 'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.7.1.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.7.2.json'; a.click();
   log('📤 Xuất World Config thành công.'); alert('📤 Đã xuất World Config!');
 }
 function importWorldConfig(){ document.getElementById('worldConfigFileInput').click(); }
@@ -2350,7 +2470,7 @@ async function generateStorySummary(){
 }
 
 // ============================================================
-// CODEX MEMORY
+// CODEX MEMORY (v2.7.2 — bổ sung Ingredient Guard warning)
 // ============================================================
 function getPriceReferenceString(){
   let txt = '[BẢNG GIÁ THAM KHẢO — Dùng để tính toán giao dịch]\n';
@@ -2423,6 +2543,13 @@ ${getPriceMemoryPrompt()}
 - **Nguyên liệu**: linh thảo, khoáng thạch → KHÔNG cần luyện hoá, tiêu hao 1 lần.
 - **Linh thạch**: tiền tệ tu tiên.
 - **Bí tịch / Ngọc giản**: đọc 1 lần để học công pháp.
+
+⚠️⚠️⚠️ ĐẶC BIỆT LƯU Ý VỀ NGUYÊN LIỆU LUYỆN ĐAN (CỰC KỲ QUAN TRỌNG):
+- "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"...
+- Đây là các NGUYÊN LIỆU KHÁC NHAU HOÀN TOÀN, KHÔNG ĐƯỢC GỘP CHUNG.
+- Khi ghi nhận vào túi đồ, PHẢI giữ nguyên tên đầy đủ (VD: "Nguyên liệu Thanh Tâm Đan" KHÔNG được viết thành "Nguyên liệu Tụ Khí Đan").
+- Khi cho/nhận/mua/bán, PHẢI dùng đúng tên nguyên liệu tương ứng với đan dược cần luyện.
+- Hệ thống có "Ingredient Guard" — nếu AI gộp nhầm, giao dịch sẽ bị từ chối.
 
 🔥 QUY TẮC GHI TRANSACTIONS (CỰC KỲ QUAN TRỌNG):
 1. "sell" — BÁN: trừ vật phẩm, CỘNG linh thạch.
@@ -2515,7 +2642,8 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 27. ⚠️ TRƯỚC KHI kể "cho thành công" vật phẩm → PHẢI kiểm tra [Túi] trong Codex.
 28. ⚡ Khi NVC NHẬN vật phẩm → BẮT BUỘC ghi type "receive" trong transactionsList.
 29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT: Pháp bảo/trận bàn/phù tái sử dụng CẦN LUYỆN HOÁ. Phù tiêu hao/đan dược/nguyên liệu KHÔNG cần luyện hoá.
-30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords vào JSON Codex.`}
+30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords vào JSON Codex.
+31. 🛡️ INGREDIENT GUARD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"... KHÔNG gộp chung.`}
 
 # THẾ GIỚI
 - Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom')||'mặc định'}
@@ -2572,6 +2700,13 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 ## 📖 NHÓM ĐẶC BIỆT:
 - **Bí tịch / Ngọc giản**: đọc 1 lần để học công pháp
 
+## 🛡️ INGREDIENT GUARD (v2.7.2 — CỰC KỲ QUAN TRỌNG):
+- Mỗi loại đan dược có NGUYÊN LIỆU RIÊNG. KHÔNG ĐƯỢC GỘP CHUNG.
+- VD SAI: "Nguyên liệu Tụ Khí Đan" x15 (gộp từ 10 Tụ Khí + 5 Thanh Tâm)
+- VD ĐÚNG: "Nguyên liệu Tụ Khí Đan" x10 và "Nguyên liệu Thanh Tâm Đan" x5
+- Khi AI ghi vào mcInventoryList, PHẢI giữ NGUYÊN TÊN ĐẦY ĐỦ.
+- Nếu AI gộp nhầm → HỆ THỐNG SẼ TỰ ĐỘNG TÁCH RA (Ingredient Guard).
+
 # ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT
 1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).
 2) 2-3 đoạn nội tâm 《...》.
@@ -2625,6 +2760,7 @@ Khi NVC HỎI GIÁ một vật phẩm/dịch vụ → BẮT BUỘC thêm mảng 
 
 # QUY TẮC mcInventoryList
 - BẮT BUỘC mảng OBJECT. MỖI PHẨM CHẤT KHÁC NHAU = 1 OBJECT RIÊNG.
+- ⚠️ ĐẶC BIỆT: MỖI NGUYÊN LIỆU KHÁC RECIPE = 1 OBJECT RIÊNG (Tụ Khí ≠ Thanh Tâm ≠ Trúc Cơ).
 - Nếu quantity = 0 → XÓA khỏi mảng.
 - ⚠️ KHI CÓ GIAO DỊCH: Bỏ qua mcInventoryList, chỉ ghi transactionsList.
 
@@ -2838,8 +2974,10 @@ async function aiGenField(fieldId, promptMsg){
     else{ field.value = originalVal; }
   }catch(e){ log("AI Gen lỗi: " + e.message); field.value = originalVal; alert("❌ AI Gen thất bại:\n" + e.message); }
   finally{ isAiGenCall = false; }
-}// ============================================================
-// FORMAT + PARSE CODEX
+}
+
+// ============================================================
+// FORMAT + PARSE CODEX (v2.7.2 — bổ sung Ingredient Guard double-check)
 // ============================================================
 function formatSummaryBox(text){
   const summaryRegex=/\[TÓM TẮT\]:\s*([\s\S]*?)(?=\n\n|\n[0-9]+\.|\nNgười sẽ|\nNgươi sẽ|$)/i;
@@ -2881,7 +3019,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
           updateTokenStatsDisplay();
           log(`🚫 Post-validate chặn ${invalid.length} giao dịch AI bịa.`);
           const lines = invalid.map((x, i) => { const t = x.tx; const q = t.quantity ? ` x${t.quantity}` : ''; const ql = t.quality ? ` [${t.quality}]` : ''; return `  ${i+1}. [${t.type}] ${t.name}${ql}${q}\n     → ${x.reason}`; }).join('\n');
-          postValidateWarningHtml = `<div class="prevalidation-block" style="border-left-color:#d29922;background:rgba(210,153,34,.12);color:#f0e6d2;margin-top:12px">⚠️ HẬU KIỂM PHÁT HIỆN AI BỊA GIAO DỊCH\n\nAI đã kể về ${invalid.length} giao dịch KHÔNG HỢP LỆ (vật phẩm không có trong túi / không đủ linh thạch). Các giao dịch này đã bị HỦY BỎ:\n\n${lines}\n\n✅ Đã giữ nguyên túi đồ — không có vật phẩm/linh thạch nào bị trừ sai.\n👉 Hãy kiểm tra lại túi đồ (tab NVC) trước khi tiếp tục.\n</div>`;
+          postValidateWarningHtml = `<div class="prevalidation-block" style="border-left-color:#d29922;background:rgba(210,153,34,.12);color:#f0e6d2;margin-top:12px">⚠️ HẬU KIỂM PHÁT HIỆN AI BỊA GIAO DỊCH\n\nAI đã kể về ${invalid.length} giao dịch KHÔNG HỢP LỆ (vật phẩm không có trong túi / không đủ linh thạch / nguyên liệu khác recipe). Các giao dịch này đã bị HỦY BỎ:\n\n${lines}\n\n✅ Đã giữ nguyên túi đồ — không có vật phẩm/linh thạch nào bị trừ sai.\n👉 Hãy kiểm tra lại túi đồ (tab NVC) trước khi tiếp tục.\n</div>`;
         }
         if(valid.length > 0){ const result = processTransactions(valid); if(result && result.count > 0){ log(`💰 Đã xử lý ${result.count}/${codexData.transactionsList.length} giao dịch hợp lệ.`); } }
         else if(invalid.length === 0){ log(`ℹ️ transactionsList rỗng hoặc không hợp lệ.`); }
@@ -2926,6 +3064,7 @@ function parseAndAutoUpdateCodex(fullResponseText){
             log(`🔀 Tách phẩm chất: "${item.name}" [${item.quality}] x${totalQty} → ${parts.length} object`);
           } else { splitInventory.push(item); }
         });
+        // v2.7.2: Ingredient Guard — không merge item khác recipe
         const mergedInventory = [];
         splitInventory.forEach(item => {
           if (!item || !item.name) return;
@@ -2933,7 +3072,13 @@ function parseAndAutoUpdateCodex(fullResponseText){
           if (qty <= 0) return;
           const key = (item.name || '').toLowerCase().trim() + '||' + (item.quality || '').toLowerCase().trim();
           const existing = mergedInventory.find(x => ((x.name || '').toLowerCase().trim() + '||' + (x.quality || '').toLowerCase().trim()) === key);
-          if (existing) { existing.quantity = (existing.quantity || 1) + qty; if (!existing.effect && item.effect) existing.effect = item.effect; if (!existing.icon && item.icon) existing.icon = item.icon; }
+          if (existing && !isIngredientForDifferentRecipe(existing.name, item.name)) { existing.quantity = (existing.quantity || 1) + qty; if (!existing.effect && item.effect) existing.effect = item.effect; if (!existing.icon && item.icon) existing.icon = item.icon; }
+          else if (existing && isIngredientForDifferentRecipe(existing.name, item.name)) {
+            log(`🛡️ Ingredient Guard (inventoryList): "${item.name}" KHÁC recipe với "${existing.name}" → tách riêng.`);
+            tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked||0) + 1;
+            updateTokenStatsDisplay();
+            mergedInventory.push({ ...item, quantity: qty });
+          }
           else { mergedInventory.push({ ...item, quantity: qty }); }
         });
         const validInventory = mergedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
@@ -3070,7 +3215,7 @@ function addWorldItemToInventory(name){
     const newItem = { name: wi.name, icon: wi.icon || catInfo.icon, quantity: 1, quality: wi.rank || 'Thường', effect: wi.usage || '', category: catKey };
     if(catInfo.needsRefine){ newItem.isRefined = false; }
     const existing = findMatchingInventoryItem(name, inv);
-    if(existing){ existing.quantity = (existing.quantity || 1) + 1; }
+    if(existing && !isIngredientForDifferentRecipe(existing.name, name)){ existing.quantity = (existing.quantity || 1) + 1; }
     else { inv.push(newItem); }
     document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
     renderInventoryVisual(inv);
@@ -3341,7 +3486,7 @@ function thienDaoStats(){
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 EXP</div><div class="thiendao-result-body">Hiện tại: ${mcExp}/${mcExpMax}<br>Linh căn: ${mcLinhCan}<br>Cảnh giới: ${document.getElementById('mcLevel').value||'?'}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Price Memory</div><div class="thiendao-result-body">Đã ghi: ${Object.keys(priceMemory).length} mục</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎭 NPC Rules</div><div class="thiendao-result-body">Đã sinh: ${tokenStats.npcRulesGenerated||0}<br>NPC có rules: ${npcList.filter(n=>n.npcRules && n.npcRules.length > 50).length}/${npcList.length}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0}<br>Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}<br>World-Item Auto-Sync: ${tokenStats.worldItemAutoSync||0}<br>🔥 Luyện hoá: ${tokenStats.itemsRefined||0}<br>➕ Thêm vào túi: ${tokenStats.itemsAddedToInv||0}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0}<br>Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}<br>🛡️ Ingredient Guard: ${tokenStats.ingredientGuardBlocked||0}<br>World-Item Auto-Sync: ${tokenStats.worldItemAutoSync||0}<br>🔥 Luyện hoá: ${tokenStats.itemsRefined||0}<br>➕ Thêm vào túi: ${tokenStats.itemsAddedToInv||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔑 API Keys</div><div class="thiendao-result-body">Keys: ${keys.length} | Models: ${models.length} | Tổ hợp: ${keys.length * models.length}<br>Rotations: ${tokenStats.keyRotations||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
@@ -3352,20 +3497,19 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.7.1 (2026-10-14)</div><div class="thiendao-result-body">🎵 <b>NHẠC NỀN</b>:<br>• Playlist nhiều bài, lưu IndexedDB.<br>• Nút ▶ ⏭ + volume trên header.<br>• Auto-play khi vào game (cần click unlock lần đầu).<br>• Toggle bật/tắt trong sidebar.<br><br>🖼️ <b>AVATAR FIX</b>:<br>• NVC 120×120, NPC 100×100 (to hơn).<br>• Crop ưu tiên phần TRÊN (giữ mặt).<br>• Lưu 200×200 chất lượng cao.<br><br>💰 <b>PRICE MEMORY FIX</b>:<br>• Hiển thị theo 3 nhóm: Từ AI / Giao dịch / Narrative.<br>• Regex chặt hơn — loại bỏ entry rác.<br>• FIX: Tụ Khí Đan ≠ Hồi Khí Đan (blacklist).<br><br>⏱️ <b>TIME NORMALIZER</b>: chuẩn hóa "X ngày Y giờ".</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.7.2 (2026-10-14)</div><div class="thiendao-result-body">🛡️ <b>INGREDIENT GUARD</b> (FIX LỖI CHÍNH):<br>• "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"...<br>• Không gộp nhầm nguyên liệu khác recipe.<br>• Áp dụng cho: fuzzy match, auto-sync, transaction process, inventory list.<br>• Thêm stat: "Ingredient Guard: N" trong Token Stats.<br>• Bổ sung blacklist cặp nguyên liệu dễ nhầm.<br>• Cập nhật prompt AI: rule #31 INGREDIENT GUARD.</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.7.1</div><div class="thiendao-result-body">🎵 Nhạc nền + Avatar fix + Price Memory 3 nhóm + Time Normalizer.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.7.0</div><div class="thiendao-result-body">Item Category + Refine Mechanic + Give-Guard Auto-Sync + World-Item Auto-Sync.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.5</div><div class="thiendao-result-body">World-Item Auto-Sync + Extended Verbs + Give-Guard Hard Block.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.4</div><div class="thiendao-result-body">Give-Guard Hard Block — chặn bịa vật phẩm ở LỚP 1.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.3</div><div class="thiendao-result-body">Dual-layer transaction guard (Pre + Post).</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.2</div><div class="thiendao-result-body">Gemini 3.x models, Hán Việt Scopes, Auto-save Model List.</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.1</div><div class="thiendao-result-body">Pre-validate linh thạch, parseQty hiểu "v","k","nghìn","triệu".</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.0</div><div class="thiendao-result-body">Undo FULL STATE + 4-loại giao dịch + Thanh EXP + Multi-scope.</div></div>`;
   resultsDiv.innerHTML=html;
 }
 document.getElementById('thienDaoModal').addEventListener('click',function(e){if(e.target===this)closeThienDao();});
 
 // ============================================================
-// MUSIC PLAYER (v2.7.1)
+// MUSIC PLAYER
 // ============================================================
 let musicPlaylist = [];
 let currentMusicIndex = -1;
@@ -3602,7 +3746,9 @@ document.getElementById('userInput').addEventListener('keypress',function(e){if(
 // ============================================================
 // MODEL SELECTORS
 // ============================================================
-document.getElementById('openRouterModel').addEventListener('change',function(e){ const customInput=document.getElementById('openRouterCustomModel'); if(e.target.value==='custom'){ if(customInput)customInput.style.display='block'; } else{ if(customInput)customInput.style.display='none'; } });// ============================================================
+document.getElementById('openRouterModel').addEventListener('change',function(e){ const customInput=document.getElementById('openRouterCustomModel'); if(e.target.value==='custom'){ if(customInput)customInput.style.display='block'; } else{ if(customInput)customInput.style.display='none'; } });
+
+// ============================================================
 // DOM READY — KHỞI TẠO TOÀN BỘ GAME
 // ============================================================
 window.addEventListener('DOMContentLoaded',async()=>{
@@ -3624,7 +3770,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
       if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}
       if(gameData.eventList) eventList=gameData.eventList;
       if(gameData.storySummary) storySummary=gameData.storySummary;
-      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0},gameData.tokenStats);
+      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0},gameData.tokenStats);
       if(gameData.mcExp !== undefined) mcExp = gameData.mcExp;
       if(gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
       if(gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
@@ -3686,7 +3832,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
   updateMusicUI();
   updateMusicTitle();
   
-  log("✅ v2.7.1 loaded. ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC ready.");
+  log("✅ v2.7.2 loaded. INGREDIENT GUARD + ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC ready.");
 });
 </script>
 </body>

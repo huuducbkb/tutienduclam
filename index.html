@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px}
-.header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--panel-bg);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color)}
+.header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--panel-bg);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);flex-wrap:wrap;gap:8px}
 .header-title{font-size:16px;font-weight:bold;color:var(--accent-blue);display:flex;align-items:center;gap:8px}
 .menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px}
 .restart-btn{background:var(--accent-green);border-color:#388e3c}
@@ -35,14 +35,13 @@ body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;lin
 input,select{width:100%;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;color:#fff;padding:10px;font-size:14px;font-family:inherit}
 textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;color:#fff;padding:10px;font-size:14px;line-height:1.5;font-family:inherit;resize:vertical;min-height:80px}
 .profile-card{display:flex;gap:14px;background:var(--input-bg);border:1px solid var(--border-color);padding:12px;border-radius:8px;margin-bottom:16px;align-items:center}
-.avatar-box{width:85px;height:85px;border-radius:8px;border:2px solid var(--accent-gold);background:#1c2128;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative}
+.avatar-box{width:120px;height:120px;border-radius:8px;border:2px solid var(--accent-gold);background:#1c2128;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative}
 .avatar-box img{width:100%;height:100%;object-fit:cover}
-.avatar-placeholder{font-size:36px;color:var(--subtext-color)}
+.avatar-placeholder{font-size:52px;color:var(--subtext-color)}
 .avatar-controls{display:flex;flex-direction:column;gap:6px;flex:1}
 .btn-upload-file{background:var(--accent-blue);border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;text-align:center;display:inline-block}
 .btn-remove-avatar{background:#21262d;border:1px solid var(--border-color);color:var(--accent-red);padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;width:fit-content}
-.inventory-grid,.loc-grid,.event-grid,.weapon-grid,.npc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px;max-height:none;overflow-y:visible}
-.item-card{background:var(--input-bg);border:1px solid var(--border-color);border-radius:8px;padding:10px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.inventory-grid,.loc-grid,.event-grid,.weapon-grid,.npc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px;max-height:none;overflow-y:visible}.item-card{background:var(--input-bg);border:1px solid var(--border-color);border-radius:8px;padding:10px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 2px 4px rgba(0,0,0,.3)}
 .item-icon-box{width:50px;height:50px;background:#1c2128;border:1px solid var(--border-color);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden}
 .item-icon-box img{width:100%;height:100%;object-fit:cover}
 .item-details{flex:1;min-width:0}
@@ -167,7 +166,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .refine-status-pending{background:rgba(210,153,34,.2);color:#d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #d29922}
 .refine-status-consumable{background:rgba(56,139,253,.2);color:#388bfd;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #388bfd}
 .refine-status-passive{background:rgba(139,148,158,.15);color:#8b949e;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #30363d}
-/* ═══ v2.7.1: Collapsible sections ═══ */
 .collapsible-group{background:var(--panel-bg);border:1px solid var(--border-color);border-radius:8px;margin-bottom:12px;overflow:hidden}
 .collapsible-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#1a1f29,#151921);cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:all .2s}
 .collapsible-header:hover{background:linear-gradient(135deg,#1f2530,#1a1f29)}
@@ -183,11 +181,32 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .price-memory-item .price{color:#d29922;font-weight:bold}
 .price-memory-item .source{color:#8b949e;font-style:italic;font-size:10px}
 .price-memory-empty{color:var(--subtext-color);font-style:italic;text-align:center;padding:8px}
+.music-controls{display:flex;align-items:center;gap:6px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:4px 8px}
+.music-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.music-btn:hover{background:var(--accent-blue)}
+.music-btn.playing{background:var(--accent-green);animation:musicPulse 2s infinite}
+@keyframes musicPulse{0%,100%{box-shadow:0 0 0 0 rgba(35,134,54,.5)}50%{box-shadow:0 0 0 8px rgba(35,134,54,0)}}
+.music-title{font-size:11px;color:var(--subtext-color);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.music-volume{width:55px;accent-color:var(--accent-blue)}
+.music-list-item{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;margin-bottom:6px;font-size:12px}
+.music-list-item.active{border-color:var(--accent-green);background:rgba(35,134,54,.1)}
+.music-list-item .music-list-title{flex:1;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.music-list-item .music-list-del{background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px}
+.music-list-item .music-list-play{background:var(--accent-blue);border:none;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;flex-shrink:0}
 </style>
 </head><body><div class="header">
 <div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.7.1</span></div>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+<div class="music-controls">
+<button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
+<button class="music-btn" id="musicNextBtn" onclick="nextMusic()" title="Bài kế tiếp">⏭</button>
+<span class="music-title" id="musicTitle">Chưa có nhạc</span>
+<input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.05" value="0.5" onchange="setMusicVolume(this.value)">
+</div>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
+</div>
+<audio id="bgMusic" loop></audio>
 
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
@@ -268,6 +287,18 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="sidebar-item" style="background:var(--accent-green);font-size:11px" onclick="showPriceMemory()">💰 Xem Giá Đã Lưu</button>
 <button class="sidebar-item" style="background:#8b2020;font-size:11px" onclick="clearPriceMemory()">🗑️ Xóa Giá Đã Lưu</button>
 
+<div class="section-header">🎵 NHẠC NỀN</div>
+<div class="form-group">
+  <label class="label-title" style="font-size:11px">Thêm bài nhạc:</label>
+  <label class="btn-upload-file" style="display:block;text-align:center;margin-top:6px">📁 Chọn file nhạc (MP3/OGG/WAV)
+    <input type="file" id="musicFileInput" style="display:none" accept="audio/*" multiple onchange="uploadMusicFiles(event)">
+  </label>
+  <div style="font-size:10px;color:var(--subtext-color);margin-top:4px">Hỗ trợ nhiều file cùng lúc. Nhạc sẽ lưu vào game.</div>
+</div>
+<div id="musicPlaylist" style="margin-bottom:10px"></div>
+<div class="toggle-row"><span>Tự phát khi vào game</span><div class="toggle-switch active" id="toggleAutoMusic" onclick="toggleSetting('autoMusic')"></div></div>
+<button class="sidebar-item" style="background:#8b2020;font-size:11px" onclick="clearAllMusic()">🗑️ Xóa toàn bộ nhạc</button>
+
 <hr style="border-color:var(--border-color);margin:12px 0">
 <button class="sidebar-item" style="background:var(--accent-orange);font-size:12px" onclick="testOpenRouterKey()">🔍 Test OpenRouter</button>
 <button class="sidebar-item" style="background:var(--accent-blue);font-size:12px" onclick="testAllGeminiKeys()">🔍 Test Gemini Keys</button>
@@ -304,9 +335,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="tab-btn" onclick="openTab('events')">📜 Sự Kiện</button>
 <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
 <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
-</div>
-
-<!-- ═══════════════ TAB WORLD ═══════════════ -->
+</div><!-- ═══════════════ TAB WORLD ═══════════════ -->
 <div id="world" class="tab-content active">
 <div class="config-box">
   <div class="config-info">
@@ -320,7 +349,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   </div>
 </div>
 
-<!-- Collapsible: Luật tối cao -->
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
   <div class="collapsible-title"><span class="icon">👑</span>QUY TẮC TỐI CAO & 18+</div>
@@ -338,7 +366,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 
-<!-- Collapsible: Scope Registry -->
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
   <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY (16 Preset — Hán Việt)</div>
@@ -358,7 +385,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 
-<!-- Collapsible: AI Rules -->
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
   <div class="collapsible-title"><span class="icon">🚨</span>QUY TẮC AI & PACING</div>
@@ -372,7 +398,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 
-<!-- Collapsible: Thông tin cơ bản -->
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
   <div class="collapsible-title"><span class="icon">📋</span>THÔNG TIN CƠ BẢN</div>
@@ -387,7 +412,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 
-<!-- Collapsible: Quy tắc thế giới -->
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
   <div class="collapsible-title"><span class="icon">🌍</span>QUY TẮC THẾ GIỚI & ĐẶT TÊN</div>
@@ -401,7 +425,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div>
 
-<!-- Collapsible: Văn phong -->
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
   <div class="collapsible-title"><span class="icon">🎭</span>VĂN PHONG & NGÔI KỂ</div>
@@ -532,6 +555,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 // - v2.7.1 NEW: PRICE MEMORY SYSTEM (AI nhớ giá cả)
 // - v2.7.1 NEW: TIME NORMALIZER (chuẩn hóa thời gian)
 // - v2.7.1 FIX: Fuzzy matching chính xác (Tụ Khí Đan ≠ Hồi Khí Đan)
+// - v2.7.1 NEW: BACKGROUND MUSIC (playlist + volume + auto-play)
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
@@ -565,7 +589,8 @@ let settings={
   autoRotate: true,
   styleReminder: true,
   autoNpcRules: true,
-  showArchetype: true
+  showArchetype: true,
+  autoMusic: true
 };
 
 let chatHistory=[];
@@ -606,7 +631,7 @@ let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
 
 // ══════════════════════════════════════════════════════════════
-// v2.7.1: PRICE MEMORY SYSTEM — AI nhớ giá cả đã khám phá
+// v2.7.1: PRICE MEMORY SYSTEM
 // ══════════════════════════════════════════════════════════════
 let priceMemory = {};
 const PRICE_MEMORY_MAX_ENTRIES = 200;
@@ -664,20 +689,27 @@ function autoRecordPricesFromTransactions(transactionsList){
 function autoRecordPricesFromNarrative(text){
   if(!text) return;
   const patterns = [
-    /([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ]+){0,3})\s+(?:giá|khoảng|tầm|chừng)?\s*(\d[\d.,]*)\s*(?:v|k)?\s*linh\s*thạch/gi,
-    /(\d[\d.,]*)\s*(?:v|k)?\s*linh\s*thạch\s+(?:cho|mua|bán|thuê)?\s*([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ]+){0,3})/gi,
+    /([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})\s+(?:hạ phẩm|trung phẩm|thượng phẩm|cực phẩm|tiên phẩm)?\s*(?:có\s+)?giá\s+(?:khoảng\s+|tầm\s+|chừng\s+)?(\d[\d.,]*)\s*(?:v|k|nghìn|ngàn|triệu)?\s*linh\s*thạch/gi,
+    /giá\s+(?:khoảng\s+|tầm\s+|chừng\s+)?(\d[\d.,]*)\s*(?:v|k|nghìn|ngàn|triệu)?\s*linh\s*thạch\s+(?:cho|mua|bán|thuê)?\s*([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})/gi,
+    /([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})\s*[:=]\s*(\d[\d.,]*)\s*(?:v|k)?\s*linh\s*thạch/gi
   ];
+  const BLACKLIST_NAME_WORDS = ['ta','toi','nguoi','no','ho','chung','minh','day','kia','do','nay','co','khong','duoc','se','da','dang','thi','la','va','voi','cua','cho','tu','den','ve','ra','vao','len','xuong','phai','ton','moi','ngay','dem','thang','nam','gio','phut'];
   for(const re of patterns){
     let m;
     while((m = re.exec(text)) !== null){
-      const itemName = (m[1] && isNaN(parseFloat(m[1])) ? m[1] : m[2]).trim();
-      const priceStr = (m[1] && !isNaN(parseFloat(m[1])) ? m[1] : m[2]);
+      let itemName, priceStr;
+      if(/^\d/.test(m[1])){ priceStr = m[1]; itemName = m[2]; }
+      else { itemName = m[1]; priceStr = m[2]; }
+      itemName = (itemName || '').trim();
       const price = parseQty(priceStr);
-      if(itemName && itemName.length >= 3 && price > 0 && price < 100000000){
-        if(!/^\d/.test(itemName)){
-          recordPrice(itemName, '', price, 'Linh thạch', 'Narrative AI');
-        }
-      }
+      if(!itemName || itemName.length < 4 || price <= 0 || price >= 100000000) continue;
+      const nameLower = itemName.toLowerCase();
+      const words = nameLower.split(/\s+/);
+      const hasBlacklist = words.some(w => BLACKLIST_NAME_WORDS.includes(w));
+      if(hasBlacklist) continue;
+      if(!/[A-ZÀ-Ỹ]/.test(itemName)) continue;
+      if(words.length > 4) continue;
+      recordPrice(itemName, '', price, 'Linh thạch', 'Narrative AI');
     }
   }
 }
@@ -686,15 +718,43 @@ function showPriceMemory(){
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   const keys = Object.keys(priceMemory);
-  let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">💰 BẢNG GIÁ ĐÃ LƯU (${keys.length})</div>`;
+  const aiEntries = [];
+  const narrativeEntries = [];
+  const txEntries = [];
+  for(const k of keys){
+    const p = priceMemory[k];
+    const src = (p.source || '').toLowerCase();
+    if(src.includes('narrative')) narrativeEntries.push(p);
+    else if(src.includes('giao dịch') || src.includes('transaction')) txEntries.push(p);
+    else aiEntries.push(p);
+  }
+  let html = `<div style="color:var(--accent-gold);font-size:14px;margin-bottom:8px;font-weight:bold">💰 BẢNG GIÁ ĐÃ LƯU (${keys.length} mục)</div>`;
+  html += `<div style="font-size:11px;color:var(--subtext-color);margin-bottom:12px;padding:8px;background:#0d1117;border-radius:6px;border-left:3px solid #388bfd">
+    ✅ <b style="color:#3fb950">Từ AI (đáng tin)</b> = giá AI chủ động ghi có cấu trúc.<br>
+    🔄 <b style="color:#388bfd">Từ giao dịch</b> = giá ghi khi NVC mua/bán thực tế.<br>
+    ⚠️ <b style="color:#d29922">Từ narrative</b> = giá tự động dò từ văn kể (tham khảo, có thể sai).
+  </div>`;
   if(keys.length === 0){
-    html += '<div class="thiendao-empty">Chưa có giá nào được ghi nhớ. Hãy hỏi NPC giá cả trong game!</div>';
+    html += '<div class="thiendao-empty">Chưa có giá nào. Hãy hỏi NPC giá cả trong game!</div>';
   } else {
-    const sorted = keys.sort((a,b) => priceMemory[b].timestamp - priceMemory[a].timestamp);
-    for(const k of sorted){
-      const p = priceMemory[k];
-      html += `<div class="thiendao-result"><div class="thiendao-result-title">${p.name}${p.quality?` [${p.quality}]`:''}</div><div class="thiendao-result-body">💰 Giá: <b style="color:#d29922">${p.price} ${p.unit||'linh thạch'}</b><br>📌 Nguồn: ${p.source}<br>🔢 Lượt: ${p.turn}</div></div>`;
-    }
+    const renderGroup = (title, color, entries) => {
+      if(entries.length === 0) return '';
+      entries.sort((a,b) => b.timestamp - a.timestamp);
+      let g = `<div style="color:${color};font-weight:bold;font-size:12px;margin:12px 0 6px 0;padding-bottom:4px;border-bottom:1px solid ${color}33">${title} (${entries.length})</div>`;
+      for(const p of entries){
+        g += `<div class="thiendao-result" style="border-left:3px solid ${color};margin-bottom:6px;padding:8px 10px">
+          <div class="thiendao-result-title" style="color:#fff;font-size:13px">${p.name}${p.quality?` <span style="color:${color};font-size:11px">[${p.quality}]</span>`:''}</div>
+          <div class="thiendao-result-body" style="margin-top:4px">
+            💰 <b style="color:#d29922;font-size:14px">${p.price.toLocaleString()} ${p.unit||'linh thạch'}</b>
+            <span style="color:var(--subtext-color);font-size:11px;margin-left:8px">• Lượt ${p.turn} • ${p.source||'?'}</span>
+          </div>
+        </div>`;
+      }
+      return g;
+    };
+    html += renderGroup('✅ TỪ AI (đáng tin)', '#3fb950', aiEntries);
+    html += renderGroup('🔄 TỪ GIAO DỊCH', '#388bfd', txEntries);
+    html += renderGroup('⚠️ TỪ NARRATIVE (tham khảo)', '#d29922', narrativeEntries);
   }
   resultsDiv.innerHTML = html;
 }
@@ -867,9 +927,7 @@ const DEFAULT_SCOPES = [
   { id: 'scope_linh_dia', label: 'Linh địa', triggers: ['linh địa','động phủ','linh mạch','phúc địa','động thiên','linh tuyền','linh khí','tu luyện địa','mua động phủ','thuê động phủ','xây động phủ'], exemplar: 'C1 Động phủ thường (×1, 1-5K, 0.95)|C2 Linh mạch thấp (×1.5, 50-200K, 0.85)|C3 Trung (×2-3).' }
 ];
 
-let scopeRegistry = [];
-
-// ══════════════════════════════════════════════════════════════
+let scopeRegistry = [];// ══════════════════════════════════════════════════════════════
 // PHÂN LOẠI ĐỒ VẬT TU TIÊN
 // ══════════════════════════════════════════════════════════════
 const ITEM_CATEGORIES = {
@@ -924,7 +982,6 @@ const ITEM_CATEGORIES = {
 
 function detectItemCategory(name, quality, effect){
   const text = ((name || '') + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
-  // Ưu tiên match chính xác cho đan dược (tránh nhầm "Nguyên liệu Tụ Khí Đan" thành đan dược)
   if(/^nguyên liệu/i.test((name||'').trim())) return 'NGUYEN_LIEU';
   for(const [key, cat] of Object.entries(ITEM_CATEGORIES)){
     if(key === 'KHAC') continue;
@@ -995,7 +1052,7 @@ function extractItemCandidate(rawText){
 }
 
 // ══════════════════════════════════════════════════════════════
-// v2.7.1 FIX: Fuzzy match chính xác hơn, tránh nhầm Tụ Khí Đan ↔ Hồi Khí Đan
+// FUZZY MATCHING
 // ══════════════════════════════════════════════════════════════
 const ITEM_NAME_BLACKLIST_PAIRS = [
   ['tu khi dan', 'hoi khi dan'],
@@ -1021,12 +1078,8 @@ function findMatchingInventoryItem(nameToFind, inv){
   if(!inv || inv.length === 0) return null;
   const needle = normalizeVN(nameToFind);
   if(!needle || needle.length < 2) return null;
-
-  // 1. EXACT match (chuẩn hóa)
   let match = inv.find(i => normalizeVN(i.name) === needle);
   if(match) return match;
-
-  // 2. Match với quality suffix
   const QUALITY_WORDS = ['ha pham', 'trung pham', 'thuong pham', 'cuc pham', 'tien pham', 'tho', 'binh thuong'];
   const stripQuality = (s) => {
     let r = s;
@@ -1038,8 +1091,6 @@ function findMatchingInventoryItem(nameToFind, inv){
     match = inv.find(i => stripQuality(normalizeVN(i.name)) === needleStripped);
     if(match) return match;
   }
-
-  // 3. Substring match — CHỈ khi không conflict blacklist
   match = inv.find(i => {
     const n = normalizeVN(i.name);
     if(n.length < 2) return false;
@@ -1047,19 +1098,14 @@ function findMatchingInventoryItem(nameToFind, inv){
     return (n.includes(needle) || needle.includes(n)) && Math.abs(n.length - needle.length) <= 4;
   });
   if(match) return match;
-
-  // 4. Token-based — phải khớp TẤT CẢ token
   const tokens = needle.split(/\s+/).filter(t => t.length >= 3 && !ITEM_STOPWORDS.has(t));
   if(tokens.length === 0) return null;
-
   match = inv.find(i => {
     const n = normalizeVN(i.name);
     if(_isConflictingName(n, needle)) return false;
     return tokens.every(t => n.includes(t));
   });
   if(match) return match;
-
-  // 5. Fuzzy 80% + không conflict
   if(tokens.length >= 2){
     const minMatch = Math.ceil(tokens.length * 0.8);
     match = inv.find(i => {
@@ -1073,9 +1119,6 @@ function findMatchingInventoryItem(nameToFind, inv){
   return null;
 }
 
-// ══════════════════════════════════════════════════════════════
-// WORLD-ITEM AUTO-SYNC
-// ══════════════════════════════════════════════════════════════
 function findInWorldItems(nameToFind){
   try {
     const worldItems = JSON.parse(document.getElementById('worldItems').value || '[]');
@@ -1109,16 +1152,11 @@ function autoSyncReceivedItem(tx){
   const worldItem = findInWorldItems(txName);
   const catKey = tx.category || detectItemCategory(txName, quality, tx.effect || (worldItem && worldItem.usage) || '');
   const catInfo = getItemCategoryInfo(catKey);
-
   let inv = [];
   try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch(e) { inv = []; }
-
-  // ⚠️ v2.7.1 FIX: build tên đầy đủ để so sánh chính xác
   const fullName = quality ? `${txName} ${quality}` : txName;
   const existing = findMatchingInventoryItem(fullName, inv) || findMatchingInventoryItem(txName, inv);
-
   if(existing){
-    // Kiểm tra quality — nếu khác thì tạo item mới
     const existQuality = (existing.quality || '').toLowerCase().trim();
     const newQuality = (quality || '').toLowerCase().trim();
     if(existQuality && newQuality && existQuality !== newQuality){
@@ -1127,13 +1165,12 @@ function autoSyncReceivedItem(tx){
       existing.quantity = (existing.quantity || 1) + qty;
       document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
       renderInventoryVisual(inv);
-      log(`🎁 Auto-sync: cộng ${qty}x "${existing.name}" vào túi (đã có sẵn).`);
+      log(`🎁 Auto-sync: cộng ${qty}x "${existing.name}" vào túi.`);
       tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync||0) + 1;
       updateTokenStatsDisplay();
       return true;
     }
   }
-
   const newItem = {
     name: txName,
     icon: tx.icon || (worldItem && worldItem.icon) || catInfo.icon,
@@ -1149,8 +1186,8 @@ function autoSyncReceivedItem(tx){
   inv.push(newItem);
   document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
   renderInventoryVisual(inv);
-  if(worldItem){ log(`🎁 Auto-sync từ Pháp Bảo: "${worldItem.name}" [${catInfo.label}] → túi đồ NVC.`); }
-  else { log(`🎁 Auto-sync: tạo mới "${txName}" [${catInfo.label}] x${qty} trong túi.`); }
+  if(worldItem){ log(`🎁 Auto-sync từ Pháp Bảo: "${worldItem.name}" [${catInfo.label}] → túi.`); }
+  else { log(`🎁 Auto-sync: tạo mới "${txName}" [${catInfo.label}] x${qty}.`); }
   tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync||0) + 1;
   updateTokenStatsDisplay();
   return true;
@@ -1483,9 +1520,7 @@ function getStyleExemplarBlockMulti(scopeIds){
     blocks.push(`# 🎨 SCOPE "${scope.label || scope.id}"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sample}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   }
   return blocks.length > 0 ? '\n' + blocks.join('\n\n') + '\n' : '';
-}
-
-// ============================================================
+}// ============================================================
 // EXP SYSTEM
 // ============================================================
 function parseRealmLevel(levelStr){
@@ -1585,7 +1620,9 @@ Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
 }
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0};updateTokenStatsDisplay();log("Đã reset token stats.");}// ============================================================
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
+
+// ============================================================
 // STATE SNAPSHOTS
 // ============================================================
 function captureStateSnapshot(){
@@ -1658,11 +1695,34 @@ function playFemaleTTS(text, btnElement){
 function stopTTS(){ if('speechSynthesis' in window){ try { window.speechSynthesis.cancel(); } catch(e) {} } if(currentTTSButton){ _resetTTSButton(currentTTSButton); } currentTTSUtterance = null; currentTTSButton = null; document.querySelectorAll('#story-box .btn-tts:not(.btn-tts-stop)').forEach(btn => { _resetTTSButton(btn); }); }
 
 // ============================================================
-// AVATAR
+// AVATAR (v2.7.1 FIX: crop ưu tiên phần trên + 200x200)
 // ============================================================
 function setMcAvatarImage(src){const img=document.getElementById('avatarImg');const placeholder=document.getElementById('avatarPlaceholder');const btnRemove=document.getElementById('btnRemoveAvatar');if(src&&src.trim()!==''){img.src=src;img.style.display='block';placeholder.style.display='none';if(btnRemove)btnRemove.style.display='inline-block';mcAvatarBase64=src;}else{img.src='';img.style.display='none';placeholder.style.display='block';if(btnRemove)btnRemove.style.display='none';mcAvatarBase64="";}}
 function removeMcAvatar(){setMcAvatarImage('');document.getElementById('avatarFileInput').value='';}
-function uploadMcAvatarFile(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);const resizedBase64=canvas.toDataURL('image/jpeg',0.85);setMcAvatarImage(resizedBase64);};img.src=e.target.result;};reader.readAsDataURL(file);}
+function uploadMcAvatarFile(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.createElement('canvas');
+      const ctx=canvas.getContext('2d');
+      canvas.width=200;canvas.height=200;
+      const minSide=Math.min(img.width,img.height);
+      let sx, sy;
+      if(img.width > img.height){
+        sx = (img.width - minSide)/2; sy = 0;
+      } else {
+        sx = 0; sy = Math.min((img.height - minSide) * 0.25, (img.height - minSide));
+      }
+      ctx.drawImage(img,sx,sy,minSide,minSide,0,0,200,200);
+      const resizedBase64=canvas.toDataURL('image/jpeg',0.9);
+      setMcAvatarImage(resizedBase64);
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 
 // ============================================================
 // NPC RENDER
@@ -1691,7 +1751,7 @@ function renderNpcs(){
     let cardBorderColor = '';
     if(npc.pinned) cardBorderColor = '#3fb950';
     else if(DISABLED_KEYWORDS.some(kw => combined.includes(kw))) cardBorderColor = '#d29922';
-    html+=`<div class="npc-card" id="npc-card-${npc.id}" style="${cardBorderColor?`border-color:${cardBorderColor};${npc.pinned?'box-shadow:0 0 8px rgba(63,185,80,.3)':''}`:''}"><div style="position:absolute;top:8px;right:8px;display:flex;gap:2px;align-items:center">${pinBtn}${lockBtn}<button style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px" onclick="removeNpc(${index})">✕</button></div><div class="npc-header"><div class="avatar-box" style="width:70px;height:70px;border-color:${npc.pinned?'#3fb950':affInfo.color}">${hasAvatar?`<img src="${npc.avatar}" alt="${npc.name}">`:`<span class="avatar-placeholder" style="font-size:28px">👤</span>`}</div><div style="flex:1"><input type="text" value="${npc.name||''}" style="font-weight:bold;padding:4px;margin-bottom:4px" placeholder="Tên NPC..." onchange="updateNpcField(${index},'name',this.value)"><input type="text" value="${npc.identity||''}" style="font-size:11px;padding:4px" placeholder="Thân phận..." onchange="updateNpcField(${index},'identity',this.value)"><span class="npc-id-badge">ID: ${npc.id}</span>${statusBadge}${archetypeBadge}</div></div><div style="margin-bottom:6px;display:flex;gap:6px"><label class="btn-upload-file" style="padding:3px 8px;font-size:10px;flex:1">📷 Tải ảnh...<input type="file" style="display:none" accept="image/*" onchange="uploadNpcAvatar(event,${index})"></label>${hasAvatar?`<button class="btn-remove-avatar" style="padding:3px 6px;font-size:10px" onclick="removeNpcAvatar(${index})">✕ Xóa</button>`:''}</div><div class="form-group" style="margin-bottom:8px"><textarea style="min-height:50px;font-size:12px;padding:6px" placeholder="Tính cách..." onchange="updateNpcField(${index},'personality',this.value)">${npc.personality||''}</textarea></div><div class="form-group" style="margin-bottom:8px"><div style="font-size:10px;color:var(--accent-gold);font-weight:bold;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span>⚙️ QUY TẮC AI: ${npc.lockedRules?'<span style="color:#d29922">(ĐÃ KHÓA)</span>':''}</span><button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:12px;padding:0 4px" onclick="toggleLockRules(${index})">${npc.lockedRules?'🔒':'🔓'}</button></div><button class="btn-npc-rules" style="width:100%;margin-bottom:6px" onclick="generateNpcRulesByNpcId('${npc.id}')">🎭 Gợi Ý Rules Cho NPC Này</button><textarea style="min-height:80px;font-size:11px;padding:6px;${npc.lockedRules?'border-color:#d29922;':''}" placeholder="Quy tắc..." onchange="updateNpcField(${index},'npcRules',this.value)">${npc.npcRules||''}</textarea></div><div class="affinity-container"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:bold"><span>❤ Hảo Cảm:</span><span style="color:${affInfo.color}">${npc.affinity}/100 (${affInfo.status})</span></div><div class="affinity-bar-bg"><div class="affinity-bar-fill" style="width:${Math.max(0,Math.min(100,npc.affinity))}%;background:${affInfo.color}"></div></div><div class="affinity-btns"><div><button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-5)">-5</button> <button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-1)">-1</button></div><div><button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},1)">+1</button> <button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},5)">+5</button></div></div></div></div>`;
+    html+=`<div class="npc-card" id="npc-card-${npc.id}" style="${cardBorderColor?`border-color:${cardBorderColor};${npc.pinned?'box-shadow:0 0 8px rgba(63,185,80,.3)':''}`:''}"><div style="position:absolute;top:8px;right:8px;display:flex;gap:2px;align-items:center">${pinBtn}${lockBtn}<button style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px" onclick="removeNpc(${index})">✕</button></div><div class="npc-header"><div class="avatar-box" style="width:100px;height:100px;border-color:${npc.pinned?'#3fb950':affInfo.color}">${hasAvatar?`<img src="${npc.avatar}" alt="${npc.name}">`:`<span class="avatar-placeholder" style="font-size:28px">👤</span>`}</div><div style="flex:1"><input type="text" value="${npc.name||''}" style="font-weight:bold;padding:4px;margin-bottom:4px" placeholder="Tên NPC..." onchange="updateNpcField(${index},'name',this.value)"><input type="text" value="${npc.identity||''}" style="font-size:11px;padding:4px" placeholder="Thân phận..." onchange="updateNpcField(${index},'identity',this.value)"><span class="npc-id-badge">ID: ${npc.id}</span>${statusBadge}${archetypeBadge}</div></div><div style="margin-bottom:6px;display:flex;gap:6px"><label class="btn-upload-file" style="padding:3px 8px;font-size:10px;flex:1">📷 Tải ảnh...<input type="file" style="display:none" accept="image/*" onchange="uploadNpcAvatar(event,${index})"></label>${hasAvatar?`<button class="btn-remove-avatar" style="padding:3px 6px;font-size:10px" onclick="removeNpcAvatar(${index})">✕ Xóa</button>`:''}</div><div class="form-group" style="margin-bottom:8px"><textarea style="min-height:50px;font-size:12px;padding:6px" placeholder="Tính cách..." onchange="updateNpcField(${index},'personality',this.value)">${npc.personality||''}</textarea></div><div class="form-group" style="margin-bottom:8px"><div style="font-size:10px;color:var(--accent-gold);font-weight:bold;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span>⚙️ QUY TẮC AI: ${npc.lockedRules?'<span style="color:#d29922">(ĐÃ KHÓA)</span>':''}</span><button style="background:none;border:none;color:${npc.lockedRules?'#d29922':'#666'};cursor:pointer;font-size:12px;padding:0 4px" onclick="toggleLockRules(${index})">${npc.lockedRules?'🔒':'🔓'}</button></div><button class="btn-npc-rules" style="width:100%;margin-bottom:6px" onclick="generateNpcRulesByNpcId('${npc.id}')">🎭 Gợi Ý Rules Cho NPC Này</button><textarea style="min-height:80px;font-size:11px;padding:6px;${npc.lockedRules?'border-color:#d29922;':''}" placeholder="Quy tắc..." onchange="updateNpcField(${index},'npcRules',this.value)">${npc.npcRules||''}</textarea></div><div class="affinity-container"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:bold"><span>❤ Hảo Cảm:</span><span style="color:${affInfo.color}">${npc.affinity}/100 (${affInfo.status})</span></div><div class="affinity-bar-bg"><div class="affinity-bar-fill" style="width:${Math.max(0,Math.min(100,npc.affinity))}%;background:${affInfo.color}"></div></div><div class="affinity-btns"><div><button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-5)">-5</button> <button class="btn-aff btn-aff-minus" onclick="changeAffinity(${index},-1)">-1</button></div><div><button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},1)">+1</button> <button class="btn-aff btn-aff-plus" onclick="changeAffinity(${index},5)">+5</button></div></div></div></div>`;
   });
   container.innerHTML=html;
 }
@@ -1705,7 +1765,30 @@ function removeNpc(index){if(confirm("Xóa NPC này?")){npcList.splice(index,1);
 function updateNpcField(index,field,value){if(npcList[index]){npcList[index][field]=value;if(field==='name'&&(!npcList[index].avatar||npcList[index].avatar.includes('dicebear')))npcList[index].avatar=generateAutoAvatar(value);renderNpcs();}}
 function changeAffinity(index,delta){if(npcList[index]){let val=(npcList[index].affinity||0)+delta;npcList[index].affinity=Math.min(100,Math.max(-100,val));renderNpcs();}}
 function removeNpcAvatar(index){if(npcList[index]){npcList[index].avatar='';renderNpcs();}}
-function uploadNpcAvatar(event,index){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');canvas.width=150;canvas.height=150;let minSide=Math.min(img.width,img.height);let sx=(img.width-minSide)/2;let sy=(img.height-minSide)/2;ctx.drawImage(img,sx,sy,minSide,minSide,0,0,150,150);npcList[index].avatar=canvas.toDataURL('image/jpeg',0.85);renderNpcs();};img.src=e.target.result;};reader.readAsDataURL(file);}
+function uploadNpcAvatar(event,index){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.createElement('canvas');
+      const ctx=canvas.getContext('2d');
+      canvas.width=200;canvas.height=200;
+      const minSide=Math.min(img.width,img.height);
+      let sx, sy;
+      if(img.width > img.height){
+        sx = (img.width - minSide)/2; sy = 0;
+      } else {
+        sx = 0; sy = Math.min((img.height - minSide) * 0.25, (img.height - minSide));
+      }
+      ctx.drawImage(img,sx,sy,minSide,minSide,0,0,200,200);
+      npcList[index].avatar=canvas.toDataURL('image/jpeg',0.9);
+      renderNpcs();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 function togglePinNpc(index){if(npcList[index]){npcList[index].pinned = !npcList[index].pinned;log(`${npcList[index].pinned?'📌 Ghim':'📍 Bỏ ghim'} [${npcList[index].name}]`);renderNpcs();}}
 function toggleLockRules(index){if(npcList[index]){npcList[index].lockedRules = !npcList[index].lockedRules;log(`${npcList[index].lockedRules?'🔒 Khóa':'🔓 Mở'} [${npcList[index].name}]`);renderNpcs();}}
 
@@ -1802,16 +1885,14 @@ function detectPurchaseIntent(actionText){
 }
 
 // ============================================================
-// PRE-VALIDATE — auto-sync worldItems
+// PRE-VALIDATE
 // ============================================================
 function prevalidateTransaction(actionText){
   const intent = detectPurchaseIntent(actionText);
   if(!intent) return { ok: true };
-
   let inv = [];
   try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch(e) { inv = []; }
   inv = inv.filter(i => i && i.name && (i.quantity === undefined || i.quantity > 0));
-
   const currentLS = (() => { const ls = inv.find(i => normalizeVN(i.name).includes('linh thach')); return ls ? (ls.quantity || 0) : 0; })();
 
   if(intent.action === 'buy'){
@@ -1827,7 +1908,6 @@ function prevalidateTransaction(actionText){
     const rawText = (intent.raw || actionText || '').toLowerCase();
     const itemNameRaw = (intent.itemName || '').trim();
     const isGivingLS = /linh\s*thach|linh\s*thạch|\bls\b/i.test(itemNameRaw) || /linh\s*thach|linh\s*thạch|\bls\b/i.test(rawText);
-
     if(isGivingLS){
       if(currentLS < intent.qty){
         tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
@@ -1836,12 +1916,10 @@ function prevalidateTransaction(actionText){
       }
       return { ok: true };
     }
-
     const candidates = [];
     if(itemNameRaw){ candidates.push(normalizeVN(itemNameRaw)); candidates.push(extractItemCandidate(itemNameRaw)); }
     candidates.push(extractItemCandidate(rawText));
     const uniqCandidates = [...new Set(candidates.filter(s => s && s.length >= 2))];
-
     let matchedItem = null;
     for(const c of uniqCandidates){ matchedItem = findMatchingInventoryItem(c, inv); if(matchedItem) break; }
 
@@ -1851,14 +1929,7 @@ function prevalidateTransaction(actionText){
         log(`🔗 Give-Guard: Tự động chuyển "${worldMatch.name}" từ Pháp Bảo → Túi đồ (NVC đã sở hữu).`);
         const catKey = detectItemCategory(worldMatch.name, worldMatch.rank, worldMatch.usage);
         const catInfo = getItemCategoryInfo(catKey);
-        const newItem = {
-          name: worldMatch.name,
-          icon: worldMatch.icon || catInfo.icon,
-          quantity: 1,
-          quality: worldMatch.rank || 'Thường',
-          effect: worldMatch.usage || '',
-          category: catKey
-        };
+        const newItem = { name: worldMatch.name, icon: worldMatch.icon || catInfo.icon, quantity: 1, quality: worldMatch.rank || 'Thường', effect: worldMatch.usage || '', category: catKey };
         if(catInfo.needsRefine){ newItem.isRefined = true; }
         const existing = findMatchingInventoryItem(worldMatch.name, inv);
         if(existing){ existing.quantity = (existing.quantity || 1) + 1; matchedItem = existing; }
@@ -1877,7 +1948,6 @@ function prevalidateTransaction(actionText){
         return { ok: false, type: 'give', message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Bạn muốn cho: "${itemShown}"\n📦 Nhưng túi đồ của bạn KHÔNG có vật phẩm này (cũng không có trong Pháp Bảo).\n\n📋 Túi đồ hiện tại:\n${invList}\n\n🚫 Không thể cho/tặng vật phẩm mà bạn KHÔNG sở hữu.\n\n👉 Hãy chọn:\n  • Kiểm tra lại túi đồ (tab NVC)\n  • Cho vật phẩm khác đang có\n  • Đi kiếm vật phẩm trước\n  • Hủy hành động` };
       }
     }
-
     const available = matchedItem.quantity || 1;
     if(intent.qty > available){
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
@@ -2132,7 +2202,7 @@ async function deleteFromIDB(key){ const db = await openDB(); return new Promise
 // ============================================================
 async function saveGame(isManual=false){
   if(isManual && !checkCJKOnSave()) return;
-  const gameData={ chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary, storyBoxContent: document.getElementById('story-box').innerHTML, inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML, locVisualHTML: document.getElementById('locVisualGrid').innerHTML, eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML, weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML, mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex, priceMemory, _saveVersion: 'v2.7.1', inputs: {} };
+  const gameData={ chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary, storyBoxContent: document.getElementById('story-box').innerHTML, inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML, locVisualHTML: document.getElementById('locVisualGrid').innerHTML, eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML, weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML, mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex, priceMemory, musicPlaylist, currentMusicIndex, _saveVersion: 'v2.7.1', inputs: {} };
   inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});
   try{ await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData); log("Game saved."); if(isManual){alert("💾 Đã lưu game!");toggleSidebar();} }
   catch(e){alert("Lỗi lưu: "+e);}
@@ -2152,6 +2222,11 @@ async function loadGame(){
     if(gameData.keyStatus)keyStatus=gameData.keyStatus;
     if(gameData.currentKeyIndex !== undefined)currentKeyIndex=gameData.currentKeyIndex;
     if(gameData.priceMemory) priceMemory = gameData.priceMemory;
+    if(gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)){
+      musicPlaylist = gameData.musicPlaylist;
+      renderMusicPlaylist(); updateMusicTitle();
+      if(gameData.currentMusicIndex !== undefined) currentMusicIndex = gameData.currentMusicIndex;
+    }
     document.getElementById('story-box').innerHTML=gameData.storyBoxContent||"Chưa có dữ liệu.";
     if(gameData.inventoryVisualHTML)document.getElementById('inventoryVisualGrid').innerHTML=gameData.inventoryVisualHTML;
     if(gameData.locVisualHTML)document.getElementById('locVisualGrid').innerHTML=gameData.locVisualHTML;
@@ -2166,7 +2241,7 @@ async function loadGame(){
     alert("📂 Khôi phục thành công!"); toggleSidebar(); openTab('play');
   }catch(e){alert("Lỗi tải: "+e);}
 }
-function syncToggleUI(){ ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave','autoRotate','styleReminder','autoNpcRules','showArchetype'].forEach(name=>{ const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1)); if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');} }); }
+function syncToggleUI(){ ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave','autoRotate','styleReminder','autoNpcRules','showArchetype','autoMusic'].forEach(name=>{ const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1)); if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');} }); }
 function updateKeyCountInfo(){ const keys = getGeminiKeys(); const models = getGeminiModels(); const el = document.getElementById('keyCountInfo'); if(el){ el.textContent = `📌 ${keys.length} key | ${models.length} model | ${keys.length * models.length} tổ hợp`; } }
 async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.7.1_save.json";a.click();log("Xuất save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
@@ -2212,9 +2287,7 @@ function undoLastTurn(){
   restoreStateSnapshot(snap);
   log(`↩ Đã quay lại lượt trước (khôi phục túi đồ, cảnh giới, EXP, NPC, giá cả, ...)`);
   alert("↩ Đã quay lại lượt trước!");
-}
-
-// ============================================================
+}// ============================================================
 // SUMMARY
 // ============================================================
 async function callGeminiInternal(promptText, preferredModel, maxTokens=1000){
@@ -2332,17 +2405,13 @@ ${getPriceReferenceString()}
 ${getPriceMemoryPrompt()}
 
 ⚠️ PHÂN BIỆT "PHÁP BẢO" vs "TÚI ĐỒ" (CỰC KỲ QUAN TRỌNG):
-- [Pháp bảo] (worldItems) = vật phẩm TỒN TẠI TRONG THẾ GIỚI. Bao gồm:
-  • Pháp bảo/pháp khí của NPC khác (chưa thuộc về NVC)
-  • Vật phẩm trong di tích, cửa hàng, chiến lợi phẩm chưa nhặt
-  • Vật phẩm NVC ĐÃ CƯỚP/CHIẾN THẮNG nhưng CHƯA CHUYỂN VÀO TÚI
+- [Pháp bảo] (worldItems) = vật phẩm TỒN TẠI TRONG THẾ GIỚI.
 - [Túi] (mcInventory) = vật phẩm NVC ĐANG SỞ HỮU và CÓ THỂ SỬ DỤNG.
 - Khi NVC CƯỚP được vật phẩm từ NPC khác → BẮT BUỘC ghi "receive" trong transactionsList.
 - Khi NVC NHẶT được vật phẩm từ di tích → BẮT BUỘC ghi "receive".
 - Khi NVC MUA vật phẩm → ghi "buy".
 - Khi NVC ĐƯỢC TẶNG → ghi "receive".
 - ⚠️ Vật phẩm trong [Pháp bảo] KHÔNG được tính là NVC sở hữu cho đến khi có "receive".
-- ✅ HỆ THỐNG SẼ TỰ ĐỘNG CHUYỂN vật phẩm từ [Pháp bảo] → [Túi] khi phát hiện NVC đã sở hữu (cướp được, nhặt được).
 
 📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN:
 - **Pháp bảo / Pháp khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn... → CẦN LUYỆN HOÁ.
@@ -2421,7 +2490,6 @@ function buildSystemRules(scopeInput='default'){
   const exemplarBlock = getStyleExemplarBlockMulti(scopes);
   if(exemplarBlock) log(`🎨 Scope exemplar injected (${scopes.length} scope)`);
   const scopeChainNote = scopes.length > 1 ? `\n# ⛓️ CHUỖI SCOPE: ${scopes.join(' → ')}\n→ Tính thời gian TÍCH LŨY cho TỪNG scope theo thứ tự.\n` : '';
-  
   return `${exemplarBlock}${scopeChainNote}# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle')||'HỒNG ĐỨC TU TIÊN LỘ'}".
 
 # QUY TẮC TỐI CAO
@@ -2512,19 +2580,13 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 5) Khối \`\`\`json cập nhật Codex.
 
 # 💰 QUY TẮC GIAO DỊCH (CỰC KỲ QUAN TRỌNG)
-
 Khi NVC giao dịch, AI BẮT BUỘC thêm mảng "transactionsList" vào JSON Codex.
 1. "sell" — BÁN: trừ vật phẩm, CỘNG linh thạch.
 2. "buy" — MUA: CỘNG vật phẩm, TRỪ linh thạch.
 3. "give" — CHO/TẶNG: trừ vật phẩm, KHÔNG nhận linh thạch.
 4. "receive" — NHẬN QUÀ: cộng vật phẩm, KHÔNG trừ linh thạch.
 
-🔑 KHI NVC "NHẬN" ĐƯỢC VẬT PHẨM:
-→ BẮT BUỘC thêm vào "transactionsList" với type "receive".
-→ VD: "Lý Hổ đưa ngươi Phệ Huyết Kiếm" → [{"type":"receive","name":"Phệ Huyết Kiếm","quantity":1,"isRefined":true}]
-
 # 💰 QUY TẮC GHI NHỚ GIÁ
-
 Khi NVC HỎI GIÁ một vật phẩm/dịch vụ → BẮT BUỘC thêm mảng "priceRecords" vào JSON:
 "priceRecords":[{"item":"Tụ Khí Đan","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}]
 
@@ -2721,7 +2783,7 @@ async function callAI(promptText, isFirstCall=false, scopeInput='default'){
 }
 
 // ============================================================
-// AI GEN FORMAT LOCK
+// AI GEN FIELD
 // ============================================================
 const AI_GEN_BANNED_WORDS = ['chào đạo hữu','kính chào','hỡi đạo hữu','chúc mừng ngươi','chào bạn','xin chào','kính thưa','hỡi ngươi','hỡi các vị'];
 function isValidRulesFormat(text){
@@ -2776,9 +2838,7 @@ async function aiGenField(fieldId, promptMsg){
     else{ field.value = originalVal; }
   }catch(e){ log("AI Gen lỗi: " + e.message); field.value = originalVal; alert("❌ AI Gen thất bại:\n" + e.message); }
   finally{ isAiGenCall = false; }
-}
-
-// ============================================================
+}// ============================================================
 // FORMAT + PARSE CODEX
 // ============================================================
 function formatSummaryBox(text){
@@ -2808,7 +2868,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
     if(jsonMatch&&jsonMatch[1]){
       const codexData = safeParseJSON(jsonMatch[1].trim());
       if(!codexData){ log("⚠️ Codex JSON không hợp lệ — bỏ qua auto-update."); return buildTurnHtml(formatSummaryBox(fullResponseText.replace(/```json[\s\S]*?```/i,''))); }
-      
       let postValidateWarningHtml = '';
       let hasTransactions = false;
       if(codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList) && codexData.transactionsList.length > 0){
@@ -2828,8 +2887,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
         else if(invalid.length === 0){ log(`ℹ️ transactionsList rỗng hoặc không hợp lệ.`); }
         codexData.mcInventoryList = undefined;
       }
-      
-      // ⚡ v2.7.1: Xử lý priceRecords từ AI
       if(codexData.priceRecords !== undefined && Array.isArray(codexData.priceRecords)){
         codexData.priceRecords.forEach(pr => {
           if(pr && pr.item && pr.price !== undefined){
@@ -2837,23 +2894,19 @@ function parseAndAutoUpdateCodex(fullResponseText){
           }
         });
       }
-      // Auto-record từ transactions
       if(codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList)){
         autoRecordPricesFromTransactions(codexData.transactionsList);
       }
-      
       const oldLevel = document.getElementById('mcLevel').value;
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!==""){ document.getElementById('mcGameTime').value=codexData.mcGameTime; normalizeGameTimeField(); }
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
-      
       if(codexData.mcExpGain !== undefined){ const gain = parseInt(codexData.mcExpGain) || 0; if(gain > 0){ mcExp += gain; log(`✨ +${gain} EXP (${codexData.mcExpReason || 'tu luyện'})`); } }
       if(codexData.mcExpLoss !== undefined){ const loss = parseInt(codexData.mcExpLoss) || 0; if(loss > 0){ mcExp = Math.max(0, mcExp - loss); log(`💔 -${loss} EXP`); } }
       if(codexData.mcLinhCan){ mcLinhCan = codexData.mcLinhCan; }
       const newLevel = document.getElementById('mcLevel').value;
       if(oldLevel && newLevel && oldLevel !== newLevel){ mcExp = 0; log(`🎉 ĐỘT PHÁ CẢNH GIỚI: ${oldLevel} → ${newLevel}`); }
       updateExpUI();
-      
       if(!hasTransactions && codexData.mcInventoryList!==undefined&&Array.isArray(codexData.mcInventoryList)){
         const normalizedInventory = codexData.mcInventoryList.map(item => {
           if (typeof item === 'string') { const match = item.match(/^(\d+)\s+(.+)$/); if (match) return { name: match[2], icon: '📦', quantity: parseInt(match[1]), quality: 'Chưa rõ', effect: 'Chưa rõ' }; return { name: item, icon: '📦', quantity: 1, quality: 'Chưa rõ', effect: 'Chưa rõ' }; }
@@ -2888,7 +2941,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
         renderInventoryVisual(validInventory);
         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
       }
-      
       if(codexData.npcActiveList!==undefined&&Array.isArray(codexData.npcActiveList)){
         codexData.npcActiveList.forEach(aiNpc=>{
           if(!aiNpc||!aiNpc.name)return;
@@ -2914,7 +2966,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
           }
         });
       }
-      
       if(codexData.locationsList!==undefined&&Array.isArray(codexData.locationsList)){
         let currentLocsText=document.getElementById('locations').value;
         let existingLocs=[];
@@ -2928,7 +2979,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
         renderLocationsVisual(existingLocs);
         document.getElementById('locations').value=JSON.stringify(existingLocs,null,2);
       }
-      
       if(codexData.eventsList!==undefined&&Array.isArray(codexData.eventsList)){
         codexData.eventsList.forEach(newEv=>{
           let found=eventList.find(e=>e.name.toLowerCase().trim()===newEv.name.toLowerCase().trim());
@@ -2938,19 +2988,16 @@ function parseAndAutoUpdateCodex(fullResponseText){
         renderEventsVisual();
         syncEventsToTextarea();
       }
-      
       if(codexData.weaponsList!==undefined&&Array.isArray(codexData.weaponsList)){
         renderWeaponsVisual(codexData.weaponsList);
         document.getElementById('worldItems').value=JSON.stringify(codexData.weaponsList,null,2);
       }
-      
       if(codexData.npcArchive!==undefined){
         let archiveStr='';
         if(typeof codexData.npcArchive==='object'){ if(Array.isArray(codexData.npcArchive))archiveStr=codexData.npcArchive.map(item=>typeof item==='string'?item:JSON.stringify(item)).join('\n'); else archiveStr=JSON.stringify(codexData.npcArchive,null,2); }
         else archiveStr=String(codexData.npcArchive);
         document.getElementById('npcArchive').value=archiveStr;
       }
-      
       const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
       npcList = npcList.filter(npc => {
         if(npc.pinned) return true;
@@ -2970,7 +3017,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
         html = html.replace('</div><div class="tts-btn-container"', postValidateWarningHtml + '</div><div class="tts-btn-container"');
         if(!html.includes(postValidateWarningHtml)){ html += postValidateWarningHtml; }
       }
-      // ⚡ v2.7.1: Auto-record giá từ narrative
       try { autoRecordPricesFromNarrative(cleanText); } catch(e){}
       return html;
     }
@@ -3036,7 +3082,7 @@ function addWorldItemToInventory(name){
 }
 
 // ══════════════════════════════════════════════════════════════
-// LUYỆN HOÁ PHÁP BẢO / TRẬN BÀN / PHÙ TÁI SỬ DỤNG
+// LUYỆN HOÁ PHÁP BẢO
 // ══════════════════════════════════════════════════════════════
 function refineInventoryItem(name, quality, catKey){
   try {
@@ -3088,12 +3134,10 @@ function renderInventoryVisual(itemsArray){
     const canSplit = /và|\/|,|&/i.test(q);
     const safeName = (item.name||'').replace(/'/g,"\\'");
     const safeQuality = (item.quality||'').replace(/'/g,"\\'");
-    
     const catKey = item.category || detectItemCategory(item.name, item.quality, item.effect);
     const catInfo = getItemCategoryInfo(catKey);
     const needsRefine = catInfo.needsRefine;
     const isRefined = item.isRefined === true;
-    
     const catBadge = `<span class="item-cat-badge ${catInfo.badgeClass}">${catInfo.icon} ${catInfo.label}</span>`;
     let refineBadge = '';
     let refineBtn = '';
@@ -3105,7 +3149,6 @@ function renderInventoryVisual(itemsArray){
       }
     } else if(catInfo.consumable){ refineBadge = `<span class="refine-status-consumable">⚡ Tiêu hao</span>`; }
     else { refineBadge = `<span class="refine-status-passive">📦 Không tiêu hao</span>`; }
-    
     html+=`<div class="item-card" style="position:relative">
       <div class="item-icon-box">${iconContent}</div>
       <div class="item-details">
@@ -3262,7 +3305,6 @@ function thienDaoExecute(){
   eventList.forEach(ev=>{const text=JSON.stringify(ev).toLowerCase();if(text.includes(keyword)){results.push({title:`📜 Sự kiện: ${ev.name}`,body:`Thời gian: ${ev.timeNote}\nĐiều kiện: ${ev.accessRules}\nNội dung: ${ev.events}`,source:'Codex Sự kiện'});}});
   try{const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');weapons.forEach(w=>{const text=JSON.stringify(w).toLowerCase();if(text.includes(keyword)){results.push({title:`⚔️ Pháp bảo: ${w.name}`,body:`Cấp bậc: ${w.rank}\nCông dụng: ${w.usage}`,source:'Codex Pháp bảo'});}});}catch(e){}
   try{const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');inv.forEach(item=>{const text=JSON.stringify(item).toLowerCase();if(text.includes(keyword)){const catInfo=getItemCategoryInfo(item.category||detectItemCategory(item.name,item.quality,item.effect));results.push({title:`🎒 Vật phẩm: ${item.name}`,body:`SL: ${item.quantity||1}\nPhẩm chất: ${item.quality||'Thường'}\nLoại: ${catInfo.label}${catInfo.needsRefine?`\nLuyện hoá: ${item.isRefined?'Đã luyện hoá':'Chưa luyện hoá'}`:''}\nCông dụng: ${item.effect||'Chưa rõ'}`,source:'Túi đồ NVC'});}});}catch(e){}
-  // ⚡ v2.7.1: Tìm trong priceMemory
   const priceKeys = Object.keys(priceMemory);
   priceKeys.forEach(k => {
     const p = priceMemory[k];
@@ -3303,14 +3345,15 @@ function thienDaoStats(){
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔑 API Keys</div><div class="thiendao-result-body">Keys: ${keys.length} | Models: ${models.length} | Tổ hợp: ${keys.length * models.length}<br>Rotations: ${tokenStats.keyRotations||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎵 Nhạc</div><div class="thiendao-result-body">Playlist: ${musicPlaylist.length} bài<br>Đang phát: ${musicPlaylist[currentMusicIndex]?.name || '(không)'}</div></div>`;
   resultsDiv.innerHTML=html;
 }
 function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.7.1 (2026-10-14)</div><div class="thiendao-result-body">🔧 <b>FIX FUZZY MATCH</b>:<br>• Sửa lỗi Tụ Khí Đan bị nhầm với Hồi Khí Đan khi cộng dồn.<br>• Thêm BLACKLIST cặp tên dễ nhầm (Tụ Khí ↔ Hồi Khí, Thanh Tâm ↔ Trúc Cơ...).<br>• Kiểm tra quality trước khi cộng dồn, khác quality → tạo item mới.<br><br>⏱️ <b>TIME NORMALIZER</b>:<br>• Parse "20 ngày 5 giờ" thành tổng số giờ.<br>• Cảnh báo khi user nhập "20" không có đơn vị.<br>• Tự chuẩn hóa hiển thị "X năm Y tháng Z ngày".<br><br>💰 <b>PRICE MEMORY SYSTEM</b>:<br>• AI ghi giá vào priceRecords trong JSON Codex.<br>• Tự động dò giá từ narrative "X linh thạch".<br>• Inject bảng giá đã khám phá vào prompt → AI tính toán nhất quán.<br>• Menu "💰 Xem Giá Đã Lưu" trong sidebar.<br><br>🎨 <b>COLLAPSIBLE UI</b>:<br>• Tab World chia thành 6 nhóm có thể thu gọn.<br>• Giảm độ dài trang, dễ điều hướng trên điện thoại.<br><br>📦 <b>ITEM CATEGORY SYSTEM</b> (từ v2.7.0):<br>• Phân loại 9 nhóm đồ vật tu tiên.<br>• Refine Mechanic: pháp bảo/trận bàn/phù tái sử dụng cần luyện hoá.<br>• Give-Guard Auto-Sync + World-Item Auto-Sync.</div></div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-blue)"><div class="thiendao-result-title">v2.7.0</div><div class="thiendao-result-body">Item Category + Refine Mechanic + Give-Guard Auto-Sync + World-Item Auto-Sync.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.7.1 (2026-10-14)</div><div class="thiendao-result-body">🎵 <b>NHẠC NỀN</b>:<br>• Playlist nhiều bài, lưu IndexedDB.<br>• Nút ▶ ⏭ + volume trên header.<br>• Auto-play khi vào game (cần click unlock lần đầu).<br>• Toggle bật/tắt trong sidebar.<br><br>🖼️ <b>AVATAR FIX</b>:<br>• NVC 120×120, NPC 100×100 (to hơn).<br>• Crop ưu tiên phần TRÊN (giữ mặt).<br>• Lưu 200×200 chất lượng cao.<br><br>💰 <b>PRICE MEMORY FIX</b>:<br>• Hiển thị theo 3 nhóm: Từ AI / Giao dịch / Narrative.<br>• Regex chặt hơn — loại bỏ entry rác.<br>• FIX: Tụ Khí Đan ≠ Hồi Khí Đan (blacklist).<br><br>⏱️ <b>TIME NORMALIZER</b>: chuẩn hóa "X ngày Y giờ".</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.7.0</div><div class="thiendao-result-body">Item Category + Refine Mechanic + Give-Guard Auto-Sync + World-Item Auto-Sync.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.5</div><div class="thiendao-result-body">World-Item Auto-Sync + Extended Verbs + Give-Guard Hard Block.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.4</div><div class="thiendao-result-body">Give-Guard Hard Block — chặn bịa vật phẩm ở LỚP 1.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.3</div><div class="thiendao-result-body">Dual-layer transaction guard (Pre + Post).</div></div>`;
@@ -3320,6 +3363,133 @@ function showVersionLog(){
   resultsDiv.innerHTML=html;
 }
 document.getElementById('thienDaoModal').addEventListener('click',function(e){if(e.target===this)closeThienDao();});
+
+// ============================================================
+// MUSIC PLAYER (v2.7.1)
+// ============================================================
+let musicPlaylist = [];
+let currentMusicIndex = -1;
+let musicEnabled = false;
+
+async function loadMusicPlaylistFromIDB(){
+  try {
+    const saved = await getFromIDB('HONGDUC_MUSIC_PLAYLIST');
+    if(saved && Array.isArray(saved)){ musicPlaylist = saved; log(`🎵 Load ${musicPlaylist.length} bài nhạc.`); }
+  } catch(e){}
+  renderMusicPlaylist();
+  updateMusicTitle();
+}
+async function saveMusicPlaylistToIDB(){
+  try { await saveToIDB('HONGDUC_MUSIC_PLAYLIST', musicPlaylist); }
+  catch(e){ log('⚠️ Không lưu được playlist: ' + e.message); }
+}
+function uploadMusicFiles(event){
+  const files = event.target.files;
+  if(!files || files.length === 0) return;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      musicPlaylist.push({
+        id: 'music_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+        name: file.name.replace(/\.[^.]+$/, ''),
+        dataUrl: e.target.result,
+        addedAt: Date.now()
+      });
+      renderMusicPlaylist();
+      updateMusicTitle();
+      saveMusicPlaylistToIDB();
+      log(`🎵 Đã thêm: ${file.name}`);
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function renderMusicPlaylist(){
+  const el = document.getElementById('musicPlaylist');
+  if(!el) return;
+  if(musicPlaylist.length === 0){
+    el.innerHTML = '<div style="font-size:11px;color:var(--subtext-color);font-style:italic;text-align:center;padding:6px">Chưa có bài nào</div>';
+    return;
+  }
+  let html = '';
+  musicPlaylist.forEach((m, i) => {
+    const isActive = i === currentMusicIndex;
+    html += `<div class="music-list-item ${isActive ? 'active' : ''}">
+      <button class="music-list-play" onclick="playMusicAt(${i})">${isActive && musicEnabled ? '⏸' : '▶'}</button>
+      <span class="music-list-title" title="${m.name}">${isActive ? '🎵 ' : ''}${m.name}</span>
+      <button class="music-list-del" onclick="removeMusicAt(${i})">✕</button>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+function removeMusicAt(i){
+  if(!musicPlaylist[i]) return;
+  if(!confirm(`Xóa bài "${musicPlaylist[i].name}"?`)) return;
+  if(i === currentMusicIndex){ stopMusic(); currentMusicIndex = -1; }
+  musicPlaylist.splice(i, 1);
+  if(i < currentMusicIndex) currentMusicIndex--;
+  renderMusicPlaylist(); updateMusicTitle(); saveMusicPlaylistToIDB();
+}
+function clearAllMusic(){
+  if(musicPlaylist.length === 0){ alert('Chưa có nhạc!'); return; }
+  if(!confirm(`🗑️ Xóa toàn bộ ${musicPlaylist.length} bài nhạc?`)) return;
+  stopMusic();
+  musicPlaylist = []; currentMusicIndex = -1;
+  renderMusicPlaylist(); updateMusicTitle(); saveMusicPlaylistToIDB();
+  log('🗑️ Đã xóa toàn bộ nhạc.');
+}
+function playMusicAt(i){
+  const audio = document.getElementById('bgMusic');
+  if(!audio || !musicPlaylist[i]) return;
+  if(i === currentMusicIndex && musicEnabled){ stopMusic(); return; }
+  currentMusicIndex = i;
+  audio.src = musicPlaylist[i].dataUrl;
+  audio.volume = parseFloat(document.getElementById('musicVolume').value) || 0.5;
+  audio.play().then(() => {
+    musicEnabled = true;
+    updateMusicUI();
+    log(`🎵 Đang phát: ${musicPlaylist[i].name}`);
+  }).catch(err => {
+    log(`⚠️ Không phát được: ${err.message} (cần click vào trang trước)`);
+    musicEnabled = false;
+    updateMusicUI();
+  });
+}
+function stopMusic(){
+  const audio = document.getElementById('bgMusic');
+  if(audio){ audio.pause(); }
+  musicEnabled = false;
+  updateMusicUI();
+}
+function toggleMusic(){
+  if(musicPlaylist.length === 0){ alert('⚠️ Chưa có nhạc! Vào sidebar → 🎵 Nhạc nền để thêm.'); return; }
+  if(musicEnabled){ stopMusic(); }
+  else { playMusicAt(currentMusicIndex >= 0 ? currentMusicIndex : 0); }
+}
+function nextMusic(){
+  if(musicPlaylist.length === 0){ alert('⚠️ Chưa có nhạc!'); return; }
+  const next = (currentMusicIndex + 1) % musicPlaylist.length;
+  playMusicAt(next);
+}
+function setMusicVolume(v){
+  const audio = document.getElementById('bgMusic');
+  if(audio) audio.volume = parseFloat(v) || 0.5;
+}
+function updateMusicUI(){
+  const btn = document.getElementById('musicPlayBtn');
+  if(btn){
+    btn.textContent = musicEnabled ? '⏸' : '▶';
+    btn.classList.toggle('playing', musicEnabled);
+  }
+  renderMusicPlaylist();
+}
+function updateMusicTitle(){
+  const el = document.getElementById('musicTitle');
+  if(!el) return;
+  if(musicPlaylist.length === 0){ el.textContent = 'Chưa có nhạc'; return; }
+  const cur = musicPlaylist[currentMusicIndex];
+  el.textContent = cur ? cur.name : `${musicPlaylist.length} bài`;
+}
 
 // ============================================================
 // START GAME
@@ -3377,7 +3547,6 @@ const sendAction=async()=>{
   if(!actionText)return;
   stopTTS();
   const storyBox=document.getElementById('story-box');
-  
   const precheck = prevalidateTransaction(actionText);
   if(!precheck.ok){
     inputEl.value = '';
@@ -3386,25 +3555,20 @@ const sendAction=async()=>{
     log(`🚫 Pre-validation chặn: ${precheck.type}`);
     return;
   }
-  
   stateSnapshots.push(captureStateSnapshot());
   if(stateSnapshots.length > MAX_SNAPSHOTS) stateSnapshots.shift();
-  
   inputEl.value='';
   const actionId='action_'+Date.now();
   const userHtml=`<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
   storyBox.innerHTML+=userHtml;
   setTimeout(()=>{const actionEl=document.getElementById(actionId);if(actionEl)actionEl.scrollIntoView({behavior:'smooth',block:'start'});},50);
-  
   const needRulesResend=(chatHistory.length===0);
   const sceneScopes = detectSceneScopes(actionText);
   const primaryScope = sceneScopes[0] || 'default';
   const scopeChain = sceneScopes.join(' → ');
   log(`🎬 Scopes: ${scopeChain}`);
-  
   const hasRealScope = sceneScopes.some(s => s !== 'default');
   const styleReminder = sceneScopes.length > 1 ? `\n⛓️ CHUỖI HÀNH ĐỘNG (theo thứ tự thời gian): ${scopeChain}\n→ AI PHẢI tính thời gian TÍCH LŨY cho TỪNG scope.\n` : (hasRealScope ? `\n⚡ SCOPE "${primaryScope}" — áp dụng số liệu + quy tắc.\n` : '');
-  
   let lengthGuard = '';
   if(settings.antiShortening){
     const lastAiMsg = [...chatHistory].reverse().find(m => m.role === 'model');
@@ -3419,13 +3583,9 @@ const sendAction=async()=>{
       } else if(lastWordCount >= MIN_TURN_WORDS){ document.getElementById('degradationWarning').style.display='none'; }
     }
   }
-  
   const styleReminderEnd = settings.styleReminder ? `\n\n🎭 NHẮC LẠI VĂN PHONG (BẮT BUỘC):\n- Ngôi thứ 2 (ngươi). NVC là bạn.\n- 2-3 đoạn nội tâm NVC đặt trong 《...》.\n- Show don't tell.\n- NPC nói chuyện theo hảo cảm.\n- Từ ngữ cổ phong: đạo hữu, tiền bối, các hạ, bổn tọa.` : '';
-  
   const formatReminder = `${lengthGuard}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + mcExpGain nếu có).${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.`;
-  
   const promptWithCodex=needRulesResend ? `${buildSystemRules(sceneScopes)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}` : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
-  
   const reply=await callAI(promptWithCodex,false, sceneScopes);
   if(reply){
     const formattedHtml=parseAndAutoUpdateCodex(reply);
@@ -3442,10 +3602,8 @@ document.getElementById('userInput').addEventListener('keypress',function(e){if(
 // ============================================================
 // MODEL SELECTORS
 // ============================================================
-document.getElementById('openRouterModel').addEventListener('change',function(e){ const customInput=document.getElementById('openRouterCustomModel'); if(e.target.value==='custom'){ if(customInput)customInput.style.display='block'; } else{ if(customInput)customInput.style.display='none'; } });
-
-// ============================================================
-// DOM READY
+document.getElementById('openRouterModel').addEventListener('change',function(e){ const customInput=document.getElementById('openRouterCustomModel'); if(e.target.value==='custom'){ if(customInput)customInput.style.display='block'; } else{ if(customInput)customInput.style.display='none'; } });// ============================================================
+// DOM READY — KHỞI TẠO TOÀN BỘ GAME
 // ============================================================
 window.addEventListener('DOMContentLoaded',async()=>{
   initializeDefaultScopes();
@@ -3473,8 +3631,13 @@ window.addEventListener('DOMContentLoaded',async()=>{
       if(gameData.keyStatus) keyStatus=gameData.keyStatus;
       if(gameData.currentKeyIndex !== undefined) currentKeyIndex=gameData.currentKeyIndex;
       if(gameData.priceMemory) priceMemory=gameData.priceMemory;
+      if(gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)){
+        musicPlaylist = gameData.musicPlaylist;
+        if(gameData.currentMusicIndex !== undefined) currentMusicIndex = gameData.currentMusicIndex;
+      }
     }
   }catch(e){}
+  
   npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});
   renderNpcs(); renderEventsVisual(); renderScopeRegistry();
   updateTokenStatsDisplay(); syncToggleUI(); updateKeyCountInfo(); renderKeyStatus(); updateExpUI();
@@ -3505,7 +3668,25 @@ window.addEventListener('DOMContentLoaded',async()=>{
   const apiKeyEl = document.getElementById('apiKey');
   if(apiKeyEl){ apiKeyEl.addEventListener('input', () => { ensureKeyStatusStructure(); updateKeyCountInfo(); renderKeyStatus(); }); }
   
-  log("✅ v2.7.1 loaded. ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER ready.");
+  // 🎵 NHẠC NỀN: Load playlist + auto-play
+  await loadMusicPlaylistFromIDB();
+  const audio = document.getElementById('bgMusic');
+  if(audio){
+    audio.loop = false;
+    audio.addEventListener('ended', () => { nextMusic(); });
+  }
+  if(settings.autoMusic && musicPlaylist.length > 0){
+    const unlockMusic = () => {
+      if(settings.autoMusic && !musicEnabled && musicPlaylist.length > 0){ playMusicAt(currentMusicIndex >= 0 ? currentMusicIndex : 0); }
+      document.removeEventListener('click', unlockMusic);
+    };
+    document.addEventListener('click', unlockMusic, { once: true });
+    log(`🎵 Auto-play nhạc: chờ click đầu tiên để unlock.`);
+  }
+  updateMusicUI();
+  updateMusicTitle();
+  
+  log("✅ v2.7.1 loaded. ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC ready.");
 });
 </script>
 </body>

@@ -5219,6 +5219,271 @@ window.addEventListener('DOMContentLoaded',async()=>{
 
   log("✅ v2.8.4 loaded. TALENT SYSTEM + STATE SYNC ready.");
 });
+// ============================================================
+// v2.8.4: SCOPE REGISTRY RENDER + HANDLERS (PATCH)
+// ============================================================
+let currentScopeFilter = 'all';
+
+function filterScopesByTag(tag) {
+  currentScopeFilter = tag;
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.filter === tag);
+  });
+  renderScopeRegistry();
+}
+
+function renderScopeRegistry(){
+  const container = document.getElementById('scopeRegistryContainer');
+  if(!container) return;
+  if(!scopeRegistry || scopeRegistry.length === 0){
+    container.innerHTML = '<div style="color:var(--subtext-color);font-style:italic;font-size:12px;text-align:center;padding:8px">Chưa có scope.</div>';
+    return;
+  }
+
+  let filtered = scopeRegistry.map((scope, idx) => ({ scope, idx, mapping: SCOPE_SYSTEM_MAPPING[scope.id] || { tags: ['style'], handledBy: 'STYLE-ONLY' } }));
+  if(currentScopeFilter === 'CODE-HANDLED' || currentScopeFilter === 'HYBRID' || currentScopeFilter === 'STYLE-ONLY'){
+    filtered = filtered.filter(f => f.mapping.handledBy === currentScopeFilter);
+  } else if(currentScopeFilter === 'nsfw'){
+    filtered = filtered.filter(f => f.scope.id === 'scope_nsfw');
+  }
+
+  const grouped = { 'CODE-HANDLED': [], 'HYBRID': [], 'STYLE-ONLY': [] };
+  filtered.forEach(f => {
+    const g = grouped[f.mapping.handledBy] || grouped['STYLE-ONLY'];
+    g.push(f);
+  });
+
+  let html = '';
+
+  if(grouped['CODE-HANDLED'].length > 0){
+    html += `<div class="scope-group-header" style="border-left-color:#3fb950">
+      <span style="color:#3fb950">🤖 XỬ LÝ BỞI CODE</span>
+      <span class="scope-group-count">${grouped['CODE-HANDLED'].length} scope</span>
+      <span class="scope-group-desc">AI không tự bịa số — code tính sẵn</span>
+    </div>`;
+    grouped['CODE-HANDLED'].forEach(g => { html += renderScopeCard(g); });
+  }
+
+  if(grouped['HYBRID'].length > 0){
+    html += `<div class="scope-group-header" style="border-left-color:#d29922">
+      <span style="color:#d29922">⚖️ KẾT HỢP (CODE + AI)</span>
+      <span class="scope-group-count">${grouped['HYBRID'].length} scope</span>
+      <span class="scope-group-desc">Code tính số chính — AI thêm flavor</span>
+    </div>`;
+    grouped['HYBRID'].forEach(g => { html += renderScopeCard(g); });
+  }
+
+  if(grouped['STYLE-ONLY'].length > 0){
+    html += `<div class="scope-group-header" style="border-left-color:#8b949e">
+      <span style="color:#8b949e">🎨 CHỈ VĂN PHONG</span>
+      <span class="scope-group-count">${grouped['STYLE-ONLY'].length} scope</span>
+      <span class="scope-group-desc">AI tự do kể — không có số liệu cứng</span>
+    </div>`;
+    grouped['STYLE-ONLY'].forEach(g => { html += renderScopeCard(g); });
+  }
+
+  if(filtered.length === 0){ html = '<div style="color:var(--subtext-color);font-style:italic;text-align:center;padding:12px">Không có scope nào khớp bộ lọc.</div>'; }
+
+  container.innerHTML = html;
+}
+
+function renderScopeCard({ scope, idx, mapping }) {
+  const isDefault = DEFAULT_SCOPES.find(d => d.id === scope.id);
+  const isNsfw = scope.id === 'scope_nsfw';
+  const badgeColor = isNsfw ? 'var(--accent-red)' : (isDefault ? 'var(--accent-green)' : 'var(--accent-purple)');
+  const badgeText = isNsfw ? '18+ TỰ ĐIỀN' : (isDefault ? 'MẶC ĐỊNH' : 'TỰ TẠO');
+  const cardClass = isNsfw ? 'scope-nsfw-highlight' : '';
+
+  const tagBadges = (mapping.tags || []).map(tagKey => {
+    const cat = SYSTEM_TAG_CATEGORIES[tagKey];
+    if(!cat) return '';
+    return `<span class="sys-tag" style="background:${cat.color}22;color:${cat.color};border-color:${cat.color}55">
+      ${cat.icon} ${cat.label}
+    </span>`;
+  }).join('');
+
+  const handledBadge = {
+    'CODE-HANDLED': '<span class="handled-badge code">🤖 CODE</span>',
+    'HYBRID': '<span class="handled-badge hybrid">⚖️ HYBRID</span>',
+    'STYLE-ONLY': '<span class="handled-badge style">🎨 STYLE</span>'
+  }[mapping.handledBy] || '';
+
+  const placeholder = isNsfw
+    ? `(Ô TRỐNG — Bạn tự điền nội dung 18+ của bạn vào đây)\n\nGợi ý cấu trúc:\n1. Quy tắc ngôn ngữ\n2. Mức độ miêu tả\n3. Nhịp điệu cảnh\n4. Tâm lý nhân vật\n5. Bối cảnh tu tiên\n6. Hậu quả sau cảnh\n7. VD mẫu 1-2 đoạn (300-800 từ)`
+    : (mapping.handledBy === 'CODE-HANDLED'
+        ? 'Dán văn mẫu (flavor text). KHÔNG cần công thức — code đã lo phần số liệu.'
+        : 'Dán văn mẫu hoặc hướng dẫn văn phong...');
+
+  const safeLabel = (scope.label || '').replace(/"/g, '&quot;');
+
+  return `<div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:10px;margin-bottom:8px" class="${cardClass}">
+    <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;flex-wrap:wrap">
+      <input type="text" value="${scope.id||''}" style="font-family:monospace;font-size:10px;padding:3px 6px;flex:0 0 120px;color:#b392f0" readonly>
+      <input type="text" value="${safeLabel}" style="font-size:12px;font-weight:bold;padding:4px;flex:1;min-width:100px" onchange="updateScopeField(${idx},'label',this.value)">
+      <span style="background:${badgeColor};color:#fff;font-size:9px;padding:2px 5px;border-radius:3px;font-weight:bold">${badgeText}</span>
+      ${handledBadge}
+      <button onclick="removeScopeEntry(${idx})" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:0 4px">✕</button>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">${tagBadges}</div>
+    <div style="margin-bottom:6px">
+      <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">🔑 TRIGGERS (${(scope.triggers||[]).length}):</div>
+      <input type="text" value="${(scope.triggers||[]).join(', ')}" style="font-size:11px;padding:5px;font-family:monospace" onchange="updateScopeTriggers(${idx},this.value)">
+    </div>
+    <div>
+      <div style="font-size:10px;color:${isNsfw?'#ff5577':'var(--accent-gold)'};font-weight:bold;margin-bottom:3px">
+        📖 EXEMPLAR (${(scope.exemplar||'').length} ký tự)${isNsfw?' — BẠN TỰ ĐIỀN':''}:
+        ${mapping.handledBy === 'CODE-HANDLED' ? '<span style="color:#3fb950;font-weight:normal">— chỉ cần văn mẫu</span>' : ''}
+      </div>
+      <textarea style="min-height:${isNsfw?'180':'100'}px;font-size:11px;padding:6px;font-family:monospace;${isNsfw?'border-color:#da3633;':''}" placeholder="${placeholder}" onchange="updateScopeField(${idx},'exemplar',this.value)">${scope.exemplar||''}</textarea>
+    </div>
+  </div>`;
+}
+
+function addScopeEntry(){
+  scopeRegistry.push({ id: 'scope_custom_'+Date.now().toString(36), label: 'Scope Mới', triggers: [], exemplar: '' });
+  renderScopeRegistry();
+  log(`➕ Đã thêm scope mới. Tổng: ${scopeRegistry.length}`);
+}
+
+function removeScopeEntry(idx){
+  if(!scopeRegistry[idx]) return;
+  if(!confirm(`Xóa scope "${scopeRegistry[idx].label||''}"?`)) return;
+  scopeRegistry.splice(idx,1);
+  renderScopeRegistry();
+  log(`🗑️ Đã xóa scope. Tổng: ${scopeRegistry.length}`);
+}
+
+function updateScopeField(idx, field, value){
+  if(scopeRegistry[idx]) scopeRegistry[idx][field] = value;
+}
+
+function updateScopeTriggers(idx, rawValue){
+  if(!scopeRegistry[idx]) return;
+  scopeRegistry[idx].triggers = rawValue.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+}
+
+function openTagLegend(){
+  openThienDao();
+  const resultsDiv = document.getElementById('thienDaoResults');
+  let html = `<div style="color:#b392f0;font-size:14px;margin-bottom:10px;font-weight:bold">🏷️ CHÚ THÍCH TAG HỆ THỐNG</div>`;
+  
+  html += `<div class="thiendao-result" style="border-left:3px solid #388bfd">
+    <div class="thiendao-result-title" style="color:#388bfd">HandledBy — Ai xử lý?</div>
+    <div class="thiendao-result-body">
+      <span class="handled-badge code">🤖 CODE</span> Code xử lý 100% — AI KHÔNG tự bịa số<br>
+      <span class="handled-badge hybrid">⚖️ HYBRID</span> Code + AI — số chính code, flavor AI<br>
+      <span class="handled-badge style">🎨 STYLE</span> AI tự do — không có số liệu cứng
+    </div>
+  </div>`;
+  
+  html += `<div class="thiendao-result" style="border-left:3px solid #d29922">
+    <div class="thiendao-result-title" style="color:#d29922">System Tags — Hệ thống liên quan</div>
+    <div class="thiendao-result-body">`;
+  for(const [key, cat] of Object.entries(SYSTEM_TAG_CATEGORIES)){
+    html += `<span class="sys-tag" style="background:${cat.color}22;color:${cat.color};border-color:${cat.color}55;margin:3px">${cat.icon} ${cat.label}</span>`;
+  }
+  html += `</div></div>`;
+  
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950">
+    <div class="thiendao-result-title" style="color:#3fb950">📖 Khi nào dùng tag nào?</div>
+    <div class="thiendao-result-body">
+      • <b>Cultivation</b>: tu luyện, đột phá, tẩu hỏa<br>
+      • <b>Profession</b>: luyện đan, khí, phù, trận<br>
+      • <b>Economy</b>: mua bán, linh thạch, giá cả<br>
+      • <b>Time</b>: di chuyển, bế quan, chờ đợi<br>
+      • <b>NPC</b>: tương tác, hảo cảm, giao dịch<br>
+      • <b>Item</b>: trang bị, luyện hoá, sử dụng<br>
+      • <b>Quest</b>: nhiệm vụ, ủy quyền<br>
+      • <b>Style</b>: văn phong, 18+, mô tả cảnh
+    </div>
+  </div>`;
+  
+  resultsDiv.innerHTML = html;
+}
+
+// ============================================================
+// v2.8.4: MULTI-SCOPE DETECTION (PATCH)
+// ============================================================
+function detectSceneScopes(actionText){
+  if(!actionText) return ['default'];
+  const lower = actionText.toLowerCase();
+  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const matches = [];
+  for(const scope of scopeRegistry){
+    if(!scope.triggers || scope.triggers.length === 0) continue;
+    let bestPos = -1;
+    for(const trigger of scope.triggers){
+      const tLower = trigger.toLowerCase().trim();
+      if(!tLower) continue;
+      const tNorm = tLower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      let pos = lower.indexOf(tLower);
+      if(pos === -1) pos = normalized.indexOf(tNorm);
+      if(pos !== -1 && (bestPos === -1 || pos < bestPos)) bestPos = pos;
+    }
+    if(bestPos !== -1) matches.push({ scopeId: scope.id, pos: bestPos });
+  }
+  if(matches.length === 0) return ['default'];
+  matches.sort((a, b) => a.pos - b.pos);
+  return matches.map(m => m.scopeId);
+}
+
+function detectSceneScope(actionText){ const scopes = detectSceneScopes(actionText); return scopes[0] || 'default'; }
+
+function getStyleExemplarBlockMulti(scopeIds){
+  if(!scopeIds || scopeIds.length === 0) return '';
+  const scopes = Array.isArray(scopeIds) ? scopeIds : [scopeIds];
+  const blocks = [];
+  for(const id of scopes){
+    if(id === 'default') continue;
+    const scope = scopeRegistry.find(s => s.id === id);
+    if(!scope) continue;
+    const sample = (scope.exemplar || '').trim();
+    const mapping = SCOPE_SYSTEM_MAPPING[scope.id] || { handledBy: 'STYLE-ONLY', tags: [] };
+
+    if(mapping.handledBy === 'CODE-HANDLED' && sample.length > 300){
+      const saved = sample.length;
+      tokenStats.tokenSavedByOptimization = (tokenStats.tokenSavedByOptimization || 0) + Math.round(saved / 4);
+      continue;
+    }
+    if(!sample && mapping.handledBy === 'CODE-HANDLED') continue;
+
+    const headerLabel = {
+      'CODE-HANDLED': `# 🤖 SCOPE "${scope.label}" [CODE-HANDLED]`,
+      'HYBRID': `# ⚖️ SCOPE "${scope.label}" [HYBRID]`,
+      'STYLE-ONLY': `# 🎨 SCOPE "${scope.label}" [STYLE-ONLY]`
+    }[mapping.handledBy] || `# SCOPE "${scope.label}"`;
+
+    const noteMap = {
+      'CODE-HANDLED': '\n⚠️ Số liệu do code tính. Chỉ tham khảo văn phong bên dưới.\n',
+      'HYBRID': '\n⚖️ Code tính số chính. AI thêm flavor và biến số nhỏ.\n',
+      'STYLE-ONLY': '\n🎨 AI tự do sáng tạo văn phong theo mẫu.\n'
+    };
+    const note = noteMap[mapping.handledBy] || '';
+
+    if(sample){
+      blocks.push(`${headerLabel}${note}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sample}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    } else {
+      blocks.push(`${headerLabel}${note}(Chưa có exemplar — AI tự do sáng tạo theo tag: ${mapping.tags.join(', ')})`);
+    }
+  }
+  return blocks.length > 0 ? '\n' + blocks.join('\n\n') + '\n' : '';
+}
+
+function buildScopeHandledNote(scopeIds) {
+  if(!scopeIds || scopeIds.length === 0) return '';
+  const notes = [];
+  for(const id of scopeIds){
+    if(id === 'default') continue;
+    const mapping = SCOPE_SYSTEM_MAPPING[id];
+    if(!mapping) continue;
+    const scope = scopeRegistry.find(s => s.id === id);
+    const label = scope?.label || id;
+    const code = mapping.handledBy === 'CODE-HANDLED' ? 'CODE' : (mapping.handledBy === 'HYBRID' ? 'HYBRID' : 'STYLE');
+    notes.push(`${label}=${code}`);
+  }
+  if(notes.length === 0) return '';
+  return `\n[🏷️ SCOPE] ${notes.join(' | ')}\n`;
+}
 </script>
 </body>
 </html>

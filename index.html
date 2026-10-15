@@ -9,14 +9,20 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background:linear-gradient(135deg,#0b0e14 0%,#0d1117 100%);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px;min-height:100vh}
-.header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);flex-wrap:wrap;gap:8px;box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
+/* v2.8.4.2 LAYOUT FIX: header dùng 2 cột - left (menu + tag) / right (music + Game + Start) */
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);flex-wrap:wrap;gap:8px;box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
+.header-left{display:flex;flex-direction:column;gap:8px;align-items:flex-start;flex-shrink:0}
+.header-right-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding-top:2px}
 .header-title{font-size:17px;font-weight:bold;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#388bfd,#8957e5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.3px}
-.header-right-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.game-tag{display:inline-block;font-size:14px;font-weight:bold;color:#3fb950;padding:6px 14px;border-radius:8px;background:linear-gradient(#0d1117,#0d1117) padding-box,linear-gradient(135deg,#ff0000,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#8800ff,#ff00ff) border-box;border:2px solid transparent;text-shadow:0 0 8px rgba(63,185,80,.6);letter-spacing:.5px;box-shadow:0 0 12px rgba(63,185,80,.35);white-space:nowrap;animation:rainbowGlow 4s linear infinite;order:-1;margin-left:auto}
+.game-tag{display:inline-block;font-size:14px;font-weight:bold;color:#3fb950;padding:6px 14px;border-radius:8px;background:linear-gradient(#0d1117,#0d1117) padding-box,linear-gradient(135deg,#ff0000,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#8800ff,#ff00ff) border-box;border:2px solid transparent;text-shadow:0 0 8px rgba(63,185,80,.6);letter-spacing:.5px;box-shadow:0 0 12px rgba(63,185,80,.35);white-space:nowrap;animation:rainbowGlow 4s linear infinite}
 @keyframes rainbowGlow{0%,100%{box-shadow:0 0 12px rgba(63,185,80,.35)}25%{box-shadow:0 0 14px rgba(56,139,253,.45)}50%{box-shadow:0 0 16px rgba(219,97,162,.5)}75%{box-shadow:0 0 14px rgba(210,153,34,.45)}}
 .menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast)}
 .restart-btn{background:var(--accent-green);border-color:#388e3c}
 .restart-btn:hover{background:#2e7d32;transform:translateY(-1px);box-shadow:var(--shadow-md)}
+/* v2.8.4.2: Game tab di chuyển lên header */
+.header-game-tab{background:#21262d;border:1px solid var(--border-color);color:var(--subtext-color);padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast);white-space:nowrap}
+.header-game-tab:hover{background:#30363d;color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.header-game-tab.active{background:linear-gradient(135deg,#388bfd,#8957e5);color:#fff;border-color:transparent;box-shadow:0 0 12px rgba(56,139,253,.5)}
 .sidebar{position:fixed;top:0;left:-360px;width:350px;height:100%;background:linear-gradient(180deg,#151921 0%,#0d1117 100%);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto;box-shadow:var(--shadow-lg);backdrop-filter:blur(20px)}
 .sidebar.active{left:0}
 .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:16px;font-weight:bold}
@@ -278,7 +284,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 <div class="header">
+<div class="header-left">
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+<span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.4</span>
+</div>
 <div class="header-right-group">
 <div class="music-controls">
 <button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
@@ -286,7 +295,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <span class="music-title" id="musicTitle">Chưa có nhạc</span>
 <input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.05" value="0.5" onchange="setMusicVolume(this.value)">
 </div>
-<span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.4</span>
+<button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 </div>
@@ -442,7 +451,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh</button>
 <button class="tab-btn" onclick="openTab('events')">📜 Sự Kiện</button>
 <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
-<button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
 </div>
 
 <div id="world" class="tab-content active">
@@ -828,6 +836,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 //     → findAllMatchingItems() gom tất cả item cùng tên
 //     → deductVirtual()/removeItem() trừ dồn theo phẩm chất (Hạ → Tiên)
 //     → Rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất
+// - v2.8.4.2 LAYOUT + UNDO FIX:
+//   + Tag game-tag chuyển sang trái dưới nút ☰ cấu hình
+//   + Tab Game chuyển lên header, cạnh nút Khởi Tạo Game
+//   + Fix undo: khởi tạo stateSnapshots trong DOMContentLoaded
+//   + Fix undo: siết điều kiện, snapshot cho refresh
 // ============================================================
 const DB_NAME = 'HongDucTuTienDB';
 const STORE_NAME = 'GameSaves';
@@ -1787,12 +1800,18 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('active');
 }
 
+// ══════════════════════════════════════════════════════════════
+// v2.8.4.2: openTab cập nhật để xử lý header-game-tab
+// ══════════════════════════════════════════════════════════════
 function openTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.header-game-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
   const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
   if (btn) btn.classList.add('active');
+  const headerBtn = document.getElementById('headerGameTab');
+  if (headerBtn && tabId === 'play') headerBtn.classList.add('active');
   if (tabId === 'prof') renderProfessionUI();
   if (tabId === 'world') updateSystemDashboard();
 }
@@ -1925,9 +1944,7 @@ function resetTokenStats() {
   };
   updateTokenStatsDisplay();
   log("Đã reset token stats.");
-}
-
-// ══════════════════════════════════════════════════════════════
+}// ══════════════════════════════════════════════════════════════
 // v2.8.4: REFRESH STATE FROM HISTORY
 // ══════════════════════════════════════════════════════════════
 async function refreshGameStateFromHistory() {
@@ -2160,6 +2177,9 @@ ${getCodexMemoryPrompt()}
 
     updateExpUI();
     updateSystemDashboard();
+
+    // v2.8.4.2 FIX: Reset snapshots sau refresh để tránh undo lệch trạng thái
+    stateSnapshots = [captureStateSnapshot()];
 
     log(`✅ Đã cập nhật trạng thái từ ${REFRESH_STATE_TURNS} lượt gần nhất.`);
     updateLog.forEach(l => log(l));
@@ -4411,8 +4431,9 @@ function showVersionLog() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.1 (2026-10-15)</div><div class="thiendao-result-body">🔥 <b>HOTFIX PHẨM CHẤT HỖN HỢP</b>:<br>• Thêm hàm <code>findAllMatchingItems()</code> gom tất cả item cùng tên<br>• Sửa <code>deductVirtual()</code> trừ dồn theo phẩm chất (Hạ → Trung → Thượng → Cực → Tiên)<br>• Sửa <code>removeItem()</code> tương tự<br>• Thêm rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất<br>• Thêm hint trong Codex Memory Prompt<br>• Sửa lỗi "AI bịa số lượng: Thanh Tâm Đan chỉ có 4, không thể cho 5"</div></div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4 (2026-10-15)</div><div class="thiendao-result-body">🔄 <b>REFRESH STATE + PROFESSION STATS + GAME TAG</b>:<br>• Tag game chuyển màu xanh + viền ngũ sắc, đặt NGAY SÁT nút Khởi Tạo Game<br>• Thêm Tố chất tu luyện: Thể chất / Thần niệm / Thiên phú<br>• Công thức luyện đan: 1 phần dược liệu → 5 viên hạ phẩm (base)<br>• Tố chất ảnh hưởng SỐ LƯỢNG và PHẨM CHẤT thành phẩm<br>• Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh<br>• Nút "🔄 CẬP NHẬT" quét 5 lượt gần nhất để sync lại túi đồ/NPC/cảnh giới<br>• Fix: Load game sẽ tự động nhận đúng trạng thái mới nhất</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.2 (2026-10-15)</div><div class="thiendao-result-body">🎨 <b>LAYOUT + UNDO FIX</b>:<br>• Tag "HỒNG ĐỨC TU TIÊN LỘ" chuyển sang trái dưới nút ☰<br>• Tab "🎮 Game" chuyển lên header cạnh nút Khởi Tạo Game<br>• Fix undo: khởi tạo stateSnapshots trong DOMContentLoaded<br>• Fix undo: siết điều kiện, snapshot cho refresh<br>• Reset snapshot sau refreshGameStateFromHistory</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.1 (2026-10-15)</div><div class="thiendao-result-body">🔥 <b>HOTFIX PHẨM CHẤT HỖN HỢP</b>:<br>• Thêm <code>findAllMatchingItems()</code> gom tất cả item cùng tên<br>• Sửa <code>deductVirtual()</code> trừ dồn theo phẩm chất (Hạ → Tiên)<br>• Sửa <code>removeItem()</code> tương tự<br>• Thêm rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất<br>• Thêm hint trong Codex Memory Prompt</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4 (2026-10-15)</div><div class="thiendao-result-body">🔄 <b>REFRESH STATE + PROFESSION STATS + GAME TAG</b>:<br>• Thêm Tố chất tu luyện: Thể chất / Thần niệm / Thiên phú<br>• Công thức luyện đan: 1 phần dược liệu → 5 viên hạ phẩm (base)<br>• Tố chất ảnh hưởng SỐ LƯỢNG và PHẨM CHẤT thành phẩm<br>• Nút "🔄 CẬP NHẬT" quét 5 lượt gần nhất<br>• Fix: Load game tự động nhận đúng trạng thái mới nhất</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #8957e5"><div class="thiendao-result-title">v2.8.3</div><div class="thiendao-result-body">🔧 BREAKTHROUGH FIX — phân biệt TIỂU vs ĐẠI đột phá</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #d29922"><div class="thiendao-result-title">v2.8.2</div><div class="thiendao-result-body">🏷️ SYSTEM TAGS + DASHBOARD</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title">v2.8.1</div><div class="thiendao-result-body">🎯 QUEST DELEGATION FIX</div></div>`;
@@ -5562,7 +5583,6 @@ function postValidateTransactions(txList, currentInv) {
     let candidates = findAllMatchingItems(name, virtualInv)
       .filter(i => !isIngredientForDifferentRecipe(i.name, name));
     if (candidates.length === 0) return { ok: false, reason: 'not_found' };
-    // Nếu AI có ghi phẩm chất → ưu tiên lọc theo phẩm chất đó
     if (quality && quality.trim()) {
       const qLower = quality.toLowerCase().trim();
       const qualityMatched = candidates.filter(i =>
@@ -5575,7 +5595,6 @@ function postValidateTransactions(txList, currentInv) {
     }
     const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
     if (qty > totalAvail) return { ok: false, reason: 'insufficient', have: totalAvail, need: qty };
-    // Sắp xếp theo phẩm chất thấp trước
     const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
     candidates.sort((a, b) => {
       const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q));
@@ -5768,7 +5787,6 @@ function processTransactions(transactionsList) {
     let candidates = findAllMatchingItems(name, inv)
       .filter(i => !isIngredientForDifferentRecipe(i.name, name));
     if (candidates.length === 0) return { ok: false, reason: 'Không tìm thấy' };
-    // Ưu tiên phẩm chất nếu AI ghi rõ VÀ đủ số lượng
     if (quality && quality.trim()) {
       const qLower = quality.toLowerCase().trim();
       const qualityMatched = candidates.filter(i =>
@@ -5781,7 +5799,6 @@ function processTransactions(transactionsList) {
     }
     const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
     if (totalAvail < qty) return { ok: false, reason: `Chỉ có ${totalAvail}` };
-    // Sắp xếp theo phẩm chất thấp trước
     const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
     candidates.sort((a, b) => {
       const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q));
@@ -6740,7 +6757,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    _saveVersion: 'v2.8.4.1',
+    _saveVersion: 'v2.8.4.2',
     inputs: {}
   };
   inputIds.forEach(id => {
@@ -6833,6 +6850,7 @@ async function loadGame() {
         if (el && id !== 'modelListInput') el.value = gameData.inputs[id];
       });
     }
+    // v2.8.4.2 FIX: Khởi tạo snapshot sau khi load để undo hoạt động
     stateSnapshots = [captureStateSnapshot()];
     updateTokenStatsDisplay();
     updateExpUI();
@@ -6868,7 +6886,7 @@ async function exportSaveFile() {
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "hongduc_tutien_v2.8.4.1_save.json";
+  a.download = "hongduc_tutien_v2.8.4.2_save.json";
   a.click();
   log("Xuất save thành công.");
 }
@@ -6900,7 +6918,7 @@ function handleFileSelect(event) {
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle'];
   const cfg = {
-    _version: 'v2.8.4.1',
+    _version: 'v2.8.4.2',
     _type: 'worldConfig',
     scopes: scopeRegistry,
     professions: professionState,
@@ -6914,7 +6932,7 @@ function exportWorldConfig() {
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'hongduc_world_config_v2.8.4.1.json';
+  a.download = 'hongduc_world_config_v2.8.4.2.json';
   a.click();
   log('📤 Xuất World Config thành công.');
   alert('📤 Đã xuất World Config!');
@@ -6964,18 +6982,26 @@ function handleWorldConfigImport(event) {
 }
 
 // ============================================================
-// UNDO
+// v2.8.4.2: UNDO — ĐÃ FIX
 // ============================================================
 function undoLastTurn() {
   stopTTS();
-  if (chatHistory.length <= 2 || stateSnapshots.length === 0) {
-    alert("⚠️ Không thể quay lại! (không có snapshot)");
+  // v2.8.4.2 FIX: cần ít nhất 2 snapshot (snapshot hiện tại + snapshot trước đó) để undo
+  if (chatHistory.length <= 2) {
+    alert("⚠️ Không thể quay lại! Đã ở lượt đầu tiên.");
     return;
   }
+  if (stateSnapshots.length < 2) {
+    alert("⚠️ Không thể quay lại! (không có snapshot)\n\n💡 Mẹo: Bấm '🔄 CẬP NHẬT' để khởi tạo snapshot mới, sau đó thử lại.");
+    return;
+  }
+  // Pop 2 tin nhắn cuối (user + model)
   chatHistory.pop();
   chatHistory.pop();
   if (turnHtmlHistory.length > 1) turnHtmlHistory.pop();
-  const snap = stateSnapshots.pop();
+  // Pop snapshot hiện tại (tương ứng lượt vừa gửi), restore snapshot trước đó
+  stateSnapshots.pop();
+  const snap = stateSnapshots[stateSnapshots.length - 1];
   restoreStateSnapshot(snap);
   log(`↩ Đã quay lại lượt trước (khôi phục túi đồ, cảnh giới, EXP, NPC, nghề, giá cả, ...)`);
   alert("↩ Đã quay lại lượt trước!");
@@ -7160,6 +7186,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thi�
     storyBox.innerHTML = formattedHtml;
     storyBox.scrollTop = 0;
     turnHtmlHistory.push(storyBox.innerHTML);
+    // v2.8.4.2 FIX: Khởi tạo snapshot ban đầu sau khi start
     stateSnapshots = [captureStateSnapshot()];
     updateExpUI();
     await saveGame(false);
@@ -7195,6 +7222,7 @@ const sendAction = async () => {
       log(`❓ Câu hỏi thông tin — không phải giao dịch.`);
     }
   }
+  // v2.8.4.2: Push snapshot TRƯỚC khi gửi (để có thể undo về trạng thái trước lượt này)
   stateSnapshots.push(captureStateSnapshot());
   if (stateSnapshots.length > MAX_SNAPSHOTS) stateSnapshots.shift();
   inputEl.value = '';
@@ -7249,6 +7277,7 @@ const sendAction = async () => {
     turnHtmlHistory.push(storyBox.innerHTML);
     await saveGame(false);
   } else {
+    // Nếu AI fail: pop snapshot vì lượt không thành công
     if (stateSnapshots.length > 0) stateSnapshots.pop();
     storyBox.innerHTML += `<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi. Bấm "🔄 Reset Key" để thử lại.</div>`;
   }
@@ -7268,7 +7297,7 @@ document.getElementById('openRouterModel').addEventListener('change', function (
 });
 
 // ============================================================
-// DOM READY
+// DOM READY — v2.8.4.2: KHỞI TẠO stateSnapshots
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
   initializeDefaultScopes();
@@ -7410,7 +7439,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateMusicUI();
   updateMusicTitle();
 
-  log("✅ v2.8.4.1 loaded. REFRESH STATE + PROFESSION STATS + HỖ TRỢ PHẨM CHẤT HỖN HỢP ready.");
+  // v2.8.4.2 CRITICAL FIX: Khởi tạo stateSnapshots sau khi đã load tất cả dữ liệu
+  // Điều này đảm bảo nút "↩ QUAY LẠI" hoạt động đúng sau khi reload trang
+  stateSnapshots = [captureStateSnapshot()];
+  log(`📸 Đã khởi tạo snapshot ban đầu (stateSnapshots.length = ${stateSnapshots.length}).`);
+
+  log("✅ v2.8.4.2 loaded. UNDO FIX + HEADER LAYOUT + HỖ TRỢ PHẨM CHẤT HỖN HỢP ready.");
 });
 </script>
 </body>

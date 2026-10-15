@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.7.2</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.0 — PROFESSION SYSTEM</title>
 <style>
-:root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
+:root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background-color:var(--bg-color);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px}
@@ -162,6 +162,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .cat-linh-thach{background:rgba(56,139,253,.25);color:#79c0ff;border:1px solid #1f6feb}
 .cat-bi-tich{background:rgba(139,148,158,.2);color:#c9d1d9;border:1px solid #8b949e}
 .cat-khac{background:rgba(139,148,158,.15);color:#8b949e;border:1px solid #30363d}
+.cat-lenh-bai{background:rgba(31,158,176,.2);color:#4dd0e1;border:1px solid #1f9eb0}
 .refine-status-refined{background:rgba(63,185,80,.2);color:#3fb950;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #238636}
 .refine-status-pending{background:rgba(210,153,34,.2);color:#d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #d29922}
 .refine-status-consumable{background:rgba(56,139,253,.2);color:#388bfd;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #388bfd}
@@ -194,9 +195,31 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .music-list-item .music-list-del{background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:14px;padding:0 4px}
 .music-list-item .music-list-play{background:var(--accent-blue);border:none;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;flex-shrink:0}
 .ingredient-warning{background:rgba(210,153,34,.12);border-left:3px solid #d29922;padding:6px 10px;font-size:11px;color:#f0e6d2;margin:4px 0;border-radius:4px}
+
+/* ═══ v2.8.0 PROFESSION SYSTEM STYLES ═══ */
+.prof-container{background:#0d1520;padding:12px;border-radius:8px;border:1px solid #1f6beb;margin-bottom:16px}
+.prof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px}
+.prof-card{background:var(--input-bg);border:1px solid var(--border-color);border-radius:8px;padding:12px;position:relative}
+.prof-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prof-name{font-size:14px;font-weight:bold;display:flex;align-items:center;gap:6px}
+.prof-rank-badge{font-size:10px;font-weight:bold;padding:3px 8px;border-radius:10px;background:linear-gradient(135deg,#1f6beb,#388bfd);color:#fff}
+.prof-exp-bar-bg{background:#21262d;height:14px;border-radius:7px;overflow:hidden;border:1px solid var(--border-color);margin:6px 0}
+.prof-exp-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#1f6beb,#4dd0e1);transition:width .4s}
+.prof-exp-text{font-size:11px;color:var(--subtext-color);display:flex;justify-content:space-between}
+.prof-rank-list{font-size:11px;color:var(--subtext-color);margin-top:8px;line-height:1.6}
+.prof-rank-list .current{color:#4dd0e1;font-weight:bold}
+.prof-bonus{font-size:11px;color:#3fb950;margin-top:6px;padding:6px 8px;background:rgba(35,134,54,.1);border-radius:4px;border-left:3px solid #238636}
+.prof-bonus.locked{color:#8b949e;background:rgba(139,148,158,.08);border-left-color:#8b949e}
+.prof-btn-group{display:flex;gap:6px;margin-top:8px}
+.prof-btn{flex:1;background:var(--accent-blue);color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold}
+.prof-btn.gold{background:var(--accent-gold);color:#000}
+.prof-btn.gray{background:#444}
+.craft-preview-box{background:rgba(31,158,176,.08);border:1px solid #1f9eb0;border-radius:6px;padding:8px 10px;font-size:11px;margin-top:8px;color:#a0e0e8;line-height:1.5}
+.craft-preview-box .highlight{color:#4dd0e1;font-weight:bold}
 </style>
-</head><body><div class="header">
-<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.7.2</span></div>
+</head><body>
+<div class="header">
+<div class="header-title"><button class="menu-btn" onclick="toggleSidebar()">☰</button><span>HỒNG ĐỨC TU TIÊN LỘ v2.8.0</span></div>
 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
 <div class="music-controls">
 <button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
@@ -274,6 +297,13 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
 
+<div class="section-header">⚒️ Nghề Nghiệp (v2.8.0)</div>
+<div class="toggle-row"><span>Bật Profession System</span><div class="toggle-switch active" id="toggleProfessionSystem" onclick="toggleSetting('professionSystem')"></div></div>
+<div class="toggle-row"><span>Auto-tính EXP nghề</span><div class="toggle-switch active" id="toggleProfessionAutoExp" onclick="toggleSetting('professionAutoExp')"></div></div>
+<button class="sidebar-item" style="background:var(--accent-cyan);font-size:12px" onclick="showProfessionStats()">📊 Thống Kê Nghề</button>
+<button class="sidebar-item" style="background:var(--accent-pink);font-size:11px" onclick="simulateCraft('luyen_dan')">🧪 Mô Phỏng Luyện Đan</button>
+<button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="resetProfessions()">🔄 Reset Nghề</button>
+
 <div class="section-header">🈶 CJK Filter</div>
 <div class="toggle-row"><span>Auto-filter CJK</span><div class="toggle-switch active" id="toggleCjkFilter" onclick="toggleSetting('cjkFilter')"></div></div>
 <div class="toggle-row"><span>Warn khi Save</span><div class="toggle-switch active" id="toggleCjkWarnOnSave" onclick="toggleSetting('cjkWarnOnSave')"></div></div>
@@ -331,17 +361,20 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="tabs">
 <button class="tab-btn active" onclick="openTab('world')">🌐 World</button>
 <button class="tab-btn" onclick="openTab('mc')">👤 NVC</button>
+<button class="tab-btn" onclick="openTab('prof')">⚒️ Nghề</button>
 <button class="tab-btn" onclick="openTab('npc')">👥 NPCs</button>
 <button class="tab-btn" onclick="openTab('loc')">📍 Địa Danh</button>
 <button class="tab-btn" onclick="openTab('events')">📜 Sự Kiện</button>
 <button class="tab-btn" onclick="openTab('items')">⚔️ Pháp Bảo</button>
 <button class="tab-btn" onclick="openTab('play')">🎮 Game</button>
-</div><!-- ═══════════════ TAB WORLD ═══════════════ -->
+</div>
+
+<!-- ═══════════════ TAB WORLD ═══════════════ -->
 <div id="world" class="tab-content active">
 <div class="config-box">
   <div class="config-info">
     <div class="label-title" style="color:#3fb950">📦 QUẢN LÝ CẤU HÌNH</div>
-    <div class="label-desc">Xuất/nhập toàn bộ cấu hình World + Scope.</div>
+    <div class="label-desc">Xuất/nhập toàn bộ cấu hình World + Scope + Profession.</div>
   </div>
   <div class="config-actions">
     <button class="btn-config" onclick="exportWorldConfig()">📤 Xuất</button>
@@ -405,7 +438,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.7.2</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.0</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
@@ -476,7 +509,49 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e"></textarea></div>
 </div>
 
-<!-- ═══════════════ TAB NPC ═══════════════ -->
+<!-- ═══════════════ TAB PROFESSION ═══════════════ -->
+<div id="prof" class="tab-content">
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.0)</div>
+<div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. AI sẽ dùng dữ liệu này để tính tỷ lệ thành công khi luyện chế.</div>
+
+<div class="prof-container">
+  <div class="label-title" style="color:#4dd0e1">📊 TỔNG QUAN NGHỀ NGHIỆP</div>
+  <div class="prof-grid" id="professionGrid"></div>
+</div>
+
+<div class="collapsible-group">
+<div class="collapsible-header" onclick="toggleCollapsible(this)">
+  <div class="collapsible-title"><span class="icon">📖</span>BẢNG TRA CỨU CẤP BẬC NGHỀ</div>
+  <span class="collapsible-arrow">▶</span>
+</div>
+<div class="collapsible-body">
+  <div style="font-size:12px;color:var(--subtext-color);line-height:1.8" id="professionRankTable"></div>
+</div>
+</div>
+
+<div class="collapsible-group">
+<div class="collapsible-header" onclick="toggleCollapsible(this)">
+  <div class="collapsible-title"><span class="icon">🧪</span>MÔ PHỎNG LUYỆN CHẾ</div>
+  <span class="collapsible-arrow">▶</span>
+</div>
+<div class="collapsible-body">
+  <div class="label-desc">Mô phỏng để kiểm tra tỷ lệ thành công của nghề hiện tại.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+    <select id="simProfType">
+      <option value="luyen_dan">💊 Luyện Đan</option>
+      <option value="luyen_khi">⚔️ Luyện Khí</option>
+      <option value="ve_phu">📜 Vẽ Phù</option>
+      <option value="tran_phap">🔮 Trận Pháp</option>
+    </select>
+    <input type="text" id="simRecipeName" placeholder="Tên đan dược / pháp bảo..." value="Tụ Khí Đan">
+    <input type="text" id="simRecipeTier" placeholder="Cấp nguyên liệu (LK/TC/KĐ/NA)" value="LK">
+    <input type="number" id="simQty" placeholder="Số lượng" value="5">
+  </div>
+  <button class="prof-btn gold" style="margin-top:8px;width:100%" onclick="runCraftSimulation()">🧪 CHẠY MÔ PHỎNG</button>
+  <div id="simResult" class="craft-preview-box" style="display:none;margin-top:10px"></div>
+</div>
+</div>
+</div><!-- ═══════════════ TAB NPC ═══════════════ -->
 <div id="npc" class="tab-content">
 <div class="section-tag"><span>👥 NPCs</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
 <div class="label-desc">⚡ Mỗi NPC có ID riêng. 📌 Ghim. 🔒 Khóa rules. 🎭 Auto sinh npcRules.</div>
@@ -529,7 +604,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.7.2 (Ingredient Split Fix) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.8.0 (Profession System) initialized... Ready.</div>
 </div>
 
 <!-- ═══════════════ MODAL THIÊN ĐẠO ═══════════════ -->
@@ -547,16 +622,18 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 </div><script>
 // ============================================================
-// HỒNG ĐỨC TU TIÊN LỘ v2.7.2
-// - v2.7.2 NEW: INGREDIENT GUARD — Chống gộp nhầm nguyên liệu
-//   (VD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan")
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.0
+// - v2.8.0 NEW: PROFESSION SYSTEM (Luyện Đan / Luyện Khí / Vẽ Phù / Trận Pháp)
+//   + Rank 1-9 cho mỗi nghề, EXP bar, bonus công thức
+//   + Lệnh Bài Phòng Luyện Đan (consumable có thời hạn)
+//   + AI context cho các ngữ cảnh thuê/mượn/thuê bao
+// - v2.7.2: INGREDIENT GUARD
 // - v2.7.1: ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC
 // - v2.7.0: Give-Guard Auto-Sync + World-Item Auto-Sync
-// - v2.6.x: Extended Verbs + Multi-scope + Undo Full State
 // ============================================================
 const DB_NAME='HongDucTuTienDB';
 const STORE_NAME='GameSaves';
-const DB_VERSION=2702;
+const DB_VERSION=2800;
 
 const MAX_RECENT_TURNS=6;
 const SUMMARY_TRIGGER_TURNS=3;
@@ -587,7 +664,9 @@ let settings={
   styleReminder: true,
   autoNpcRules: true,
   showArchetype: true,
-  autoMusic: true
+  autoMusic: true,
+  professionSystem: true,
+  professionAutoExp: true
 };
 
 let chatHistory=[];
@@ -615,7 +694,10 @@ let tokenStats={
   itemsRefined:0,
   itemsAddedToInv:0,
   pricesRecorded:0,
-  ingredientGuardBlocked:0
+  ingredientGuardBlocked:0,
+  professionExpGained:0,
+  professionLevelUps:0,
+  craftSimulations:0
 };
 
 let systemRulesSentThisSession=false;
@@ -629,81 +711,460 @@ let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
 
 // ══════════════════════════════════════════════════════════════
-// v2.7.2: INGREDIENT GUARD — Chống gộp nhầm nguyên liệu
+// v2.8.0: PROFESSION SYSTEM
 // ══════════════════════════════════════════════════════════════
-// Map: tên nguyên liệu → sản phẩm đích (recipe key)
-// Mục đích: "Nguyên liệu Tụ Khí Đan" và "Nguyên liệu Thanh Tâm Đan"
-// tuy cùng hậu tố "Đan" nhưng là 2 nguyên liệu KHÁC NHAU.
-const INGREDIENT_RECIPE_MAP = {
-  'tu khi': 'tu_khi_dan',
-  'tụ khí': 'tu_khi_dan',
-  'thanh tam': 'thanh_tam_dan',
-  'thanh tâm': 'thanh_tam_dan',
-  'truc co': 'truc_co_dan',
-  'trúc cơ': 'truc_co_dan',
-  'kim nguyen': 'kim_nguyen_dan',
-  'kim nguyên': 'kim_nguyen_dan',
-  'ngung anh': 'ngung_anh_dan',
-  'ngưng anh': 'ngung_anh_dan',
-  'hoa than': 'hoa_than_dan',
-  'hóa thần': 'hoa_than_dan',
-  'hoi khi': 'hoi_khi_dan',
-  'hồi khí': 'hoi_khi_dan',
-  'boi nguyen': 'boi_nguyen_dan',
-  'bồi nguyên': 'boi_nguyen_dan',
-  'tay tuy': 'tay_tuy_dan',
-  'tẩy tủy': 'tay_tuy_dan',
-  'pha canh': 'pha_canh_dan',
-  'phá cảnh': 'pha_canh_dan',
-  'tu linh': 'tu_linh_dan',
-  'tụ linh': 'tu_linh_dan'
+// 4 nghề: luyen_dan, luyen_khi, ve_phu, tran_phap
+// Mỗi nghề có 9 cấp bậc (tương ứng với 9 tầng Luyện Khí)
+// Cấp càng cao → có thể luyện chế đồ cấp cao hơn + tăng tỷ lệ phẩm chất cao
+// ══════════════════════════════════════════════════════════════
+
+const PROFESSION_TYPES = {
+  luyen_dan: {
+    id: 'luyen_dan',
+    name: 'Luyện Đan',
+    icon: '💊',
+    desc: 'Chế tạo đan dược từ linh thảo',
+    color: '#3fb950'
+  },
+  luyen_khi: {
+    id: 'luyen_khi',
+    name: 'Luyện Khí',
+    icon: '⚔️',
+    desc: 'Rèn đúc pháp bảo, pháp khí từ khoáng thạch',
+    color: '#8957e5'
+  },
+  ve_phu: {
+    id: 've_phu',
+    name: 'Vẽ Phù',
+    icon: '📜',
+    desc: 'Vẽ phù lục từ chu sa, linh mực',
+    color: '#d29922'
+  },
+  tran_phap: {
+    id: 'tran_phap',
+    name: 'Trận Pháp',
+    icon: '🔮',
+    desc: 'Bày trận, chế trận bàn từ trận kỳ, trận văn',
+    color: '#388bfd'
+  }
 };
 
+// Cấp bậc nghề (1-9) — tên gọi + EXP cần + bonus phẩm chất
+// Bonus chất lượng: hệ số tăng tỷ lệ ra phẩm chất cao hơn (Thượng/Cực/Tiên)
+const PROFESSION_RANKS = {
+  1: { name: 'Học Đồ',       expNeed: 100,    qualityBonus: 0.00,  canCraftTier: 'LK' },
+  2: { name: 'Sơ Cấp',       expNeed: 300,    qualityBonus: 0.05,  canCraftTier: 'LK' },
+  3: { name: 'Trung Cấp',    expNeed: 800,    qualityBonus: 0.10,  canCraftTier: 'LK/TC' },
+  4: { name: 'Cao Cấp',      expNeed: 2000,   qualityBonus: 0.18,  canCraftTier: 'LK/TC' },
+  5: { name: 'Đại Sư',       expNeed: 5000,   qualityBonus: 0.28,  canCraftTier: 'LK/TC/KĐ' },
+  6: { name: 'Tông Sư',      expNeed: 12000,  qualityBonus: 0.40,  canCraftTier: 'LK/TC/KĐ' },
+  7: { name: 'Đan Vương',    expNeed: 30000,  qualityBonus: 0.55,  canCraftTier: 'LK/TC/KĐ/NA' },
+  8: { name: 'Đan Thánh',    expNeed: 80000,  qualityBonus: 0.72,  canCraftTier: 'LK/TC/KĐ/NA' },
+  9: { name: 'Đan Tổ',       expNeed: 200000, qualityBonus: 0.95,  canCraftTier: 'Tất cả' }
+};
+
+// Phẩm chất đan dược (thứ tự từ thấp đến cao)
+const ITEM_QUALITIES = ['Hạ phẩm', 'Trung phẩm', 'Thượng phẩm', 'Cực phẩm', 'Tiên phẩm'];
+
+// Hệ số EXP theo phẩm chất thành phẩm
+// Hạ phẩm = 1.0, Trung = 1.5, Thượng = 2.5, Cực = 5, Tiên = 15
+const QUALITY_EXP_MULT = {
+  'Hạ phẩm': 1.0,
+  'Trung phẩm': 1.5,
+  'Thượng phẩm': 2.5,
+  'Cực phẩm': 5.0,
+  'Tiên phẩm': 15.0
+};
+
+// EXP cơ bản cho mỗi phẩm chất (nhân với cấp bậc đan dược)
+// Đan dược cấp càng cao → EXP càng nhiều
+const BASE_EXP_PER_QUALITY = {
+  'LK': 10,   // Luyện Khí kỳ (Tụ Khí Đan)
+  'TC': 50,   // Trúc Cơ kỳ (Trúc Cơ Đan)
+  'KĐ': 200,  // Kim Đan kỳ
+  'NA': 800,  // Nguyên Anh kỳ
+  'HT': 3000  // Hóa Thần kỳ
+};
+
+// ══════════════════════════════════════════════════════════════
+// PROFESSION STATE
+// ══════════════════════════════════════════════════════════════
+let professionState = {
+  luyen_dan: { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' },
+  luyen_khi: { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' },
+  ve_phu: { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' },
+  tran_phap: { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' }
+};
+
+// ══════════════════════════════════════════════════════════════
+// PROFESSION CALCULATOR
+// ══════════════════════════════════════════════════════════════
+
 /**
- * Trích xuất recipe key từ tên nguyên liệu.
- * VD: "Nguyên liệu Tụ Khí Đan" → "tu_khi_dan"
- *     "Nguyên liệu Thanh Tâm Đan" → "thanh_tam_dan"
- * Trả về null nếu không phải nguyên liệu luyện đan.
+ * Lấy thông tin cấp bậc nghề hiện tại.
  */
-function extractIngredientRecipeKey(name){
-  if(!name) return null;
+function getProfessionRankInfo(profId) {
+  const state = professionState[profId];
+  if (!state) return null;
+  const rank = state.rank || 1;
+  const info = PROFESSION_RANKS[rank] || PROFESSION_RANKS[1];
+  const nextRank = rank < 9 ? PROFESSION_RANKS[rank + 1] : null;
+  return {
+    rank,
+    info,
+    exp: state.exp || 0,
+    expMax: info.expNeed,
+    nextRank,
+    expPct: Math.min(100, ((state.exp || 0) / info.expNeed) * 100)
+  };
+}
+
+/**
+ * Tính EXP nghề nhận được khi luyện chế thành công.
+ * Công thức: EXP = BASE_EXP_PER_QUALITY[tier] × QUALITY_EXP_MULT[quality] × quantity
+ */
+function calcProfessionExp(tier, quality, quantity) {
+  const base = BASE_EXP_PER_QUALITY[tier] || BASE_EXP_PER_QUALITY['LK'];
+  const mult = QUALITY_EXP_MULT[quality] || 1.0;
+  const qty = Math.max(1, parseInt(quantity) || 1);
+  return Math.round(base * mult * qty);
+}
+
+/**
+ * Cộng EXP nghề, có thể lên cấp.
+ * Trả về { oldRank, newRank, leveledUp, expGained }
+ */
+function addProfessionExp(profId, expAmount, recipeName) {
+  const state = professionState[profId];
+  if (!state) return null;
+  const oldRank = state.rank;
+  state.exp = (state.exp || 0) + expAmount;
+  state.totalCrafts = (state.totalCrafts || 0) + 1;
+  state.totalSuccess = (state.totalSuccess || 0) + 1;
+  state.lastRecipe = recipeName || state.lastRecipe;
+
+  // Kiểm tra lên cấp (có thể lên nhiều cấp 1 lúc)
+  let leveledUp = false;
+  while (state.rank < 9) {
+    const curRankInfo = PROFESSION_RANKS[state.rank];
+    if (state.exp >= curRankInfo.expNeed) {
+      state.exp -= curRankInfo.expNeed;
+      state.rank += 1;
+      leveledUp = true;
+    } else {
+      break;
+    }
+  }
+
+  tokenStats.professionExpGained = (tokenStats.professionExpGained || 0) + expAmount;
+  if (leveledUp) tokenStats.professionLevelUps = (tokenStats.professionLevelUps || 0) + 1;
+
+  return {
+    oldRank,
+    newRank: state.rank,
+    leveledUp,
+    expGained: expAmount,
+    expRemain: state.exp
+  };
+}
+
+/**
+ * Tính tỷ lệ thành công & phẩm chất khi luyện chế.
+ * Dựa trên:
+ * - Cấp nghề hiện tại
+ * - Cấp nguyên liệu (tier) so với tier tối đa nghề có thể chế
+ * - QualityBonus của cấp nghề
+ *
+ * Trả về object mô tả phân bố phẩm chất dự kiến.
+ * VD: { success: 100, distribution: { 'Hạ phẩm': 0.6, 'Trung phẩm': 0.3, 'Thượng phẩm': 0.1 } }
+ */
+function calcCraftQualityDistribution(profId, recipeTier) {
+  const state = professionState[profId];
+  if (!state) return null;
+  const rank = state.rank;
+  const rankInfo = PROFESSION_RANKS[rank];
+  const baseBonus = rankInfo.qualityBonus;
+
+  // Nếu recipe tier vượt khả năng → giảm mạnh tỷ lệ + có thể thất bại
+  const tierOrder = ['LK', 'TC', 'KĐ', 'NA', 'HT'];
+  const maxTierIdx = tierOrder.indexOf(rankInfo.canCraftTier.split('/').pop());
+  const recipeTierIdx = tierOrder.indexOf(recipeTier);
+  const tierOverflow = Math.max(0, recipeTierIdx - maxTierIdx);
+
+  // Tỷ lệ thành công tổng (không tính phẩm chất)
+  const successRate = Math.max(0.05, 1 - tierOverflow * 0.25);
+
+  // Phân bố phẩm chất mặc định cho đan sư cấp 1 (làm đan LK)
+  // → Hạ 70%, Trung 25%, Thượng 5%
+  let dist = {
+    'Hạ phẩm': 0.70,
+    'Trung phẩm': 0.25,
+    'Thượng phẩm': 0.05,
+    'Cực phẩm': 0.00,
+    'Tiên phẩm': 0.00
+  };
+
+  // Áp dụng bonus theo cấp nghề
+  // Mỗi cấp tăng khả năng ra phẩm chất cao hơn.
+  // Bonus càng lớn thì càng dịch chuyển phân bố về phía cao.
+  // Ví dụ: đan sư cấp 2 (qualityBonus 0.05) làm đan LK → Hạ 65%, Trung 27%, Thượng 8%
+  // Đan sư cấp 5 (qualityBonus 0.28) làm đan LK → Hạ 30%, Trung 35%, Thượng 25%, Cực 8%, Tiên 2%
+  if (baseBonus > 0) {
+    // Dịch chuyển 1 phần xác suất từ các bậc thấp lên bậc cao
+    const shift = Math.min(0.95, baseBonus * 2.2);
+    // Trừ từ Hạ phẩm
+    dist['Hạ phẩm'] = Math.max(0.05, dist['Hạ phẩm'] - shift * 0.6);
+    // Cộng vào Trung phẩm
+    dist['Trung phẩm'] += shift * 0.25;
+    // Cộng vào Thượng phẩm
+    dist['Thượng phẩm'] += shift * 0.30;
+    // Cộng vào Cực phẩm (nếu cấp >= 5)
+    if (rank >= 5) dist['Cực phẩm'] += shift * 0.25;
+    // Cộng vào Tiên phẩm (nếu cấp >= 7)
+    if (rank >= 7) dist['Tiên phẩm'] += shift * 0.15;
+  }
+
+  // Nếu tier nguyên liệu thấp hơn tier max của nghề → bonus thêm (dễ ra đồ ngon hơn)
+  const tierDiscount = Math.max(0, maxTierIdx - recipeTierIdx);
+  if (tierDiscount > 0) {
+    const tierBonus = Math.min(0.5, tierDiscount * 0.15);
+    dist['Hạ phẩm'] = Math.max(0.02, dist['Hạ phẩm'] - tierBonus * 0.4);
+    dist['Trung phẩm'] += tierBonus * 0.15;
+    dist['Thượng phẩm'] += tierBonus * 0.35;
+    dist['Cực phẩm'] += tierBonus * 0.35;
+    dist['Tiên phẩm'] += tierBonus * 0.15;
+  }
+
+  // Chuẩn hoá lại tổng = 1.0
+  const total = Object.values(dist).reduce((a, b) => a + b, 0);
+  if (total > 0) {
+    for (const k of Object.keys(dist)) dist[k] = dist[k] / total;
+  }
+
+  return {
+    successRate,
+    tierOverflow,
+    distribution: dist,
+    rank,
+    rankName: rankInfo.name,
+    qualityBonus: baseBonus
+  };
+}
+
+/**
+ * Mô phỏng luyện chế N sản phẩm.
+ * Trả về phân bố thực tế.
+ */
+function simulateCraftBatch(profId, recipeTier, quantity) {
+  const dist = calcCraftQualityDistribution(profId, recipeTier);
+  if (!dist) return null;
+  const result = { 'Hạ phẩm': 0, 'Trung phẩm': 0, 'Thượng phẩm': 0, 'Cực phẩm': 0, 'Tiên phẩm': 0, 'Thất bại': 0 };
+  const totalQuality = [];
+  for (const [q, p] of Object.entries(dist.distribution)) {
+    for (let i = 0; i < 1000; i++) totalQuality.push({ q, p: p * 1000 });
+  }
+  for (let i = 0; i < quantity; i++) {
+    const roll = Math.random();
+    if (roll > dist.successRate) { result['Thất bại']++; continue; }
+    let acc = 0;
+    let chosen = 'Hạ phẩm';
+    for (const q of ITEM_QUALITIES) {
+      acc += dist.distribution[q] || 0;
+      if (roll <= acc) { chosen = q; break; }
+    }
+    result[chosen]++;
+  }
+  return { ...result, distribution: dist.distribution, successRate: dist.successRate };
+}
+
+/**
+ * Render profession grid UI.
+ */
+function renderProfessionUI() {
+  const grid = document.getElementById('professionGrid');
+  if (!grid) return;
+  let html = '';
+  for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
+    const rankInfo = getProfessionRankInfo(profId);
+    if (!rankInfo) continue;
+    const state = professionState[profId];
+    const pct = rankInfo.expPct;
+    const nextInfo = rankInfo.nextRank ? `Cấp kế: ${rankInfo.nextRank.name} (${rankInfo.nextRank.expNeed} EXP)` : 'Đã đạt cấp tối đa';
+    const bonusPct = (rankInfo.info.qualityBonus * 100).toFixed(0);
+    const nextBonusPct = rankInfo.nextRank ? (rankInfo.nextRank.qualityBonus * 100).toFixed(0) : '—';
+    const canCraftTiers = rankInfo.info.canCraftTier;
+    html += `<div class="prof-card" style="border-color:${profDef.color}33">
+      <div class="prof-card-header">
+        <div class="prof-name" style="color:${profDef.color}">${profDef.icon} ${profDef.name}</div>
+        <div class="prof-rank-badge" style="background:linear-gradient(135deg,${profDef.color},${profDef.color}aa)">Cấp ${rankInfo.rank} — ${rankInfo.info.name}</div>
+      </div>
+      <div style="font-size:11px;color:var(--subtext-color);margin-bottom:6px">${profDef.desc}</div>
+      <div class="prof-exp-bar-bg"><div class="prof-exp-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${profDef.color},${profDef.color}cc)"></div></div>
+      <div class="prof-exp-text"><span>EXP: ${state.exp.toLocaleString()} / ${rankInfo.info.expNeed.toLocaleString()}</span><span>${pct.toFixed(1)}%</span></div>
+      <div class="prof-bonus">✨ Bonus phẩm chất: <b>+${bonusPct}%</b> · Có thể chế: <b>${canCraftTiers}</b><div style="font-size:10px;opacity:.8;margin-top:2px">${nextInfo}</div></div>
+      <div style="font-size:10px;color:var(--subtext-color);margin-top:4px">Đã chế: ${state.totalCrafts || 0} lần · Gần nhất: ${state.lastRecipe || '—'}</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+
+  // Render rank table
+  const tbl = document.getElementById('professionRankTable');
+  if (tbl) {
+    let t = '<table style="width:100%;border-collapse:collapse"><thead><tr style="background:#0d1117"><th style="padding:6px;text-align:left;border-bottom:1px solid #30363d">Cấp</th><th style="padding:6px;text-align:left;border-bottom:1px solid #30363d">Tên</th><th style="padding:6px;text-align:right;border-bottom:1px solid #30363d">EXP cần</th><th style="padding:6px;text-align:right;border-bottom:1px solid #30363d">Bonus</th><th style="padding:6px;text-align:left;border-bottom:1px solid #30363d">Chế được</th></tr></thead><tbody>';
+    for (let r = 1; r <= 9; r++) {
+      const info = PROFESSION_RANKS[r];
+      t += `<tr><td style="padding:5px;border-bottom:1px solid #21262d">${r}</td><td style="padding:5px;border-bottom:1px solid #21262d">${info.name}</td><td style="padding:5px;text-align:right;border-bottom:1px solid #21262d">${info.expNeed.toLocaleString()}</td><td style="padding:5px;text-align:right;border-bottom:1px solid #21262d;color:#3fb950">+${(info.qualityBonus*100).toFixed(0)}%</td><td style="padding:5px;border-bottom:1px solid #21262d">${info.canCraftTier}</td></tr>`;
+    }
+    t += '</tbody></table>';
+    tbl.innerHTML = t;
+  }
+}
+
+function showProfessionStats() {
+  openThienDao();
+  const resultsDiv = document.getElementById('thienDaoResults');
+  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP</div>`;
+  for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
+    const state = professionState[profId];
+    const rankInfo = getProfessionRankInfo(profId);
+    html += `<div class="thiendao-result" style="border-left:3px solid ${profDef.color}">
+      <div class="thiendao-result-title" style="color:${profDef.color}">${profDef.icon} ${profDef.name}</div>
+      <div class="thiendao-result-body">
+        Cấp: <b>${rankInfo.rank} — ${rankInfo.info.name}</b><br>
+        EXP: ${state.exp} / ${rankInfo.info.expNeed}<br>
+        Đã chế: ${state.totalCrafts || 0} lần<br>
+        Bonus phẩm chất: +${(rankInfo.info.qualityBonus*100).toFixed(0)}%<br>
+        Chế được: ${rankInfo.info.canCraftTier}
+      </div>
+    </div>`;
+  }
+  resultsDiv.innerHTML = html;
+}
+
+function resetProfessions() {
+  if (!confirm('🔄 Reset toàn bộ nghề về cấp 1?')) return;
+  for (const k of Object.keys(professionState)) {
+    professionState[k] = { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' };
+  }
+  renderProfessionUI();
+  log('🔄 Đã reset toàn bộ nghề.');
+  alert('✅ Đã reset nghề!');
+}
+
+function simulateCraft(profId) {
+  openTab('prof');
+  setTimeout(() => {
+    const simType = document.getElementById('simProfType');
+    if (simType) simType.value = profId;
+    runCraftSimulation();
+  }, 100);
+}
+
+function runCraftSimulation() {
+  const profId = document.getElementById('simProfType').value;
+  const recipeName = document.getElementById('simRecipeName').value.trim() || 'Vật phẩm';
+  const recipeTier = (document.getElementById('simRecipeTier').value.trim().toUpperCase() || 'LK');
+  const qty = parseInt(document.getElementById('simQty').value) || 5;
+  const result = simulateCraftBatch(profId, recipeTier, qty);
+  if (!result) { alert('❌ Không thể mô phỏng!'); return; }
+  tokenStats.craftSimulations = (tokenStats.craftSimulations || 0) + 1;
+  updateTokenStatsDisplay();
+  let expGained = 0;
+  for (const q of ITEM_QUALITIES) {
+    if (result[q] > 0) expGained += calcProfessionExp(recipeTier, q, result[q]);
+  }
+  const rankInfo = getProfessionRankInfo(profId);
+  let html = `<div style="color:#4dd0e1;font-weight:bold;margin-bottom:6px">🧪 KẾT QUẢ MÔ PHỎNG: ${recipeName} [${recipeTier}] x${qty}</div>`;
+  html += `<div style="font-size:11px;color:#8b949e;margin-bottom:8px">Nghề: <b style="color:${PROFESSION_TYPES[profId].color}">${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}</b> · Cấp ${rankInfo.rank} — ${rankInfo.info.name}</div>`;
+  html += `<div style="margin:6px 0">`;
+  for (const q of ITEM_QUALITIES) {
+    if (result[q] > 0) {
+      const pct = (result.distribution[q] * 100).toFixed(1);
+      html += `<div>• <span class="highlight">${q}</span>: ${result[q]} viên (dự kiến ${pct}%)</div>`;
+    }
+  }
+  if (result['Thất bại'] > 0) html += `<div style="color:#f85149">• Thất bại: ${result['Thất bại']} lần</div>`;
+  html += `</div>`;
+  html += `<div style="border-top:1px dashed #1f9eb0;padding-top:6px;margin-top:6px">`;
+  html += `<div>📈 Tỷ lệ thành công: <b class="highlight">${(result.successRate * 100).toFixed(1)}%</b></div>`;
+  html += `<div>✨ Bonus phẩm chất hiện tại: <b class="highlight">+${(rankInfo.info.qualityBonus*100).toFixed(0)}%</b></div>`;
+  html += `<div>🎯 EXP nghề dự kiến nhận: <b class="highlight">+${expGained.toLocaleString()} EXP</b></div>`;
+  html += `</div>`;
+  const simResult = document.getElementById('simResult');
+  simResult.style.display = 'block';
+  simResult.innerHTML = html;
+  log(`🧪 Mô phỏng ${profId}: ${recipeName} [${recipeTier}] x${qty} → ${expGained} EXP`);
+}
+
+/**
+ * Lấy context cho AI biết về nghề nghiệp của NVC.
+ */
+function getProfessionAIContext() {
+  if (!settings.professionSystem) return '';
+  let txt = '\n[⚒️ NGHỀ NGHIỆP CỦA NVC — DÙNG ĐỂ TÍNH TỶ LỆ THÀNH CÔNG + EXP]\n';
+  for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
+    const rankInfo = getProfessionRankInfo(profId);
+    const state = professionState[profId];
+    txt += `• ${profDef.icon} ${profDef.name}: Cấp ${rankInfo.rank} (${rankInfo.info.name}) | EXP ${state.exp}/${rankInfo.info.expNeed} | Bonus phẩm chất +${(rankInfo.info.qualityBonus*100).toFixed(0)}% | Chế được: ${rankInfo.info.canCraftTier}\n`;
+  }
+  txt += '\n📌 CÔNG THỨC EXP NGHỀ (AI PHẢI DÙNG):\n';
+  txt += '  EXP = BASE_EXP[tier] × QUALITY_MULT[quality] × quantity\n';
+  txt += '  BASE_EXP: LK=10, TC=50, KĐ=200, NA=800, HT=3000\n';
+  txt += '  QUALITY_MULT: Hạ=1.0, Trung=1.5, Thượng=2.5, Cực=5.0, Tiên=15.0\n';
+  txt += '\n📌 KHI NVC LUYỆN CHẾ:\n';
+  txt += '  1. AI mô tả quá trình luyện chế (dài, có chi tiết kỹ thuật).\n';
+  txt += '  2. AI ghi "craftResultList" trong JSON Codex để hệ thống tự tính EXP:\n';
+  txt += '     "craftResultList":[{"profession":"luyen_dan","recipe":"Tụ Khí Đan","tier":"LK","results":[{"quality":"Hạ phẩm","quantity":4},{"quality":"Trung phẩm","quantity":1}]}]\n';
+  txt += '  3. HỆ THỐNG SẼ TỰ ĐỘNG TÍNH VÀ CỘNG EXP NGHỀ.\n';
+  txt += '  4. Tỷ lệ thất bại/thành công dựa vào cấp nghề + tier nguyên liệu.\n';
+  return txt;
+}
+
+// ══════════════════════════════════════════════════════════════
+// v2.7.2: INGREDIENT GUARD — Chống gộp nhầm nguyên liệu
+// ══════════════════════════════════════════════════════════════
+const INGREDIENT_RECIPE_MAP = {
+  'tu khi': 'tu_khi_dan', 'tụ khí': 'tu_khi_dan',
+  'thanh tam': 'thanh_tam_dan', 'thanh tâm': 'thanh_tam_dan',
+  'truc co': 'truc_co_dan', 'trúc cơ': 'truc_co_dan',
+  'kim nguyen': 'kim_nguyen_dan', 'kim nguyên': 'kim_nguyen_dan',
+  'ngung anh': 'ngung_anh_dan', 'ngưng anh': 'ngung_anh_dan',
+  'hoa than': 'hoa_than_dan', 'hóa thần': 'hoa_than_dan',
+  'hoi khi': 'hoi_khi_dan', 'hồi khí': 'hoi_khi_dan',
+  'boi nguyen': 'boi_nguyen_dan', 'bồi nguyên': 'boi_nguyen_dan',
+  'tay tuy': 'tay_tuy_dan', 'tẩy tủy': 'tay_tuy_dan',
+  'pha canh': 'pha_canh_dan', 'phá cảnh': 'pha_canh_dan',
+  'tu linh': 'tu_linh_dan', 'tụ linh': 'tu_linh_dan'
+};
+
+function extractIngredientRecipeKey(name) {
+  if (!name) return null;
   const lower = normalizeVN(name);
-  // Phải có tiền tố "nguyen lieu" mới tính là nguyên liệu
-  if(!lower.startsWith('nguyen lieu') && !lower.includes('nguyen lieu')) return null;
-  // Nếu có "dan" ở cuối → tìm recipe key
-  if(!lower.includes('dan')) return null;
-  for(const [prefix, recipeKey] of Object.entries(INGREDIENT_RECIPE_MAP)){
+  if (!lower.startsWith('nguyen lieu') && !lower.includes('nguyen lieu')) return null;
+  if (!lower.includes('dan')) return null;
+  for (const [prefix, recipeKey] of Object.entries(INGREDIENT_RECIPE_MAP)) {
     const prefixNorm = normalizeVN(prefix);
-    if(lower.includes(prefixNorm)) return recipeKey;
+    if (lower.includes(prefixNorm)) return recipeKey;
   }
   return null;
 }
 
-/**
- * Kiểm tra 2 tên nguyên liệu có phải là nguyên liệu cho 2 recipe KHÁC NHAU không.
- * Nếu khác recipe → KHÔNG được merge/gộp chung.
- */
-function isIngredientForDifferentRecipe(nameA, nameB){
+function isIngredientForDifferentRecipe(nameA, nameB) {
   const keyA = extractIngredientRecipeKey(nameA);
   const keyB = extractIngredientRecipeKey(nameB);
-  // Nếu cả 2 đều là nguyên liệu nhưng khác recipe → true (khác nhau, không merge)
-  if(keyA && keyB && keyA !== keyB) return true;
-  // Nếu 1 cái là nguyên liệu, 1 cái không phải → false (không conflict, để logic khác xử lý)
+  if (keyA && keyB && keyA !== keyB) return true;
   return false;
 }
 
-/**
- * Kiểm tra 2 tên có phải cùng recipe nguyên liệu không.
- */
-function isSameIngredientRecipe(nameA, nameB){
+function isSameIngredientRecipe(nameA, nameB) {
   const keyA = extractIngredientRecipeKey(nameA);
   const keyB = extractIngredientRecipeKey(nameB);
-  if(!keyA || !keyB) return false;
+  if (!keyA || !keyB) return false;
   return keyA === keyB;
 }
 
 // ══════════════════════════════════════════════════════════════
-// v2.7.1: PRICE MEMORY SYSTEM
+// PRICE MEMORY SYSTEM
 // ══════════════════════════════════════════════════════════════
 let priceMemory = {};
 const PRICE_MEMORY_MAX_ENTRIES = 200;
@@ -712,13 +1173,9 @@ function recordPrice(itemName, quality, price, unit, source){
   if(!itemName || price === undefined || price === null) return;
   const key = `${normalizeVN(itemName)}||${normalizeVN(quality || '')}`;
   priceMemory[key] = {
-    name: itemName,
-    quality: quality || '',
-    price: Number(price),
-    unit: unit || 'Linh thạch',
-    source: source || 'Không rõ',
-    turn: turnCounter,
-    timestamp: Date.now()
+    name: itemName, quality: quality || '', price: Number(price),
+    unit: unit || 'Linh thạch', source: source || 'Không rõ',
+    turn: turnCounter, timestamp: Date.now()
   };
   tokenStats.pricesRecorded = (tokenStats.pricesRecorded||0) + 1;
   const keys = Object.keys(priceMemory);
@@ -738,7 +1195,7 @@ function getPriceMemoryPrompt(){
     const p = priceMemory[k];
     txt += `- ${p.name}${p.quality?` [${p.quality}]`:''}: ${p.price} ${p.unit||'linh thạch'} (nguồn: ${p.source||'?'}, lượt ${p.turn})\n`;
   }
-  txt += '⚠️ Khi giao dịch, BẮT BUỘC dùng giá đã ghi nhớ nếu có. Nếu giá mới khác biệt đáng kể, hãy giải thích (khan hiếm, thương nhân khác...).\n';
+  txt += '⚠️ Khi giao dịch, BẮT BUỘC dùng giá đã ghi nhớ nếu có.\n';
   return txt;
 }
 
@@ -762,10 +1219,9 @@ function autoRecordPricesFromNarrative(text){
   if(!text) return;
   const patterns = [
     /([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})\s+(?:hạ phẩm|trung phẩm|thượng phẩm|cực phẩm|tiên phẩm)?\s*(?:có\s+)?giá\s+(?:khoảng\s+|tầm\s+|chừng\s+)?(\d[\d.,]*)\s*(?:v|k|nghìn|ngàn|triệu)?\s*linh\s*thạch/gi,
-    /giá\s+(?:khoảng\s+|tầm\s+|chừng\s+)?(\d[\d.,]*)\s*(?:v|k|nghìn|ngàn|triệu)?\s*linh\s*thạch\s+(?:cho|mua|bán|thuê)?\s*([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})/gi,
-    /([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})\s*[:=]\s*(\d[\d.,]*)\s*(?:v|k)?\s*linh\s*thạch/gi
+    /giá\s+(?:khoảng\s+|tầm\s+|chừng\s+)?(\d[\d.,]*)\s*(?:v|k|nghìn|ngàn|triệu)?\s*linh\s*thạch\s+(?:cho|mua|bán|thuê)?\s*([A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹa-zà-ỹ]+){0,3})/gi
   ];
-  const BLACKLIST_NAME_WORDS = ['ta','toi','nguoi','no','ho','chung','minh','day','kia','do','nay','co','khong','duoc','se','da','dang','thi','la','va','voi','cua','cho','tu','den','ve','ra','vao','len','xuong','phai','ton','moi','ngay','dem','thang','nam','gio','phut'];
+  const BLACKLIST = ['ta','toi','nguoi','no','ho','chung','minh','day','kia','do','nay','co','khong','duoc','se','da','dang','thi','la','va','voi','cua','cho','tu','den','ve','ra','vao','len','xuong','phai','ton','moi','ngay','dem','thang','nam','gio','phut'];
   for(const re of patterns){
     let m;
     while((m = re.exec(text)) !== null){
@@ -775,10 +1231,8 @@ function autoRecordPricesFromNarrative(text){
       itemName = (itemName || '').trim();
       const price = parseQty(priceStr);
       if(!itemName || itemName.length < 4 || price <= 0 || price >= 100000000) continue;
-      const nameLower = itemName.toLowerCase();
-      const words = nameLower.split(/\s+/);
-      const hasBlacklist = words.some(w => BLACKLIST_NAME_WORDS.includes(w));
-      if(hasBlacklist) continue;
+      const words = itemName.toLowerCase().split(/\s+/);
+      if(words.some(w => BLACKLIST.includes(w))) continue;
       if(!/[A-ZÀ-Ỹ]/.test(itemName)) continue;
       if(words.length > 4) continue;
       recordPrice(itemName, '', price, 'Linh thạch', 'Narrative AI');
@@ -790,43 +1244,18 @@ function showPriceMemory(){
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   const keys = Object.keys(priceMemory);
-  const aiEntries = [];
-  const narrativeEntries = [];
-  const txEntries = [];
-  for(const k of keys){
-    const p = priceMemory[k];
-    const src = (p.source || '').toLowerCase();
-    if(src.includes('narrative')) narrativeEntries.push(p);
-    else if(src.includes('giao dịch') || src.includes('transaction')) txEntries.push(p);
-    else aiEntries.push(p);
-  }
   let html = `<div style="color:var(--accent-gold);font-size:14px;margin-bottom:8px;font-weight:bold">💰 BẢNG GIÁ ĐÃ LƯU (${keys.length} mục)</div>`;
-  html += `<div style="font-size:11px;color:var(--subtext-color);margin-bottom:12px;padding:8px;background:#0d1117;border-radius:6px;border-left:3px solid #388bfd">
-    ✅ <b style="color:#3fb950">Từ AI (đáng tin)</b> = giá AI chủ động ghi có cấu trúc.<br>
-    🔄 <b style="color:#388bfd">Từ giao dịch</b> = giá ghi khi NVC mua/bán thực tế.<br>
-    ⚠️ <b style="color:#d29922">Từ narrative</b> = giá tự động dò từ văn kể (tham khảo, có thể sai).
-  </div>`;
-  if(keys.length === 0){
-    html += '<div class="thiendao-empty">Chưa có giá nào. Hãy hỏi NPC giá cả trong game!</div>';
-  } else {
-    const renderGroup = (title, color, entries) => {
-      if(entries.length === 0) return '';
-      entries.sort((a,b) => b.timestamp - a.timestamp);
-      let g = `<div style="color:${color};font-weight:bold;font-size:12px;margin:12px 0 6px 0;padding-bottom:4px;border-bottom:1px solid ${color}33">${title} (${entries.length})</div>`;
-      for(const p of entries){
-        g += `<div class="thiendao-result" style="border-left:3px solid ${color};margin-bottom:6px;padding:8px 10px">
-          <div class="thiendao-result-title" style="color:#fff;font-size:13px">${p.name}${p.quality?` <span style="color:${color};font-size:11px">[${p.quality}]</span>`:''}</div>
-          <div class="thiendao-result-body" style="margin-top:4px">
-            💰 <b style="color:#d29922;font-size:14px">${p.price.toLocaleString()} ${p.unit||'linh thạch'}</b>
-            <span style="color:var(--subtext-color);font-size:11px;margin-left:8px">• Lượt ${p.turn} • ${p.source||'?'}</span>
-          </div>
-        </div>`;
-      }
-      return g;
-    };
-    html += renderGroup('✅ TỪ AI (đáng tin)', '#3fb950', aiEntries);
-    html += renderGroup('🔄 TỪ GIAO DỊCH', '#388bfd', txEntries);
-    html += renderGroup('⚠️ TỪ NARRATIVE (tham khảo)', '#d29922', narrativeEntries);
+  if(keys.length === 0){ html += '<div class="thiendao-empty">Chưa có giá nào.</div>'; }
+  else {
+    const sorted = keys.sort((a,b) => priceMemory[b].timestamp - priceMemory[a].timestamp);
+    for(const k of sorted){
+      const p = priceMemory[k];
+      html += `<div class="thiendao-result" style="border-left:3px solid #3fb950;margin-bottom:6px;padding:8px 10px">
+        <div class="thiendao-result-title" style="color:#fff;font-size:13px">${p.name}${p.quality?` <span style="color:#3fb950;font-size:11px">[${p.quality}]</span>`:''}</div>
+        <div class="thiendao-result-body" style="margin-top:4px">💰 <b style="color:#d29922">${p.price.toLocaleString()} ${p.unit||'linh thạch'}</b>
+        <span style="color:var(--subtext-color);font-size:11px;margin-left:8px">• Lượt ${p.turn} • ${p.source||'?'}</span></div>
+      </div>`;
+    }
   }
   resultsDiv.innerHTML = html;
 }
@@ -841,7 +1270,7 @@ function clearPriceMemory(){
 }
 
 // ══════════════════════════════════════════════════════════════
-// v2.7.1: TIME NORMALIZER
+// TIME NORMALIZER
 // ══════════════════════════════════════════════════════════════
 const TIME_UNITS = {
   'nam': 365 * 24, 'năm': 365 * 24, 'niên': 365 * 24,
@@ -863,16 +1292,11 @@ function parseTimeString(str){
   while((m = regex.exec(s)) !== null){
     const num = parseFloat(m[1].replace(/,/g, ''));
     const unit = m[2].toLowerCase().trim();
-    if(TIME_UNITS[unit] !== undefined){
-      total += num * TIME_UNITS[unit];
-      matched = true;
-    }
+    if(TIME_UNITS[unit] !== undefined){ total += num * TIME_UNITS[unit]; matched = true; }
   }
   if(!matched){
     const numOnly = parseFloat(s.replace(/,/g, ''));
-    if(!isNaN(numOnly)){
-      return { totalHours: numOnly, hasUnit: false, display: `${s} (⚠️ chưa rõ đơn vị, tạm tính ${numOnly} giờ)` };
-    }
+    if(!isNaN(numOnly)) return { totalHours: numOnly, hasUnit: false, display: `${s} (⚠️ chưa rõ đơn vị)` };
     return { totalHours: 0, hasUnit: false, display: s };
   }
   return { totalHours: total, hasUnit: true, display: s };
@@ -903,22 +1327,13 @@ function normalizeGameTimeField(){
   const parsed = parseTimeString(raw);
   const hint = document.getElementById('mcGameTimeHint');
   if(!parsed.hasUnit && parsed.totalHours > 0){
-    if(hint){
-      hint.textContent = `⚠️ Chưa rõ đơn vị — tạm hiểu là ${parsed.totalHours} giờ. VD: "20 ngày 5 giờ"`;
-      hint.style.color = '#d29922';
-    }
+    if(hint){ hint.textContent = `⚠️ Chưa rõ đơn vị — tạm hiểu là ${parsed.totalHours} giờ.`; hint.style.color = '#d29922'; }
   } else if(parsed.hasUnit){
     const formatted = formatTime(parsed.totalHours);
-    if(hint){
-      hint.textContent = `≈ ${formatted} (tổng ${parsed.totalHours.toFixed(1)} giờ game)`;
-      hint.style.color = '#3fb950';
-    }
+    if(hint){ hint.textContent = `≈ ${formatted} (tổng ${parsed.totalHours.toFixed(1)} giờ game)`; hint.style.color = '#3fb950'; }
   }
 }
 
-// ══════════════════════════════════════════════════════════════
-// v2.7.1: COLLAPSIBLE UI
-// ══════════════════════════════════════════════════════════════
 function toggleCollapsible(headerEl){
   const body = headerEl.nextElementSibling;
   if(!body) return;
@@ -926,6 +1341,9 @@ function toggleCollapsible(headerEl){
   body.classList.toggle('open', isOpen);
 }
 
+// ══════════════════════════════════════════════════════════════
+// EXP TABLE
+// ══════════════════════════════════════════════════════════════
 const EXP_TABLE = {
   'LK1': 100, 'LK2': 150, 'LK3': 220, 'LK4': 320, 'LK5': 450,
   'LK6': 620, 'LK7': 850, 'LK8': 1150, 'LK9': 1500, 'LK10': 2000,
@@ -957,109 +1375,75 @@ const PRICE_REFERENCE = {
   'Thanh Tâm Thảo': 2
 };
 
+// ══════════════════════════════════════════════════════════════
+// NPC ARCHETYPES
+// ══════════════════════════════════════════════════════════════
 const NPC_ARCHETYPES = {
-  'cao_ngao': { name: 'Cao ngạo', keywords: ['cao ngạo','kiêu ngạo','tự phụ','trưởng lão','tông chủ','lão tổ','thượng nhân'], template: `Tính cách: Cao ngạo, tự phụ, coi thường kẻ yếu.\nTự xưng: "bổn tọa" hoặc "lão phu".\nCách gọi NVC:\n- ❤<0: "tiểu tử", "con kiến" (khinh thường)\n- ❤0-50: "đạo hữu" (hờ hững)\n- ❤50-80: "tiểu hữu" (có chút coi trọng)\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu ngắn, sắc bén, cười nửa miệng.` },
-  'diu_dang': { name: 'Dịu dàng', keywords: ['dịu dàng','hiền lành','sư muội','sư tỷ','thánh nữ','tốt bụng'], template: `Tính cách: Dịu dàng, hay lo lắng, tốt bụng, nhút nhát.\nTự xưng: "muội" hoặc "ta".\nCách gọi NVC:\n- ❤<0: "vị đạo hữu này"\n- ❤0-50: "sư huynh" (khách sáo)\n- ❤50-80: "sư huynh" (thân thiết)\n- ❤>80: "huynh" (thân mật)\nĐặc điểm nói: Câu dài, hay hỏi thăm, lo lắng cho NVC.` },
-  'lanh_lung': { name: 'Lạnh lùng', keywords: ['lạnh lùng','kiếm tu','sát thủ','cô độc','băng lãnh','thanh cao'], template: `Tính cách: Lạnh lùng, ít nói, cẩn trọng.\nTự xưng: "ta".\nCách gọi NVC:\n- ❤<0: "ngươi" (lạnh nhạt)\n- ❤0-50: "ngươi"\n- ❤50-80: "các hạ"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu rất ngắn, thường im lặng.` },
-  'tham_lam': { name: 'Tham lam', keywords: ['tham lam','thương nhân','đan sư','buôn bán','keo kiệt','tính toán'], template: `Tính cách: Tham lam, khôn ngoan, giỏi mặc cả.\nTự xưng: "lão phu" hoặc "tại hạ".\nCách gọi NVC:\n- ❤<0: "tiểu tử", "tên kia"\n- ❤0-50: "đạo hữu", "khách nhân"\n- ❤50-80: "tiểu hữu" (ưu đãi giá)\n- ❤>80: "hiền chất"\nĐặc điểm nói: Câu trung bình, luôn nhắc giá cả.` },
-  'dien_cuong': { name: 'Điên cuồng', keywords: ['điên','cuồng','ma tu','tà tu','máu','giết chóc','tàn bạo'], template: `Tính cách: Điên loạn, tàn bạo, thích giết chóc.\nTự xưng: "bổn tọa" hoặc "ta".\nCách gọi NVC:\n- ❤<0: "con kiến", "phế vật"\n- ❤0-50: "ngươi"\n- ❤50-80: "tiểu gia hỏa"\n- ❤>80: "đồ đệ"\nĐặc điểm nói: Câu dài, cười điên loạn "Hahaha".` },
-  'trung_thanh': { name: 'Trung thành', keywords: ['trung thành','sủng vật','linh thú','đệ tử','hộ vệ','nô bộc','sói','hổ'], template: `Tính cách: Trung thành, hung dữ với người lạ.\nTự xưng: "ta" hoặc gầm gừ.\nCách gọi NVC:\n- ❤<0: gầm gừ, nanh vuốt\n- ❤0-50: "nhân loại"\n- ❤50-80: "chủ nhân"\n- ❤>80: "chủ nhân" + thân thiết\nĐặc điểm nói: Câu ngắn, hành động nhiều hơn lời.` },
-  'thong_thai': { name: 'Thông thái', keywords: ['thông thái','hiền triết','cố vấn','già','lão nhân','sư phụ','trưởng bối'], template: `Tính cách: Thông thái, từ tốn, hay dạy bảo.\nTự xưng: "lão phu" hoặc "vi sư".\nCách gọi NVC:\n- ❤<0: "tiểu tử"\n- ❤0-50: "đạo hữu"\n- ❤50-80: "đồ nhi" hoặc "tiểu hữu"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu dài, triết lý, hay ví von.` },
-  'hoat_bat': { name: 'Hoạt bát', keywords: ['hoạt bát','vui vẻ','nhí nhảnh','trẻ','nghịch ngợm','tiểu đồng'], template: `Tính cách: Hoạt bát, vui vẻ, nghịch ngợm.\nTự xưng: "ta" hoặc "tiểu đệ/tiểu muội".\nCách gọi NVC:\n- ❤<0: "đồ xấu xa"\n- ❤0-50: "này ngươi"\n- ❤50-80: "lão đại" hoặc "đại ca"\n- ❤>80: gọi biệt danh riêng\nĐặc điểm nói: Câu ngắn, hay thán từ "Oa", "Hihi".` },
-  'bi_an': { name: 'Bí ẩn', keywords: ['bí ẩn','thần bí','ẩn giấu','che mặt','hắc y'], template: `Tính cách: Bí ẩn, khó đoán, che giấu thân phận.\nTự xưng: "ta" hoặc "tại hạ".\nCách gọi NVC:\n- ❤<0: "ngươi"\n- ❤0-50: "đạo hữu"\n- ❤50-80: "tiểu hữu"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu ngắn, ẩn ý, cười bí ẩn.` },
-  'cu_phach': { name: 'Cục phách', keywords: ['cục phách','thô lỗ','dã man','man hoang','thể tu','hổ báo'], template: `Tính cách: Cục phách, thô lỗ, thẳng thắn.\nTự xưng: "lão tử" hoặc "ta".\nCách gọi NVC:\n- ❤<0: "tiểu tử", "ranh con"\n- ❤0-50: "tiểu tử"\n- ❤50-80: "tiểu huynh đệ"\n- ❤>80: "huynh đệ"\nĐặc điểm nói: Câu ngắn, hay chửi thề nhẹ.` }
+  'cao_ngao': { name: 'Cao ngạo', keywords: ['cao ngạo','kiêu ngạo','tự phụ','trưởng lão','tông chủ','lão tổ','thượng nhân'], template: `Tính cách: Cao ngạo, tự phụ, coi thường kẻ yếu.\nTự xưng: "bổn tọa" hoặc "lão phu".\nCách gọi NVC:\n- ❤<0: "tiểu tử", "con kiến"\n- ❤0-50: "đạo hữu"\n- ❤50-80: "tiểu hữu"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu ngắn, sắc bén.` },
+  'diu_dang': { name: 'Dịu dàng', keywords: ['dịu dàng','hiền lành','sư muội','sư tỷ','thánh nữ','tốt bụng'], template: `Tính cách: Dịu dàng, hay lo lắng.\nTự xưng: "muội" hoặc "ta".\nCách gọi NVC:\n- ❤<0: "vị đạo hữu này"\n- ❤0-50: "sư huynh"\n- ❤50-80: "sư huynh"\n- ❤>80: "huynh"\nĐặc điểm nói: Câu dài, hay hỏi thăm.` },
+  'lanh_lung': { name: 'Lạnh lùng', keywords: ['lạnh lùng','kiếm tu','sát thủ','cô độc','băng lãnh','thanh cao'], template: `Tính cách: Lạnh lùng, ít nói.\nTự xưng: "ta".\nCách gọi NVC:\n- ❤<0: "ngươi"\n- ❤0-50: "ngươi"\n- ❤50-80: "các hạ"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu rất ngắn.` },
+  'tham_lam': { name: 'Tham lam', keywords: ['tham lam','thương nhân','đan sư','buôn bán','keo kiệt','tính toán'], template: `Tính cách: Tham lam, khôn ngoan.\nTự xưng: "lão phu" hoặc "tại hạ".\nCách gọi NVC:\n- ❤<0: "tiểu tử"\n- ❤0-50: "đạo hữu"\n- ❤50-80: "tiểu hữu"\n- ❤>80: "hiền chất"\nĐặc điểm nói: Câu trung bình, nhắc giá cả.` },
+  'dien_cuong': { name: 'Điên cuồng', keywords: ['điên','cuồng','ma tu','tà tu','máu','giết chóc','tàn bạo'], template: `Tính cách: Điên loạn, tàn bạo.\nTự xưng: "bổn tọa" hoặc "ta".\nCách gọi NVC:\n- ❤<0: "con kiến"\n- ❤0-50: "ngươi"\n- ❤50-80: "tiểu gia hỏa"\n- ❤>80: "đồ đệ"\nĐặc điểm nói: Câu dài, cười điên loạn.` },
+  'trung_thanh': { name: 'Trung thành', keywords: ['trung thành','sủng vật','linh thú','đệ tử','hộ vệ','nô bộc','sói','hổ'], template: `Tính cách: Trung thành.\nTự xưng: "ta" hoặc gầm gừ.\nCách gọi NVC:\n- ❤<0: gầm gừ\n- ❤0-50: "nhân loại"\n- ❤50-80: "chủ nhân"\n- ❤>80: "chủ nhân"\nĐặc điểm nói: Câu ngắn.` },
+  'thong_thai': { name: 'Thông thái', keywords: ['thông thái','hiền triết','cố vấn','già','lão nhân','sư phụ','trưởng bối'], template: `Tính cách: Thông thái, từ tốn.\nTự xưng: "lão phu" hoặc "vi sư".\nCách gọi NVC:\n- ❤<0: "tiểu tử"\n- ❤0-50: "đạo hữu"\n- ❤50-80: "đồ nhi"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu dài, triết lý.` },
+  'hoat_bat': { name: 'Hoạt bát', keywords: ['hoạt bát','vui vẻ','nhí nhảnh','trẻ','nghịch ngợm','tiểu đồng'], template: `Tính cách: Hoạt bát, vui vẻ.\nTự xưng: "ta" hoặc "tiểu đệ/tiểu muội".\nCách gọi NVC:\n- ❤<0: "đồ xấu xa"\n- ❤0-50: "này ngươi"\n- ❤50-80: "lão đại"\n- ❤>80: gọi biệt danh riêng\nĐặc điểm nói: Câu ngắn.` },
+  'bi_an': { name: 'Bí ẩn', keywords: ['bí ẩn','thần bí','ẩn giấu','che mặt','hắc y'], template: `Tính cách: Bí ẩn, khó đoán.\nTự xưng: "ta" hoặc "tại hạ".\nCách gọi NVC:\n- ❤<0: "ngươi"\n- ❤0-50: "đạo hữu"\n- ❤50-80: "tiểu hữu"\n- ❤>80: gọi thẳng tên NVC\nĐặc điểm nói: Câu ngắn, ẩn ý.` },
+  'cu_phach': { name: 'Cục phách', keywords: ['cục phách','thô lỗ','dã man','man hoang','thể tu','hổ báo'], template: `Tính cách: Cục phách, thô lỗ.\nTự xưng: "lão tử" hoặc "ta".\nCách gọi NVC:\n- ❤<0: "tiểu tử"\n- ❤0-50: "tiểu tử"\n- ❤50-80: "tiểu huynh đệ"\n- ❤>80: "huynh đệ"\nĐặc điểm nói: Câu ngắn.` }
 };
 
 function detectNpcArchetype(npc){
   const text = ((npc.personality||'') + ' ' + (npc.identity||'') + ' ' + (npc.npcRules||'')).toLowerCase();
   for(const [key, arch] of Object.entries(NPC_ARCHETYPES)){
-    for(const kw of arch.keywords){
-      if(text.includes(kw)) return key;
-    }
+    for(const kw of arch.keywords){ if(text.includes(kw)) return key; }
   }
   return null;
 }
 
+// ══════════════════════════════════════════════════════════════
+// DEFAULT SCOPES (16 preset)
+// ══════════════════════════════════════════════════════════════
 const DEFAULT_SCOPES = [
-  { id: 'scope_nsfw', label: '18+ — Cảnh đặc biệt (TỰ ĐIỀN)', triggers: ['song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái','thân mật','hôn','ôm','vuốt ve','cởi','lột','khỏa thân','lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa','thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm','sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ','sủng hạnh','phòng the','giường chiếu','chiếm hữu thân thể','cưỡng hiếp','cưỡng dâm','dâm loạn','tình nhân','sủng phi','sủng thiếp','thị thiếp','song tu đại pháp','âm dương song tu','đỉnh lô','thái âm bổ trợ','động phòng','giao hợp','hoan lạc','ái tình','tình sự','mây mưa sương gió','khỏa lõa','ái ân mặn nồng'], exemplar: '' },
+  { id: 'scope_nsfw', label: '18+ — Cảnh đặc biệt (TỰ ĐIỀN)', triggers: ['song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái','thân mật','hôn','ôm','vuốt ve','cởi','lột','khỏa thân','lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa','thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm','sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ','sủng hạnh','phòng the','giường chiếu','chiếm hữu thân thể','dâm loạn','tình nhân','sủng phi','sủng thiếp','thị thiếp','song tu đại pháp','âm dương song tu','đỉnh lô','động phòng','giao hợp','hoan lạc','ái tình','tình sự','mây mưa sương gió','khỏa lõa','ái ân mặn nồng'], exemplar: '' },
   { id: 'scope_tu_luyen', label: 'Tu luyện & Đột phá', triggers: ['tu luyện','bế quan','đột phá','luyện công','tĩnh tọa','thiền định','đả tọa','vận công','hành công','luyện hóa','kết đan','kết anh','phá cảnh','tấn cấp','tăng tu vi','viên mãn'], exemplar: 'Công thức: Thời gian = (Cơ bản × Cảnh giới × Đan × Linh địa × Linh thạch × Cơ duyên × Cộng hưởng) ÷ Linh căn. Hệ số linh căn: Đơn:1.0|Song:0.7|Tam:0.5|Tứ:0.3|Ngũ:0.15|Dị:1.5.' },
   { id: 'scope_dan_duoc', label: 'Đan dược', triggers: ['đan dược','uống đan','dùng đan','luyện đan','đan phương','đan lô','luyện chế','tụ khí đan','trúc cơ đan','kim nguyên đan','ngưng anh đan','hóa thần đan','đan độc','kháng đan'], exemplar: 'Phẩm: Hạ:0.9|Trung:0.75|Thượng:0.6|Cực:0.45|Tiên:0.25.' },
   { id: 'scope_linh_thach', label: 'Linh thạch', triggers: ['linh thạch','đốt linh thạch','giao dịch','mua bán','đấu giá','trả tiền','nhận thưởng','kiếm linh thạch','thu nhập','chi tiêu','mua đan','mua pháp bảo','thuê linh địa','nợ','vay'], exemplar: 'Hạ(×1)<Trung(×10)<Thượng(×100)<Cực(×1000)<Tiên(×10.000).' },
-  { id: 'scope_di_chuyen', label: 'Di chuyển', triggers: ['di chuyển','đi đến','phi hành','phi độn','bay','chạy','ngự kiếm','độn quang','na di','truyền tống','hành trình','rời khỏi','đến nơi','xuất phát','trở về','đi về','về'], exemplar: 'Tốc độ (dặm/ngày): Phàm:30-40|Ngựa:100-150|LK:300-500|TC:1-2K|KĐ:5-10K|NA:30-50K|HT:100K+.' },
-  { id: 'scope_nhiem_vu', label: 'Nhiệm vụ', triggers: ['nhiệm vụ','tạp dịch','trồng rau','trồng linh dược','dọn dẹp','tưới cây','tuần tra','canh gác','làm việc','lao động','nhặt củi','hộ tống','khai thác','sinh hoạt','ăn uống','ngủ nghỉ'], exemplar: 'Tưới linh tuyền 1-2 canh|Dọn động phủ 3-5 canh|Tuần tra 1 ngày.' },
+  { id: 'scope_di_chuyen', label: 'Di chuyển', triggers: ['di chuyển','đi đến','phi hành','phi độn','bay','chạy','ngự kiếm','độn quang','na di','truyền tống','hành trình','rời khỏi','đến nơi','xuất phát','trở về','đi về','về'], exemplar: 'Tốc độ (dặm/ngày): Phàm:30-40|Ngựa:100-150|LK:300-500|TC:1-2K.' },
+  { id: 'scope_nhiem_vu', label: 'Nhiệm vụ', triggers: ['nhiệm vụ','tạp dịch','trồng rau','trồng linh dược','dọn dẹp','tưới cây','tuần tra','canh gác','làm việc','lao động','nhặt củi','hộ tống','khai thác','sinh hoạt','ăn uống','ngủ nghỉ'], exemplar: 'Tưới linh tuyền 1-2 canh|Dọn động phủ 3-5 canh.' },
   { id: 'scope_chien_dau', label: 'Chiến đấu', triggers: ['đánh','chém','giết','chiến','đấu','giao chiến','đối đầu','tập kích','phục kích','đánh lén','chạy trốn','bỏ chạy','ám sát','truy sát','đuổi giết','đấu pháp'], exemplar: 'Yếu tố: Cảnh giới 60%|Pháp bảo 20%|Kinh nghiệm 10%|Địa hình 10%.' },
   { id: 'scope_luyen_khi', label: 'Luyện khí', triggers: ['luyện khí','rèn pháp bảo','đúc kiếm','rèn đao','đúc khí','rèn bảo','luyện khí lô','tinh luyện khoáng thạch','tôi luyện','khai lô','tế luyện pháp bảo'], exemplar: 'Phàm→Linh→Bảo→Cổ→Tiên.' },
-  { id: 'scope_luyen_phu', label: 'Luyện phù', triggers: ['luyện phù','vẽ phù','chế phù','phù lục','phù bút','phù chỉ','chu sa','linh mực','hỏa phù','lôi phù','tốc hành phù','độn địa phù'], exemplar: 'Nhất (LK): Hỏa Cầu, Tốc Hành|Nhị (TC): Lôi Đình, Hộ Thân|Tam (KĐ): Thiên Lôi, Độn Địa.' },
-  { id: 'scope_tran_phap', label: 'Trận pháp', triggers: ['trận pháp','bày trận','phá trận','trận bàn','trận kỳ','trận văn','trận nhãn','khốn trận','sát trận','huyễn trận','mê trận','cấm trận','tụ linh trận','phòng ngự trận'], exemplar: 'Thời gian bày: Nhất (LK) 1-7 ngày|Nhị (TC) 3-30 ngày|Tam (KĐ) 15 ngày-6 tháng.' },
+  { id: 'scope_luyen_phu', label: 'Luyện phù', triggers: ['luyện phù','vẽ phù','chế phù','phù lục','phù bút','phù chỉ','chu sa','linh mực','hỏa phù','lôi phù','tốc hành phù','độn địa phù'], exemplar: 'Nhất (LK): Hỏa Cầu, Tốc Hành|Nhị (TC): Lôi Đình, Hộ Thân.' },
+  { id: 'scope_tran_phap', label: 'Trận pháp', triggers: ['trận pháp','bày trận','phá trận','trận bàn','trận kỳ','trận văn','trận nhãn','khốn trận','sát trận','huyễn trận','mê trận','cấm trận','tụ linh trận','phòng ngự trận'], exemplar: 'Thời gian bày: Nhất (LK) 1-7 ngày|Nhị (TC) 3-30 ngày.' },
   { id: 'scope_linh_thu', label: 'Linh thú', triggers: ['linh thú','khế ước','thu phục','sủng vật','linh sủng','yêu thú','yêu tộc','hóa hình','tấn cấp linh thú','nuôi linh thú','triệu hồi linh thú'], exemplar: 'Nhất (LK)→Cửu (ĐK)→Tiên.' },
-  { id: 'scope_phi_thang', label: 'Phi thăng', triggers: ['phi thăng','độ kiếp','thiên kiếp','lôi kiếp','lôi vân','kiếp vân','vượt kiếp','đại kiếp','tiểu kiếp','tâm ma','độc kiếp','phi thăng đài'], exemplar: 'Lôi kiếp: TC→KĐ:3|KĐ→NA:6|NA→HT:9|HT→LH:12.' },
-  { id: 'scope_tau_hoa', label: 'Tẩu hỏa', triggers: ['tẩu hỏa','nhập ma','tẩu hỏa nhập ma','tâm ma','nội ma','ngoại ma','phát cuồng','mất trí','bị thương đan điền','hủy tu vi','phế tu vi','bạo thể','đan toái','cảnh giới tụt'], exemplar: 'Hậu quả: Nhẹ 1-3 tháng, mất 5-10%|Vừa 1-3 năm, 20-50%|Nặng 10-30 năm.' },
+  { id: 'scope_phi_thang', label: 'Phi thăng', triggers: ['phi thăng','độ kiếp','thiên kiếp','lôi kiếp','lôi vân','kiếp vân','vượt kiếp','đại kiếp','tiểu kiếp','tâm ma','độc kiếp','phi thăng đài'], exemplar: 'Lôi kiếp: TC→KĐ:3|KĐ→NA:6|NA→HT:9.' },
+  { id: 'scope_tau_hoa', label: 'Tẩu hỏa', triggers: ['tẩu hỏa','nhập ma','tẩu hỏa nhập ma','tâm ma','nội ma','ngoại ma','phát cuồng','mất trí','bị thương đan điền','hủy tu vi','phế tu vi','bạo thể','đan toái','cảnh giới tụt'], exemplar: 'Hậu quả: Nhẹ 1-3 tháng, mất 5-10%|Vừa 1-3 năm, 20-50%.' },
   { id: 'scope_tong_mon', label: 'Tông môn', triggers: ['tông môn','gia nhập','đệ tử','trưởng lão','tông chủ','nội môn','ngoại môn','chân truyền','thái thượng','tông môn đại chiến','gia tộc','thế lực','liên minh','chiến tranh','phái','môn','các'], exemplar: 'Thứ bậc: Tạp dịch→Ngoại môn→Nội môn→Chân truyền→Thân truyền→Trưởng lão→Đại trưởng lão→Thái thượng→Tông chủ.' },
-  { id: 'scope_di_tich', label: 'Di tích', triggers: ['di tích','bí cảnh','cổ mộ','thượng cổ di tích','cấm địa','linh địa','phúc địa','động phủ','mật cảnh','không gian độc lập','cơ duyên','nhặt bảo','thám hiểm','khám phá'], exemplar: 'Nhỏ (1-10 người, LK-TC, 1-7 ngày)|Trung (50-100, TC-KĐ, 7-30 ngày)|Lớn (500-1K, KĐ-NA, 1-6 tháng).' },
-  { id: 'scope_linh_dia', label: 'Linh địa', triggers: ['linh địa','động phủ','linh mạch','phúc địa','động thiên','linh tuyền','linh khí','tu luyện địa','mua động phủ','thuê động phủ','xây động phủ'], exemplar: 'C1 Động phủ thường (×1, 1-5K, 0.95)|C2 Linh mạch thấp (×1.5, 50-200K, 0.85)|C3 Trung (×2-3).' }
+  { id: 'scope_di_tich', label: 'Di tích', triggers: ['di tích','bí cảnh','cổ mộ','thượng cổ di tích','cấm địa','linh địa','phúc địa','động phủ','mật cảnh','không gian độc lập','cơ duyên','nhặt bảo','thám hiểm','khám phá'], exemplar: 'Nhỏ (1-10 người, LK-TC, 1-7 ngày)|Trung (50-100, TC-KĐ, 7-30 ngày).' },
+  { id: 'scope_linh_dia', label: 'Linh địa', triggers: ['linh địa','động phủ','linh mạch','phúc địa','động thiên','linh tuyền','linh khí','tu luyện địa','mua động phủ','thuê động phủ','xây động phủ'], exemplar: 'C1 Động phủ thường (×1, 1-5K)|C2 Linh mạch thấp (×1.5, 50-200K).' }
 ];
 
 let scopeRegistry = [];
 
 // ══════════════════════════════════════════════════════════════
-// PHÂN LOẠI ĐỒ VẬT TU TIÊN
+// ITEM CATEGORIES
 // ══════════════════════════════════════════════════════════════
 const ITEM_CATEGORIES = {
-  PHAP_BAO: {
-    id: 'phap_bao', label: 'Pháp Bảo / Pháp Khí', icon: '⚔️',
-    needsRefine: true, consumable: false, refineCost: 100,
-    badgeClass: 'cat-phap-bao',
-    keywords: ['kiếm','đao','thương','côn','roi','nhẫn','kính','phiến','châu','tháp','chung','ấn','kỳ','phan','bình','hồ','đại','khí','bảo','linh khí','phi kiếm','phi đao','pháp khí','pháp bảo','cổ bảo','tiên bảo','bản mệnh','bản mệnh pháp bảo','phệ huyết','huyết kiếm','linh kiếm','phi thuyền','linh chu','bảo thuyền','đan lô','luyện khí lô']
-  },
-  TRUYEN_BAN: {
-    id: 'tran_ban', label: 'Trận Bàn / Trận Kỳ', icon: '🔮',
-    needsRefine: true, consumable: false, refineCost: 200,
-    badgeClass: 'cat-tran-ban',
-    keywords: ['trận bàn','trận kỳ','trận văn','trận đồ','trận pháp','mê trận bàn','khốn trận bàn','sát trận bàn','tụ linh bàn','phòng ngự trận bàn']
-  },
-  PHU_TAI_SU_DUNG: {
-    id: 'phu_reusable', label: 'Phù Lục Tái Sử Dụng', icon: '📜',
-    needsRefine: true, consumable: false, refineCost: 150,
-    badgeClass: 'cat-phu-reuse',
-    keywords: ['linh phù','tiên phù','thần phù','bản mệnh phù','hộ thân phù cao cấp','độn địa phù cao cấp','trấn sơn phù','phong ấn phù']
-  },
-  PHU_TIEU_HAO: {
-    id: 'phu_consumable', label: 'Phù Lục Tiêu Hao', icon: '🔥',
-    needsRefine: false, consumable: true, badgeClass: 'cat-phu-consumable',
-    keywords: ['hỏa cầu phù','tốc hành phù','lôi phù','băng phù','phong phù','độn địa phù','hồi khí phù','chữa thương phù','kim quang phù','phù lục','linh phù cấp thấp','liệt hỏa phù','thiên lôi phù','thủy tiễn phù']
-  },
-  DAN_DUOC: {
-    id: 'dan_duoc', label: 'Đan Dược', icon: '💊',
-    needsRefine: false, consumable: true, badgeClass: 'cat-dan-duoc',
-    keywords: ['đan','hoàn','tán','cao','thang','dược','tụ khí đan','trúc cơ đan','kim nguyên đan','ngưng anh đan','hóa thần đan','thanh tâm đan','hồi khí đan','bồi nguyên đan','tẩy tủy đan','phá cảnh đan','tụ linh đan','huyết đan','yêu đan']
-  },
-  NGUYEN_LIEU: {
-    id: 'nguyen_lieu', label: 'Nguyên Liệu', icon: '🌿',
-    needsRefine: false, consumable: true, badgeClass: 'cat-nguyen-lieu',
-    keywords: ['thảo','hoa','quả','củ','rễ','lá','khoáng','thạch','tinh','thiết','đồng','ngân','kim','mộc','thủy','hỏa','thổ','linh thảo','linh dược','yêu đan','nội đan','tinh hạch','tinh thạch','khoáng thạch','linh mộc','long huyết','phượng huyết','nguyên liệu']
-  },
-  LINH_THACH: {
-    id: 'linh_thach', label: 'Linh Thạch', icon: '💎',
-    needsRefine: false, consumable: true, badgeClass: 'cat-linh-thach',
-    keywords: ['linh thạch','hạ phẩm linh thạch','trung phẩm linh thạch','thượng phẩm linh thạch','cực phẩm linh thạch','tiên thạch']
-  },
-  BI_TICH: {
-    id: 'bi_tich', label: 'Bí Tịch / Ngọc Giản', icon: '📖',
-    needsRefine: false, consumable: false, badgeClass: 'cat-bi-tich',
-    keywords: ['bí tịch','bí kíp','công pháp','ngọc giản','ngọc bội','quyển trục','thư tịch','đan phương','trận đồ','phù văn','khế ước','linh hồn khế','yêu đan khế']
-  },
-  KHAC: {
-    id: 'khac', label: 'Khác', icon: '📦',
-    needsRefine: false, consumable: false, badgeClass: 'cat-khac', keywords: []
-  }
+  PHAP_BAO: { id: 'phap_bao', label: 'Pháp Bảo / Pháp Khí', icon: '⚔️', needsRefine: true, consumable: false, refineCost: 100, badgeClass: 'cat-phap-bao', keywords: ['kiếm','đao','thương','côn','roi','nhẫn','kính','phiến','châu','tháp','chung','ấn','kỳ','phan','bình','hồ','đại','khí','bảo','linh khí','phi kiếm','phi đao','pháp khí','pháp bảo','cổ bảo','tiên bảo','bản mệnh','phệ huyết','huyết kiếm','linh kiếm','phi thuyền','linh chu','bảo thuyền','đan lô','luyện khí lô'] },
+  TRUYEN_BAN: { id: 'tran_ban', label: 'Trận Bàn / Trận Kỳ', icon: '🔮', needsRefine: true, consumable: false, refineCost: 200, badgeClass: 'cat-tran-ban', keywords: ['trận bàn','trận kỳ','trận văn','trận đồ','trận pháp','mê trận bàn','khốn trận bàn','sát trận bàn','tụ linh bàn','phòng ngự trận bàn'] },
+  PHU_TAI_SU_DUNG: { id: 'phu_reusable', label: 'Phù Lục Tái Sử Dụng', icon: '📜', needsRefine: true, consumable: false, refineCost: 150, badgeClass: 'cat-phu-reuse', keywords: ['linh phù','tiên phù','thần phù','bản mệnh phù','hộ thân phù cao cấp','độn địa phù cao cấp','trấn sơn phù','phong ấn phù'] },
+  PHU_TIEU_HAO: { id: 'phu_consumable', label: 'Phù Lục Tiêu Hao', icon: '🔥', needsRefine: false, consumable: true, badgeClass: 'cat-phu-consumable', keywords: ['hỏa cầu phù','tốc hành phù','lôi phù','băng phù','phong phù','độn địa phù','hồi khí phù','chữa thương phù','kim quang phù','phù lục','liệt hỏa phù','thiên lôi phù','thủy tiễn phù'] },
+  DAN_DUOC: { id: 'dan_duoc', label: 'Đan Dược', icon: '💊', needsRefine: false, consumable: true, badgeClass: 'cat-dan-duoc', keywords: ['đan','hoàn','tán','cao','thang','dược','tụ khí đan','trúc cơ đan','kim nguyên đan','ngưng anh đan','hóa thần đan','thanh tâm đan','hồi khí đan','bồi nguyên đan','tẩy tủy đan','phá cảnh đan','tụ linh đan','huyết đan','yêu đan'] },
+  NGUYEN_LIEU: { id: 'nguyen_lieu', label: 'Nguyên Liệu', icon: '🌿', needsRefine: false, consumable: true, badgeClass: 'cat-nguyen-lieu', keywords: ['thảo','hoa','quả','củ','rễ','lá','khoáng','thạch','tinh','thiết','đồng','ngân','kim','mộc','thủy','hỏa','thổ','linh thảo','linh dược','yêu đan','nội đan','tinh hạch','tinh thạch','khoáng thạch','linh mộc','long huyết','phượng huyết','nguyên liệu'] },
+  LINH_THACH: { id: 'linh_thach', label: 'Linh Thạch', icon: '💎', needsRefine: false, consumable: true, badgeClass: 'cat-linh-thach', keywords: ['linh thạch','hạ phẩm linh thạch','trung phẩm linh thạch','thượng phẩm linh thạch','cực phẩm linh thạch','tiên thạch'] },
+  BI_TICH: { id: 'bi_tich', label: 'Bí Tịch / Ngọc Giản', icon: '📖', needsRefine: false, consumable: false, badgeClass: 'cat-bi-tich', keywords: ['bí tịch','bí kíp','công pháp','ngọc giản','ngọc bội','quyển trục','thư tịch','đan phương','trận đồ','phù văn','khế ước','linh hồn khế','yêu đan khế'] },
+  LENH_BAI: { id: 'lenh_bai', label: 'Lệnh Bài', icon: '🎫', needsRefine: false, consumable: true, badgeClass: 'cat-lenh-bai', keywords: ['lệnh bài','token','thẻ','vé','phiếu','lệnh phù'] },
+  KHAC: { id: 'khac', label: 'Khác', icon: '📦', needsRefine: false, consumable: false, badgeClass: 'cat-khac', keywords: [] }
 };
 
 function detectItemCategory(name, quality, effect){
   const text = ((name || '') + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
-  // ⚠️ QUAN TRỌNG: "Nguyên liệu ..." phải được nhận diện là NGUYÊN LIỆU
-  // NGAY CẢ KHI tên có chứa "Đan" (VD: "Nguyên liệu Tụ Khí Đan")
   if(/^nguyên liệu/i.test((name||'').trim())) return 'NGUYEN_LIEU';
   if(/^nguyen lieu/i.test((name||'').trim())) return 'NGUYEN_LIEU';
+  if(/lệnh bài|token|phiếu|vé/i.test((name||'').trim())) return 'LENH_BAI';
   for(const [key, cat] of Object.entries(ITEM_CATEGORIES)){
     if(key === 'KHAC') continue;
     for(const kw of cat.keywords){ if(text.includes(kw.toLowerCase())) return key; }
@@ -1075,10 +1459,10 @@ function itemNeedsRefine(item){
 // ══════════════════════════════════════════════════════════════
 // EXTENDED VERBS
 // ══════════════════════════════════════════════════════════════
-const GIVE_VERBS = ['cho','tặng','tang','biếu','bieu','đưa','dua','gửi','gui','trao','giao','cấp','cap','phát','phat','thưởng','thuong','ban','ban cho','cống nạp','cong nap','hiến','hien','dâng','dang','nộp','nop','cung cấp','cung cap','chia','chia sẻ','chia se','lì xì','li xi','đưa cho','dua cho','giao cho','trao cho','đưa tặng','dua tang','gửi tặng','gui tang','tặng cho','tang cho','bố thí','bo thi','ban thưởng','ban thuong','khen thưởng','khen thuong'];
-const RECEIVE_VERBS = ['nhận','nhan','lĩnh','linh','thu','thu được','thu duoc','được cho','duoc cho','được tặng','duoc tang','được biếu','duoc bieu','được ban','duoc ban','được thưởng','duoc thuong','được cấp','duoc cap','được giao','duoc giao','được phát','duoc phat','được nhận','duoc nhan','thu hoạch','thu hoach','lấy được','lay duoc','chiếm được','chiem duoc','đoạt được','doat duoc','cướp được','cuop duoc','hưởng','huong','nhận được','nhan duoc','lĩnh được','linh duoc','thu vào','thu vao','bỏ vào túi','bo vao tui','cất vào túi','cat vao tui','nhặt được','nhat duoc'];
+const GIVE_VERBS = ['cho','tặng','tang','biếu','bieu','đưa','dua','gửi','gui','trao','giao','cấp','cap','phát','phat','thưởng','thuong','ban','ban cho','cống nạp','cong nap','hiến','hien','dâng','dang','nộp','nop','cung cấp','cung cap','chia','chia sẻ','chia se','lì xì','li xi','đưa cho','dua cho','giao cho','trao cho','đưa tặng','dua tang','gửi tặng','gui tang','tặng cho','tang cho','bố thí','bo thi','ban thưởng','ban thuong','khen thưởng','khen thuong','thuê','thue','cho thuê','cho thue'];
+const RECEIVE_VERBS = ['nhận','nhan','lĩnh','linh','thu','thu được','thu duoc','được cho','duoc cho','được tặng','duoc tang','được biếu','duoc bieu','được ban','duoc ban','được thưởng','duoc thuong','được cấp','duoc cap','được giao','duoc giao','được phát','duoc phat','được nhận','duoc nhan','thu hoạch','thu hoach','lấy được','lay duoc','chiếm được','chiem duoc','đoạt được','doat duoc','cướp được','cuop duoc','hưởng','huong','nhận được','nhan duoc','lĩnh được','linh duoc','thu vào','thu vao','bỏ vào túi','bo vao tui','cất vào túi','cat vao tui','nhặt được','nhat duoc','thuê','thue','mượn','muon'];
 const SELL_VERBS = ['bán','ban','trao đổi','trao doi','đổi','doi','quy đổi','quy doi','thanh lý','thanh ly','bán lại','ban lai','sang nhượng','sang nhuong','kí gửi','ki gui','ký gửi','ky gui','đổi lấy','doi lay','bán đổi','ban doi'];
-const BUY_VERBS = ['mua','tậu','tau','sắm','sam','thu mua','đặt mua','dat mua','mua lại','mua lai','săn','san','săn lùng','san lung','tìm mua','tim mua','mua đứt','mua dut','mua buôn','mua buon','nhập hàng','nhap hang'];
+const BUY_VERBS = ['mua','tậu','tau','sắm','sam','thu mua','đặt mua','dat mua','mua lại','mua lai','săn','san','săn lùng','san lung','tìm mua','tim mua','mua đứt','mua dut','mua buôn','mua buon','nhập hàng','nhap hang','thuê','thue'];
 
 function buildVerbRegex(verbs){
   const escaped = verbs.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -1097,7 +1481,7 @@ function normalizeVN(str){
   return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-const ITEM_STOPWORDS = new Set(['cho','tang','bieu','dua','gui','trao','ban','nhan','mua','sell','buy','give','receive','toi','ta','minh','tao','to','em','anh','chi','no','ho','nguoi','ban','ay','do','kia','vi','mot','hai','ba','bon','nam','sau','bay','tam','chin','muoi','cai','chiec','la','vien','cuc','thanh','bo','hop','goi','phan','manh','khuc','linh','thach','ls','v','k','nghin','ngan','trieu','tr','trong','tu','cua','va','voi','de','roi','day','nay','ra','vao','lai','di','ve','den','item','unknown','none','null','so','luong','tong','het','con','du','thieu','them','bot','phap','bao','dao','kiem','khi','phu','luc','dan','duoc','hoa','thuoc']);
+const ITEM_STOPWORDS = new Set(['cho','tang','bieu','dua','gui','trao','ban','nhan','mua','sell','buy','give','receive','toi','ta','minh','tao','to','em','anh','chi','no','ho','nguoi','ban','ay','do','kia','vi','mot','hai','ba','bon','nam','sau','bay','tam','chin','muoi','cai','chiec','la','vien','cuc','thanh','bo','hop','goi','phan','manh','khuc','linh','thach','ls','v','k','nghin','ngan','trieu','tr','trong','tu','cua','va','voi','de','roi','day','nay','ra','vao','lai','di','ve','den','item','unknown','none','null','so','luong','tong','het','con','du','thieu','them','bot','phap','bao','dao','kiem','khi','phu','luc','dan','duoc','hoa','thuoc','thue','muon']);
 const NPC_PREFIX_STOPWORDS = new Set(['ly','ho','vuong','trieu','tran','le','nguyen','pham','dang','bui','do','hoang','phan','lao','tien','su','muoi','ty','de','huynh','ong','ba','thang','con','nha','chu','npc','ten','ga','y','thi','cac','vi']);
 
 function stripNpcPhrase(rawText){
@@ -1129,7 +1513,7 @@ function extractItemCandidate(rawText){
 }
 
 // ══════════════════════════════════════════════════════════════
-// FUZZY MATCHING (v2.7.2 — FIX INGREDIENT GUARD)
+// FUZZY MATCHING
 // ══════════════════════════════════════════════════════════════
 const ITEM_NAME_BLACKLIST_PAIRS = [
   ['tu khi dan', 'hoi khi dan'],
@@ -1141,7 +1525,6 @@ const ITEM_NAME_BLACKLIST_PAIRS = [
   ['linh thach ha pham', 'linh thach trung pham'],
   ['linh thach trung pham', 'linh thach thuong pham'],
   ['linh thach thuong pham', 'linh thach cuc pham'],
-  // v2.7.2: blacklist nguyên liệu
   ['nguyen lieu tu khi dan', 'nguyen lieu thanh tam dan'],
   ['nguyen lieu tu khi dan', 'nguyen lieu truc co dan'],
   ['nguyen lieu thanh tam dan', 'nguyen lieu truc co dan'],
@@ -1158,7 +1541,6 @@ function _isConflictingName(a, b){
   for(const [x, y] of ITEM_NAME_BLACKLIST_PAIRS){
     if((na.includes(x) && nb.includes(y)) || (na.includes(y) && nb.includes(x))) return true;
   }
-  // v2.7.2: Ingredient Guard — 2 nguyên liệu khác recipe KHÔNG được match
   if(isIngredientForDifferentRecipe(a, b)) return true;
   return false;
 }
@@ -1246,7 +1628,6 @@ function autoSyncReceivedItem(tx){
   const fullName = quality ? `${txName} ${quality}` : txName;
   const existing = findMatchingInventoryItem(fullName, inv) || findMatchingInventoryItem(txName, inv);
   if(existing){
-    // v2.7.2: Double-check ingredient guard trước khi cộng dồn
     if(isIngredientForDifferentRecipe(existing.name, txName)){
       log(`🛡️ Ingredient Guard: "${txName}" KHÁC recipe với "${existing.name}" → tạo item mới.`);
       tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked||0) + 1;
@@ -1267,18 +1648,8 @@ function autoSyncReceivedItem(tx){
       }
     }
   }
-  const newItem = {
-    name: txName,
-    icon: tx.icon || (worldItem && worldItem.icon) || catInfo.icon,
-    quantity: qty,
-    quality: quality || (worldItem && worldItem.rank) || 'Thường',
-    effect: (worldItem && worldItem.usage) || tx.effect || '',
-    category: catKey
-  };
-  if(catInfo.needsRefine){
-    newItem.isRefined = tx.isRefined === true;
-    if(!newItem.isRefined){ log(`⚠️ "${newItem.name}" cần luyện hoá trước khi sử dụng.`); }
-  }
+  const newItem = { name: txName, icon: tx.icon || (worldItem && worldItem.icon) || catInfo.icon, quantity: qty, quality: quality || (worldItem && worldItem.rank) || 'Thường', effect: (worldItem && worldItem.usage) || tx.effect || '', category: catKey };
+  if(catInfo.needsRefine){ newItem.isRefined = tx.isRefined === true; }
   inv.push(newItem);
   document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
   renderInventoryVisual(inv);
@@ -1287,7 +1658,9 @@ function autoSyncReceivedItem(tx){
   tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync||0) + 1;
   updateTokenStatsDisplay();
   return true;
-}// ============================================================
+}
+
+// ============================================================
 // MODEL LIST AUTO-SAVE
 // ============================================================
 function getDefaultModelListString(){ return 'gemini-3.8-flash, gemini-3.5-flash, gemini-3.6-flash, gemini-3.1-flash-lite, gemini-3.5-flash-lite'; }
@@ -1428,252 +1801,7 @@ function renderKeyStatus(){
   el.innerHTML = html;
 }
 
-// ============================================================
-// CJK FILTER
-// ============================================================
-const CJK_VIET_MAP = {
-  '丹':'Đan','药':'Dược','丸':'Hoàn','散':'Tán','膏':'Cao','汤':'Thang',
-  '气':'Khí','基':'Cơ','婴':'Anh','虚':'Hư','合':'Hợp','境':'Cảnh','界':'Giới',
-  '炼':'Luyện','筑':'Trúc','凝':'Ngưng','化':'Hóa','元':'Nguyên','神':'Thần',
-  '仙':'Tiên','魔':'Ma','妖':'Yêu','兽':'Thú','灵':'Linh','宝':'Bảo','器':'Khí',
-  '法':'Pháp','术':'Thuật','剑':'Kiếm','刀':'Đao','枪':'Thương','棍':'Côn',
-  '塔':'Tháp','钟':'Chung','印':'Ấn','旗':'Kỳ','幡':'Phan','珠':'Châu',
-  '镜':'Kính','扇':'Phiến','袋':'Đại','壶':'Hồ','瓶':'Bình','罐':'Quán',
-  '劫':'Kiếp','雷':'Lôi','电':'Điện','风':'Phong','雨':'Vũ','云':'Vân',
-  '冰':'Băng','雪':'Tuyết','霜':'Sương','火':'Hỏa','炎':'Viêm','焰':'Diễm',
-  '光':'Quang','暗':'Ám','阴':'Âm','阳':'Dương','月':'Nguyệt','日':'Nhật',
-  '星':'Tinh','辰':'Thần','斗':'Đẩu','宿':'Tú','曜':'Diệu',
-  '天':'Thiên','地':'Địa','山':'Sơn','川':'Xuyên','河':'Hà','江':'Giang',
-  '海':'Hải','湖':'Hồ','泉':'Tuyền','溪':'Khê','谷':'Cốc','峰':'Phong',
-  '岭':'Lĩnh','洞':'Động','窟':'Quật','林':'Lâm','森':'Sâm','原':'Nguyên',
-  '野':'Dã','城':'Thành','关':'Quan','塞':'Tái','门':'Môn','派':'Phái',
-  '宗':'Tông','阁':'Các','楼':'Lâu','殿':'Điện','宫':'Cung','府':'Phủ',
-  '园':'Viên','庄':'Trang','村':'Thôn','镇':'Trấn',
-  '人':'Nhân','男':'Nam','女':'Nữ','老':'Lão','少':'Thiếu','幼':'Ấu',
-  '王':'Vương','帝':'Đế','皇':'Hoàng','君':'Quân','臣':'Thần','将':'Tướng',
-  '兵':'Binh','士':'Sĩ','卒':'Tốt','民':'Dân','农':'Nông','商':'Thương',
-  '师':'Sư','徒':'Đồ','兄':'Huynh','弟':'Đệ','姐':'Tỷ','妹':'Muội',
-  '父':'Phụ','母':'Mẫu','子':'Tử','妻':'Thê','夫':'Phu',
-  '生':'Sinh','死':'Tử','杀':'Sát','斩':'Trảm','击':'Kích','打':'Đả',
-  '攻':'Công','守':'Thủ','退':'Thoái','进':'Tiến','逃':'Đào','追':'Truy',
-  '行':'Hành','走':'Tẩu','飞':'Phi','跳':'Khiêu','奔':'Bôn','跑':'Bào',
-  '坐':'Tọa','立':'Lập','卧':'Ngọa','睡':'Thụy','醒':'Tỉnh','醉':'Túy',
-  '食':'Thực','饮':'Ẩm','服':'Phục','穿':'Xuyên','脱':'Thoát',
-  '强':'Cường','弱':'Nhược','快':'Khoái','慢':'Mạn','高':'Cao','低':'Đê',
-  '大':'Đại','小':'Tiểu','长':'Trường','短':'Đoản','多':'Đa',
-  '新':'Tân','旧':'Cựu','真':'Chân','假':'Giả','善':'Thiện','恶':'Ác',
-  '美':'Mỹ','丑':'Xú','香':'Hương','臭':'Xú','冷':'Lãnh','热':'Nhiệt',
-  '明':'Minh','亮':'Lượng','黑':'Hắc','白':'Bạch','红':'Hồng',
-  '黄':'Hoàng','蓝':'Lam','绿':'Lục','紫':'Tử','金':'Kim','银':'Ngân',
-  '铁':'Thiết','铜':'Đồng','玉':'Ngọc','石':'Thạch','木':'Mộc','水':'Thủy',
-  '土':'Thổ','沙':'Sa','尘':'Trần','泥':'Nê','岩':'Nham',
-  '一':'Nhất','二':'Nhị','三':'Tam','四':'Tứ','五':'Ngũ','六':'Lục',
-  '七':'Thất','八':'Bát','九':'Cửu','十':'Thập','百':'Bách','千':'Thiên',
-  '万':'Vạn','亿':'Ức','零':'Linh','两':'Lưỡng','半':'Bán','双':'Song',
-  '年':'Niên','时':'Thời','刻':'Khắc','分':'Phân',
-  '秒':'Miểu','春':'Xuân','夏':'Hạ','秋':'Thu','冬':'Đông','朝':'Triêu',
-  '暮':'Mộ','晨':'Thần','昏':'Hôn','夜':'Dạ','昼':'Trú',
-  '心':'Tâm','魂':'Hồn','魄':'Phách','识':'Thức','念':'Niệm',
-  '意':'Ý','志':'Chí','情':'Tình','欲':'Dục','怒':'Nộ','喜':'Hỷ',
-  '悲':'Bi','恐':'Khủng','惊':'Kinh','忧':'Ưu','思':'Tư','忆':'Ức',
-  '道':'Đạo','德':'Đức','仁':'Nhân','义':'Nghĩa','礼':'Lễ','智':'Trí',
-  '信':'Tín','忠':'Trung','孝':'Hiếu','廉':'Liêm','耻':'Sỉ',
-  '极':'Cực','上':'Thượng','中':'Trung','下':'Hạ','品':'Phẩm','阶':'Giai',
-  '级':'Cấp','层':'Tầng','重':'Trọng','倍':'Bội','数':'Số','量':'Lượng',
-  '名':'Danh','字':'Tự','号':'Hiệu','称':'Xưng','呼':'Hô','曰':'Viết',
-  '无':'Vô','有':'Hữu','空':'Không','实':'Thực',
-  '刚':'Cương','柔':'Nhu','动':'Động','静':'Tĩnh',
-  '内':'Nội','外':'Ngoại','前':'Tiền','后':'Hậu','左':'Tả','右':'Hữu',
-  '东':'Đông','西':'Tây','南':'Nam','北':'Bắc',
-  '来':'Lai','去':'Khứ','回':'Hồi','往':'Vãng','返':'Phản','归':'Quy'
-};
-
-function countCJK(text){ if(!text) return 0; const matches = text.match(CJK_REGEX); return matches ? matches.length : 0; }
-function getUniqueCJK(text){ if(!text) return []; const matches = text.match(CJK_REGEX); if(!matches) return []; return [...new Set(matches)]; }
-function filterCJKFromResponse(text){
-  if(!text || !settings.cjkFilter) return text;
-  const cjkCount = countCJK(text);
-  if(cjkCount === 0) return text;
-  let cleaned = text; let convertedCount = 0; const unmappedChars = new Set();
-  for(const [cjk, viet] of Object.entries(CJK_VIET_MAP)){
-    if(cleaned.includes(cjk)){ const re = new RegExp(cjk, 'g'); const before = cleaned; cleaned = cleaned.replace(re, viet); if(before !== cleaned) convertedCount++; }
-  }
-  const remainingMatches = cleaned.match(CJK_REGEX);
-  if(remainingMatches){ remainingMatches.forEach(c => unmappedChars.add(c)); cleaned = cleaned.replace(/[\u3000-\u303F]/g, ' '); }
-  const remainingAfter = countCJK(cleaned);
-  tokenStats.cjkFilteredCount = (tokenStats.cjkFilteredCount||0) + (cjkCount - remainingAfter);
-  updateTokenStatsDisplay();
-  if(unmappedChars.size > 0){ log(`🈶 CJK: convert ${convertedCount}. Còn ${unmappedChars.size} chưa map.`); }
-  else { log(`🈶 CJK: convert ${cjkCount} ký tự.`); }
-  return cleaned;
-}
-function scanChineseChars(){
-  const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
-  const found = [];
-  fields.forEach(el => { const val = el.value || ''; const matches = val.match(CJK_REGEX); if(matches && matches.length > 0){ found.push({ id: el.id || '(no id)', chars: getUniqueCJK(val).join(' '), count: matches.length }); } });
-  if(found.length === 0){ alert('✅ Không phát hiện ký tự Trung!'); return; }
-  let msg = `⚠️ PHÁT HIỆN ${found.length} Ô:\n\n`;
-  found.forEach((f, i) => { msg += `${i+1}. Ô [${f.id}]\n   Ký tự: ${f.chars}\n   SL: ${f.count}\n\n`; });
-  alert(msg);
-}
-function autoCleanCJK(){
-  const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
-  let cleanedCount = 0, totalRemoved = 0;
-  fields.forEach(el => { const val = el.value || ''; const cjkCount = countCJK(val); if(cjkCount > 0){ const cleaned = filterCJKFromResponse(val); if(cleaned !== val){ el.value = cleaned; cleanedCount++; totalRemoved += cjkCount; } } });
-  if(cleanedCount === 0){ alert('✅ Không có ô nào cần làm sạch!'); return; }
-  alert(`🧹 ĐÃ LÀM SẠCH ${cleanedCount} Ô! (${totalRemoved} ký tự)`);
-}
-function checkCJKOnSave(){
-  if(!settings.cjkWarnOnSave) return true;
-  const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
-  let foundCount = 0;
-  fields.forEach(el => { if(countCJK(el.value || '') > 0) foundCount++; });
-  if(foundCount > 0){ const proceed = confirm(`⚠️ Phát hiện ${foundCount} ô chứa ký tự Trung!\n\nTiếp tục lưu?`); if(!proceed) return false; }
-  return true;
-}
-
-const INACTIVE_KEYWORDS = ['đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn','đã phế','bị phế','tàn phế','si ngốc','mất ý thức','tẩu hỏa','tẩu hỏa nhập ma','mất trí','hôn mê','bất tỉnh','phế nhân','không còn hành động','vô dụng','đã bị giết','bị chôn','thân tử đạo tiêu'];
-const DEATH_KEYWORDS = ['đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn'];
-const DISABLED_KEYWORDS = ['đã phế','bị phế','tàn phế','si ngốc','mất ý thức','tẩu hỏa','tẩu hỏa nhập ma','mất trí','hôn mê','bất tỉnh','phế nhân'];
-
-const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
-const inputIds=['apiKey','openRouterKey','openRouterModel','openRouterCustomModel',...fieldsToReset,'difficultySelect'];
-
-const NSFW_KEYWORDS_VI = ['song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái','thân mật','hôn','ôm','vuốt ve','cởi','lột','hở hang','khỏa thân','lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa','thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm','sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ','chém giết','giết','tàn sát','đồ sát','chém','đâm','chặt','moi tim','lột da','tra tấn','hành hạ','ngược đãi','huyết tinh','máu me','sát nhân','đoạt bảo','cướp','hiếp','giết chóc','sát phạt','đồ diệt','cưỡng','bắt cóc','giam cầm','trói','khống chế','nô lệ','nô gia','chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức','cưỡng hiếp','cưỡng đoạt','cưỡng chế'];
-const NSFW_KEYWORDS_EN = ['sex','intercourse','rape','fuck','kiss','naked','nude','orgasm','kill','murder','slaughter','torture','slave','capture'];
-
-function detectNsfwIntent(actionText){
-  if(!actionText)return false;
-  const lower=actionText.toLowerCase();
-  const normalized=lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  for(const kw of NSFW_KEYWORDS_VI){ if(lower.includes(kw))return true; const kwNorm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,''); if(normalized.includes(kwNorm))return true; }
-  for(const kw of NSFW_KEYWORDS_EN){ if(lower.includes(kw))return true; }
-  return false;
-}
-
-// ============================================================
-// SCOPE REGISTRY RENDER
-// ============================================================
-function renderScopeRegistry(){
-  const container = document.getElementById('scopeRegistryContainer');
-  if(!container) return;
-  if(scopeRegistry.length === 0){ container.innerHTML = '<div style="color:var(--subtext-color);font-style:italic;font-size:12px;text-align:center;padding:8px">Chưa có scope.</div>'; return; }
-  let html = '';
-  scopeRegistry.forEach((scope, idx) => {
-    const isDefault = DEFAULT_SCOPES.find(d => d.id === scope.id);
-    const isNsfw = scope.id === 'scope_nsfw';
-    const badgeColor = isNsfw ? 'var(--accent-red)' : (isDefault ? 'var(--accent-green)' : 'var(--accent-purple)');
-    const badgeText = isNsfw ? '18+ TỰ ĐIỀN' : (isDefault ? 'MẶC ĐỊNH' : 'TỰ TẠO');
-    const cardClass = isNsfw ? 'scope-nsfw-highlight' : '';
-    const placeholder = isNsfw ? `(Ô TRỐNG — Bạn tự điền nội dung 18+ của bạn vào đây)\n\nGợi ý cấu trúc:\n1. Quy tắc ngôn ngữ\n2. Mức độ miêu tả\n3. Nhịp điệu cảnh\n4. Tâm lý nhân vật\n5. Bối cảnh tu tiên\n6. Hậu quả sau cảnh\n7. VD mẫu 1-2 đoạn (300-800 từ)` : 'Dán exemplar...';
-    html += `<div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:10px" class="${cardClass}"><div style="display:flex;gap:6px;margin-bottom:6px;align-items:center"><input type="text" value="${scope.id||''}" style="font-family:monospace;font-size:11px;padding:4px;flex:0 0 130px;color:#b392f0" readonly><input type="text" value="${scope.label||''}" style="font-size:12px;font-weight:bold;padding:4px;flex:1" onchange="updateScopeField(${idx},'label',this.value)"><span style="background:${badgeColor};color:#fff;font-size:9px;padding:2px 5px;border-radius:3px;font-weight:bold">${badgeText}</span><button onclick="removeScopeEntry(${idx})" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:0 6px">✕</button></div><div style="margin-bottom:6px"><div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">🔑 TRIGGERS:</div><input type="text" value="${(scope.triggers||[]).join(', ')}" style="font-size:11px;padding:5px;font-family:monospace" onchange="updateScopeTriggers(${idx},this.value)"></div><div><div style="font-size:10px;color:${isNsfw?'#ff5577':'var(--accent-gold)'};font-weight:bold;margin-bottom:3px">📖 EXEMPLAR (${(scope.exemplar||'').length} ký tự)${isNsfw?' — BẠN TỰ ĐIỀN':''}:</div><textarea style="min-height:${isNsfw?'180':'100'}px;font-size:11px;padding:6px;font-family:monospace;${isNsfw?'border-color:#da3633;':''}" placeholder="${placeholder}" onchange="updateScopeField(${idx},'exemplar',this.value)">${scope.exemplar||''}</textarea></div></div>`;
-  });
-  container.innerHTML = html;
-}
-function addScopeEntry(){ scopeRegistry.push({ id: 'scope_custom_'+Date.now().toString(36), label: 'Scope Mới', triggers: [], exemplar: '' }); renderScopeRegistry(); }
-function removeScopeEntry(idx){ if(!scopeRegistry[idx]) return; if(!confirm(`Xóa scope "${scopeRegistry[idx].label||''}"?`)) return; scopeRegistry.splice(idx,1); renderScopeRegistry(); }
-function updateScopeField(idx, field, value){ if(scopeRegistry[idx]) scopeRegistry[idx][field] = value; }
-function updateScopeTriggers(idx, rawValue){ if(!scopeRegistry[idx]) return; scopeRegistry[idx].triggers = rawValue.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0); }
-
-// ============================================================
-// MULTI-SCOPE DETECTION
-// ============================================================
-function detectSceneScopes(actionText){
-  if(!actionText) return ['default'];
-  const lower = actionText.toLowerCase();
-  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const matches = [];
-  for(const scope of scopeRegistry){
-    if(!scope.triggers || scope.triggers.length === 0) continue;
-    let bestPos = -1;
-    for(const trigger of scope.triggers){
-      const tLower = trigger.toLowerCase().trim();
-      if(!tLower) continue;
-      const tNorm = tLower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      let pos = lower.indexOf(tLower);
-      if(pos === -1) pos = normalized.indexOf(tNorm);
-      if(pos !== -1 && (bestPos === -1 || pos < bestPos)) bestPos = pos;
-    }
-    if(bestPos !== -1) matches.push({ scopeId: scope.id, pos: bestPos });
-  }
-  if(matches.length === 0) return ['default'];
-  matches.sort((a, b) => a.pos - b.pos);
-  return matches.map(m => m.scopeId);
-}
-function detectSceneScope(actionText){ const scopes = detectSceneScopes(actionText); return scopes[0] || 'default'; }
-function getStyleExemplarBlockMulti(scopeIds){
-  if(!scopeIds || scopeIds.length === 0) return '';
-  const scopes = Array.isArray(scopeIds) ? scopeIds : [scopeIds];
-  const blocks = [];
-  for(const id of scopes){
-    if(id === 'default') continue;
-    const scope = scopeRegistry.find(s => s.id === id);
-    if(!scope) continue;
-    const sample = (scope.exemplar || '').trim();
-    if(!sample) continue;
-    blocks.push(`# 🎨 SCOPE "${scope.label || scope.id}"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sample}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-  }
-  return blocks.length > 0 ? '\n' + blocks.join('\n\n') + '\n' : '';
-}
-
-// ============================================================
-// EXP SYSTEM
-// ============================================================
-function parseRealmLevel(levelStr){
-  if(!levelStr) return { realm: 'LK', sub: 1 };
-  const s = levelStr.toLowerCase();
-  if(s.includes('luyện khí') || s.includes('lk')){ const m = s.match(/(\d+)/); const sub = m ? Math.min(13, Math.max(1, parseInt(m[1]))) : 1; return { realm: 'LK', sub }; }
-  if(s.includes('trúc cơ') || s.includes('tc')){ if(s.includes('hậu')) return { realm: 'TC', sub: 'h' }; if(s.includes('trung')) return { realm: 'TC', sub: 't' }; return { realm: 'TC', sub: 's' }; }
-  if(s.includes('kim đan') || s.includes('kđ') || s.includes('kd')){ if(s.includes('hậu')) return { realm: 'KD', sub: 'h' }; if(s.includes('trung')) return { realm: 'KD', sub: 't' }; return { realm: 'KD', sub: 's' }; }
-  if(s.includes('nguyên anh') || s.includes('na')){ if(s.includes('hậu')) return { realm: 'NA', sub: 'h' }; if(s.includes('trung')) return { realm: 'NA', sub: 't' }; return { realm: 'NA', sub: 's' }; }
-  if(s.includes('hóa thần') || s.includes('ht')){ if(s.includes('hậu')) return { realm: 'HT', sub: 'h' }; if(s.includes('trung')) return { realm: 'HT', sub: 't' }; return { realm: 'HT', sub: 's' }; }
-  if(s.includes('luyện hư') || s.includes('lh')){ if(s.includes('hậu')) return { realm: 'LH', sub: 'h' }; if(s.includes('trung')) return { realm: 'LH', sub: 't' }; return { realm: 'LH', sub: 's' }; }
-  return { realm: 'LK', sub: 1 };
-}
-function calcExpRequired(levelStr, linhCan){
-  const { realm, sub } = parseRealmLevel(levelStr);
-  const key = realm === 'LK' ? `LK${sub}` : `${realm}_${sub}`;
-  const baseExp = EXP_TABLE[key] || 100;
-  const lcCoef = LINH_CAN_COEF[linhCan] || 0.15;
-  const realmMult = REALM_MULTIPLIER[realm] || 1.0;
-  return Math.max(10, Math.round(baseExp / lcCoef * realmMult));
-}
-function updateExpUI(){
-  const barEl = document.getElementById('expBarFill');
-  if(!barEl) return;
-  const levelStr = document.getElementById('mcLevel').value || 'Luyện Khí sơ kỳ';
-  mcExpMax = calcExpRequired(levelStr, mcLinhCan);
-  const pct = Math.min(100, Math.max(0, (mcExp / mcExpMax) * 100));
-  barEl.style.width = pct + '%';
-  const expLabel = document.getElementById('expLabel');
-  const expLevelLabel = document.getElementById('expLevelLabel');
-  const expDetail = document.getElementById('expDetail');
-  if(expLabel) expLabel.textContent = `${mcExp.toLocaleString()} / ${mcExpMax.toLocaleString()} EXP`;
-  if(expLevelLabel) expLevelLabel.textContent = levelStr;
-  const { realm } = parseRealmLevel(levelStr);
-  const lcCoef = LINH_CAN_COEF[mcLinhCan] || 0.15;
-  const realmMult = REALM_MULTIPLIER[realm] || 1.0;
-  if(expDetail) expDetail.textContent = `Linh căn: ${mcLinhCan} (×${lcCoef}) | Cảnh giới: ×${realmMult} | Cần: ${mcExpMax.toLocaleString()} EXP`;
-  if(pct >= 100) barEl.style.background = 'linear-gradient(90deg,#d29922,#f0c040)';
-  else if(pct >= 75) barEl.style.background = 'linear-gradient(90deg,#238636,#3fb950)';
-  else barEl.style.background = 'linear-gradient(90deg,#1f6beb,#388bfd)';
-}
-function addManualExp(){
-  const inp = document.getElementById('mcExpManual');
-  if(!inp) return;
-  const val = parseInt(inp.value) || 0;
-  if(val === 0) return;
-  mcExp += val; inp.value = ''; updateExpUI();
-  log(`✨ Thủ công +${val} EXP (tổng ${mcExp}/${mcExpMax})`);
-}
-function setLinhCan(){
-  const options = ['Đơn','Song','Tam','Tứ','Ngũ','Dị'];
-  const choice = prompt(`🔮 CHỌN LINH CĂN (hiện tại: ${mcLinhCan}):\n\n1. Đơn (×1.0)\n2. Song (×0.7)\n3. Tam (×0.5)\n4. Tứ (×0.3)\n5. Ngũ (×0.15)\n6. Dị (×1.5)\n\nNhập số 1-6:`);
-  if(!choice) return;
-  const idx = parseInt(choice) - 1;
-  if(idx >= 0 && idx < options.length){ mcLinhCan = options[idx]; updateExpUI(); log(`🔮 Đổi linh căn: ${mcLinhCan}`); }
-}
-function resetExp(){ if(!confirm("🔄 Reset EXP về 0?")) return; mcExp = 0; updateExpUI(); log("🔄 Đã reset EXP."); }
+function updateKeyCountInfo(){ const keys = getGeminiKeys(); const models = getGeminiModels(); const el = document.getElementById('keyCountInfo'); if(el){ el.textContent = `📌 ${keys.length} key | ${models.length} model | ${keys.length * models.length} tổ hợp`; } }
 
 // ============================================================
 // UTILITIES
@@ -1681,7 +1809,7 @@ function resetExp(){ if(!confirm("🔄 Reset EXP về 0?")) return; mcExp = 0; u
 function generateAutoAvatar(name){return "https://api.dicebear.com/7.x/adventurer/svg?seed="+encodeURIComponent(name||'NPC');}
 function generateNpcId(){return 'npc_'+Date.now().toString(36)+Math.random().toString(36).substr(2,6);}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('active');}
-function openTab(tabId){document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));document.getElementById(tabId).classList.add('active');const btn=Array.from(document.querySelectorAll('.tab-btn')).find(b=>b.getAttribute('onclick').includes(tabId));if(btn)btn.classList.add('active');}
+function openTab(tabId){document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));document.getElementById(tabId).classList.add('active');const btn=Array.from(document.querySelectorAll('.tab-btn')).find(b=>b.getAttribute('onclick').includes(tabId));if(btn)btn.classList.add('active');if(tabId==='prof')renderProfessionUI();}
 function log(msg){const logBox=document.getElementById('sysLogs');if(logBox){logBox.innerHTML+=`<br>> ${msg}`;logBox.scrollTop=logBox.scrollHeight;}}
 function copySystemLogs(){const logBox=document.getElementById('sysLogs');if(!logBox){alert("⚠️ Không có log!");return;}const text=logBox.innerText||logBox.textContent;if(!text||text.trim()===''){alert("⚠️ Log trống!");return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert("📋 Đã copy log!")).catch(e=>{fallbackCopyText(text);});}else{fallbackCopyText(text);}}
 function fallbackCopyText(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert("📋 Đã copy log!");}catch(err){alert("❌ Lỗi copy");}document.body.removeChild(ta);}
@@ -1704,6 +1832,8 @@ function updateTokenStatsDisplay(){
 Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}<br>
 🛡️ Resend: ${tokenStats.resendRulesCount||0} | ⚠️ Short: ${tokenStats.shortTurnWarnings||0}<br>
 🎭 NPC Rules sinh: ${tokenStats.npcRulesGenerated||0}<br>
+⚒️ EXP nghề: ${(tokenStats.professionExpGained||0).toLocaleString()} | Lên cấp: ${tokenStats.professionLevelUps||0}<br>
+🧪 Mô phỏng: ${tokenStats.craftSimulations||0}<br>
 🈶 CJK filtered: ${tokenStats.cjkFilteredCount||0}<br>
 💰 Giao dịch: ${tokenStats.transactionsProcessed||0}<br>
 💵 Giá đã ghi: ${tokenStats.pricesRecorded||0}<br>
@@ -1717,9 +1847,7 @@ Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations||0}
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
 }
-function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0};updateTokenStatsDisplay();log("Đã reset token stats.");}
-
-// ============================================================
+function resetTokenStats(){tokenStats={input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0,professionExpGained:0,professionLevelUps:0,craftSimulations:0};updateTokenStatsDisplay();log("Đã reset token stats.");}// ============================================================
 // STATE SNAPSHOTS
 // ============================================================
 function captureStateSnapshot(){
@@ -1740,7 +1868,8 @@ function captureStateSnapshot(){
     storyBoxHTML: document.getElementById('story-box').innerHTML,
     turnCounter: turnCounter,
     tokenStats: JSON.parse(JSON.stringify(tokenStats)),
-    priceMemory: JSON.parse(JSON.stringify(priceMemory))
+    priceMemory: JSON.parse(JSON.stringify(priceMemory)),
+    professionState: JSON.parse(JSON.stringify(professionState))
   };
 }
 function restoreStateSnapshot(snap){
@@ -1764,7 +1893,8 @@ function restoreStateSnapshot(snap){
   turnCounter = snap.turnCounter;
   if(snap.tokenStats) tokenStats = JSON.parse(JSON.stringify(snap.tokenStats));
   if(snap.priceMemory) priceMemory = JSON.parse(JSON.stringify(snap.priceMemory));
-  renderNpcs(); renderEventsVisual(); updateExpUI(); updateTokenStatsDisplay();
+  if(snap.professionState) professionState = JSON.parse(JSON.stringify(snap.professionState));
+  renderNpcs(); renderEventsVisual(); updateExpUI(); updateTokenStatsDisplay(); renderProfessionUI();
   const taEv = document.getElementById('gameEvents');
   if(taEv) taEv.value = JSON.stringify(eventList, null, 2);
 }
@@ -1883,6 +2013,10 @@ function uploadNpcAvatar(event,index){
 function togglePinNpc(index){if(npcList[index]){npcList[index].pinned = !npcList[index].pinned;log(`${npcList[index].pinned?'📌 Ghim':'📍 Bỏ ghim'} [${npcList[index].name}]`);renderNpcs();}}
 function toggleLockRules(index){if(npcList[index]){npcList[index].lockedRules = !npcList[index].lockedRules;log(`${npcList[index].lockedRules?'🔒 Khóa':'🔓 Mở'} [${npcList[index].name}]`);renderNpcs();}}
 
+const INACTIVE_KEYWORDS = ['đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn','đã phế','bị phế','tàn phế','si ngốc','mất ý thức','tẩu hỏa','tẩu hỏa nhập ma','mất trí','hôn mê','bất tỉnh','phế nhân','không còn hành động','vô dụng','đã bị giết','bị chôn','thân tử đạo tiêu'];
+const DEATH_KEYWORDS = ['đã chết','tử trận','tử vong','hy sinh','thiệt mạng','tử nạn'];
+const DISABLED_KEYWORDS = ['đã phế','bị phế','tàn phế','si ngốc','mất ý thức','tẩu hỏa','tẩu hỏa nhập ma','mất trí','hôn mê','bất tỉnh','phế nhân'];
+
 // ============================================================
 // PARSE QTY
 // ============================================================
@@ -1976,7 +2110,7 @@ function detectPurchaseIntent(actionText){
 }
 
 // ============================================================
-// PRE-VALIDATE (v2.7.2 — bổ sung Ingredient Guard)
+// PRE-VALIDATE
 // ============================================================
 function prevalidateTransaction(actionText){
   const intent = detectPurchaseIntent(actionText);
@@ -2003,7 +2137,7 @@ function prevalidateTransaction(actionText){
       if(currentLS < intent.qty){
         tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
         updateTokenStatsDisplay();
-        return { ok: false, type: 'give', message: `❌ KHÔNG ĐỦ LINH THẠCH ĐỂ CHO!\n\n💰 Bạn có: ${currentLS.toLocaleString()} linh thạch\n🎁 Muốn cho: ${intent.qty.toLocaleString()} linh thạch\n⚠️ Thiếu: ${(intent.qty - currentLS).toLocaleString()} linh thạch\n\n🚫 Không thể cho số linh thạch lớn hơn số đang có.\n\n👉 Hãy chọn:\n  • Giảm số lượng cho\n  • Kiếm thêm linh thạch trước\n  • Hủy hành động` };
+        return { ok: false, type: 'give', message: `❌ KHÔNG ĐỦ LINH THẠCH ĐỂ CHO!\n\n💰 Bạn có: ${currentLS.toLocaleString()} linh thạch\n🎁 Muốn cho: ${intent.qty.toLocaleString()} linh thạch\n⚠️ Thiếu: ${(intent.qty - currentLS).toLocaleString()} linh thạch\n\n🚫 Không thể cho số linh thạch lớn hơn số đang có.` };
       }
       return { ok: true };
     }
@@ -2036,7 +2170,7 @@ function prevalidateTransaction(actionText){
         updateTokenStatsDisplay();
         const itemShown = itemNameRaw || uniqCandidates[uniqCandidates.length-1] || '(không rõ)';
         const invList = inv.length > 0 ? inv.map(i => `  • ${i.name}${i.quality?` [${i.quality}]`:''} x${i.quantity||1}`).join('\n') : '  (túi đồ trống)';
-        return { ok: false, type: 'give', message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Bạn muốn cho: "${itemShown}"\n📦 Nhưng túi đồ của bạn KHÔNG có vật phẩm này (cũng không có trong Pháp Bảo).\n\n📋 Túi đồ hiện tại:\n${invList}\n\n🚫 Không thể cho/tặng vật phẩm mà bạn KHÔNG sở hữu.\n\n👉 Hãy chọn:\n  • Kiểm tra lại túi đồ (tab NVC)\n  • Cho vật phẩm khác đang có\n  • Đi kiếm vật phẩm trước\n  • Hủy hành động` };
+        return { ok: false, type: 'give', message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Bạn muốn cho: "${itemShown}"\n📦 Túi đồ của bạn KHÔNG có vật phẩm này (cũng không có trong Pháp Bảo).\n\n📋 Túi đồ hiện tại:\n${invList}\n\n🚫 Không thể cho/tặng vật phẩm mà bạn KHÔNG sở hữu.` };
       }
     }
     const available = matchedItem.quantity || 1;
@@ -2044,7 +2178,7 @@ function prevalidateTransaction(actionText){
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked||0) + 1;
       tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked||0) + 1;
       updateTokenStatsDisplay();
-      return { ok: false, type: 'give', message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}${matchedItem.quality?` [${matchedItem.quality}]`:''}\n📦 Bạn có: ${available}\n🎁 Muốn cho: ${intent.qty}\n⚠️ Thiếu: ${intent.qty - available}\n\n🚫 Không thể cho nhiều hơn số đang có.\n\n👉 Hãy chọn:\n  • Giảm số lượng cho xuống ≤ ${available}\n  • Kiếm thêm vật phẩm\n  • Hủy hành động` };
+      return { ok: false, type: 'give', message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}${matchedItem.quality?` [${matchedItem.quality}]`:''}\n📦 Bạn có: ${available}\n🎁 Muốn cho: ${intent.qty}\n⚠️ Thiếu: ${intent.qty - available}\n\n🚫 Không thể cho nhiều hơn số đang có.` };
     }
     return { ok: true };
   }
@@ -2052,7 +2186,7 @@ function prevalidateTransaction(actionText){
 }
 
 // ============================================================
-// POST-VALIDATE (v2.7.2 — bổ sung Ingredient Guard)
+// POST-VALIDATE
 // ============================================================
 function postValidateTransactions(txList, currentInv){
   const valid = []; const invalid = [];
@@ -2063,10 +2197,7 @@ function postValidateTransactions(txList, currentInv){
   const deductVirtual = (name, quality, qty) => {
     const m = findMatchingInventoryItem(name, virtualInv);
     if(!m) return { ok: false, reason: 'not_found' };
-    // v2.7.2: Ingredient Guard — không cho phép trừ nhầm nguyên liệu khác recipe
-    if(isIngredientForDifferentRecipe(m.name, name)){
-      return { ok: false, reason: 'different_recipe' };
-    }
+    if(isIngredientForDifferentRecipe(m.name, name)) return { ok: false, reason: 'different_recipe' };
     const avail = m.quantity || 1;
     if(qty > avail) return { ok: false, reason: 'insufficient', have: avail, need: qty };
     m.quantity = avail - qty;
@@ -2074,11 +2205,7 @@ function postValidateTransactions(txList, currentInv){
   };
   const addVirtual = (name, quality, qty, isRefined) => {
     const m = findMatchingInventoryItem(name, virtualInv);
-    // v2.7.2: Ingredient Guard — nếu là nguyên liệu khác recipe, PHẢI tạo item mới
-    if(m && !isIngredientForDifferentRecipe(m.name, name)){
-      m.quantity = (m.quantity || 1) + qty;
-      return;
-    }
+    if(m && !isIngredientForDifferentRecipe(m.name, name)){ m.quantity = (m.quantity || 1) + qty; return; }
     const catKey = detectItemCategory(name, quality, '');
     const catInfo = getItemCategoryInfo(catKey);
     const newItem = { name, quality: quality || 'Thường', quantity: qty, icon: catInfo.icon, effect: '', category: catKey };
@@ -2137,7 +2264,7 @@ function postValidateTransactions(txList, currentInv){
 }
 
 // ============================================================
-// TRANSACTION PROCESSOR (v2.7.2 — bổ sung Ingredient Guard)
+// TRANSACTION PROCESSOR
 // ============================================================
 function processTransactions(transactionsList){
   if(!transactionsList || !Array.isArray(transactionsList) || transactionsList.length === 0) return null;
@@ -2148,7 +2275,6 @@ function processTransactions(transactionsList){
 
   const addItem = (name, quality, qty, icon, effect) => {
     const m = findMatchingInventoryItem(name, inv);
-    // v2.7.2: Ingredient Guard — không gộp nguyên liệu khác recipe
     if(m && isIngredientForDifferentRecipe(m.name, name)){
       log(`🛡️ Ingredient Guard: "${name}" KHÁC recipe với "${m.name}" → tạo item mới.`);
       tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked||0) + 1;
@@ -2167,9 +2293,7 @@ function processTransactions(transactionsList){
   const removeItem = (name, quality, qty) => {
     const m = findMatchingInventoryItem(name, inv);
     if(!m) return { ok: false, reason: 'Không tìm thấy' };
-    if(isIngredientForDifferentRecipe(m.name, name)){
-      return { ok: false, reason: 'Khác recipe nguyên liệu' };
-    }
+    if(isIngredientForDifferentRecipe(m.name, name)) return { ok: false, reason: 'Khác recipe nguyên liệu' };
     const current = m.quantity || 1;
     const removed = Math.min(qty, current);
     m.quantity = current - removed;
@@ -2214,11 +2338,6 @@ function processTransactions(transactionsList){
       logs.push(`🎁 NHẬN: ${qty}x ${txName}${txQuality?` [${txQuality}]`:''} [${catInfo.label}]${r.isNew?' (MỚI)':` (tổng ${r.newQty})`}`);
       processedCount++;
       autoSyncReceivedItem(tx);
-      if(catInfo.needsRefine && tx.isRefined !== undefined){
-        const invAfter = JSON.parse(document.getElementById('mcInventory').value || '[]');
-        const receivedItem = findMatchingInventoryItem(txName, invAfter);
-        if(receivedItem){ receivedItem.isRefined = tx.isRefined === true; receivedItem.category = catKey; document.getElementById('mcInventory').value = JSON.stringify(invAfter, null, 2); renderInventoryVisual(invAfter); log(`🔥 "${receivedItem.name}" → isRefined: ${receivedItem.isRefined}`); }
-      }
     }
     else { logs.push(`⚠️ Loại giao dịch không hợp lệ: "${tx.type}"`); }
   });
@@ -2231,6 +2350,46 @@ function processTransactions(transactionsList){
     logs.forEach(l => log(l));
   }
   return { inventory: inv, count: processedCount, logs };
+}
+
+// ============================================================
+// CRAFT RESULT PROCESSOR (v2.8.0)
+// ============================================================
+function processCraftResults(craftList){
+  if(!craftList || !Array.isArray(craftList) || craftList.length === 0) return null;
+  let totalExpGained = 0;
+  const logs = [];
+  for(const craft of craftList){
+    if(!craft || !craft.profession) continue;
+    const profId = craft.profession;
+    if(!professionState[profId]){ logs.push(`⚠️ Nghề không hợp lệ: "${profId}"`); continue; }
+    const recipe = craft.recipe || 'Vật phẩm';
+    const tier = (craft.tier || 'LK').toUpperCase();
+    const results = craft.results || [];
+    let craftExp = 0;
+    let totalProduced = 0;
+    for(const r of results){
+      const q = r.quality || 'Hạ phẩm';
+      const qty = parseInt(r.quantity) || 0;
+      if(qty <= 0) continue;
+      craftExp += calcProfessionExp(tier, q, qty);
+      totalProduced += qty;
+    }
+    if(craftExp > 0){
+      const result = addProfessionExp(profId, craftExp, recipe);
+      totalExpGained += craftExp;
+      logs.push(`⚒️ ${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}: +${craftExp} EXP (${recipe} [${tier}] x${totalProduced})`);
+      if(result && result.leveledUp){
+        logs.push(`🎉 LÊN CẤP NGHỀ: ${PROFESSION_TYPES[profId].name} Cấp ${result.oldRank} → ${result.newRank} (${PROFESSION_RANKS[result.newRank].name})`);
+      }
+    }
+  }
+  if(totalExpGained > 0){
+    renderProfessionUI();
+    logs.forEach(l => log(l));
+    return { totalExpGained };
+  }
+  return null;
 }
 
 // ============================================================
@@ -2281,7 +2440,8 @@ async function resetAllFields(){
   initializeDefaultScopes();renderScopeRegistry();stopTTS();
   chatHistory=[];turnHtmlHistory=[];npcList=[];eventList=[];turnCounter=0;storySummary="";systemRulesSentThisSession=false;
   mcExp=0;mcExpMax=100;mcLinhCan='Ngũ';stateSnapshots=[];priceMemory={};
-  removeMcAvatar();renderNpcs();renderEventsVisual();
+  for(const k of Object.keys(professionState)){ professionState[k] = { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' }; }
+  removeMcAvatar();renderNpcs();renderEventsVisual();renderProfessionUI();
   document.getElementById('story-box').innerHTML='Chưa có dữ liệu. Hãy điền cấu hình và bấm "⚡ KHỞI TẠO GAME"!';
   document.getElementById('inventoryVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Túi đồ trống...</div>';
   document.getElementById('locVisualGrid').innerHTML='<div style="color:var(--subtext-color);font-style:italic">Chưa có địa danh...</div>';
@@ -2295,6 +2455,9 @@ async function resetAllFields(){
   alert("🧹 Đã làm sạch!");toggleSidebar();openTab('world');
 }
 
+const fieldsToReset=['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle','mcName','mcLevel','mcGameTime','mcSkills','mcInventory','npcArchive','locations','gameEvents','worldItems'];
+const inputIds=['apiKey','openRouterKey','openRouterModel','openRouterCustomModel',...fieldsToReset,'difficultySelect'];
+
 // ============================================================
 // INDEXEDDB
 // ============================================================
@@ -2306,7 +2469,6 @@ function openDB(){
       const db = evt.target.result;
       log(`🔧 IDB Upgrade: v${evt.oldVersion} → v${evt.newVersion}`);
       if(!db.objectStoreNames.contains(STORE_NAME)){ db.createObjectStore(STORE_NAME); log(`✅ Đã tạo store "${STORE_NAME}"`); }
-      else { log(`♻️ Store "${STORE_NAME}" đã tồn tại.`); }
     };
     req.onsuccess = (evt) => { _dbInstance = evt.target.result; _dbInstance.onversionchange = () => { _dbInstance.close(); _dbInstance = null; log('⚠️ DB versionchange — đã đóng.'); }; resolve(_dbInstance); };
     req.onerror = (evt) => { reject("Lỗi IDB: " + evt.target.error); };
@@ -2322,7 +2484,7 @@ async function deleteFromIDB(key){ const db = await openDB(); return new Promise
 // ============================================================
 async function saveGame(isManual=false){
   if(isManual && !checkCJKOnSave()) return;
-  const gameData={ chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary, storyBoxContent: document.getElementById('story-box').innerHTML, inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML, locVisualHTML: document.getElementById('locVisualGrid').innerHTML, eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML, weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML, mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex, priceMemory, musicPlaylist, currentMusicIndex, _saveVersion: 'v2.7.2', inputs: {} };
+  const gameData={ chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary, storyBoxContent: document.getElementById('story-box').innerHTML, inventoryVisualHTML: document.getElementById('inventoryVisualGrid').innerHTML, locVisualHTML: document.getElementById('locVisualGrid').innerHTML, eventVisualHTML: document.getElementById('eventVisualGrid').innerHTML, weaponVisualHTML: document.getElementById('weaponVisualGrid').innerHTML, mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex, priceMemory, professionState, musicPlaylist, currentMusicIndex, _saveVersion: 'v2.8.0', inputs: {} };
   inputIds.forEach(id=>{const el=document.getElementById(id);if(el)gameData.inputs[id]=el.value;});
   try{ await saveToIDB('HONDUC_TU_TIEN_SAVE',gameData); log("Game saved."); if(isManual){alert("💾 Đã lưu game!");toggleSidebar();} }
   catch(e){alert("Lỗi lưu: "+e);}
@@ -2333,7 +2495,7 @@ async function loadGame(){
     if(!gameData){alert("⚠️ Chưa có bản lưu!");return;}
     if(gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)){ scopeRegistry = gameData.scopeRegistry; migrateScopes(); renderScopeRegistry(); }
     chatHistory=gameData.chatHistory||[]; turnHtmlHistory=gameData.turnHtmlHistory||[]; turnCounter=gameData.turnCounter||0; storySummary=gameData.storySummary||"";
-    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0},gameData.tokenStats||{});
+    tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0,professionExpGained:0,professionLevelUps:0,craftSimulations:0},gameData.tokenStats||{});
     if(gameData.mcExp !== undefined) mcExp = gameData.mcExp;
     if(gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
     if(gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
@@ -2342,6 +2504,7 @@ async function loadGame(){
     if(gameData.keyStatus)keyStatus=gameData.keyStatus;
     if(gameData.currentKeyIndex !== undefined)currentKeyIndex=gameData.currentKeyIndex;
     if(gameData.priceMemory) priceMemory = gameData.priceMemory;
+    if(gameData.professionState) professionState = Object.assign(professionState, gameData.professionState);
     if(gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)){
       musicPlaylist = gameData.musicPlaylist;
       renderMusicPlaylist(); updateMusicTitle();
@@ -2357,13 +2520,12 @@ async function loadGame(){
     if(gameData.eventList){eventList=gameData.eventList;renderEventsVisual();}
     if(gameData.inputs){Object.keys(gameData.inputs).forEach(id=>{const el=document.getElementById(id);if(el && id !== 'modelListInput')el.value=gameData.inputs[id];});}
     stateSnapshots = [captureStateSnapshot()];
-    updateTokenStatsDisplay(); updateExpUI(); renderKeyStatus(); syncToggleUI(); updateKeyCountInfo(); normalizeGameTimeField();
+    updateTokenStatsDisplay(); updateExpUI(); renderKeyStatus(); syncToggleUI(); updateKeyCountInfo(); normalizeGameTimeField(); renderProfessionUI();
     alert("📂 Khôi phục thành công!"); toggleSidebar(); openTab('play');
   }catch(e){alert("Lỗi tải: "+e);}
 }
-function syncToggleUI(){ ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave','autoRotate','styleReminder','autoNpcRules','showArchetype','autoMusic'].forEach(name=>{ const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1)); if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');} }); }
-function updateKeyCountInfo(){ const keys = getGeminiKeys(); const models = getGeminiModels(); const el = document.getElementById('keyCountInfo'); if(el){ el.textContent = `📌 ${keys.length} key | ${models.length} model | ${keys.length * models.length} tổ hợp`; } }
-async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.7.2_save.json";a.click();log("Xuất save thành công.");}
+function syncToggleUI(){ ['autoSwitch','autoFallback','retry5xx','periodicRules','antiShortening','cjkFilter','cjkWarnOnSave','autoRotate','styleReminder','autoNpcRules','showArchetype','autoMusic','professionSystem','professionAutoExp'].forEach(name=>{ const el=document.getElementById('toggle'+name.charAt(0).toUpperCase()+name.slice(1)); if(el){if(settings[name])el.classList.add('active');else el.classList.remove('active');} }); }
+async function exportSaveFile(){await saveGame(false);const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');if(!gameData)return;const blob=new Blob([JSON.stringify(gameData)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hongduc_tutien_v2.8.0_save.json";a.click();log("Xuất save thành công.");}
 function importSaveFile(){document.getElementById('fileInput').click();}
 function handleFileSelect(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){try{const content=JSON.parse(e.target.result);await saveToIDB('HONDUC_TU_TIEN_SAVE',content);await loadGame();alert("📥 Import thành công!");}catch(err){alert("❌ File không hợp lệ!");}};reader.readAsText(file);}
 
@@ -2372,10 +2534,10 @@ function handleFileSelect(event){const file=event.target.files[0];if(!file)retur
 // ============================================================
 function exportWorldConfig(){
   const worldIds = ['supremeMotifRule','rule18Plus','aiRules','gameTitle','difficultySelect','difficultyCustom','worldContext','startTime','startScript','worldRules','namingRules','genre','powerSystem','writingStyle'];
-  const cfg = { _version: 'v2.7.2', _type: 'worldConfig', scopes: scopeRegistry, fields: {} };
+  const cfg = { _version: 'v2.8.0', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if(el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], {type: 'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.7.2.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.0.json'; a.click();
   log('📤 Xuất World Config thành công.'); alert('📤 Đã xuất World Config!');
 }
 function importWorldConfig(){ document.getElementById('worldConfigFileInput').click(); }
@@ -2389,6 +2551,7 @@ function handleWorldConfigImport(event){
       if(!cfg || cfg._type !== 'worldConfig'){ alert('❌ File không phải World Config!'); return; }
       if(cfg.fields){ Object.keys(cfg.fields).forEach(id => { const el = document.getElementById(id); if(el) el.value = cfg.fields[id]; }); }
       if(cfg.scopes && Array.isArray(cfg.scopes)){ scopeRegistry = cfg.scopes; migrateScopes(); renderScopeRegistry(); }
+      if(cfg.professions){ professionState = Object.assign(professionState, cfg.professions); renderProfessionUI(); }
       log('📥 Import World Config thành công.'); alert('📥 Đã import World Config!');
     }catch(err){ alert('❌ File lỗi: ' + err.message); }
   };
@@ -2405,9 +2568,11 @@ function undoLastTurn(){
   if(turnHtmlHistory.length > 1) turnHtmlHistory.pop();
   const snap = stateSnapshots.pop();
   restoreStateSnapshot(snap);
-  log(`↩ Đã quay lại lượt trước (khôi phục túi đồ, cảnh giới, EXP, NPC, giá cả, ...)`);
+  log(`↩ Đã quay lại lượt trước (khôi phục túi đồ, cảnh giới, EXP, NPC, nghề, giá cả, ...)`);
   alert("↩ Đã quay lại lượt trước!");
-}// ============================================================
+}
+
+// ============================================================
 // SUMMARY
 // ============================================================
 async function callGeminiInternal(promptText, preferredModel, maxTokens=1000){
@@ -2470,7 +2635,7 @@ async function generateStorySummary(){
 }
 
 // ============================================================
-// CODEX MEMORY (v2.7.2 — bổ sung Ingredient Guard warning)
+// CODEX MEMORY (v2.8.0)
 // ============================================================
 function getPriceReferenceString(){
   let txt = '[BẢNG GIÁ THAM KHẢO — Dùng để tính toán giao dịch]\n';
@@ -2507,6 +2672,7 @@ function getCodexMemoryPrompt(){
   }catch(e){invSummary=document.getElementById('mcInventory').value||'Trống';}
   const archive=document.getElementById('npcArchive').value||'Chưa có';
   const expLine = `${mcExp}/${mcExpMax} (Linh căn: ${mcLinhCan})`;
+  const profCtx = getProfessionAIContext();
 
   return `【CODEX】
 [NVC] ${mcName} | Cảnh giới: ${mcLevel} | EXP: ${expLine} | Time: ${mcTime}
@@ -2519,6 +2685,7 @@ ${npcSummary}
 [Sự kiện - 5 gần nhất] ${eventSummary}
 [Pháp bảo — THẾ GIỚI, KHÔNG PHẢI TÚI NVC] ${weaponSummary}
 [TÓM TẮT CỐT TRUYỆN] ${storySummary||'Game mới bắt đầu.'}
+${profCtx}
 【END CODEX】
 
 ${getPriceReferenceString()}
@@ -2543,12 +2710,20 @@ ${getPriceMemoryPrompt()}
 - **Nguyên liệu**: linh thảo, khoáng thạch → KHÔNG cần luyện hoá, tiêu hao 1 lần.
 - **Linh thạch**: tiền tệ tu tiên.
 - **Bí tịch / Ngọc giản**: đọc 1 lần để học công pháp.
+- **Lệnh Bài / Token**: vật phẩm thuê/mượn, TIÊU HAO khi hết hạn.
+
+🎫 LỆNH BÀI / TOKEN PHÒNG LUYỆN ĐAN (v2.8.0 — ĐẶC BIỆT LƯU Ý):
+- "Token phòng luyện đan" → PHẢI gọi là "Lệnh Bài Phòng Luyện Đan".
+- Đây là vật phẩm THUÊ có thời hạn (VD: 1 ngày).
+- Phân loại: Lệnh Bài / Tiêu hao (consumable: true).
+- Khi hết hạn sử dụng → tự động biến mất khỏi túi đồ.
+- Khi NVC thuê phòng luyện đan → nhận "Lệnh Bài Phòng Luyện Đan" có thời hạn.
+- AI PHẢI hiểu ngữ cảnh "thuê", "mượn", "thuê bao" có thời hạn → không phải sở hữu vĩnh viễn.
+- VD: "Thuê phòng luyện đan 1 ngày" → NVC nhận Lệnh Bài, sau 1 ngày lệnh bài biến mất.
 
 ⚠️⚠️⚠️ ĐẶC BIỆT LƯU Ý VỀ NGUYÊN LIỆU LUYỆN ĐAN (CỰC KỲ QUAN TRỌNG):
 - "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"...
 - Đây là các NGUYÊN LIỆU KHÁC NHAU HOÀN TOÀN, KHÔNG ĐƯỢC GỘP CHUNG.
-- Khi ghi nhận vào túi đồ, PHẢI giữ nguyên tên đầy đủ (VD: "Nguyên liệu Thanh Tâm Đan" KHÔNG được viết thành "Nguyên liệu Tụ Khí Đan").
-- Khi cho/nhận/mua/bán, PHẢI dùng đúng tên nguyên liệu tương ứng với đan dược cần luyện.
 - Hệ thống có "Ingredient Guard" — nếu AI gộp nhầm, giao dịch sẽ bị từ chối.
 
 🔥 QUY TẮC GHI TRANSACTIONS (CỰC KỲ QUAN TRỌNG):
@@ -2557,44 +2732,24 @@ ${getPriceMemoryPrompt()}
 3. "give" — CHO/TẶNG: trừ vật phẩm, KHÔNG nhận linh thạch.
 4. "receive" — NHẬN QUÀ: cộng vật phẩm, KHÔNG trừ linh thạch.
 
-📋 TỪ VỰNG MỞ RỘNG:
-- CHO/TẶNG: cho, tặng, biếu, đưa, gửi, trao, giao, cấp, phát, thưởng, ban, cống nạp, hiến, dâng, nộp, cung cấp, chia, lì xì
-- NHẬN: nhận, lĩnh, thu, được cho/tặng/ban/thưởng, thu hoạch, lấy được, chiếm được, đoạt được, cướp được, hưởng
-- BÁN: bán, trao đổi, đổi, quy đổi, thanh lý, sang nhượng, kí gửi
-- MUA: mua, tậu, sắm, thu mua, đặt mua, săn, tìm mua
+⚒️ QUY TẮC GHI CRAFT RESULTS (v2.8.0 — MỚI):
+- Khi NVC luyện đan / luyện khí / vẽ phù / bày trận → BẮT BUỘC ghi "craftResultList" vào JSON Codex.
+- Format: "craftResultList":[{"profession":"luyen_dan","recipe":"Tụ Khí Đan","tier":"LK","results":[{"quality":"Hạ phẩm","quantity":4},{"quality":"Trung phẩm","quantity":1}]}]
+- profession: luyen_dan | luyen_khi | ve_phu | tran_phap
+- tier: LK (Luyện Khí) | TC (Trúc Cơ) | KĐ (Kim Đan) | NA (Nguyên Anh) | HT (Hóa Thần)
+- HỆ THỐNG SẼ TỰ ĐỘNG TÍNH EXP NGHỀ DỰA TRÊN KẾT QUẢ NÀY.
+- Tỷ lệ phẩm chất phụ thuộc vào CẤP NGHỀ của NVC — AI PHẢI tham khảo [NGHỀ NGHIỆP CỦA NVC] trong Codex.
 
-🔑 PHÂN BIỆT "ĐƯA CHO" vs "BÁN":
-- "đưa cho", "giao cho", "trao cho", "biếu", "cấp", "phát" → type "give" (KHÔNG nhận tiền)
-- "bán", "trao đổi lấy tiền" → type "sell" (CÓ nhận tiền)
-- "nhận từ", "được X đưa cho" → type "receive" (KHÔNG trừ tiền NVC)
+💰 QUY TẮC GHI NHỚ GIÁ:
+- Khi NVC HỎI GIÁ → ghi "priceRecords": [{"item":"Tụ Khí Đan","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}]
 
-💰 QUY TẮC GHI NHỚ GIÁ (CỰC KỲ QUAN TRỌNG):
-- Khi NVC HỎI GIÁ một vật phẩm/dịch vụ (đan dược, phù lục, trận pháp, pháp bảo, thuê phòng luyện đan...):
-  → AI BẮT BUỘC ghi giá vào "priceRecords" trong JSON Codex.
-  → Format: [{"item":"Tụ Khí Đan","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}]
-  → HỆ THỐNG SẼ TỰ ĐỘNG LƯU vào bộ nhớ giá để dùng cho các lượt sau.
-- Khi NVC giao dịch, BẮT BUỘC dùng giá đã ghi nhớ nếu có.
-- Nếu giá mới khác biệt đáng kể, phải giải thích lý do (khan hiếm, thương nhân khác, phẩm chất khác...).
-
-VD: "tôi cho Lý Hổ 1 viên đan" → [{"type":"give","name":"Tụ Khí Đan","quantity":1}]
-VD: "tôi đưa cho Lý Hổ 30000v linh thạch" → [{"type":"give","name":"Linh thạch","quantity":30000}]
-VD: "Lý Hổ đưa tôi 225 linh thạch" → [{"type":"receive","name":"Linh thạch","quantity":225}]
-VD: "Tôi cướp được Phệ Huyết Nhẫn của Lý Hổ" → [{"type":"receive","name":"Phệ Huyết Nhẫn","quantity":1,"isRefined":true}]
-
-🚫 CHẶN GIAO DỊCH THIẾU TIỀN / THIẾU ĐỒ (CỰC KỲ QUAN TRỌNG):
-- TRƯỚC KHI kể "cho thành công" / "mua thành công", AI PHẢI kiểm tra túi đồ trong [Túi] Codex.
-- Nếu KHÔNG CÓ vật phẩm trong túi → KHÔNG kể cho thành công.
-- Nếu KHÔNG ĐỦ linh thạch → KHÔNG kể mua thành công.
-- ⚠️ HỆ THỐNG SẼ TỰ ĐỘNG HỦY mọi giao dịch give/sell không hợp lệ.
-
-📊 QUY TẮC EXP (BẮT BUỘC):
-Mỗi lượt AI ước lượng EXP NVC nhận được.
+📊 QUY TẮC EXP TU LUYỆN:
 Format: "mcExpGain": N, "mcExpLoss": N, "mcLinhCan": "...", "mcExpReason": "..."
 
 ⚠️ NHẮC LẠI FORMAT OUTPUT:
 1. [TÓM TẮT]: 2-3 câu
 2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số)
-3. Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + mcExpGain nếu có)
+3. Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + craftResultList + mcExpGain nếu có)
 
 🎭 NHẮC LẠI VĂN PHONG:
 - Ngôi thứ 2 (ngươi). NVC là bạn.
@@ -2609,7 +2764,7 @@ Format: "mcExpGain": N, "mcExpLoss": N, "mcLinhCan": "...", "mcExpReason": "..."
 }
 
 // ============================================================
-// SYSTEM RULES
+// SYSTEM RULES (v2.8.0)
 // ============================================================
 function buildSystemRules(scopeInput='default'){
   const v=id=>document.getElementById(id)?.value||'';
@@ -2617,6 +2772,7 @@ function buildSystemRules(scopeInput='default'){
   const exemplarBlock = getStyleExemplarBlockMulti(scopes);
   if(exemplarBlock) log(`🎨 Scope exemplar injected (${scopes.length} scope)`);
   const scopeChainNote = scopes.length > 1 ? `\n# ⛓️ CHUỖI SCOPE: ${scopes.join(' → ')}\n→ Tính thời gian TÍCH LŨY cho TỪNG scope theo thứ tự.\n` : '';
+  const profCtx = getProfessionAIContext();
   return `${exemplarBlock}${scopeChainNote}# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle')||'HỒNG ĐỨC TU TIÊN LỘ'}".
 
 # QUY TẮC TỐI CAO
@@ -2643,7 +2799,10 @@ ${v('aiRules')||`1. Nhịp chậm cẩn trọng, không buff vô lý.
 28. ⚡ Khi NVC NHẬN vật phẩm → BẮT BUỘC ghi type "receive" trong transactionsList.
 29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT: Pháp bảo/trận bàn/phù tái sử dụng CẦN LUYỆN HOÁ. Phù tiêu hao/đan dược/nguyên liệu KHÔNG cần luyện hoá.
 30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords vào JSON Codex.
-31. 🛡️ INGREDIENT GUARD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"... KHÔNG gộp chung.`}
+31. 🛡️ INGREDIENT GUARD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan"... KHÔNG gộp chung.
+32. 🎫 "Token phòng luyện đan" → PHẢI gọi "Lệnh Bài Phòng Luyện Đan". Là vật phẩm thuê có thời hạn, tiêu hao khi hết hạn.
+33. ⚒️ Khi NVC LUYỆN CHẾ (đan/khí/phù/trận) → BẮT BUỘC ghi "craftResultList" trong JSON Codex.
+34. 📊 Tỷ lệ phẩm chất khi luyện chế PHỤ THUỘC vào CẤP NGHỀ của NVC (xem [NGHỀ NGHIỆP CỦA NVC] trong Codex).`}
 
 # THẾ GIỚI
 - Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom')||'mặc định'}
@@ -2661,8 +2820,10 @@ Khi NVC thực hiện CHUỖI hành động (VD: "đi về động phủ tu luy�
 2. Tính thời gian TỪNG bước dựa trên scope tương ứng.
 3. CỘNG DỒN vào mcGameTime theo format "X ngày Y giờ" hoặc "X năm Y tháng Z ngày".
 
-# 📊 QUY TẮC EXP (BẮT BUỘC)
-Mỗi lượt AI phải ước lượng EXP NVC nhận được.
+${profCtx}
+
+# 📊 QUY TẮC EXP TU LUYỆN (BẮT BUỘC)
+Mỗi lượt AI phải ước lượng EXP tu luyện NVC nhận được.
 Khi mcExp >= mcExpMax → đột phá, cập nhật "mcLevel", reset mcExp = 0.
 Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason": "..."
 
@@ -2681,31 +2842,30 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 - CHỈ VIẾT TIẾNG VIỆT CÓ DẤU.
 - KHÔNG dùng ký tự Hán/Nhật/Hàn.
 
-# 📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN (CỰC KỲ QUAN TRỌNG)
-
+# 📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN
 ## 🔥 NHÓM CẦN LUYỆN HOÁ (không tiêu hao khi dùng):
-- **Pháp bảo / Pháp khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn...
-- **Cổ bảo / Tiên bảo**: cổ chung, tiên ấn, thần khí (luyện hoá khó hơn)
-- **Trận bàn / Trận kỳ**: dùng để bày trận, tái sử dụng nhiều lần
-- **Phù lục tái sử dụng**: linh phù, tiên phù, bản mệnh phù (dùng nhiều lần)
-→ Các vật phẩm này PHẢI được LUYỆN HOÁ trước khi sử dụng.
-→ Khi NVC nhận được → BẮT BUỘC ghi "receive" kèm "isRefined": false.
+- Pháp bảo / Pháp khí: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn...
+- Cổ bảo / Tiên bảo: cổ chung, tiên ấn, thần khí (luyện hoá khó hơn)
+- Trận bàn / Trận kỳ: dùng để bày trận, tái sử dụng nhiều lần
+- Phù lục tái sử dụng: linh phù, tiên phù, bản mệnh phù
 
 ## ⚡ NHÓM TIÊU HAO (dùng 1 lần, KHÔNG cần luyện hoá):
-- **Phù lục tiêu hao**: hỏa cầu phù, tốc hành phù, lôi phù, độn địa phù...
-- **Đan dược**: tụ khí đan, trúc cơ đan, thanh tâm đan...
-- **Nguyên liệu**: linh thảo, khoáng thạch, yêu đan...
-- **Linh thạch**: tiền tệ tu tiên
+- Phù lục tiêu hao: hỏa cầu phù, tốc hành phù, lôi phù...
+- Đan dược: tụ khí đan, trúc cơ đan, thanh tâm đan...
+- Nguyên liệu: linh thảo, khoáng thạch, yêu đan...
+- Linh thạch: tiền tệ tu tiên
+- Lệnh Bài / Token: vật phẩm thuê có thời hạn
 
-## 📖 NHÓM ĐẶC BIỆT:
-- **Bí tịch / Ngọc giản**: đọc 1 lần để học công pháp
+# 🎫 LỆNH BÀI PHÒNG LUYỆN ĐAN (CỰC KỲ QUAN TRỌNG):
+- "Token phòng luyện đan" → PHẢI gọi là "Lệnh Bài Phòng Luyện Đan".
+- Là vật phẩm THUÊ có thời hạn (VD: 1 ngày).
+- Khi hết hạn sử dụng → tự động biến mất khỏi túi đồ.
+- AI PHẢI hiểu ngữ cảnh "thuê", "mượn", "thuê bao" có thời hạn.
 
-## 🛡️ INGREDIENT GUARD (v2.7.2 — CỰC KỲ QUAN TRỌNG):
+# 🛡️ INGREDIENT GUARD:
 - Mỗi loại đan dược có NGUYÊN LIỆU RIÊNG. KHÔNG ĐƯỢC GỘP CHUNG.
 - VD SAI: "Nguyên liệu Tụ Khí Đan" x15 (gộp từ 10 Tụ Khí + 5 Thanh Tâm)
 - VD ĐÚNG: "Nguyên liệu Tụ Khí Đan" x10 và "Nguyên liệu Thanh Tâm Đan" x5
-- Khi AI ghi vào mcInventoryList, PHẢI giữ NGUYÊN TÊN ĐẦY ĐỦ.
-- Nếu AI gộp nhầm → HỆ THỐNG SẼ TỰ ĐỘNG TÁCH RA (Ingredient Guard).
 
 # ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT
 1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).
@@ -2714,38 +2874,18 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 4) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG.
 5) Khối \`\`\`json cập nhật Codex.
 
-# 💰 QUY TẮC GIAO DỊCH (CỰC KỲ QUAN TRỌNG)
-Khi NVC giao dịch, AI BẮT BUỘC thêm mảng "transactionsList" vào JSON Codex.
-1. "sell" — BÁN: trừ vật phẩm, CỘNG linh thạch.
-2. "buy" — MUA: CỘNG vật phẩm, TRỪ linh thạch.
-3. "give" — CHO/TẶNG: trừ vật phẩm, KHÔNG nhận linh thạch.
-4. "receive" — NHẬN QUÀ: cộng vật phẩm, KHÔNG trừ linh thạch.
-
-# 💰 QUY TẮC GHI NHỚ GIÁ
-Khi NVC HỎI GIÁ một vật phẩm/dịch vụ → BẮT BUỘC thêm mảng "priceRecords" vào JSON:
-"priceRecords":[{"item":"Tụ Khí Đan","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}]
-
-# 🚨🚨🚨 CHỐNG BỊA VẬT PHẨM (SIÊU QUAN TRỌNG):
-- Khi NVC muốn CHO/TẶNG vật phẩm, bạn PHẢI ĐỌC KỸ [Túi] trong Codex trước.
-- Nếu [Túi] KHÔNG có tên vật phẩm đó → BẠN KHÔNG ĐƯỢC KỂ việc cho thành công.
-- TUYỆT ĐỐI KHÔNG bịa vật phẩm không tồn tại.
-- HỆ THỐNG SẼ TỰ ĐỘNG HỦY mọi giao dịch give/sell không hợp lệ.
-
-# 🚨 CHỐNG THOÁI HÓA
-- KHÔNG viết ngắn dần. Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
-
 # CẤU TRÚC JSON CODEX
 \`\`\`json
 {
   "transactionsList":[
     {"type":"sell","name":"Tụ Khí Đan","quality":"Thượng phẩm","quantity":3,"unitPrice":15,"totalPrice":45},
-    {"type":"buy","name":"Thạch Linh Thảo","quality":"Thô","quantity":20,"unitPrice":2,"totalPrice":40},
-    {"type":"give","name":"Tụ Khí Đan","quality":"Hạ phẩm","quantity":1},
-    {"type":"receive","name":"Linh thạch","quantity":225},
-    {"type":"receive","name":"Phệ Huyết Nhẫn","quantity":1,"isRefined":true}
+    {"type":"receive","name":"Linh thạch","quantity":225}
   ],
   "priceRecords":[
     {"item":"Tụ Khí Đan","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}
+  ],
+  "craftResultList":[
+    {"profession":"luyen_dan","recipe":"Tụ Khí Đan","tier":"LK","results":[{"quality":"Hạ phẩm","quantity":4},{"quality":"Trung phẩm","quantity":1}]}
   ],
   "mcLevel":"...","mcGameTime":"...","mcSkills":"...",
   "mcExpGain":50,"mcExpLoss":0,"mcLinhCan":"Ngũ","mcExpReason":"...",
@@ -2977,7 +3117,7 @@ async function aiGenField(fieldId, promptMsg){
 }
 
 // ============================================================
-// FORMAT + PARSE CODEX (v2.7.2 — bổ sung Ingredient Guard double-check)
+// FORMAT + PARSE CODEX (v2.8.0)
 // ============================================================
 function formatSummaryBox(text){
   const summaryRegex=/\[TÓM TẮT\]:\s*([\s\S]*?)(?=\n\n|\n[0-9]+\.|\nNgười sẽ|\nNgươi sẽ|$)/i;
@@ -3027,19 +3167,25 @@ function parseAndAutoUpdateCodex(fullResponseText){
       }
       if(codexData.priceRecords !== undefined && Array.isArray(codexData.priceRecords)){
         codexData.priceRecords.forEach(pr => {
-          if(pr && pr.item && pr.price !== undefined){
-            recordPrice(pr.item, pr.quality, pr.price, pr.unit, pr.source);
-          }
+          if(pr && pr.item && pr.price !== undefined){ recordPrice(pr.item, pr.quality, pr.price, pr.unit, pr.source); }
         });
       }
       if(codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList)){
         autoRecordPricesFromTransactions(codexData.transactionsList);
       }
+      // ═══ v2.8.0: CRAFT RESULT PROCESSING ═══
+      if(codexData.craftResultList !== undefined && Array.isArray(codexData.craftResultList) && codexData.craftResultList.length > 0){
+        log(`⚒️ Đang xử lý ${codexData.craftResultList.length} kết quả luyện chế...`);
+        const craftResult = processCraftResults(codexData.craftResultList);
+        if(craftResult && craftResult.totalExpGained > 0){
+          log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained}`);
+        }
+      }
       const oldLevel = document.getElementById('mcLevel').value;
       if(codexData.mcLevel!==undefined&&String(codexData.mcLevel).trim()!=="")document.getElementById('mcLevel').value=codexData.mcLevel;
       if(codexData.mcGameTime!==undefined&&String(codexData.mcGameTime).trim()!==""){ document.getElementById('mcGameTime').value=codexData.mcGameTime; normalizeGameTimeField(); }
       if(codexData.mcSkills!==undefined){document.getElementById('mcSkills').value=typeof codexData.mcSkills==='object'?JSON.stringify(codexData.mcSkills,null,2):String(codexData.mcSkills);}
-      if(codexData.mcExpGain !== undefined){ const gain = parseInt(codexData.mcExpGain) || 0; if(gain > 0){ mcExp += gain; log(`✨ +${gain} EXP (${codexData.mcExpReason || 'tu luyện'})`); } }
+      if(codexData.mcExpGain !== undefined){ const gain = parseInt(codexData.mcExpGain) || 0; if(gain > 0){ mcExp += gain; log(`✨ +${gain} EXP tu luyện (${codexData.mcExpReason || 'tu luyện'})`); } }
       if(codexData.mcExpLoss !== undefined){ const loss = parseInt(codexData.mcExpLoss) || 0; if(loss > 0){ mcExp = Math.max(0, mcExp - loss); log(`💔 -${loss} EXP`); } }
       if(codexData.mcLinhCan){ mcLinhCan = codexData.mcLinhCan; }
       const newLevel = document.getElementById('mcLevel').value;
@@ -3064,7 +3210,6 @@ function parseAndAutoUpdateCodex(fullResponseText){
             log(`🔀 Tách phẩm chất: "${item.name}" [${item.quality}] x${totalQty} → ${parts.length} object`);
           } else { splitInventory.push(item); }
         });
-        // v2.7.2: Ingredient Guard — không merge item khác recipe
         const mergedInventory = [];
         splitInventory.forEach(item => {
           if (!item || !item.name) return;
@@ -3238,7 +3383,7 @@ function refineInventoryItem(name, quality, catKey){
     const detectedCat = catKey || item.category || detectItemCategory(item.name, item.quality, item.effect);
     const catInfo = getItemCategoryInfo(detectedCat);
     if(!catInfo.needsRefine){
-      if(catInfo.consumable){ alert(`⚠️ "${item.name}" là ${catInfo.label} — vật phẩm TIÊU HAO, KHÔNG CẦN luyện hoá!\n\nSử dụng trực tiếp khi cần.`); }
+      if(catInfo.consumable){ alert(`⚠️ "${item.name}" là ${catInfo.label} — vật phẩm TIÊU HAO, KHÔNG CẦN luyện hoá!`); }
       else { alert(`ℹ️ "${item.name}" là ${catInfo.label} — không cần luyện hoá.`); }
       return;
     }
@@ -3246,7 +3391,7 @@ function refineInventoryItem(name, quality, catKey){
     const lsItem = inv.find(i => normalizeVN(i.name).includes('linh thach'));
     const currentLS = lsItem ? (lsItem.quantity || 0) : 0;
     const cost = catInfo.refineCost;
-    const confirmMsg = `🔥 LUYỆN HOÁ "${item.name}"?\n\n📋 Loại: ${catInfo.label}\n💰 Chi phí: ${cost} linh thạch\n📦 Bạn có: ${currentLS} linh thạch\n\nSau khi luyện hoá, vật phẩm có thể sử dụng trong chiến đấu/tu luyện.`;
+    const confirmMsg = `🔥 LUYỆN HOÁ "${item.name}"?\n\n📋 Loại: ${catInfo.label}\n💰 Chi phí: ${cost} linh thạch\n📦 Bạn có: ${currentLS} linh thạch`;
     if (!confirm(confirmMsg)) return;
     if (currentLS < cost) { alert(`❌ Không đủ linh thạch! Bạn có ${currentLS}, cần ${cost}.`); return; }
     lsItem.quantity = currentLS - cost;
@@ -3372,14 +3517,14 @@ ${archetypeKeys}
 
 📖 FORMAT:
 """
-Tính cách: [mô tả ngắn, 5-10 từ]
+Tính cách: [mô tả ngắn]
 Tự xưng: "[từ tự gọi]"
 Cách gọi NVC:
 - ❤<0: "[cách gọi]" ([thái độ])
 - ❤0-50: "[cách gọi]" ([thái độ])
 - ❤50-80: "[cách gọi]" ([thái độ])
 - ❤>80: "[cách gọi]" ([thái độ])
-Đặc điểm nói: [mô tả cách nói chuyện]
+Đặc điểm nói: [mô tả]
 """
 
 Viết npcRules cho NPC "${npc.name}". Chọn archetype phù hợp nhất.
@@ -3451,12 +3596,13 @@ function thienDaoExecute(){
   try{const weapons=JSON.parse(document.getElementById('worldItems').value||'[]');weapons.forEach(w=>{const text=JSON.stringify(w).toLowerCase();if(text.includes(keyword)){results.push({title:`⚔️ Pháp bảo: ${w.name}`,body:`Cấp bậc: ${w.rank}\nCông dụng: ${w.usage}`,source:'Codex Pháp bảo'});}});}catch(e){}
   try{const inv=JSON.parse(document.getElementById('mcInventory').value||'[]');inv.forEach(item=>{const text=JSON.stringify(item).toLowerCase();if(text.includes(keyword)){const catInfo=getItemCategoryInfo(item.category||detectItemCategory(item.name,item.quality,item.effect));results.push({title:`🎒 Vật phẩm: ${item.name}`,body:`SL: ${item.quantity||1}\nPhẩm chất: ${item.quality||'Thường'}\nLoại: ${catInfo.label}${catInfo.needsRefine?`\nLuyện hoá: ${item.isRefined?'Đã luyện hoá':'Chưa luyện hoá'}`:''}\nCông dụng: ${item.effect||'Chưa rõ'}`,source:'Túi đồ NVC'});}});}catch(e){}
   const priceKeys = Object.keys(priceMemory);
-  priceKeys.forEach(k => {
-    const p = priceMemory[k];
-    if((p.name||'').toLowerCase().includes(keyword) || (p.quality||'').toLowerCase().includes(keyword)){
-      results.push({title:`💰 Giá: ${p.name}${p.quality?` [${p.quality}]`:''}`,body:`Giá: ${p.price} ${p.unit}\nNguồn: ${p.source}\nLượt: ${p.turn}`,source:'Price Memory'});
+  priceKeys.forEach(k => { const p = priceMemory[k]; if((p.name||'').toLowerCase().includes(keyword) || (p.quality||'').toLowerCase().includes(keyword)){ results.push({title:`💰 Giá: ${p.name}${p.quality?` [${p.quality}]`:''}`,body:`Giá: ${p.price} ${p.unit}\nNguồn: ${p.source}\nLượt: ${p.turn}`,source:'Price Memory'}); } });
+  for(const [profId, profDef] of Object.entries(PROFESSION_TYPES)){
+    if(profDef.name.toLowerCase().includes(keyword) || profDef.desc.toLowerCase().includes(keyword) || profDef.id.includes(keyword)){
+      const rankInfo = getProfessionRankInfo(profId);
+      results.push({title:`⚒️ Nghề: ${profDef.name}`,body:`Cấp: ${rankInfo.rank} — ${rankInfo.info.name}\nEXP: ${professionState[profId].exp} / ${rankInfo.info.expNeed}\nBonus phẩm chất: +${(rankInfo.info.qualityBonus*100).toFixed(0)}%\nChế được: ${rankInfo.info.canCraftTier}\nĐã chế: ${professionState[profId].totalCrafts || 0} lần`,source:'Profession System'});
     }
-  });
+  }
   if(storySummary&&storySummary.toLowerCase().includes(keyword)){const sentences=storySummary.split(/[.!?]\s+/);const relevant=sentences.filter(s=>s.toLowerCase().includes(keyword)).join('. ');results.push({title:`📖 Tóm tắt`,body:relevant||storySummary.substring(0,500),source:'Story Summary'});}
   const recent=chatHistory.slice(-MAX_RECENT_TURNS*2);
   recent.forEach((msg,idx)=>{const text=msg.parts[0].text||'';if(text.toLowerCase().includes(keyword)){const lower=text.toLowerCase();const pos=lower.indexOf(keyword);const start=Math.max(0,pos-100);const end=Math.min(text.length,pos+200);let snippet=text.substring(start,end);if(start>0)snippet='...'+snippet;if(end<text.length)snippet=snippet+'...';results.push({title:`💬 Chat ${idx%2===0?'(bạn)':'(AI)'}`,body:snippet,source:'Lịch sử chat'});}});
@@ -3483,10 +3629,16 @@ function thienDaoStats(){
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📊 THỐNG KÊ</div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔧 Models hiện tại</div><div class="thiendao-result-body">${models.join('\n')}<br><em>(auto-save localStorage)</em></div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎨 Scope Registry</div><div class="thiendao-result-body">Tổng: ${scopeRegistry.length}<br>Mặc định: ${scopeRegistry.filter(s=>DEFAULT_SCOPES.find(d=>d.id===s.id)).length}/${DEFAULT_SCOPES.length}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 EXP</div><div class="thiendao-result-body">Hiện tại: ${mcExp}/${mcExpMax}<br>Linh căn: ${mcLinhCan}<br>Cảnh giới: ${document.getElementById('mcLevel').value||'?'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">📊 EXP Tu Luyện</div><div class="thiendao-result-body">Hiện tại: ${mcExp}/${mcExpMax}<br>Linh căn: ${mcLinhCan}<br>Cảnh giới: ${document.getElementById('mcLevel').value||'?'}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">⚒️ Nghề Nghiệp</div><div class="thiendao-result-body">`;
+  for(const [profId, profDef] of Object.entries(PROFESSION_TYPES)){
+    const ri = getProfessionRankInfo(profId);
+    html += `• ${profDef.icon} ${profDef.name}: Cấp ${ri.rank} (${ri.info.name}) — ${professionState[profId].exp}/${ri.info.expNeed} EXP<br>`;
+  }
+  html += `Tổng EXP nghề: ${(tokenStats.professionExpGained||0).toLocaleString()}<br>Lên cấp: ${tokenStats.professionLevelUps||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Price Memory</div><div class="thiendao-result-body">Đã ghi: ${Object.keys(priceMemory).length} mục</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🎭 NPC Rules</div><div class="thiendao-result-body">Đã sinh: ${tokenStats.npcRulesGenerated||0}<br>NPC có rules: ${npcList.filter(n=>n.npcRules && n.npcRules.length > 50).length}/${npcList.length}</div></div>`;
-  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0}<br>Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}<br>🛡️ Ingredient Guard: ${tokenStats.ingredientGuardBlocked||0}<br>World-Item Auto-Sync: ${tokenStats.worldItemAutoSync||0}<br>🔥 Luyện hoá: ${tokenStats.itemsRefined||0}<br>➕ Thêm vào túi: ${tokenStats.itemsAddedToInv||0}</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">💰 Giao dịch</div><div class="thiendao-result-body">Đã xử lý: ${tokenStats.transactionsProcessed||0}<br>Pre-validate chặn: ${tokenStats.prevalidationBlocked||0}<br>Post-validate chặn: ${tokenStats.postvalidationBlocked||0}<br>Give-Guard chặn: ${tokenStats.giveGuardBlocked||0}<br>🛡️ Ingredient Guard: ${tokenStats.ingredientGuardBlocked||0}<br>World-Item Auto-Sync: ${tokenStats.worldItemAutoSync||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">🔑 API Keys</div><div class="thiendao-result-body">Keys: ${keys.length} | Models: ${models.length} | Tổ hợp: ${keys.length * models.length}<br>Rotations: ${tokenStats.keyRotations||0}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value||'').split('\n').filter(l=>l.trim()).length}</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">💬 Chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
@@ -3497,7 +3649,8 @@ function showVersionLog(){
   openThienDao();
   const resultsDiv=document.getElementById('thienDaoResults');
   let html=`<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-green)"><div class="thiendao-result-title">v2.7.2 (2026-10-14)</div><div class="thiendao-result-body">🛡️ <b>INGREDIENT GUARD</b> (FIX LỖI CHÍNH):<br>• "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"...<br>• Không gộp nhầm nguyên liệu khác recipe.<br>• Áp dụng cho: fuzzy match, auto-sync, transaction process, inventory list.<br>• Thêm stat: "Ingredient Guard: N" trong Token Stats.<br>• Bổ sung blacklist cặp nguyên liệu dễ nhầm.<br>• Cập nhật prompt AI: rule #31 INGREDIENT GUARD.</div></div>`;
+  html+=`<div class="thiendao-result" style="border-left:3px solid var(--accent-cyan)"><div class="thiendao-result-title">v2.8.0 (2026-10-15)</div><div class="thiendao-result-body">⚒️ <b>PROFESSION SYSTEM</b> (MỚI):<br>• 4 nghề: Luyện Đan / Luyện Khí / Vẽ Phù / Trận Pháp<br>• Mỗi nghề có 9 cấp bậc (Học Đồ → Đan Tổ)<br>• Công thức EXP: BASE_EXP[tier] × QUALITY_MULT[quality] × qty<br>• Bonus phẩm chất theo cấp nghề (tăng tỷ lệ ra đồ ngon)<br>• Mô phỏng luyện chế + UI Profession Grid<br>• Tự động tính EXP nghề từ craftResultList trong JSON Codex<br><br>🎫 <b>LỆNH BÀI PHÒNG LUYỆN ĐAN</b>:<br>• Sửa "Token phòng luyện đan" → "Lệnh Bài Phòng Luyện Đan"<br>• Phân loại: Lệnh Bài / Tiêu hao<br>• Hỗ trợ ngữ cảnh thuê/mượn/thuê bao có thời hạn<br>• AI hiểu đúng bản chất vật phẩm thuê (hết hạn → biến mất)</div></div>`;
+  html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.7.2</div><div class="thiendao-result-body">🛡️ INGREDIENT GUARD — chống gộp nhầm nguyên liệu luyện đan.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.7.1</div><div class="thiendao-result-body">🎵 Nhạc nền + Avatar fix + Price Memory 3 nhóm + Time Normalizer.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.7.0</div><div class="thiendao-result-body">Item Category + Refine Mechanic + Give-Guard Auto-Sync + World-Item Auto-Sync.</div></div>`;
   html+=`<div class="thiendao-result"><div class="thiendao-result-title">v2.6.5</div><div class="thiendao-result-body">World-Item Auto-Sync + Extended Verbs + Give-Guard Hard Block.</div></div>`;
@@ -3516,32 +3669,18 @@ let currentMusicIndex = -1;
 let musicEnabled = false;
 
 async function loadMusicPlaylistFromIDB(){
-  try {
-    const saved = await getFromIDB('HONGDUC_MUSIC_PLAYLIST');
-    if(saved && Array.isArray(saved)){ musicPlaylist = saved; log(`🎵 Load ${musicPlaylist.length} bài nhạc.`); }
-  } catch(e){}
-  renderMusicPlaylist();
-  updateMusicTitle();
+  try { const saved = await getFromIDB('HONGDUC_MUSIC_PLAYLIST'); if(saved && Array.isArray(saved)){ musicPlaylist = saved; log(`🎵 Load ${musicPlaylist.length} bài nhạc.`); } } catch(e){}
+  renderMusicPlaylist(); updateMusicTitle();
 }
-async function saveMusicPlaylistToIDB(){
-  try { await saveToIDB('HONGDUC_MUSIC_PLAYLIST', musicPlaylist); }
-  catch(e){ log('⚠️ Không lưu được playlist: ' + e.message); }
-}
+async function saveMusicPlaylistToIDB(){ try { await saveToIDB('HONGDUC_MUSIC_PLAYLIST', musicPlaylist); } catch(e){ log('⚠️ Không lưu được playlist: ' + e.message); } }
 function uploadMusicFiles(event){
   const files = event.target.files;
   if(!files || files.length === 0) return;
   Array.from(files).forEach(file => {
     const reader = new FileReader();
     reader.onload = function(e){
-      musicPlaylist.push({
-        id: 'music_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
-        name: file.name.replace(/\.[^.]+$/, ''),
-        dataUrl: e.target.result,
-        addedAt: Date.now()
-      });
-      renderMusicPlaylist();
-      updateMusicTitle();
-      saveMusicPlaylistToIDB();
+      musicPlaylist.push({ id: 'music_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5), name: file.name.replace(/\.[^.]+$/, ''), dataUrl: e.target.result, addedAt: Date.now() });
+      renderMusicPlaylist(); updateMusicTitle(); saveMusicPlaylistToIDB();
       log(`🎵 Đã thêm: ${file.name}`);
     };
     reader.readAsDataURL(file);
@@ -3551,10 +3690,7 @@ function uploadMusicFiles(event){
 function renderMusicPlaylist(){
   const el = document.getElementById('musicPlaylist');
   if(!el) return;
-  if(musicPlaylist.length === 0){
-    el.innerHTML = '<div style="font-size:11px;color:var(--subtext-color);font-style:italic;text-align:center;padding:6px">Chưa có bài nào</div>';
-    return;
-  }
+  if(musicPlaylist.length === 0){ el.innerHTML = '<div style="font-size:11px;color:var(--subtext-color);font-style:italic;text-align:center;padding:6px">Chưa có bài nào</div>'; return; }
   let html = '';
   musicPlaylist.forEach((m, i) => {
     const isActive = i === currentMusicIndex;
@@ -3577,8 +3713,7 @@ function removeMusicAt(i){
 function clearAllMusic(){
   if(musicPlaylist.length === 0){ alert('Chưa có nhạc!'); return; }
   if(!confirm(`🗑️ Xóa toàn bộ ${musicPlaylist.length} bài nhạc?`)) return;
-  stopMusic();
-  musicPlaylist = []; currentMusicIndex = -1;
+  stopMusic(); musicPlaylist = []; currentMusicIndex = -1;
   renderMusicPlaylist(); updateMusicTitle(); saveMusicPlaylistToIDB();
   log('🗑️ Đã xóa toàn bộ nhạc.');
 }
@@ -3589,51 +3724,14 @@ function playMusicAt(i){
   currentMusicIndex = i;
   audio.src = musicPlaylist[i].dataUrl;
   audio.volume = parseFloat(document.getElementById('musicVolume').value) || 0.5;
-  audio.play().then(() => {
-    musicEnabled = true;
-    updateMusicUI();
-    log(`🎵 Đang phát: ${musicPlaylist[i].name}`);
-  }).catch(err => {
-    log(`⚠️ Không phát được: ${err.message} (cần click vào trang trước)`);
-    musicEnabled = false;
-    updateMusicUI();
-  });
+  audio.play().then(() => { musicEnabled = true; updateMusicUI(); log(`🎵 Đang phát: ${musicPlaylist[i].name}`); }).catch(err => { log(`⚠️ Không phát được: ${err.message}`); musicEnabled = false; updateMusicUI(); });
 }
-function stopMusic(){
-  const audio = document.getElementById('bgMusic');
-  if(audio){ audio.pause(); }
-  musicEnabled = false;
-  updateMusicUI();
-}
-function toggleMusic(){
-  if(musicPlaylist.length === 0){ alert('⚠️ Chưa có nhạc! Vào sidebar → 🎵 Nhạc nền để thêm.'); return; }
-  if(musicEnabled){ stopMusic(); }
-  else { playMusicAt(currentMusicIndex >= 0 ? currentMusicIndex : 0); }
-}
-function nextMusic(){
-  if(musicPlaylist.length === 0){ alert('⚠️ Chưa có nhạc!'); return; }
-  const next = (currentMusicIndex + 1) % musicPlaylist.length;
-  playMusicAt(next);
-}
-function setMusicVolume(v){
-  const audio = document.getElementById('bgMusic');
-  if(audio) audio.volume = parseFloat(v) || 0.5;
-}
-function updateMusicUI(){
-  const btn = document.getElementById('musicPlayBtn');
-  if(btn){
-    btn.textContent = musicEnabled ? '⏸' : '▶';
-    btn.classList.toggle('playing', musicEnabled);
-  }
-  renderMusicPlaylist();
-}
-function updateMusicTitle(){
-  const el = document.getElementById('musicTitle');
-  if(!el) return;
-  if(musicPlaylist.length === 0){ el.textContent = 'Chưa có nhạc'; return; }
-  const cur = musicPlaylist[currentMusicIndex];
-  el.textContent = cur ? cur.name : `${musicPlaylist.length} bài`;
-}
+function stopMusic(){ const audio = document.getElementById('bgMusic'); if(audio){ audio.pause(); } musicEnabled = false; updateMusicUI(); }
+function toggleMusic(){ if(musicPlaylist.length === 0){ alert('⚠️ Chưa có nhạc!'); return; } if(musicEnabled){ stopMusic(); } else { playMusicAt(currentMusicIndex >= 0 ? currentMusicIndex : 0); } }
+function nextMusic(){ if(musicPlaylist.length === 0){ alert('⚠️ Chưa có nhạc!'); return; } const next = (currentMusicIndex + 1) % musicPlaylist.length; playMusicAt(next); }
+function setMusicVolume(v){ const audio = document.getElementById('bgMusic'); if(audio) audio.volume = parseFloat(v) || 0.5; }
+function updateMusicUI(){ const btn = document.getElementById('musicPlayBtn'); if(btn){ btn.textContent = musicEnabled ? '⏸' : '▶'; btn.classList.toggle('playing', musicEnabled); } renderMusicPlaylist(); }
+function updateMusicTitle(){ const el = document.getElementById('musicTitle'); if(!el) return; if(musicPlaylist.length === 0){ el.textContent = 'Chưa có nhạc'; return; } const cur = musicPlaylist[currentMusicIndex]; el.textContent = cur ? cur.name : `${musicPlaylist.length} bài`; }
 
 // ============================================================
 // START GAME
@@ -3728,7 +3826,7 @@ const sendAction=async()=>{
     }
   }
   const styleReminderEnd = settings.styleReminder ? `\n\n🎭 NHẮC LẠI VĂN PHONG (BẮT BUỘC):\n- Ngôi thứ 2 (ngươi). NVC là bạn.\n- 2-3 đoạn nội tâm NVC đặt trong 《...》.\n- Show don't tell.\n- NPC nói chuyện theo hảo cảm.\n- Từ ngữ cổ phong: đạo hữu, tiền bối, các hạ, bổn tọa.` : '';
-  const formatReminder = `${lengthGuard}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + mcExpGain nếu có).${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.`;
+  const formatReminder = `${lengthGuard}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + craftResultList + mcExpGain nếu có).${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.`;
   const promptWithCodex=needRulesResend ? `${buildSystemRules(sceneScopes)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}` : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
   const reply=await callAI(promptWithCodex,false, sceneScopes);
   if(reply){
@@ -3754,7 +3852,7 @@ document.getElementById('openRouterModel').addEventListener('change',function(e)
 window.addEventListener('DOMContentLoaded',async()=>{
   initializeDefaultScopes();
   autoRestoreModelList();
-  
+
   try{
     const gameData=await getFromIDB('HONDUC_TU_TIEN_SAVE');
     if(gameData){
@@ -3770,26 +3868,23 @@ window.addEventListener('DOMContentLoaded',async()=>{
       if(gameData.npcList){npcList=gameData.npcList;npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});}
       if(gameData.eventList) eventList=gameData.eventList;
       if(gameData.storySummary) storySummary=gameData.storySummary;
-      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0},gameData.tokenStats);
+      if(gameData.tokenStats) tokenStats=Object.assign({input:0,output:0,requests:0,errors:0,geminiReq:0,geminiIn:0,geminiOut:0,orReq:0,orIn:0,orOut:0,fallbackCount:0,resendRulesCount:0,shortTurnWarnings:0,cjkFilteredCount:0,keyRotations:0,npcRulesGenerated:0,transactionsProcessed:0,prevalidationBlocked:0,postvalidationBlocked:0,giveGuardBlocked:0,worldItemAutoSync:0,itemsRefined:0,itemsAddedToInv:0,pricesRecorded:0,ingredientGuardBlocked:0,professionExpGained:0,professionLevelUps:0,craftSimulations:0},gameData.tokenStats);
       if(gameData.mcExp !== undefined) mcExp = gameData.mcExp;
       if(gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
       if(gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
       if(gameData.keyStatus) keyStatus=gameData.keyStatus;
       if(gameData.currentKeyIndex !== undefined) currentKeyIndex=gameData.currentKeyIndex;
       if(gameData.priceMemory) priceMemory=gameData.priceMemory;
-      if(gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)){
-        musicPlaylist = gameData.musicPlaylist;
-        if(gameData.currentMusicIndex !== undefined) currentMusicIndex = gameData.currentMusicIndex;
-      }
+      if(gameData.professionState) professionState=Object.assign(professionState, gameData.professionState);
+      if(gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)){ musicPlaylist = gameData.musicPlaylist; if(gameData.currentMusicIndex !== undefined) currentMusicIndex = gameData.currentMusicIndex; }
     }
   }catch(e){}
-  
+
   npcList.forEach(n=>{if(!n.id)n.id=generateNpcId();if(n.pinned===undefined)n.pinned=false;if(n.lockedRules===undefined)n.lockedRules=false;if(n.status===undefined)n.status='';});
-  renderNpcs(); renderEventsVisual(); renderScopeRegistry();
+  renderNpcs(); renderEventsVisual(); renderScopeRegistry(); renderProfessionUI();
   updateTokenStatsDisplay(); syncToggleUI(); updateKeyCountInfo(); renderKeyStatus(); updateExpUI();
   normalizeGameTimeField();
-  
-  // Auto-detect category cho item cũ
+
   try{
     const invRaw = document.getElementById('mcInventory').value;
     if(invRaw && invRaw.trim().startsWith('[')){
@@ -3800,39 +3895,28 @@ window.addEventListener('DOMContentLoaded',async()=>{
         const catInfo = getItemCategoryInfo(item.category);
         if(catInfo.needsRefine && item.isRefined === undefined){ item.isRefined = false; changed = true; }
       });
-      if(changed){
-        document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
-        log(`🔄 Đã migrate ${inv.length} item sang category system.`);
-      }
+      if(changed){ document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2); log(`🔄 Đã migrate ${inv.length} item sang category system.`); }
       renderInventoryVisual(inv);
     }
   }catch(e){}
-  
+
   const modelListEl = document.getElementById('modelListInput');
   if(modelListEl){ let saveTimer = null; modelListEl.addEventListener('input', () => { if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveModelListToLocal(true); ensureKeyStatusStructure(); updateKeyCountInfo(); renderKeyStatus(); }, 800); }); }
-  
+
   const apiKeyEl = document.getElementById('apiKey');
   if(apiKeyEl){ apiKeyEl.addEventListener('input', () => { ensureKeyStatusStructure(); updateKeyCountInfo(); renderKeyStatus(); }); }
-  
-  // 🎵 NHẠC NỀN: Load playlist + auto-play
+
   await loadMusicPlaylistFromIDB();
   const audio = document.getElementById('bgMusic');
-  if(audio){
-    audio.loop = false;
-    audio.addEventListener('ended', () => { nextMusic(); });
-  }
+  if(audio){ audio.loop = false; audio.addEventListener('ended', () => { nextMusic(); }); }
   if(settings.autoMusic && musicPlaylist.length > 0){
-    const unlockMusic = () => {
-      if(settings.autoMusic && !musicEnabled && musicPlaylist.length > 0){ playMusicAt(currentMusicIndex >= 0 ? currentMusicIndex : 0); }
-      document.removeEventListener('click', unlockMusic);
-    };
+    const unlockMusic = () => { if(settings.autoMusic && !musicEnabled && musicPlaylist.length > 0){ playMusicAt(currentMusicIndex >= 0 ? currentMusicIndex : 0); } document.removeEventListener('click', unlockMusic); };
     document.addEventListener('click', unlockMusic, { once: true });
     log(`🎵 Auto-play nhạc: chờ click đầu tiên để unlock.`);
   }
-  updateMusicUI();
-  updateMusicTitle();
-  
-  log("✅ v2.7.2 loaded. INGREDIENT GUARD + ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC ready.");
+  updateMusicUI(); updateMusicTitle();
+
+  log("✅ v2.8.0 loaded. PROFESSION SYSTEM + LỆNH BÀI + INGREDIENT GUARD + ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC ready.");
 });
 </script>
 </body>

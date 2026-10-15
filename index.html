@@ -3917,7 +3917,298 @@ window.addEventListener('DOMContentLoaded',async()=>{
   updateMusicUI(); updateMusicTitle();
 
   log("✅ v2.8.0 loaded. PROFESSION SYSTEM + LỆNH BÀI + INGREDIENT GUARD + ITEM CATEGORY + REFINE + PRICE MEMORY + TIME NORMALIZER + MUSIC ready.");
-});
+});// ══════════════════════════════════════════════════════════════
+// FIX v2.8.0 — BỔ SUNG CÁC HÀM RENDER SCOPE REGISTRY BỊ THIẾU
+// ══════════════════════════════════════════════════════════════
+
+function renderScopeRegistry(){
+  const container = document.getElementById('scopeRegistryContainer');
+  if(!container) return;
+  if(!scopeRegistry || scopeRegistry.length === 0){
+    container.innerHTML = '<div style="color:var(--subtext-color);font-style:italic;font-size:12px;text-align:center;padding:8px">Chưa có scope.</div>';
+    return;
+  }
+  let html = '';
+  scopeRegistry.forEach((scope, idx) => {
+    const isDefault = DEFAULT_SCOPES.find(d => d.id === scope.id);
+    const isNsfw = scope.id === 'scope_nsfw';
+    const badgeColor = isNsfw ? 'var(--accent-red)' : (isDefault ? 'var(--accent-green)' : 'var(--accent-purple)');
+    const badgeText = isNsfw ? '18+ TỰ ĐIỀN' : (isDefault ? 'MẶC ĐỊNH' : 'TỰ TẠO');
+    const cardClass = isNsfw ? 'scope-nsfw-highlight' : '';
+    const placeholder = isNsfw
+      ? `(Ô TRỐNG — Bạn tự điền nội dung 18+ của bạn vào đây)\n\nGợi ý cấu trúc:\n1. Quy tắc ngôn ngữ\n2. Mức độ miêu tả\n3. Nhịp điệu cảnh\n4. Tâm lý nhân vật\n5. Bối cảnh tu tiên\n6. Hậu quả sau cảnh\n7. VD mẫu 1-2 đoạn (300-800 từ)`
+      : 'Dán exemplar...';
+    html += `<div style="background:var(--input-bg);border:1px solid var(--border-color);border-radius:6px;padding:10px" class="${cardClass}">
+      <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
+        <input type="text" value="${scope.id||''}" style="font-family:monospace;font-size:11px;padding:4px;flex:0 0 130px;color:#b392f0" readonly>
+        <input type="text" value="${scope.label||''}" style="font-size:12px;font-weight:bold;padding:4px;flex:1" onchange="updateScopeField(${idx},'label',this.value)">
+        <span style="background:${badgeColor};color:#fff;font-size:9px;padding:2px 5px;border-radius:3px;font-weight:bold">${badgeText}</span>
+        <button onclick="removeScopeEntry(${idx})" style="background:none;border:none;color:var(--accent-red);cursor:pointer;font-size:16px;padding:0 6px">✕</button>
+      </div>
+      <div style="margin-bottom:6px">
+        <div style="font-size:10px;color:var(--accent-gold);font-weight:bold;margin-bottom:3px">🔑 TRIGGERS:</div>
+        <input type="text" value="${(scope.triggers||[]).join(', ')}" style="font-size:11px;padding:5px;font-family:monospace" onchange="updateScopeTriggers(${idx},this.value)">
+      </div>
+      <div>
+        <div style="font-size:10px;color:${isNsfw?'#ff5577':'var(--accent-gold)'};font-weight:bold;margin-bottom:3px">📖 EXEMPLAR (${(scope.exemplar||'').length} ký tự)${isNsfw?' — BẠN TỰ ĐIỀN':''}:</div>
+        <textarea style="min-height:${isNsfw?'180':'100'}px;font-size:11px;padding:6px;font-family:monospace;${isNsfw?'border-color:#da3633;':''}" placeholder="${placeholder}" onchange="updateScopeField(${idx},'exemplar',this.value)">${scope.exemplar||''}</textarea>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function addScopeEntry(){
+  scopeRegistry.push({ id: 'scope_custom_'+Date.now().toString(36), label: 'Scope Mới', triggers: [], exemplar: '' });
+  renderScopeRegistry();
+}
+
+function removeScopeEntry(idx){
+  if(!scopeRegistry[idx]) return;
+  if(!confirm(`Xóa scope "${scopeRegistry[idx].label||''}"?`)) return;
+  scopeRegistry.splice(idx,1);
+  renderScopeRegistry();
+}
+
+function updateScopeField(idx, field, value){
+  if(scopeRegistry[idx]) scopeRegistry[idx][field] = value;
+}
+
+function updateScopeTriggers(idx, rawValue){
+  if(!scopeRegistry[idx]) return;
+  scopeRegistry[idx].triggers = rawValue.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MULTI-SCOPE DETECTION
+// ══════════════════════════════════════════════════════════════
+function detectSceneScopes(actionText){
+  if(!actionText) return ['default'];
+  const lower = actionText.toLowerCase();
+  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const matches = [];
+  for(const scope of scopeRegistry){
+    if(!scope.triggers || scope.triggers.length === 0) continue;
+    let bestPos = -1;
+    for(const trigger of scope.triggers){
+      const tLower = trigger.toLowerCase().trim();
+      if(!tLower) continue;
+      const tNorm = tLower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      let pos = lower.indexOf(tLower);
+      if(pos === -1) pos = normalized.indexOf(tNorm);
+      if(pos !== -1 && (bestPos === -1 || pos < bestPos)) bestPos = pos;
+    }
+    if(bestPos !== -1) matches.push({ scopeId: scope.id, pos: bestPos });
+  }
+  if(matches.length === 0) return ['default'];
+  matches.sort((a, b) => a.pos - b.pos);
+  return matches.map(m => m.scopeId);
+}
+
+function detectSceneScope(actionText){ const scopes = detectSceneScopes(actionText); return scopes[0] || 'default'; }
+
+function getStyleExemplarBlockMulti(scopeIds){
+  if(!scopeIds || scopeIds.length === 0) return '';
+  const scopes = Array.isArray(scopeIds) ? scopeIds : [scopeIds];
+  const blocks = [];
+  for(const id of scopes){
+    if(id === 'default') continue;
+    const scope = scopeRegistry.find(s => s.id === id);
+    if(!scope) continue;
+    const sample = (scope.exemplar || '').trim();
+    if(!sample) continue;
+    blocks.push(`# 🎨 SCOPE "${scope.label || scope.id}"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${sample}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  }
+  return blocks.length > 0 ? '\n' + blocks.join('\n\n') + '\n' : '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXP UI FUNCTIONS (BỔ SUNG)
+// ══════════════════════════════════════════════════════════════
+function parseRealmLevel(levelStr){
+  if(!levelStr) return { realm: 'LK', sub: 1 };
+  const s = levelStr.toLowerCase();
+  if(s.includes('luyện khí') || s.includes('lk')){ const m = s.match(/(\d+)/); const sub = m ? Math.min(13, Math.max(1, parseInt(m[1]))) : 1; return { realm: 'LK', sub }; }
+  if(s.includes('trúc cơ') || s.includes('tc')){ if(s.includes('hậu')) return { realm: 'TC', sub: 'h' }; if(s.includes('trung')) return { realm: 'TC', sub: 't' }; return { realm: 'TC', sub: 's' }; }
+  if(s.includes('kim đan') || s.includes('kđ') || s.includes('kd')){ if(s.includes('hậu')) return { realm: 'KD', sub: 'h' }; if(s.includes('trung')) return { realm: 'KD', sub: 't' }; return { realm: 'KD', sub: 's' }; }
+  if(s.includes('nguyên anh') || s.includes('na')){ if(s.includes('hậu')) return { realm: 'NA', sub: 'h' }; if(s.includes('trung')) return { realm: 'NA', sub: 't' }; return { realm: 'NA', sub: 's' }; }
+  if(s.includes('hóa thần') || s.includes('ht')){ if(s.includes('hậu')) return { realm: 'HT', sub: 'h' }; if(s.includes('trung')) return { realm: 'HT', sub: 't' }; return { realm: 'HT', sub: 's' }; }
+  if(s.includes('luyện hư') || s.includes('lh')){ if(s.includes('hậu')) return { realm: 'LH', sub: 'h' }; if(s.includes('trung')) return { realm: 'LH', sub: 't' }; return { realm: 'LH', sub: 's' }; }
+  return { realm: 'LK', sub: 1 };
+}
+function calcExpRequired(levelStr, linhCan){
+  const { realm, sub } = parseRealmLevel(levelStr);
+  const key = realm === 'LK' ? `LK${sub}` : `${realm}_${sub}`;
+  const baseExp = EXP_TABLE[key] || 100;
+  const lcCoef = LINH_CAN_COEF[linhCan] || 0.15;
+  const realmMult = REALM_MULTIPLIER[realm] || 1.0;
+  return Math.max(10, Math.round(baseExp / lcCoef * realmMult));
+}
+function updateExpUI(){
+  const barEl = document.getElementById('expBarFill');
+  if(!barEl) return;
+  const levelStr = document.getElementById('mcLevel').value || 'Luyện Khí sơ kỳ';
+  mcExpMax = calcExpRequired(levelStr, mcLinhCan);
+  const pct = Math.min(100, Math.max(0, (mcExp / mcExpMax) * 100));
+  barEl.style.width = pct + '%';
+  const expLabel = document.getElementById('expLabel');
+  const expLevelLabel = document.getElementById('expLevelLabel');
+  const expDetail = document.getElementById('expDetail');
+  if(expLabel) expLabel.textContent = `${mcExp.toLocaleString()} / ${mcExpMax.toLocaleString()} EXP`;
+  if(expLevelLabel) expLevelLabel.textContent = levelStr;
+  const { realm } = parseRealmLevel(levelStr);
+  const lcCoef = LINH_CAN_COEF[mcLinhCan] || 0.15;
+  const realmMult = REALM_MULTIPLIER[realm] || 1.0;
+  if(expDetail) expDetail.textContent = `Linh căn: ${mcLinhCan} (×${lcCoef}) | Cảnh giới: ×${realmMult} | Cần: ${mcExpMax.toLocaleString()} EXP`;
+  if(pct >= 100) barEl.style.background = 'linear-gradient(90deg,#d29922,#f0c040)';
+  else if(pct >= 75) barEl.style.background = 'linear-gradient(90deg,#238636,#3fb950)';
+  else barEl.style.background = 'linear-gradient(90deg,#1f6beb,#388bfd)';
+}
+function addManualExp(){
+  const inp = document.getElementById('mcExpManual');
+  if(!inp) return;
+  const val = parseInt(inp.value) || 0;
+  if(val === 0) return;
+  mcExp += val; inp.value = ''; updateExpUI();
+  log(`✨ Thủ công +${val} EXP (tổng ${mcExp}/${mcExpMax})`);
+}
+function setLinhCan(){
+  const options = ['Đơn','Song','Tam','Tứ','Ngũ','Dị'];
+  const choice = prompt(`🔮 CHỌN LINH CĂN (hiện tại: ${mcLinhCan}):\n\n1. Đơn (×1.0)\n2. Song (×0.7)\n3. Tam (×0.5)\n4. Tứ (×0.3)\n5. Ngũ (×0.15)\n6. Dị (×1.5)\n\nNhập số 1-6:`);
+  if(!choice) return;
+  const idx = parseInt(choice) - 1;
+  if(idx >= 0 && idx < options.length){ mcLinhCan = options[idx]; updateExpUI(); log(`🔮 Đổi linh căn: ${mcLinhCan}`); }
+}
+function resetExp(){ if(!confirm("🔄 Reset EXP về 0?")) return; mcExp = 0; updateExpUI(); log("🔄 Đã reset EXP."); }
+
+// ══════════════════════════════════════════════════════════════
+// CJK FILTER FUNCTIONS (BỔ SUNG)
+// ══════════════════════════════════════════════════════════════
+const CJK_VIET_MAP = {
+  '丹':'Đan','药':'Dược','丸':'Hoàn','散':'Tán','膏':'Cao','汤':'Thang',
+  '气':'Khí','基':'Cơ','婴':'Anh','虚':'Hư','合':'Hợp','境':'Cảnh','界':'Giới',
+  '炼':'Luyện','筑':'Trúc','凝':'Ngưng','化':'Hóa','元':'Nguyên','神':'Thần',
+  '仙':'Tiên','魔':'Ma','妖':'Yêu','兽':'Thú','灵':'Linh','宝':'Bảo','器':'Khí',
+  '法':'Pháp','术':'Thuật','剑':'Kiếm','刀':'Đao','枪':'Thương','棍':'Côn',
+  '塔':'Tháp','钟':'Chung','印':'Ấn','旗':'Kỳ','幡':'Phan','珠':'Châu',
+  '镜':'Kính','扇':'Phiến','袋':'Đại','壶':'Hồ','瓶':'Bình','罐':'Quán',
+  '劫':'Kiếp','雷':'Lôi','电':'Điện','风':'Phong','雨':'Vũ','云':'Vân',
+  '冰':'Băng','雪':'Tuyết','霜':'Sương','火':'Hỏa','炎':'Viêm','焰':'Diễm',
+  '光':'Quang','暗':'Ám','阴':'Âm','阳':'Dương','月':'Nguyệt','日':'Nhật',
+  '星':'Tinh','辰':'Thần','斗':'Đẩu','宿':'Tú','曜':'Diệu',
+  '天':'Thiên','地':'Địa','山':'Sơn','川':'Xuyên','河':'Hà','江':'Giang',
+  '海':'Hải','湖':'Hồ','泉':'Tuyền','溪':'Khê','谷':'Cốc','峰':'Phong',
+  '岭':'Lĩnh','洞':'Động','窟':'Quật','林':'Lâm','森':'Sâm','原':'Nguyên',
+  '野':'Dã','城':'Thành','关':'Quan','塞':'Tái','门':'Môn','派':'Phái',
+  '宗':'Tông','阁':'Các','楼':'Lâu','殿':'Điện','宫':'Cung','府':'Phủ',
+  '园':'Viên','庄':'Trang','村':'Thôn','镇':'Trấn',
+  '人':'Nhân','男':'Nam','女':'Nữ','老':'Lão','少':'Thiếu','幼':'Ấu',
+  '王':'Vương','帝':'Đế','皇':'Hoàng','君':'Quân','臣':'Thần','将':'Tướng',
+  '兵':'Binh','士':'Sĩ','卒':'Tốt','民':'Dân','农':'Nông','商':'Thương',
+  '师':'Sư','徒':'Đồ','兄':'Huynh','弟':'Đệ','姐':'Tỷ','妹':'Muội',
+  '父':'Phụ','母':'Mẫu','子':'Tử','妻':'Thê','夫':'Phu',
+  '生':'Sinh','死':'Tử','杀':'Sát','斩':'Trảm','击':'Kích','打':'Đả',
+  '攻':'Công','守':'Thủ','退':'Thoái','进':'Tiến','逃':'Đào','追':'Truy',
+  '行':'Hành','走':'Tẩu','飞':'Phi','跳':'Khiêu','奔':'Bôn','跑':'Bào',
+  '坐':'Tọa','立':'Lập','卧':'Ngọa','睡':'Thụy','醒':'Tỉnh','醉':'Túy',
+  '食':'Thực','饮':'Ẩm','服':'Phục','穿':'Xuyên','脱':'Thoát',
+  '强':'Cường','弱':'Nhược','快':'Khoái','慢':'Mạn','高':'Cao','低':'Đê',
+  '大':'Đại','小':'Tiểu','长':'Trường','短':'Đoản','多':'Đa',
+  '新':'Tân','旧':'Cựu','真':'Chân','假':'Giả','善':'Thiện','恶':'Ác',
+  '美':'Mỹ','丑':'Xú','香':'Hương','臭':'Xú','冷':'Lãnh','热':'Nhiệt',
+  '明':'Minh','亮':'Lượng','黑':'Hắc','白':'Bạch','红':'Hồng',
+  '黄':'Hoàng','蓝':'Lam','绿':'Lục','紫':'Tử','金':'Kim','银':'Ngân',
+  '铁':'Thiết','铜':'Đồng','玉':'Ngọc','石':'Thạch','木':'Mộc','水':'Thủy',
+  '土':'Thổ','沙':'Sa','尘':'Trần','泥':'Nê','岩':'Nham',
+  '一':'Nhất','二':'Nhị','三':'Tam','四':'Tứ','五':'Ngũ','六':'Lục',
+  '七':'Thất','八':'Bát','九':'Cửu','十':'Thập','百':'Bách','千':'Thiên',
+  '万':'Vạn','亿':'Ức','零':'Linh','两':'Lưỡng','半':'Bán','双':'Song',
+  '年':'Niên','时':'Thời','刻':'Khắc','分':'Phân',
+  '秒':'Miểu','春':'Xuân','夏':'Hạ','秋':'Thu','冬':'Đông','朝':'Triêu',
+  '暮':'Mộ','晨':'Thần','昏':'Hôn','夜':'Dạ','昼':'Trú',
+  '心':'Tâm','魂':'Hồn','魄':'Phách','识':'Thức','念':'Niệm',
+  '意':'Ý','志':'Chí','情':'Tình','欲':'Dục','怒':'Nộ','喜':'Hỷ',
+  '悲':'Bi','恐':'Khủng','惊':'Kinh','忧':'Ưu','思':'Tư','忆':'Ức',
+  '道':'Đạo','德':'Đức','仁':'Nhân','义':'Nghĩa','礼':'Lễ','智':'Trí',
+  '信':'Tín','忠':'Trung','孝':'Hiếu','廉':'Liêm','耻':'Sỉ',
+  '极':'Cực','上':'Thượng','中':'Trung','下':'Hạ','品':'Phẩm','阶':'Giai',
+  '级':'Cấp','层':'Tầng','重':'Trọng','倍':'Bội','数':'Số','量':'Lượng',
+  '名':'Danh','字':'Tự','号':'Hiệu','称':'Xưng','呼':'Hô','曰':'Viết',
+  '无':'Vô','有':'Hữu','空':'Không','实':'Thực',
+  '刚':'Cương','柔':'Nhu','动':'Động','静':'Tĩnh',
+  '内':'Nội','外':'Ngoại','前':'Tiền','后':'Hậu','左':'Tả','右':'Hữu',
+  '东':'Đông','西':'Tây','南':'Nam','北':'Bắc',
+  '来':'Lai','去':'Khứ','回':'Hồi','往':'Vãng','返':'Phản','归':'Quy'
+};
+
+function countCJK(text){ if(!text) return 0; const matches = text.match(CJK_REGEX); return matches ? matches.length : 0; }
+function getUniqueCJK(text){ if(!text) return []; const matches = text.match(CJK_REGEX); if(!matches) return []; return [...new Set(matches)]; }
+function filterCJKFromResponse(text){
+  if(!text || !settings.cjkFilter) return text;
+  const cjkCount = countCJK(text);
+  if(cjkCount === 0) return text;
+  let cleaned = text; let convertedCount = 0; const unmappedChars = new Set();
+  for(const [cjk, viet] of Object.entries(CJK_VIET_MAP)){
+    if(cleaned.includes(cjk)){ const re = new RegExp(cjk, 'g'); const before = cleaned; cleaned = cleaned.replace(re, viet); if(before !== cleaned) convertedCount++; }
+  }
+  const remainingMatches = cleaned.match(CJK_REGEX);
+  if(remainingMatches){ remainingMatches.forEach(c => unmappedChars.add(c)); cleaned = cleaned.replace(/[\u3000-\u303F]/g, ' '); }
+  const remainingAfter = countCJK(cleaned);
+  tokenStats.cjkFilteredCount = (tokenStats.cjkFilteredCount||0) + (cjkCount - remainingAfter);
+  updateTokenStatsDisplay();
+  if(unmappedChars.size > 0){ log(`🈶 CJK: convert ${convertedCount}. Còn ${unmappedChars.size} chưa map.`); }
+  else { log(`🈶 CJK: convert ${cjkCount} ký tự.`); }
+  return cleaned;
+}
+function scanChineseChars(){
+  const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
+  const found = [];
+  fields.forEach(el => { const val = el.value || ''; const matches = val.match(CJK_REGEX); if(matches && matches.length > 0){ found.push({ id: el.id || '(no id)', chars: getUniqueCJK(val).join(' '), count: matches.length }); } });
+  if(found.length === 0){ alert('✅ Không phát hiện ký tự Trung!'); return; }
+  let msg = `⚠️ PHÁT HIỆN ${found.length} Ô:\n\n`;
+  found.forEach((f, i) => { msg += `${i+1}. Ô [${f.id}]\n   Ký tự: ${f.chars}\n   SL: ${f.count}\n\n`; });
+  alert(msg);
+}
+function autoCleanCJK(){
+  const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
+  let cleanedCount = 0, totalRemoved = 0;
+  fields.forEach(el => { const val = el.value || ''; const cjkCount = countCJK(val); if(cjkCount > 0){ const cleaned = filterCJKFromResponse(val); if(cleaned !== val){ el.value = cleaned; cleanedCount++; totalRemoved += cjkCount; } } });
+  if(cleanedCount === 0){ alert('✅ Không có ô nào cần làm sạch!'); return; }
+  alert(`🧹 ĐÃ LÀM SẠCH ${cleanedCount} Ô! (${totalRemoved} ký tự)`);
+}
+function checkCJKOnSave(){
+  if(!settings.cjkWarnOnSave) return true;
+  const fields = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
+  let foundCount = 0;
+  fields.forEach(el => { if(countCJK(el.value || '') > 0) foundCount++; });
+  if(foundCount > 0){ const proceed = confirm(`⚠️ Phát hiện ${foundCount} ô chứa ký tự Trung!\n\nTiếp tục lưu?`); if(!proceed) return false; }
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════════
+// NSFW DETECTION (BỔ SUNG)
+// ══════════════════════════════════════════════════════════════
+const NSFW_KEYWORDS_VI = ['song tu','làm tình','giao hoan','mây mưa','ái ân','hoan ái','ân ái','thân mật','hôn','ôm','vuốt ve','cởi','lột','hở hang','khỏa thân','lõa thể','dâm','dục','tình dục','mặn nồng','lô đỉnh','hái hoa','thái âm bổ dương','thái dương bổ âm','dâm dục','dục vọng','khiêu dâm','sắc dục','tình ái','quan hệ','hiến thân','dâng hiến','hầu hạ','chém giết','giết','tàn sát','đồ sát','chém','đâm','chặt','moi tim','lột da','tra tấn','hành hạ','ngược đãi','huyết tinh','máu me','sát nhân','đoạt bảo','cướp','hiếp','giết chóc','sát phạt','đồ diệt','cưỡng','bắt cóc','giam cầm','trói','khống chế','nô lệ','nô gia','chủ nô','chiếm hữu','ép buộc','uy hiếp','đe dọa','cưỡng bức','cưỡng hiếp','cưỡng đoạt','cưỡng chế'];
+const NSFW_KEYWORDS_EN = ['sex','intercourse','rape','fuck','kiss','naked','nude','orgasm','kill','murder','slaughter','torture','slave','capture'];
+
+function detectNsfwIntent(actionText){
+  if(!actionText)return false;
+  const lower=actionText.toLowerCase();
+  const normalized=lower.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  for(const kw of NSFW_KEYWORDS_VI){ if(lower.includes(kw))return true; const kwNorm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,''); if(normalized.includes(kwNorm))return true; }
+  for(const kw of NSFW_KEYWORDS_EN){ if(lower.includes(kw))return true; }
+  return false;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FIX: GỌI LẠI INIT SAU KHI ĐÃ ĐỊNH NGHĨA ĐỦ HÀM
+// ══════════════════════════════════════════════════════════════
+// Re-render scope registry nếu DOM đã sẵn sàng
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => { if(typeof renderScopeRegistry === 'function') renderScopeRegistry(); });
+} else {
+  setTimeout(() => { if(typeof renderScopeRegistry === 'function') renderScopeRegistry(); }, 50);
+}
 </script>
 </body>
 </html>

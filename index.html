@@ -12,7 +12,7 @@ body{background:linear-gradient(135deg,#0b0e14 0%,#0d1117 100%);color:var(--text
 .header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);flex-wrap:wrap;gap:8px;box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
 .header-title{font-size:17px;font-weight:bold;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#388bfd,#8957e5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.3px}
 .header-right-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.game-tag{display:inline-block;font-size:14px;font-weight:bold;color:#3fb950;padding:6px 14px;border-radius:8px;background:linear-gradient(#0d1117,#0d1117) padding-box,linear-gradient(135deg,#ff0000,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#8800ff,#ff00ff) border-box;border:2px solid transparent;text-shadow:0 0 8px rgba(63,185,80,.6);letter-spacing:.5px;box-shadow:0 0 12px rgba(63,185,80,.35);white-space:nowrap;animation:rainbowGlow 4s linear infinite}
+.game-tag{display:inline-block;font-size:14px;font-weight:bold;color:#3fb950;padding:6px 14px;border-radius:8px;background:linear-gradient(#0d1117,#0d1117) padding-box,linear-gradient(135deg,#ff0000,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#8800ff,#ff00ff) border-box;border:2px solid transparent;text-shadow:0 0 8px rgba(63,185,80,.6);letter-spacing:.5px;box-shadow:0 0 12px rgba(63,185,80,.35);white-space:nowrap;animation:rainbowGlow 4s linear infinite;order:-1;margin-left:auto}
 @keyframes rainbowGlow{0%,100%{box-shadow:0 0 12px rgba(63,185,80,.35)}25%{box-shadow:0 0 14px rgba(56,139,253,.45)}50%{box-shadow:0 0 16px rgba(219,97,162,.5)}75%{box-shadow:0 0 14px rgba(210,153,34,.45)}}
 .menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast)}
 .restart-btn{background:var(--accent-green);border-color:#388e3c}
@@ -280,13 +280,13 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="header">
 <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 <div class="header-right-group">
-<span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.4</span>
 <div class="music-controls">
 <button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
 <button class="music-btn" id="musicNextBtn" onclick="nextMusic()" title="Bài kế tiếp">⏭</button>
 <span class="music-title" id="musicTitle">Chưa có nhạc</span>
 <input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.05" value="0.5" onchange="setMusicVolume(this.value)">
 </div>
+<span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.4</span>
 <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
 </div>
 </div>
@@ -817,18 +817,17 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="thienDaoResults"></div>
 </div>
 </div>
-<script>
-// ============================================================
+<script>// ============================================================
 // HỒNG ĐỨC TU TIÊN LỘ v2.8.4
 // - v2.8.4 NEW:
-//   + GAME TAG: xanh lá + viền ngũ sắc, cạnh nút Khởi Tạo Game
+//   + GAME TAG: xanh lá + viền ngũ sắc, đặt NGAY SÁT nút Khởi Tạo Game
 //   + MC STATS: Thể chất / Thần niệm / Thiên phú
 //   + REFRESH STATE: cập nhật trạng thái từ 5 lượt gần nhất
 //   + PROFESSION OUTPUT: 1 phần → 5 viên base + bonus tố chất
-// - v2.8.3: BREAKTHROUGH FIX (minor vs major)
-// - v2.8.2: SYSTEM TAGS + DASHBOARD
-// - v2.8.1: QUEST DELEGATION FIX
-// - v2.8.0: PROFESSION SYSTEM
+//   + v2.8.4.1 HOTFIX: HỖ TRỢ PHẨM CHẤT HỖN HỢP
+//     → findAllMatchingItems() gom tất cả item cùng tên
+//     → deductVirtual()/removeItem() trừ dồn theo phẩm chất (Hạ → Tiên)
+//     → Rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất
 // ============================================================
 const DB_NAME = 'HongDucTuTienDB';
 const STORE_NAME = 'GameSaves';
@@ -1688,6 +1687,36 @@ function findMatchingInventoryItem(nameToFind, inv) {
   return null;
 }
 
+// 🆕 v2.8.4.1: Tìm TẤT CẢ item cùng tên (để xử lý phẩm chất hỗn hợp)
+function findAllMatchingItems(nameToFind, inv) {
+  if (!inv || inv.length === 0) return [];
+  const needle = normalizeVN(nameToFind);
+  if (!needle || needle.length < 2) return [];
+  
+  // 1. Khớp chính xác
+  let matches = inv.filter(i => normalizeVN(i.name) === needle);
+  if (matches.length > 0) return matches;
+  
+  // 2. Khớp includes
+  matches = inv.filter(i => {
+    const n = normalizeVN(i.name);
+    if (n.length < 2) return false;
+    if (_isConflictingName(n, needle)) return false;
+    return (n.includes(needle) || needle.includes(n)) && Math.abs(n.length - needle.length) <= 4;
+  });
+  if (matches.length > 0) return matches;
+  
+  // 3. Khớp token
+  const tokens = needle.split(/\s+/).filter(t => t.length >= 3 && !ITEM_STOPWORDS.has(t));
+  if (tokens.length === 0) return [];
+  matches = inv.filter(i => {
+    const n = normalizeVN(i.name);
+    if (_isConflictingName(n, needle)) return false;
+    return tokens.every(t => n.includes(t));
+  });
+  return matches;
+}
+
 function findInWorldItems(nameToFind) {
   try {
     const worldItems = JSON.parse(document.getElementById('worldItems').value || '[]');
@@ -1949,6 +1978,7 @@ ${getCodexMemoryPrompt()}
 - KHÔNG ghi transactionsList, KHÔNG ghi craftResultList, KHÔNG ghi priceRecords.
 - CHỈ cập nhật túi đồ dựa trên diễn biến đã xảy ra trong ${REFRESH_STATE_TURNS} lượt qua.
 - Nếu thấy NVC đã bán/mua/nhận/cho đồ trong các lượt qua → cập nhật vào mcInventoryList.
+- ⚠️ PHẨM CHẤT HỖN HỢP: MỖI phẩm chất khác nhau = 1 OBJECT RIÊNG. VD túi có 4 Thanh Tâm Đan Hạ phẩm + 1 Thanh Tâm Đan Trung phẩm → 2 object riêng.
 - Nếu NPC đã chết → chuyển vào npcArchive.
 - GIỮ NGUYÊN ĐẠI cảnh giới của NVC (chỉ đổi nếu có breakthrough đã được hệ thống xác nhận).
 - CHỈ TRẢ VỀ KHỐI \`\`\`json\`\`\`. KHÔNG GIẢI THÍCH.`;
@@ -4381,7 +4411,8 @@ function showVersionLog() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4 (2026-10-15)</div><div class="thiendao-result-body">🔄 <b>REFRESH STATE + PROFESSION STATS + GAME TAG</b>:<br>• Tag game chuyển màu xanh + viền ngũ sắc, đặt cạnh nút Khởi Tạo Game<br>• Thêm Tố chất tu luyện: Thể chất / Thần niệm / Thiên phú<br>• Công thức luyện đan: 1 phần dược liệu → 5 viên hạ phẩm (base)<br>• Tố chất ảnh hưởng SỐ LƯỢNG và PHẨM CHẤT thành phẩm<br>• Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh<br>• Nút "🔄 CẬP NHẬT" quét 5 lượt gần nhất để sync lại túi đồ/NPC/cảnh giới<br>• Fix: Load game sẽ tự động nhận đúng trạng thái mới nhất</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.1 (2026-10-15)</div><div class="thiendao-result-body">🔥 <b>HOTFIX PHẨM CHẤT HỖN HỢP</b>:<br>• Thêm hàm <code>findAllMatchingItems()</code> gom tất cả item cùng tên<br>• Sửa <code>deductVirtual()</code> trừ dồn theo phẩm chất (Hạ → Trung → Thượng → Cực → Tiên)<br>• Sửa <code>removeItem()</code> tương tự<br>• Thêm rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất<br>• Thêm hint trong Codex Memory Prompt<br>• Sửa lỗi "AI bịa số lượng: Thanh Tâm Đan chỉ có 4, không thể cho 5"</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4 (2026-10-15)</div><div class="thiendao-result-body">🔄 <b>REFRESH STATE + PROFESSION STATS + GAME TAG</b>:<br>• Tag game chuyển màu xanh + viền ngũ sắc, đặt NGAY SÁT nút Khởi Tạo Game<br>• Thêm Tố chất tu luyện: Thể chất / Thần niệm / Thiên phú<br>• Công thức luyện đan: 1 phần dược liệu → 5 viên hạ phẩm (base)<br>• Tố chất ảnh hưởng SỐ LƯỢNG và PHẨM CHẤT thành phẩm<br>• Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh<br>• Nút "🔄 CẬP NHẬT" quét 5 lượt gần nhất để sync lại túi đồ/NPC/cảnh giới<br>• Fix: Load game sẽ tự động nhận đúng trạng thái mới nhất</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #8957e5"><div class="thiendao-result-title">v2.8.3</div><div class="thiendao-result-body">🔧 BREAKTHROUGH FIX — phân biệt TIỂU vs ĐẠI đột phá</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #d29922"><div class="thiendao-result-title">v2.8.2</div><div class="thiendao-result-body">🏷️ SYSTEM TAGS + DASHBOARD</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title">v2.8.1</div><div class="thiendao-result-body">🎯 QUEST DELEGATION FIX</div></div>`;
@@ -5495,15 +5526,17 @@ function prevalidateTransaction(actionText) {
         };
       }
     }
-    const available = matchedItem.quantity || 1;
-    if (intent.qty > available) {
+    // 🆕 v2.8.4.1: Dùng findAllMatchingItems để kiểm tra tổng số lượng qua nhiều phẩm chất
+    const allMatches = findAllMatchingItems(matchedItem.name, inv);
+    const totalAvail = allMatches.reduce((s, i) => s + (i.quantity || 1), 0);
+    if (intent.qty > totalAvail) {
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1;
       tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked || 0) + 1;
       updateTokenStatsDisplay();
       return {
         ok: false,
         type: 'give',
-        message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}${matchedItem.quality ? ` [${matchedItem.quality}]` : ''}\n📦 Bạn có: ${available}\n🎁 Muốn cho: ${intent.qty}\n⚠️ Thiếu: ${intent.qty - available}\n\n🚫 Không thể cho nhiều hơn số đang có.`
+        message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}\n📦 Bạn có: ${totalAvail} (qua ${allMatches.length} phẩm chất)\n🎁 Muốn cho: ${intent.qty}\n⚠️ Thiếu: ${intent.qty - totalAvail}\n\n🚫 Không thể cho nhiều hơn số đang có.`
       };
     }
     return { ok: true };
@@ -5512,7 +5545,7 @@ function prevalidateTransaction(actionText) {
 }
 
 // ============================================================
-// POST-VALIDATE
+// POST-VALIDATE — 🆕 v2.8.4.1 SỬA ĐỂ HỖ TRỢ PHẨM CHẤT HỖN HỢP
 // ============================================================
 function postValidateTransactions(txList, currentInv) {
   const valid = [];
@@ -5524,14 +5557,40 @@ function postValidateTransactions(txList, currentInv) {
   })();
   const virtualInv = currentInv.map(i => ({ ...i }));
 
+  // 🆕 v2.8.4.1: Trừ dồn theo phẩm chất (Hạ → Trung → Thượng → Cực → Tiên)
   const deductVirtual = (name, quality, qty) => {
-    const m = findMatchingInventoryItem(name, virtualInv);
-    if (!m) return { ok: false, reason: 'not_found' };
-    if (isIngredientForDifferentRecipe(m.name, name)) return { ok: false, reason: 'different_recipe' };
-    const avail = m.quantity || 1;
-    if (qty > avail) return { ok: false, reason: 'insufficient', have: avail, need: qty };
-    m.quantity = avail - qty;
-    return { ok: true, matchedName: m.name };
+    let candidates = findAllMatchingItems(name, virtualInv)
+      .filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    if (candidates.length === 0) return { ok: false, reason: 'not_found' };
+    // Nếu AI có ghi phẩm chất → ưu tiên lọc theo phẩm chất đó
+    if (quality && quality.trim()) {
+      const qLower = quality.toLowerCase().trim();
+      const qualityMatched = candidates.filter(i =>
+        (i.quality || '').toLowerCase().includes(qLower)
+      );
+      const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0);
+      if (qualityMatched.length > 0 && qualityTotal >= qty) {
+        candidates = qualityMatched;
+      }
+    }
+    const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
+    if (qty > totalAvail) return { ok: false, reason: 'insufficient', have: totalAvail, need: qty };
+    // Sắp xếp theo phẩm chất thấp trước
+    const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
+    candidates.sort((a, b) => {
+      const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q));
+      const bi = QUALITY_ORDER.findIndex(q => (b.quality || '').toLowerCase().includes(q));
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+    let remaining = qty;
+    for (const item of candidates) {
+      if (remaining <= 0) break;
+      const avail = item.quantity || 1;
+      const take = Math.min(avail, remaining);
+      item.quantity = avail - take;
+      remaining -= take;
+    }
+    return { ok: true, matchedName: candidates[0].name };
   };
 
   const addVirtual = (name, quality, qty, isRefined) => {
@@ -5617,7 +5676,7 @@ function postValidateTransactions(txList, currentInv) {
 }
 
 // ============================================================
-// TRANSACTION PROCESSOR
+// TRANSACTION PROCESSOR — 🆕 v2.8.4.1 SỬA removeItem
 // ============================================================
 function autoSyncReceivedItem(tx) {
   if (!tx || !tx.name) return false;
@@ -5704,19 +5763,55 @@ function processTransactions(transactionsList) {
     return { isNew: true, newQty: qty };
   };
 
+  // 🆕 v2.8.4.1: Trừ dồn theo phẩm chất
   const removeItem = (name, quality, qty) => {
-    const m = findMatchingInventoryItem(name, inv);
-    if (!m) return { ok: false, reason: 'Không tìm thấy' };
-    if (isIngredientForDifferentRecipe(m.name, name)) return { ok: false, reason: 'Khác recipe nguyên liệu' };
-    const current = m.quantity || 1;
-    const removed = Math.min(qty, current);
-    m.quantity = current - removed;
-    const emptied = m.quantity <= 0;
-    if (emptied) {
-      const idx = inv.indexOf(m);
-      if (idx !== -1) inv.splice(idx, 1);
+    let candidates = findAllMatchingItems(name, inv)
+      .filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    if (candidates.length === 0) return { ok: false, reason: 'Không tìm thấy' };
+    // Ưu tiên phẩm chất nếu AI ghi rõ VÀ đủ số lượng
+    if (quality && quality.trim()) {
+      const qLower = quality.toLowerCase().trim();
+      const qualityMatched = candidates.filter(i =>
+        (i.quality || '').toLowerCase().includes(qLower)
+      );
+      const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0);
+      if (qualityMatched.length > 0 && qualityTotal >= qty) {
+        candidates = qualityMatched;
+      }
     }
-    return { ok: true, removed, emptied, remain: emptied ? 0 : m.quantity };
+    const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
+    if (totalAvail < qty) return { ok: false, reason: `Chỉ có ${totalAvail}` };
+    // Sắp xếp theo phẩm chất thấp trước
+    const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
+    candidates.sort((a, b) => {
+      const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q));
+      const bi = QUALITY_ORDER.findIndex(q => (b.quality || '').toLowerCase().includes(q));
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+    let remaining = qty;
+    let removed = 0;
+    const emptiedItems = [];
+    for (const item of candidates) {
+      if (remaining <= 0) break;
+      const avail = item.quantity || 1;
+      const take = Math.min(avail, remaining);
+      item.quantity = avail - take;
+      removed += take;
+      remaining -= take;
+      if (item.quantity <= 0) emptiedItems.push(item);
+    }
+    emptiedItems.forEach(e => {
+      const idx = inv.indexOf(e);
+      if (idx !== -1) inv.splice(idx, 1);
+    });
+    const remainTotal = findAllMatchingItems(name, inv)
+      .reduce((s, i) => s + (i.quantity || 1), 0);
+    return {
+      ok: true,
+      removed,
+      emptied: emptiedItems.length > 0,
+      remain: remainTotal
+    };
   };
 
   transactionsList.forEach(tx => {
@@ -5998,6 +6093,14 @@ Khi NVC nói "giao nhiệm vụ cho NPC" → QUEST DELEGATION — khác giao d�
 ⛓️ CHUỖI GIAO DỊCH PHỤ THUỘC:
 Khi câu có "sau đó" / "rồi" + >=2 verb kinh tế (bán/mua/thuê/đổi) → chuỗi giao dịch phụ thuộc.
 
+💊 NHẮC ĐẶC BIỆT VỀ PHẨM CHẤT HỖN HỢP (v2.8.4.1):
+- Khi NVC sở hữu cùng tên vật phẩm với nhiều phẩm chất → tách giao dịch riêng.
+- VD túi có: "Thanh Tâm Đan Hạ phẩm x4", "Thanh Tâm Đan Trung phẩm x1"
+- NVC nói "cho hết 5 viên Thanh Tâm Đan" → transactionsList PHẢI là:
+  [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},
+   {"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
+- ⛔ KHÔNG BAO GIỜ viết gộp: [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
+
 🔥 QUY TẮC GHI TRANSACTIONS:
 1. "sell" — BÁN: trừ vật phẩm, CỘNG linh thạch.
 2. "buy" — MUA: CỘNG vật phẩm, TRỪ linh thạch.
@@ -6070,6 +6173,10 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT: Pháp bảo/trận bàn/phù tái sử dụng CẦN LUYỆN HOÁ. Phù tiêu hao/đan dược/nguyên liệu KHÔNG cần luyện hoá.
 30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords vào JSON Codex.
 31. 🛡️ INGREDIENT GUARD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan"... KHÔNG gộp chung.
+31.5. ⚠️⚠️ PHẨM CHẤT HỖN HỢP: Khi NVC sở hữu CÙNG 1 vật phẩm với NHIỀU phẩm chất khác nhau (VD: 4 Thanh Tâm Đan Hạ phẩm + 1 Thanh Tâm Đan Trung phẩm), BẮT BUỘC tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất. TUYỆT ĐỐI KHÔNG ghi gộp "Thanh Tâm Đan x5".
+     Ví dụ SAI:  [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
+     Ví dụ ĐÚNG: [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},{"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
+31.6. 📦 Khi NVC ra lệnh "đưa hết đan dược cho NPC" mà không nêu rõ phẩm chất → AI PHẢI tự đọc [Túi] trong Codex, liệt kê TỪNG phẩm chất 1 dòng giao dịch riêng.
 32. 🎫 "Token phòng luyện đan" → PHẢI gọi "Lệnh Bài Phòng Luyện Đan". Là vật phẩm thuê có thời hạn.
 33. ⚒️ Khi NVC LUYỆN CHẾ → BẮT BUỘC ghi "craftResultList" trong JSON Codex.
 34. 📊 Tỷ lệ phẩm chất khi luyện chế PHỤ THUỘC vào CẤP NGHỀ của NVC.
@@ -6131,6 +6238,15 @@ Khi câu có "sau đó" / "rồi" / "tiếp theo" + >=2 verb kinh tế → CHU�
 - CODE-HANDLED: AI KHÔNG tự bịa số — code tính sẵn.
 - HYBRID: Code tính số chính — AI thêm flavor (<10%).
 - STYLE-ONLY: AI tự do văn phong.
+
+# 💊 PHẨM CHẤT HỖN HỢP (v2.8.4.1)
+Khi NVC sở hữu CÙNG 1 vật phẩm với NHIỀU phẩm chất khác nhau:
+- BẮT BUỘC tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất.
+- VD túi có: "Thanh Tâm Đan Hạ phẩm x4" + "Thanh Tâm Đan Trung phẩm x1"
+- NVC nói "cho hết 5 viên Thanh Tâm Đan" → transactionsList PHẢI là:
+  [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},
+   {"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
+- ⛔ TUYỆT ĐỐI KHÔNG viết gộp: [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
 
 # 📊 QUY TẮC EXP TU LUYỆN
 Mỗi lượt AI phải ước lượng EXP tu luyện NVC nhận được.
@@ -6624,7 +6740,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    _saveVersion: 'v2.8.4',
+    _saveVersion: 'v2.8.4.1',
     inputs: {}
   };
   inputIds.forEach(id => {
@@ -6752,7 +6868,7 @@ async function exportSaveFile() {
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "hongduc_tutien_v2.8.4_save.json";
+  a.download = "hongduc_tutien_v2.8.4.1_save.json";
   a.click();
   log("Xuất save thành công.");
 }
@@ -6784,7 +6900,7 @@ function handleFileSelect(event) {
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle'];
   const cfg = {
-    _version: 'v2.8.4',
+    _version: 'v2.8.4.1',
     _type: 'worldConfig',
     scopes: scopeRegistry,
     professions: professionState,
@@ -6798,7 +6914,7 @@ function exportWorldConfig() {
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'hongduc_world_config_v2.8.4.json';
+  a.download = 'hongduc_world_config_v2.8.4.1.json';
   a.click();
   log('📤 Xuất World Config thành công.');
   alert('📤 Đã xuất World Config!');
@@ -7294,7 +7410,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateMusicUI();
   updateMusicTitle();
 
-  log("✅ v2.8.4 loaded. REFRESH STATE + PROFESSION STATS ready.");
+  log("✅ v2.8.4.1 loaded. REFRESH STATE + PROFESSION STATS + HỖ TRỢ PHẨM CHẤT HỖN HỢP ready.");
 });
 </script>
 </body>

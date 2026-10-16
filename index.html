@@ -3,26 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.4 — REFRESH + PROFESSION STATS</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.5 — HEADER + ITEM SYSTEM</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e;--shadow-sm:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--transition-fast:150ms cubic-bezier(0.4,0,0.2,1);--transition-base:250ms cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background:linear-gradient(135deg,#0b0e14 0%,#0d1117 100%);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px;min-height:100vh}
-/* v2.8.4.2 LAYOUT FIX: header dùng 2 cột - left (menu + tag) / right (music + Game + Start) */
-.header{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);flex-wrap:wrap;gap:8px;box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
-.header-left{display:flex;flex-direction:column;gap:8px;align-items:flex-start;flex-shrink:0}
-.header-right-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;padding-top:2px}
-.header-title{font-size:17px;font-weight:bold;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#388bfd,#8957e5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.3px}
-.game-tag{display:inline-block;font-size:14px;font-weight:bold;color:#3fb950;padding:6px 14px;border-radius:8px;background:linear-gradient(#0d1117,#0d1117) padding-box,linear-gradient(135deg,#ff0000,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#8800ff,#ff00ff) border-box;border:2px solid transparent;text-shadow:0 0 8px rgba(63,185,80,.6);letter-spacing:.5px;box-shadow:0 0 12px rgba(63,185,80,.35);white-space:nowrap;animation:rainbowGlow 4s linear infinite}
-@keyframes rainbowGlow{0%,100%{box-shadow:0 0 12px rgba(63,185,80,.35)}25%{box-shadow:0 0 14px rgba(56,139,253,.45)}50%{box-shadow:0 0 16px rgba(219,97,162,.5)}75%{box-shadow:0 0 14px rgba(210,153,34,.45)}}
-.menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast)}
-.restart-btn{background:var(--accent-green);border-color:#388e3c}
+/* ══════════════════════════════════════════════════════════════
+   v2.8.5 HEADER — 2 HÀNG (giữ nguyên các class cũ, chỉ đổi layout)
+   Hàng 1: [☰] [TAG GAME] [🎮 Game] [⚡ Khởi Tạo Game]
+   Hàng 2: [Music controls]
+   ══════════════════════════════════════════════════════════════ */
+.header{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
+.header-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.header-row-main{justify-content:space-between;width:100%}
+.header-row-music{justify-content:center;padding-top:8px;border-top:1px solid rgba(48,54,61,.6);width:100%}
+.header-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.menu-btn,.restart-btn{background:#21262d;border:1px solid var(--border-color);color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast);flex-shrink:0}
+.menu-btn{padding:8px 12px}
+.menu-btn:hover{background:#30363d}
+.restart-btn{background:var(--accent-green);border-color:#388e3c;white-space:nowrap}
 .restart-btn:hover{background:#2e7d32;transform:translateY(-1px);box-shadow:var(--shadow-md)}
-/* v2.8.4.2: Game tab di chuyển lên header */
-.header-game-tab{background:#21262d;border:1px solid var(--border-color);color:var(--subtext-color);padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast);white-space:nowrap}
+.header-game-tab{background:#21262d;border:1px solid var(--border-color);color:var(--subtext-color);padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;transition:all var(--transition-fast);white-space:nowrap;flex-shrink:0}
 .header-game-tab:hover{background:#30363d;color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-md)}
 .header-game-tab.active{background:linear-gradient(135deg,#388bfd,#8957e5);color:#fff;border-color:transparent;box-shadow:0 0 12px rgba(56,139,253,.5)}
+.game-tag{flex:1;min-width:100px;text-align:center;font-size:13px;font-weight:bold;color:#3fb950;padding:7px 10px;border-radius:8px;background:linear-gradient(#0d1117,#0d1117) padding-box,linear-gradient(135deg,#ff0000,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#8800ff,#ff00ff) border-box;border:2px solid transparent;text-shadow:0 0 8px rgba(63,185,80,.6);letter-spacing:.5px;box-shadow:0 0 12px rgba(63,185,80,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:rainbowGlow 4s linear infinite}
+@keyframes rainbowGlow{0%,100%{box-shadow:0 0 12px rgba(63,185,80,.35)}25%{box-shadow:0 0 14px rgba(56,139,253,.45)}50%{box-shadow:0 0 16px rgba(219,97,162,.5)}75%{box-shadow:0 0 14px rgba(210,153,34,.45)}}
+@media (max-width:480px){
+  .game-tag{font-size:11px;padding:6px 8px;letter-spacing:.2px}
+  .restart-btn,.header-game-tab,.menu-btn{padding:7px 10px;font-size:12px}
+}
+/* ── CÁC CSS CÒN LẠI GIỮ NGUYÊN 100% ── */
 .sidebar{position:fixed;top:0;left:-360px;width:350px;height:100%;background:linear-gradient(180deg,#151921 0%,#0d1117 100%);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto;box-shadow:var(--shadow-lg);backdrop-filter:blur(20px)}
 .sidebar.active{left:0}
 .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:16px;font-weight:bold}
@@ -182,7 +193,13 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .sync-log{background:rgba(137,87,229,.1);border-left:3px solid #8957e5;padding:4px 8px;font-size:11px;color:#b392f0;margin:4px 0;border-radius:4px}
 .item-cat-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold}
 .cat-phap-bao{background:rgba(137,87,229,.2);color:#b392f0;border:1px solid #8957e5}
+.cat-linh-bao{background:rgba(210,153,34,.25);color:#f0c040;border:1px solid #d29922}
+.cat-co-bao{background:rgba(218,54,51,.2);color:#f85149;border:1px solid #da3633}
+.cat-tru-vat-do{background:rgba(31,158,176,.2);color:#4dd0e1;border:1px solid #1f9eb0}
 .cat-tran-ban{background:rgba(56,139,253,.2);color:#388bfd;border:1px solid #388bfd}
+.cat-khoi-loi{background:rgba(139,148,158,.25);color:#c9d1d9;border:1px solid #8b949e}
+.cat-dich-hoa{background:rgba(227,112,45,.25);color:#ff9a5c;border:1px solid #e3702d}
+.cat-yeu-dan{background:rgba(219,97,162,.2);color:#f0a0d0;border:1px solid #db61a2}
 .cat-phu-reuse{background:rgba(210,153,34,.2);color:#d29922;border:1px solid #d29922}
 .cat-phu-consumable{background:rgba(227,112,45,.2);color:#e3702d;border:1px solid #e3702d}
 .cat-dan-duoc{background:rgba(63,185,80,.2);color:#3fb950;border:1px solid #238636}
@@ -191,6 +208,15 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .cat-bi-tich{background:rgba(139,148,158,.2);color:#c9d1d9;border:1px solid #8b949e}
 .cat-khac{background:rgba(139,148,158,.15);color:#8b949e;border:1px solid #30363d}
 .cat-lenh-bai{background:rgba(31,158,176,.2);color:#4dd0e1;border:1px solid #1f9eb0}
+.tier-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid}
+.tier-pham{background:rgba(139,148,158,.15);color:#8b949e;border-color:#8b949e}
+.tier-ha{background:rgba(201,209,217,.15);color:#c9d1d9;border-color:#c9d1d9}
+.tier-trung{background:rgba(63,185,80,.2);color:#3fb950;border-color:#3fb950}
+.tier-thuong{background:rgba(56,139,253,.2);color:#388bfd;border-color:#388bfd}
+.tier-cuc{background:rgba(137,87,229,.2);color:#b392f0;border-color:#8957e5}
+.tier-linh{background:rgba(210,153,34,.25);color:#f0c040;border-color:#d29922}
+.tier-tien{background:rgba(219,97,162,.25);color:#f0a0d0;border-color:#db61a2}
+.tier-than{background:rgba(218,54,51,.25);color:#ff7b72;border-color:#da3633}
 .refine-status-refined{background:rgba(63,185,80,.2);color:#3fb950;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #238636}
 .refine-status-pending{background:rgba(210,153,34,.2);color:#d29922;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #d29922}
 .refine-status-consumable{background:rgba(56,139,253,.2);color:#388bfd;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:bold;border:1px solid #388bfd}
@@ -283,29 +309,38 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     v2.8.5 HEADER — 2 HÀNG GỌN GÀNG (không còn vỡ layout mobile)
+     Hàng 1: [☰] [TAG GAME] [🎮 Game] [⚡ KHỞI TẠO GAME]
+     Hàng 2: [Music controls]
+     ══════════════════════════════════════════════════════════════ -->
 <div class="header">
-<div class="header-left">
-<button class="menu-btn" onclick="toggleSidebar()">☰</button>
-<span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.4</span>
-</div>
-<div class="header-right-group">
-<div class="music-controls">
-<button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
-<button class="music-btn" id="musicNextBtn" onclick="nextMusic()" title="Bài kế tiếp">⏭</button>
-<span class="music-title" id="musicTitle">Chưa có nhạc</span>
-<input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.05" value="0.5" onchange="setMusicVolume(this.value)">
-</div>
-<button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
-<button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
-</div>
+  <div class="header-row header-row-main">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.5</span>
+    <div class="header-actions">
+      <button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
+      <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
+    </div>
+  </div>
+  <div class="header-row header-row-music">
+    <div class="music-controls">
+      <button class="music-btn" id="musicPlayBtn" onclick="toggleMusic()" title="Phát/Tạm dừng">▶</button>
+      <button class="music-btn" id="musicNextBtn" onclick="nextMusic()" title="Bài kế tiếp">⏭</button>
+      <span class="music-title" id="musicTitle">Chưa có nhạc</span>
+      <input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.05" value="0.5" onchange="setMusicVolume(this.value)">
+    </div>
+  </div>
 </div>
 <audio id="bgMusic" loop></audio>
 
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 
-<div class="section-header">🔄 v2.8.4 CẬP NHẬT</div>
+<div class="section-header">🔄 v2.8.5 CẬP NHẬT</div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#db61a2);font-size:12px" onclick="refreshGameStateFromHistory()">🔄 Cập Nhật Trạng Thái (5 lượt)</button>
+<button class="sidebar-item" style="background:linear-gradient(135deg,#e3702d,#d29922);font-size:12px" onclick="showItemSystemInfo()">📦 Hệ Thống Phân Loại Vật Phẩm</button>
 
 <div class="section-header">🔵 Gemini (Multi-Key)</div>
 <div class="form-group">
@@ -369,21 +404,21 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
 
-<div class="section-header">⚒️ Nghề Nghiệp (v2.8.4)</div>
+<div class="section-header">⚒️ Nghề Nghiệp (v2.8.5)</div>
 <div class="toggle-row"><span>Bật Profession System</span><div class="toggle-switch active" id="toggleProfessionSystem" onclick="toggleSetting('professionSystem')"></div></div>
 <div class="toggle-row"><span>Auto-tính EXP nghề</span><div class="toggle-switch active" id="toggleProfessionAutoExp" onclick="toggleSetting('professionAutoExp')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-cyan);font-size:12px" onclick="showProfessionStats()">📊 Thống Kê Nghề</button>
 <button class="sidebar-item" style="background:var(--accent-pink);font-size:11px" onclick="simulateCraft('luyen_dan')">🧪 Mô Phỏng Luyện Đan</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="resetProfessions()">🔄 Reset Nghề</button>
 
-<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.4)</div>
+<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.5)</div>
 <div class="toggle-row"><span>Bật Breakthrough Requirements</span><div class="toggle-switch active" id="toggleBreakthroughReq" onclick="toggleSetting('breakthroughReq')"></div></div>
 <div class="toggle-row"><span>Cảnh báo thiếu điều kiện</span><div class="toggle-switch active" id="toggleBreakthroughWarn" onclick="toggleSetting('breakthroughWarn')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-gold);color:#000;font-size:12px" onclick="openBreakthroughPanel()">⚡ Kiểm Tra Đột Phá</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showBreakthroughTable()">📖 Bảng Yêu Cầu Đột Phá</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#388bfd,#1f6beb);font-size:11px" onclick="showRealmProgressionTable()">📈 Bảng Lộ Trình Cảnh Giới</button>
 
-<div class="section-header">🎯 Quest Delegation (v2.8.4)</div>
+<div class="section-header">🎯 Quest Delegation (v2.8.5)</div>
 <div class="toggle-row"><span>Bật Quest Delegation Detection</span><div class="toggle-switch active" id="toggleQuestDelegation" onclick="toggleSetting('questDelegation')"></div></div>
 <div class="toggle-row"><span>Bật Transaction Chain Detection</span><div class="toggle-switch active" id="toggleTransactionChain" onclick="toggleSetting('transactionChain')"></div></div>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showQuestDelegationStats()">📊 Thống Kê Quest Delegation</button>
@@ -394,7 +429,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="sidebar-item" style="background:#7d2828;font-size:12px;margin-top:8px" onclick="scanChineseChars()">🔍 Quét CJK</button>
 <button class="sidebar-item" style="background:#8b2020;font-size:12px" onclick="autoCleanCJK()">🧹 Xóa CJK</button>
 
-<div class="section-header">🎨 Scope Registry v2.8.4</div>
+<div class="section-header">🎨 Scope Registry v2.8.5</div>
 <button class="sidebar-item" style="background:var(--accent-purple);font-size:12px" onclick="restoreDefaultScopes()">🔄 Khôi Phục 16 Scope</button>
 <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px" onclick="showScopeStats()">📊 Thống Kê Scope</button>
 <button class="sidebar-item" style="background:#444;font-size:11px" onclick="openTagLegend()">🏷️ Xem Chú Thích Tag</button>
@@ -537,14 +572,14 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.4 — Hệ thống tag</div>
+  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.5 — Hệ thống tag</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
   <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
     <div class="input-header">
       <div>
-        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.4</div>
+        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.5</div>
         <div class="label-desc">16 scope được phân nhóm theo <b>handledBy</b>: <span style="color:#3fb950">🤖 CODE</span> · <span style="color:#d29922">⚖️ HYBRID</span> · <span style="color:#8b949e">🎨 STYLE</span>.</div>
       </div>
       <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM</button>
@@ -582,7 +617,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.4</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.5</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
@@ -702,7 +737,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <div id="prof" class="tab-content">
-<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.4)</div>
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.5)</div>
 <div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. 1 phần dược liệu = 5 viên hạ phẩm (base) + bonus từ tố chất NVC.</div>
 
 <div class="prof-container">
@@ -722,7 +757,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.4)</div>
+  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.5)</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
@@ -809,10 +844,8 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.8.4 (Refresh State + Profession Stats) initialized... Ready.</div>
-</div>
-
-<div id="thienDaoModal" class="thiendao-modal">
+<div id="sysLogs" class="log-box">> System v2.8.5 (Header + Item System) initialized... Ready.</div>
+</div><div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
 <div class="thiendao-header">
 <div class="thiendao-title">🔍 THIÊN ĐẠO</div>
@@ -825,26 +858,22 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="thienDaoResults"></div>
 </div>
 </div>
-<script>// ============================================================
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.4
-// - v2.8.4 NEW:
-//   + GAME TAG: xanh lá + viền ngũ sắc, đặt NGAY SÁT nút Khởi Tạo Game
-//   + MC STATS: Thể chất / Thần niệm / Thiên phú
-//   + REFRESH STATE: cập nhật trạng thái từ 5 lượt gần nhất
-//   + PROFESSION OUTPUT: 1 phần → 5 viên base + bonus tố chất
-//   + v2.8.4.1 HOTFIX: HỖ TRỢ PHẨM CHẤT HỖN HỢP
-//     → findAllMatchingItems() gom tất cả item cùng tên
-//     → deductVirtual()/removeItem() trừ dồn theo phẩm chất (Hạ → Tiên)
-//     → Rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất
-// - v2.8.4.2 LAYOUT + UNDO FIX:
-//   + Tag game-tag chuyển sang trái dưới nút ☰ cấu hình
-//   + Tab Game chuyển lên header, cạnh nút Khởi Tạo Game
-//   + Fix undo: khởi tạo stateSnapshots trong DOMContentLoaded
-//   + Fix undo: siết điều kiện, snapshot cho refresh
+<script>
+// ============================================================
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.5
+// - v2.8.5 NEW:
+//   + HEADER LAYOUT: 2 hàng gọn gàng (Tag + Actions / Music)
+//   + ITEM SYSTEM OVERHAUL:
+//     → Sắp xếp PRIORITY detectItemCategory đúng thứ tự
+//     → Loại bỏ keyword generic khỏi PHAP_BAO
+//     → 8 NHÓM CẦN LUYỆN HOÁ + 7 NHÓM KHÔNG CẦN
+//     → Hệ thống TIER 8 cấp với cost multiplier
+//     → Giá luyện hoá tự động theo tier + category + realm
+//   + Giữ nguyên toàn bộ logic v2.8.4.2 (undo, refresh state, mixed quality)
 // ============================================================
 const DB_NAME = 'HongDucTuTienDB';
 const STORE_NAME = 'GameSaves';
-const DB_VERSION = 2804;
+const DB_VERSION = 2805;
 
 const MAX_RECENT_TURNS = 6;
 const SUMMARY_TRIGGER_TURNS = 3;
@@ -920,7 +949,7 @@ let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
 
 // ══════════════════════════════════════════════════════════════
-// v2.8.4: MC STATS — Tố chất ảnh hưởng luyện chế
+// MC STATS — Tố chất ảnh hưởng luyện chế
 // ══════════════════════════════════════════════════════════════
 let mcStats = {
   theChat: 'Phàm',
@@ -1079,6 +1108,357 @@ const MINOR_BASE_SUCCESS_RATE = 0.85;
 const MINOR_FAIL_EXP_LOSS = 0.10;
 
 // ══════════════════════════════════════════════════════════════
+// v2.8.5 ITEM TIER SYSTEM — CẤP BẬC VẬT PHẨM
+// ══════════════════════════════════════════════════════════════
+const ITEM_TIERS = {
+  'Phàm phẩm': { order: 0, mult: 1, color: '#8b949e', label: 'Phàm phẩm', class: 'tier-pham' },
+  'Hạ phẩm': { order: 1, mult: 2, color: '#c9d1d9', label: 'Hạ phẩm', class: 'tier-ha' },
+  'Trung phẩm': { order: 2, mult: 4, color: '#3fb950', label: 'Trung phẩm', class: 'tier-trung' },
+  'Thượng phẩm': { order: 3, mult: 8, color: '#388bfd', label: 'Thượng phẩm', class: 'tier-thuong' },
+  'Cực phẩm': { order: 4, mult: 16, color: '#b392f0', label: 'Cực phẩm', class: 'tier-cuc' },
+  'Linh phẩm': { order: 5, mult: 40, color: '#f0c040', label: 'Linh phẩm', class: 'tier-linh' },
+  'Tiên phẩm': { order: 6, mult: 100, color: '#f0a0d0', label: 'Tiên phẩm', class: 'tier-tien' },
+  'Thần phẩm': { order: 7, mult: 300, color: '#ff7b72', label: 'Thần phẩm', class: 'tier-than' }
+};
+
+const TIER_ALIASES = {
+  'pham': 'Phàm phẩm', 'phàm': 'Phàm phẩm', 'binh thuong': 'Phàm phẩm', 'bình thường': 'Phàm phẩm', 'thuong': 'Phàm phẩm', 'thường': 'Phàm phẩm',
+  'ha': 'Hạ phẩm', 'hạ': 'Hạ phẩm', 'lower': 'Hạ phẩm',
+  'trung': 'Trung phẩm', 'mid': 'Trung phẩm',
+  'thuong pham': 'Thượng phẩm', 'thượng': 'Thượng phẩm', 'cao': 'Thượng phẩm', 'upper': 'Thượng phẩm',
+  'cuc': 'Cực phẩm', 'cực': 'Cực phẩm', 'extreme': 'Cực phẩm',
+  'linh': 'Linh phẩm', 'linh pham': 'Linh phẩm',
+  'tien': 'Tiên phẩm', 'tiên': 'Tiên phẩm', 'immortal': 'Tiên phẩm',
+  'than': 'Thần phẩm', 'thần': 'Thần phẩm', 'divine': 'Thần phẩm'
+};
+
+function normalizeTier(qualityStr) {
+  if (!qualityStr) return 'Phàm phẩm';
+  const q = qualityStr.toLowerCase().trim();
+  for (const [k, v] of Object.entries(ITEM_TIERS)) {
+    if (q === k.toLowerCase() || q.includes(k.toLowerCase())) return k;
+  }
+  for (const [alias, tier] of Object.entries(TIER_ALIASES)) {
+    if (q === alias || q.includes(alias)) return tier;
+  }
+  return 'Phàm phẩm';
+}
+
+function getTierInfo(tierName) {
+  const normalized = normalizeTier(tierName);
+  return ITEM_TIERS[normalized] || ITEM_TIERS['Phàm phẩm'];
+}
+
+function getTierCostMultiplier(tierName) {
+  return getTierInfo(tierName).mult;
+}
+
+function getTierBadgeHtml(quality) {
+  const tierInfo = getTierInfo(quality);
+  return `<span class="tier-badge ${tierInfo.class}">${tierInfo.label}</span>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// v2.8.5 ITEM CATEGORIES — SẮP XẾP THEO PRIORITY
+// Thứ tự detect (cao → thấp):
+//  1. Linh Thạch → 2. Lệnh Bài → 3. Yêu Đan → 4. Đan Dược → 5. Nguyên Liệu
+//  6. Trữ Vật Đồ → 7. Khôi Lỗi → 8. Dị Hỏa → 9. Bí Tịch
+//  10. Trận Bàn → 11. Phù Tiêu Hao → 12. Phù Tái Sử Dụng
+//  13. Cổ Bảo → 14. Linh Bảo → 15. Pháp Bảo → 16. Khác
+// ══════════════════════════════════════════════════════════════
+const ITEM_CATEGORIES = {
+  LINH_THACH: {
+    id: 'linh_thach', label: 'Linh Thạch', icon: '💎',
+    needsRefine: false, consumable: true,
+    badgeClass: 'cat-linh-thach', priority: 1,
+    baseRefineCost: 0,
+    keywords: ['linh thạch', 'linh thach', 'hạ phẩm linh thạch', 'trung phẩm linh thạch', 'thượng phẩm linh thạch', 'cực phẩm linh thạch', 'tiên thạch', 'linh thạch hạ phẩm', 'linh thạch trung phẩm', 'linh thạch thượng phẩm']
+  },
+  LENH_BAI: {
+    id: 'lenh_bai', label: 'Lệnh Bài / Token', icon: '🎫',
+    needsRefine: false, consumable: true,
+    badgeClass: 'cat-lenh-bai', priority: 2,
+    baseRefineCost: 0,
+    keywords: ['lệnh bài', 'lenh bai', 'token', 'phiếu', 'vé', 'thẻ', 'lệnh phù']
+  },
+  YEU_DAN: {
+    id: 'yeu_dan', label: 'Yêu Đan / Nội Đan', icon: '🔴',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-yeu-dan', priority: 3,
+    baseRefineCost: 20,
+    keywords: ['yêu đan', 'yeu dan', 'nội đan', 'noi dan', 'tinh hạch', 'tinh hach', 'yêu hạch', 'yêu cốt', 'linh phách', 'linh phach']
+  },
+  DAN_DUOC: {
+    id: 'dan_duoc', label: 'Đan Dược', icon: '💊',
+    needsRefine: false, consumable: true,
+    badgeClass: 'cat-dan-duoc', priority: 4,
+    baseRefineCost: 0,
+    keywords: ['đan dược', 'dan duoc', 'linh đan', 'linh dan', 'đan', 'hoàn', 'tán', 'cao', 'thang', 'tụ khí đan', 'tu khi dan', 'trúc cơ đan', 'truc co dan', 'kim nguyên đan', 'kim nguyen dan', 'ngưng anh đan', 'ngung anh dan', 'hóa thần đan', 'hoa than dan', 'thanh tâm đan', 'thanh tam dan', 'hồi khí đan', 'hoi khi dan', 'bồi nguyên đan', 'boi nguyen dan', 'tẩy tủy đan', 'tay tuy dan', 'phá cảnh đan', 'pha canh dan', 'tụ linh đan', 'tu linh dan', 'huyết đan', 'huyet dan']
+  },
+  NGUYEN_LIEU: {
+    id: 'nguyen_lieu', label: 'Nguyên Liệu', icon: '🌿',
+    needsRefine: false, consumable: true,
+    badgeClass: 'cat-nguyen-lieu', priority: 5,
+    baseRefineCost: 0,
+    keywords: ['nguyên liệu', 'nguyen lieu', 'linh thảo', 'linh thao', 'linh dược', 'linh duoc', 'thảo', 'hoa', 'quả', 'củ', 'rễ', 'lá', 'khoáng', 'khoáng thạch', 'khoang thach', 'quặng', 'quang', 'tinh thạch', 'tinh thach', 'linh mộc', 'linh moc', 'linh tuyền thủy', 'linh tuyen thuy', 'yêu cốt thô', 'long huyết', 'long huyet', 'phượng huyết', 'phuong huyet', 'chu sa', 'linh mực', 'trận kỳ thô']
+  },
+  TRU_VAT_DO: {
+    id: 'tru_vat_do', label: 'Trữ Vật Đồ', icon: '🎒',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-tru-vat-do', priority: 6,
+    baseRefineCost: 30,
+    keywords: ['túi trữ vật', 'tui tru vat', 'nhẫn trữ vật', 'nhan tru vat', 'lạc bảo phù', 'lac bao phu', 'trữ vật', 'tru vat', 'trữ vật đồ']
+  },
+  KHOI_LOI: {
+    id: 'khoi_loi', label: 'Khôi Lỗi', icon: '🤖',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-khoi-loi', priority: 7,
+    baseRefineCost: 40,
+    keywords: ['khôi lỗi', 'khoi loi', 'rối', 'roi', 'puppet', 'khôi lỗi nhân', 'khôi lỗi thú']
+  },
+  DICH_HOA: {
+    id: 'dich_hoa', label: 'Dị Hỏa / Linh Vật', icon: '🔥',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-dich-hoa', priority: 8,
+    baseRefineCost: 60,
+    keywords: ['dị hỏa', 'di hoa', 'linh nhãn', 'linh nhan', 'thiên địa linh vật', 'thien dia linh vat', 'linh vật', 'linh vat', 'dị bảo', 'di bao', 'cổ hỏa', 'co hoa', 'thần hỏa', 'than hoa']
+  },
+  BI_TICH: {
+    id: 'bi_tich', label: 'Bí Tịch / Ngọc Giản', icon: '📖',
+    needsRefine: false, consumable: false,
+    badgeClass: 'cat-bi-tich', priority: 9,
+    baseRefineCost: 0,
+    keywords: ['bí tịch', 'bi tich', 'bí kíp', 'bi kip', 'công pháp', 'cong phap', 'ngọc giản', 'ngoc gian', 'ngọc bội', 'ngoc boi', 'quyển trục', 'quyen truc', 'thư tịch', 'thu tich', 'đan phương', 'dan phuong', 'trận đồ', 'tran do', 'phù văn', 'phu van', 'khế ước', 'khe uoc', 'linh hồn khế', 'linh hon khe', 'bí pháp', 'bi phap']
+  },
+  TRUYEN_BAN: {
+    id: 'tran_ban', label: 'Trận Bàn / Trận Kỳ', icon: '🔮',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-tran-ban', priority: 10,
+    baseRefineCost: 25,
+    keywords: ['trận bàn', 'tran ban', 'trận kỳ', 'tran ky', 'trận văn', 'tran van', 'trận đồ', 'tran do', 'trận pháp', 'tran phap', 'mê trận bàn', 'me tran ban', 'khốn trận bàn', 'khon tran ban', 'sát trận bàn', 'sat tran ban', 'tụ linh bàn', 'tu linh ban', 'phòng ngự trận bàn', 'phong ngu tran ban']
+  },
+  PHU_TIEU_HAO: {
+    id: 'phu_consumable', label: 'Phù Lục Tiêu Hao', icon: '📃',
+    needsRefine: false, consumable: true,
+    badgeClass: 'cat-phu-consumable', priority: 11,
+    baseRefineCost: 0,
+    keywords: ['hỏa cầu phù', 'hoa cau phu', 'tốc hành phù', 'toc hanh phu', 'lôi phù', 'loi phu', 'băng phù', 'bang phu', 'phong phù', 'phong phu', 'độn địa phù', 'don dia phu', 'hồi khí phù', 'hoi khi phu', 'chữa thương phù', 'chua thuong phu', 'kim quang phù', 'kim quang phu', 'liệt hỏa phù', 'liet hoa phu', 'thiên lôi phù', 'thien loi phu', 'thủy tiễn phù', 'thuy tien phu', 'phù tiêu hao', 'phu tieu hao', 'phù lục tiêu hao']
+  },
+  PHU_TAI_SU_DUNG: {
+    id: 'phu_reusable', label: 'Phù Lục Tái Sử Dụng', icon: '📜',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-phu-reuse', priority: 12,
+    baseRefineCost: 35,
+    keywords: ['linh phù', 'linh phu', 'tiên phù', 'tien phu', 'thần phù', 'than phu', 'bản mệnh phù', 'ban menh phu', 'hộ thân phù cao cấp', 'ho than phu cao cap', 'trấn sơn phù', 'tran son phu', 'phong ấn phù', 'phong an phu', 'phù tái sử dụng', 'phu tai su dung']
+  },
+  CO_BAO: {
+    id: 'co_bao', label: 'Cổ Bảo / Thần Binh', icon: '⚜️',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-co-bao', priority: 13,
+    baseRefineCost: 100,
+    keywords: ['cổ bảo', 'co bao', 'thần binh', 'than binh', 'cổ thần binh', 'co than binh', 'cổ linh bảo', 'co linh bao', 'thượng cổ bảo', 'thuong co bao', 'viễn cổ bảo', 'vien co bao']
+  },
+  LINH_BAO: {
+    id: 'linh_bao', label: 'Linh Bảo', icon: '💫',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-linh-bao', priority: 14,
+    baseRefineCost: 75,
+    keywords: ['linh bảo', 'linh bao', 'thông thiên linh bảo', 'thong thien linh bao', 'hậu thiên linh bảo', 'hau thien linh bao', 'tiên thiên linh bảo', 'tien thien linh bao']
+  },
+  PHAP_BAO: {
+    id: 'phap_bao', label: 'Pháp Bảo / Pháp Khí', icon: '⚔️',
+    needsRefine: true, consumable: false,
+    badgeClass: 'cat-phap-bao', priority: 15,
+    baseRefineCost: 50,
+    keywords: [
+      'pháp bảo', 'phap bao', 'pháp khí', 'phap khi', 'linh khí', 'linh khi',
+      'phi kiếm', 'phi kiem', 'phi đao', 'phi dao', 'phi thương', 'phi thuong',
+      'linh kiếm', 'linh kiem', 'linh đao', 'linh dao',
+      'bản mệnh pháp bảo', 'ban menh phap bao', 'bản mệnh kiếm', 'ban menh kiem',
+      'huyết kiếm', 'huyet kiem', 'phệ huyết kiếm', 'phe huyet kiem',
+      'kiếm', 'kiem', 'đao', 'dao', 'thương', 'thuong', 'côn', 'con', 'roi',
+      'nhẫn', 'nhan', 'kính', 'kinh', 'phiến', 'phien', 'châu', 'chau',
+      'tháp', 'thap', 'chung', 'ấn', 'an', 'kỳ', 'ky', 'phan', 'bình', 'binh',
+      'hồ', 'ho', 'đại', 'dai', 'linh chu', 'linh thuyền', 'linh thuyen',
+      'phi thuyền', 'phi thuyen', 'bảo thuyền', 'bao thuyen',
+      'đan lô', 'dan lo', 'luyện khí lô', 'luyen khi lo'
+    ]
+  },
+  KHAC: {
+    id: 'khac', label: 'Khác', icon: '📦',
+    needsRefine: false, consumable: false,
+    badgeClass: 'cat-khac', priority: 99,
+    baseRefineCost: 0,
+    keywords: []
+  }
+};
+
+// Sắp xếp category theo priority (cao → thấp)
+const ITEM_CATEGORY_PRIORITY = Object.entries(ITEM_CATEGORIES)
+  .sort((a, b) => a[1].priority - b[1].priority)
+  .map(([k, v]) => k);
+
+// ══════════════════════════════════════════════════════════════
+// DETECT ITEM CATEGORY — v2.8.5 SỬA PRIORITY LOGIC
+// ══════════════════════════════════════════════════════════════
+function detectItemCategory(name, quality, effect) {
+  const rawName = (name || '').trim();
+  const text = (rawName + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
+  const nameLower = rawName.toLowerCase();
+  const nameNorm = normalizeVN(rawName);
+
+  // 1. Check TÊN trước (không phải effect) theo PRIORITY
+  for (const catKey of ITEM_CATEGORY_PRIORITY) {
+    if (catKey === 'KHAC') continue;
+    const cat = ITEM_CATEGORIES[catKey];
+    for (const kw of cat.keywords) {
+      const kwLower = kw.toLowerCase().trim();
+      const kwNorm = normalizeVN(kwLower);
+      if (nameLower === kwLower || nameNorm === kwNorm) return catKey;
+      if (kwLower.length >= 4 && nameLower.includes(kwLower)) return catKey;
+      if (kwNorm.length >= 4 && nameNorm.includes(kwNorm)) return catKey;
+    }
+  }
+
+  // 2. Fallback: check toàn bộ text (name + quality + effect)
+  for (const catKey of ITEM_CATEGORY_PRIORITY) {
+    if (catKey === 'KHAC') continue;
+    const cat = ITEM_CATEGORIES[catKey];
+    for (const kw of cat.keywords) {
+      const kwLower = kw.toLowerCase().trim();
+      if (kwLower.length >= 5 && text.includes(kwLower)) return catKey;
+    }
+  }
+
+  return 'KHAC';
+}
+
+function getItemCategoryInfo(catKey) {
+  return ITEM_CATEGORIES[catKey] || ITEM_CATEGORIES.KHAC;
+}
+
+function itemNeedsRefine(item) {
+  const cat = item.category || detectItemCategory(item.name, item.quality, item.effect);
+  return getItemCategoryInfo(cat).needsRefine;
+}
+
+// ══════════════════════════════════════════════════════════════
+// v2.8.5 REFINE COST CALCULATOR
+// Công thức: baseCost × tierMult × realmBonus
+// ══════════════════════════════════════════════════════════════
+function getRefineCost(item) {
+  const catKey = item.category || detectItemCategory(item.name, item.quality, item.effect);
+  const catInfo = getItemCategoryInfo(catKey);
+  if (!catInfo.needsRefine) return 0;
+
+  const baseCost = catInfo.baseRefineCost || 10;
+  const tierName = normalizeTier(item.quality);
+  const tierMult = getTierCostMultiplier(tierName);
+
+  let realmBonus = 1.0;
+  try {
+    const levelStr = document.getElementById('mcLevel')?.value || 'Luyện Khí tầng 1';
+    const parsed = parseRealmLevel(levelStr);
+    const realmMap = { 'LK': 1.0, 'TC': 1.5, 'KD': 2.5, 'NA': 4.0, 'HT': 6.0, 'LH': 10.0 };
+    realmBonus = realmMap[parsed.realm] || 1.0;
+  } catch (e) { }
+
+  const finalCost = Math.max(1, Math.round(baseCost * tierMult * realmBonus));
+  return finalCost;
+}
+
+function getRefineCostBreakdown(item) {
+  const catKey = item.category || detectItemCategory(item.name, item.quality, item.effect);
+  const catInfo = getItemCategoryInfo(catKey);
+  const tierName = normalizeTier(item.quality);
+  const tierInfo = getTierInfo(tierName);
+  const baseCost = catInfo.baseRefineCost || 10;
+  let realmBonus = 1.0;
+  let realmName = 'LK';
+  try {
+    const levelStr = document.getElementById('mcLevel')?.value || 'Luyện Khí tầng 1';
+    const parsed = parseRealmLevel(levelStr);
+    realmName = parsed.realm;
+    const realmMap = { 'LK': 1.0, 'TC': 1.5, 'KD': 2.5, 'NA': 4.0, 'HT': 6.0, 'LH': 10.0 };
+    realmBonus = realmMap[parsed.realm] || 1.0;
+  } catch (e) { }
+  const finalCost = Math.max(1, Math.round(baseCost * tierInfo.mult * realmBonus));
+  return {
+    category: catInfo.label,
+    baseCost,
+    tier: tierName,
+    tierMult: tierInfo.mult,
+    realm: realmName,
+    realmBonus,
+    finalCost
+  };
+}
+
+function showItemSystemInfo() {
+  openThienDao();
+  const resultsDiv = document.getElementById('thienDaoResults');
+  let html = `<div style="color:#e3702d;font-size:14px;margin-bottom:10px;font-weight:bold">📦 HỆ THỐNG PHÂN LOẠI VẬT PHẨM v2.8.5</div>`;
+
+  html += `<div class="thiendao-result" style="border-left:3px solid #d29922">
+    <div class="thiendao-result-title" style="color:#d29922">📊 CẤP BẬC VẬT PHẨM (TIER SYSTEM)</div>
+    <div class="thiendao-result-body" style="font-family:monospace;font-size:11px">`;
+  for (const [tier, info] of Object.entries(ITEM_TIERS)) {
+    html += `<span class="tier-badge ${info.class}" style="margin:2px">${info.label}</span> <b>×${info.mult}</b> hệ số giá luyện hoá<br>`;
+  }
+  html += `</div></div>`;
+
+  html += `<div class="thiendao-result" style="border-left:3px solid #8957e5">
+    <div class="thiendao-result-title" style="color:#8957e5">🔮 NHÓM CẦN LUYỆN HOÁ</div>
+    <div class="thiendao-result-body" style="font-size:12px;line-height:1.7">
+      <b>1. Pháp Bảo / Pháp Khí</b> (⚔️): Kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn...<br>
+      <em>→ Đả thông cấm chế, thu vào đan điền ôn dưỡng, điều khiển bằng thần thức.</em><br><br>
+      <b>2. Linh Bảo</b> (💫): Thông Thiên Linh Bảo, Tiên Thiên / Hậu Thiên Linh Bảo<br>
+      <em>→ Cấp cao hơn pháp bảo, có linh tính riêng.</em><br><br>
+      <b>3. Cổ Bảo / Thần Binh</b> (⚜️): Pháp bảo thời cổ đại, chứa sát khí/cấm chế mạnh<br>
+      <em>→ Cần tinh huyết hoặc linh lực cấp cao để xóa dấu ấn cũ.</em><br><br>
+      <b>4. Trữ Vật Đồ</b> (🎒): Túi trữ vật, nhẫn trữ vật, lạc bảo phù<br>
+      <em>→ Để lại thần thức ấn ký, chỉ khi luyện hoá mới xem/thu/phóng đồ được.</em><br><br>
+      <b>5. Trận Bàn / Trận Kỳ</b> (🔮): Bộ trận pháp cao cấp<br>
+      <em>→ Luyện hoá trận bàn làm trung tâm điều khiển (trận nhãn).</em><br><br>
+      <b>6. Khôi Lỗi</b> (🤖): Rối, khôi lỗi chiến đấu<br>
+      <em>→ Đặt thần thức phân thân vào hạt nhân để điều khiển.</em><br><br>
+      <b>7. Dị Hỏa / Thiên Địa Linh Vật</b> (🔥)<br>
+      <em>→ Khu phục sát khí, năng lượng bạo ngược, hợp nhất vào cơ thể.</em><br><br>
+      <b>8. Yêu Đan / Nội Đan</b> (🔴)<br>
+      <em>→ Loại bỏ tạp chất, ma tính/sát khí trước khi hấp thụ hoặc dùng làm năng lượng.</em>
+    </div>
+  </div>`;
+
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950">
+    <div class="thiendao-result-title" style="color:#3fb950">✅ NHÓM KHÔNG CẦN LUYỆN HOÁ</div>
+    <div class="thiendao-result-body" style="font-size:12px;line-height:1.7">
+      <b>1. Đan Dược</b> (💊): Cơ thể tự hấp thụ dược lực khi vận công.<br>
+      <b>2. Linh Thảo / Nguyên Liệu</b> (🌿): Ăn trực tiếp hoặc chế biến.<br>
+      <b>3. Phù Lục Tiêu Hao</b> (📃): Kích hoạt bằng chút linh lực, dùng 1 lần rồi mất.<br>
+      <b>4. Linh Thạch</b> (💎): Tiền tệ, dùng trực tiếp hoặc nạp vào trận nhãn.<br>
+      <b>5. Bí Tịch / Ngọc Giản</b> (📖): Dán lên trán, chìm thần thức để đọc.<br>
+      <b>6. Lệnh Bài / Token</b> (🎫): Vật phẩm thuê/mượn có thời hạn.
+    </div>
+  </div>`;
+
+  html += `<div class="thiendao-result" style="border-left:3px solid #388bfd">
+    <div class="thiendao-result-title" style="color:#388bfd">💰 CÔNG THỨC TÍNH GIÁ LUYỆN HOÁ</div>
+    <div class="thiendao-result-body" style="font-family:monospace;font-size:11px">
+<b>Giá = baseCost × tierMult × realmBonus</b><br><br>
+• <b>baseCost</b>: Pháp Bảo=50, Linh Bảo=75, Cổ Bảo=100, Trữ Vật Đồ=30, Trận Bàn=25, Khôi Lỗi=40, Dị Hỏa=60, Yêu Đan=20<br>
+• <b>tierMult</b>: Phàm=1, Hạ=2, Trung=4, Thượng=8, Cực=16, Linh=40, Tiên=100, Thần=300<br>
+• <b>realmBonus</b>: LK=1, TC=1.5, KD=2.5, NA=4, HT=6, LH=10<br><br>
+<b>Ví dụ:</b><br>
+• Phi Kiếm Hạ phẩm (LK): 50 × 2 × 1 = <b>100 linh thạch</b><br>
+• Phi Kiếm Thượng phẩm (TC): 50 × 8 × 1.5 = <b>600 linh thạch</b><br>
+• Cổ Bảo Tiên phẩm (KD): 100 × 100 × 2.5 = <b>25,000 linh thạch</b>
+    </div>
+  </div>`;
+
+  resultsDiv.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
 // PROFESSION SYSTEM
 // ══════════════════════════════════════════════════════════════
 const PROFESSION_TYPES = {
@@ -1111,9 +1491,6 @@ let professionState = {
   tran_phap: { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' }
 };
 
-// ══════════════════════════════════════════════════════════════
-// v2.8.4: PROFESSION RECIPES — outputQty là BASE cho 1 phần
-// ══════════════════════════════════════════════════════════════
 const PROFESSION_OUTPUT_RECIPES = {
   luyen_dan: {
     'Tụ Khí Đan': { tier: 'LK', ingredients: [{ name: 'Thạch Linh Thảo', qty: 2 }, { name: 'Huyết Cỏ', qty: 1 }], output: 'Tụ Khí Đan', outputQty: 5 },
@@ -1527,45 +1904,6 @@ const DEFAULT_SCOPES = [
 let scopeRegistry = [];
 
 // ══════════════════════════════════════════════════════════════
-// ITEM CATEGORIES
-// ══════════════════════════════════════════════════════════════
-const ITEM_CATEGORIES = {
-  PHAP_BAO: { id: 'phap_bao', label: 'Pháp Bảo / Pháp Khí', icon: '⚔️', needsRefine: true, consumable: false, refineCost: 100, badgeClass: 'cat-phap-bao', keywords: ['kiếm', 'đao', 'thương', 'côn', 'roi', 'nhẫn', 'kính', 'phiến', 'châu', 'tháp', 'chung', 'ấn', 'kỳ', 'phan', 'bình', 'hồ', 'đại', 'khí', 'bảo', 'linh khí', 'phi kiếm', 'phi đao', 'pháp khí', 'pháp bảo', 'cổ bảo', 'tiên bảo', 'bản mệnh', 'phệ huyết', 'huyết kiếm', 'linh kiếm', 'phi thuyền', 'linh chu', 'bảo thuyền', 'đan lô', 'luyện khí lô'] },
-  TRUYEN_BAN: { id: 'tran_ban', label: 'Trận Bàn / Trận Kỳ', icon: '🔮', needsRefine: true, consumable: false, refineCost: 200, badgeClass: 'cat-tran-ban', keywords: ['trận bàn', 'trận kỳ', 'trận văn', 'trận đồ', 'trận pháp', 'mê trận bàn', 'khốn trận bàn', 'sát trận bàn', 'tụ linh bàn', 'phòng ngự trận bàn'] },
-  PHU_TAI_SU_DUNG: { id: 'phu_reusable', label: 'Phù Lục Tái Sử Dụng', icon: '📜', needsRefine: true, consumable: false, refineCost: 150, badgeClass: 'cat-phu-reuse', keywords: ['linh phù', 'tiên phù', 'thần phù', 'bản mệnh phù', 'hộ thân phù cao cấp', 'độn địa phù cao cấp', 'trấn sơn phù', 'phong ấn phù'] },
-  PHU_TIEU_HAO: { id: 'phu_consumable', label: 'Phù Lục Tiêu Hao', icon: '🔥', needsRefine: false, consumable: true, badgeClass: 'cat-phu-consumable', keywords: ['hỏa cầu phù', 'tốc hành phù', 'lôi phù', 'băng phù', 'phong phù', 'độn địa phù', 'hồi khí phù', 'chữa thương phù', 'kim quang phù', 'phù lục', 'liệt hỏa phù', 'thiên lôi phù', 'thủy tiễn phù'] },
-  DAN_DUOC: { id: 'dan_duoc', label: 'Đan Dược', icon: '💊', needsRefine: false, consumable: true, badgeClass: 'cat-dan-duoc', keywords: ['đan', 'hoàn', 'tán', 'cao', 'thang', 'dược', 'tụ khí đan', 'trúc cơ đan', 'kim nguyên đan', 'ngưng anh đan', 'hóa thần đan', 'thanh tâm đan', 'hồi khí đan', 'bồi nguyên đan', 'tẩy tủy đan', 'phá cảnh đan', 'tụ linh đan', 'huyết đan', 'yêu đan'] },
-  NGUYEN_LIEU: { id: 'nguyen_lieu', label: 'Nguyên Liệu', icon: '🌿', needsRefine: false, consumable: true, badgeClass: 'cat-nguyen-lieu', keywords: ['thảo', 'hoa', 'quả', 'củ', 'rễ', 'lá', 'khoáng', 'thạch', 'tinh', 'thiết', 'đồng', 'ngân', 'kim', 'mộc', 'thủy', 'hỏa', 'thổ', 'linh thảo', 'linh dược', 'yêu đan', 'nội đan', 'tinh hạch', 'tinh thạch', 'khoáng thạch', 'linh mộc', 'long huyết', 'phượng huyết', 'nguyên liệu'] },
-  LINH_THACH: { id: 'linh_thach', label: 'Linh Thạch', icon: '💎', needsRefine: false, consumable: true, badgeClass: 'cat-linh-thach', keywords: ['linh thạch', 'hạ phẩm linh thạch', 'trung phẩm linh thạch', 'thượng phẩm linh thạch', 'cực phẩm linh thạch', 'tiên thạch'] },
-  BI_TICH: { id: 'bi_tich', label: 'Bí Tịch / Ngọc Giản', icon: '📖', needsRefine: false, consumable: false, badgeClass: 'cat-bi-tich', keywords: ['bí tịch', 'bí kíp', 'công pháp', 'ngọc giản', 'ngọc bội', 'quyển trục', 'thư tịch', 'đan phương', 'trận đồ', 'phù văn', 'khế ước', 'linh hồn khế', 'yêu đan khế'] },
-  LENH_BAI: { id: 'lenh_bai', label: 'Lệnh Bài', icon: '🎫', needsRefine: false, consumable: true, badgeClass: 'cat-lenh-bai', keywords: ['lệnh bài', 'token', 'thẻ', 'vé', 'phiếu', 'lệnh phù'] },
-  KHAC: { id: 'khac', label: 'Khác', icon: '📦', needsRefine: false, consumable: false, badgeClass: 'cat-khac', keywords: [] }
-};
-
-function detectItemCategory(name, quality, effect) {
-  const text = ((name || '') + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
-  if (/^nguyên liệu/i.test((name || '').trim())) return 'NGUYEN_LIEU';
-  if (/^nguyen lieu/i.test((name || '').trim())) return 'NGUYEN_LIEU';
-  if (/lệnh bài|token|phiếu|vé/i.test((name || '').trim())) return 'LENH_BAI';
-  for (const [key, cat] of Object.entries(ITEM_CATEGORIES)) {
-    if (key === 'KHAC') continue;
-    for (const kw of cat.keywords) {
-      if (text.includes(kw.toLowerCase())) return key;
-    }
-  }
-  return 'KHAC';
-}
-
-function getItemCategoryInfo(catKey) {
-  return ITEM_CATEGORIES[catKey] || ITEM_CATEGORIES.KHAC;
-}
-
-function itemNeedsRefine(item) {
-  const cat = item.category || detectItemCategory(item.name, item.quality, item.effect);
-  return getItemCategoryInfo(cat).needsRefine;
-}
-
-// ══════════════════════════════════════════════════════════════
 // VERBS
 // ══════════════════════════════════════════════════════════════
 const GIVE_VERBS = ['cho', 'tặng', 'tang', 'biếu', 'bieu', 'đưa', 'dua', 'gửi', 'gui', 'trao', 'giao', 'cấp', 'cap', 'phát', 'phat', 'thưởng', 'thuong', 'ban', 'ban cho', 'cống nạp', 'cong nap', 'hiến', 'hien', 'dâng', 'dang', 'nộp', 'nop', 'cung cấp', 'cung cap', 'chia', 'chia sẻ', 'chia se', 'lì xì', 'li xi', 'đưa cho', 'dua cho', 'giao cho', 'trao cho', 'đưa tặng', 'dua tang', 'gửi tặng', 'gui tang', 'tặng cho', 'tang cho', 'bố thí', 'bo thi', 'ban thưởng', 'ban thuong', 'khen thưởng', 'khen thuong', 'thuê', 'thue', 'cho thuê', 'cho thue'];
@@ -1661,7 +1999,7 @@ function findMatchingInventoryItem(nameToFind, inv) {
   if (!needle || needle.length < 2) return null;
   let match = inv.find(i => normalizeVN(i.name) === needle);
   if (match) return match;
-  const QUALITY_WORDS = ['ha pham', 'trung pham', 'thuong pham', 'cuc pham', 'tien pham', 'tho', 'binh thuong'];
+  const QUALITY_WORDS = ['ha pham', 'trung pham', 'thuong pham', 'cuc pham', 'tien pham', 'linh pham', 'than pham', 'pham pham', 'tho', 'binh thuong'];
   const stripQuality = (s) => {
     let r = s;
     for (const q of QUALITY_WORDS) r = r.replace(new RegExp('\\s*' + q + '\\s*', 'g'), ' ').trim();
@@ -1700,17 +2038,12 @@ function findMatchingInventoryItem(nameToFind, inv) {
   return null;
 }
 
-// 🆕 v2.8.4.1: Tìm TẤT CẢ item cùng tên (để xử lý phẩm chất hỗn hợp)
 function findAllMatchingItems(nameToFind, inv) {
   if (!inv || inv.length === 0) return [];
   const needle = normalizeVN(nameToFind);
   if (!needle || needle.length < 2) return [];
-  
-  // 1. Khớp chính xác
   let matches = inv.filter(i => normalizeVN(i.name) === needle);
   if (matches.length > 0) return matches;
-  
-  // 2. Khớp includes
   matches = inv.filter(i => {
     const n = normalizeVN(i.name);
     if (n.length < 2) return false;
@@ -1718,8 +2051,6 @@ function findAllMatchingItems(nameToFind, inv) {
     return (n.includes(needle) || needle.includes(n)) && Math.abs(n.length - needle.length) <= 4;
   });
   if (matches.length > 0) return matches;
-  
-  // 3. Khớp token
   const tokens = needle.split(/\s+/).filter(t => t.length >= 3 && !ITEM_STOPWORDS.has(t));
   if (tokens.length === 0) return [];
   matches = inv.filter(i => {
@@ -1800,9 +2131,6 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('active');
 }
 
-// ══════════════════════════════════════════════════════════════
-// v2.8.4.2: openTab cập nhật để xử lý header-game-tab
-// ══════════════════════════════════════════════════════════════
 function openTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -1858,7 +2186,7 @@ function copyUnifiedLog() {
   const logsText = document.getElementById('sysLogs').innerText || '';
   const statsText = document.getElementById('tokenStats').innerText || '';
   const header = `═══════════════════════════════════════════════════════
-📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.4 — NHẬT KÝ GAME
+📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.5 — NHẬT KÝ GAME
 ⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}
 🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel').value || '?'} | EXP: ${mcExp}/${mcExpMax}
 ═══════════════════════════════════════════════════════
@@ -1944,8 +2272,10 @@ function resetTokenStats() {
   };
   updateTokenStatsDisplay();
   log("Đã reset token stats.");
-}// ══════════════════════════════════════════════════════════════
-// v2.8.4: REFRESH STATE FROM HISTORY
+}
+
+// ══════════════════════════════════════════════════════════════
+// REFRESH STATE FROM HISTORY
 // ══════════════════════════════════════════════════════════════
 async function refreshGameStateFromHistory() {
   if (chatHistory.length === 0) {
@@ -1995,7 +2325,7 @@ ${getCodexMemoryPrompt()}
 - KHÔNG ghi transactionsList, KHÔNG ghi craftResultList, KHÔNG ghi priceRecords.
 - CHỈ cập nhật túi đồ dựa trên diễn biến đã xảy ra trong ${REFRESH_STATE_TURNS} lượt qua.
 - Nếu thấy NVC đã bán/mua/nhận/cho đồ trong các lượt qua → cập nhật vào mcInventoryList.
-- ⚠️ PHẨM CHẤT HỖN HỢP: MỖI phẩm chất khác nhau = 1 OBJECT RIÊNG. VD túi có 4 Thanh Tâm Đan Hạ phẩm + 1 Thanh Tâm Đan Trung phẩm → 2 object riêng.
+- ⚠️ PHẨM CHẤT HỖN HỢP: MỖI phẩm chất khác nhau = 1 OBJECT RIÊNG.
 - Nếu NPC đã chết → chuyển vào npcArchive.
 - GIỮ NGUYÊN ĐẠI cảnh giới của NVC (chỉ đổi nếu có breakthrough đã được hệ thống xác nhận).
 - CHỈ TRẢ VỀ KHỐI \`\`\`json\`\`\`. KHÔNG GIẢI THÍCH.`;
@@ -2178,7 +2508,6 @@ ${getCodexMemoryPrompt()}
     updateExpUI();
     updateSystemDashboard();
 
-    // v2.8.4.2 FIX: Reset snapshots sau refresh để tránh undo lệch trạng thái
     stateSnapshots = [captureStateSnapshot()];
 
     log(`✅ Đã cập nhật trạng thái từ ${REFRESH_STATE_TURNS} lượt gần nhất.`);
@@ -2890,7 +3219,7 @@ function openBreakthroughPanel() {
 function showBreakthroughTable() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
-  let html = `<div style="color:var(--accent-gold);font-size:14px;margin-bottom:10px;font-weight:bold">⚡ BẢNG YÊU CẦU ĐỘT PHÁ v2.8.4</div>`;
+  let html = `<div style="color:var(--accent-gold);font-size:14px;margin-bottom:10px;font-weight:bold">⚡ BẢNG YÊU CẦU ĐỘT PHÁ v2.8.5</div>`;
 
   html += `<div class="thiendao-result" style="border-left:3px solid #388bfd">
     <div class="thiendao-result-title" style="color:#388bfd">⚡ TIỂU ĐỘT PHÁ (trong cùng đại cảnh giới)</div>
@@ -2947,7 +3276,7 @@ function showBreakthroughTable() {
 function showRealmProgressionTable() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
-  let html = `<div style="color:#388bfd;font-size:14px;margin-bottom:10px;font-weight:bold">📈 BẢNG LỘ TRÌNH CẢNH GIỚI v2.8.4</div>`;
+  let html = `<div style="color:#388bfd;font-size:14px;margin-bottom:10px;font-weight:bold">📈 BẢNG LỘ TRÌNH CẢNH GIỚI v2.8.5</div>`;
 
   html += `<div class="thiendao-result" style="border-left:3px solid #388bfd">
     <div class="thiendao-result-title" style="color:#388bfd">🎯 HỆ THỐNG CẢNH GIỚI</div>
@@ -3969,6 +4298,7 @@ function addWorldItemToInventory(name) {
   }
 }
 
+// v2.8.5: refineInventoryItem dùng getRefineCost mới (tier × category × realm)
 function refineInventoryItem(name, quality, catKey) {
   try {
     const inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
@@ -3992,10 +4322,11 @@ function refineInventoryItem(name, quality, catKey) {
       alert(`✅ "${item.name}" đã được luyện hoá rồi!`);
       return;
     }
+    const breakdown = getRefineCostBreakdown(item);
+    const cost = breakdown.finalCost;
     const lsItem = inv.find(i => normalizeVN(i.name).includes('linh thach'));
     const currentLS = lsItem ? (lsItem.quantity || 0) : 0;
-    const cost = catInfo.refineCost;
-    const confirmMsg = `🔥 LUYỆN HOÁ "${item.name}"?\n\n📋 Loại: ${catInfo.label}\n💰 Chi phí: ${cost} linh thạch\n📦 Bạn có: ${currentLS} linh thạch`;
+    const confirmMsg = `🔥 LUYỆN HOÁ "${item.name}"?\n\n📋 Loại: ${catInfo.label}\n⭐ Cấp bậc: ${breakdown.tier} (×${breakdown.tierMult})\n🎯 Cảnh giới NVC: ${breakdown.realm} (×${breakdown.realmBonus})\n💰 Chi phí: ${cost} linh thạch\n📦 Bạn có: ${currentLS} linh thạch`;
     if (!confirm(confirmMsg)) return;
     if (currentLS < cost) {
       alert(`❌ Không đủ linh thạch! Bạn có ${currentLS}, cần ${cost}.`);
@@ -4012,7 +4343,7 @@ function refineInventoryItem(name, quality, catKey) {
     document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
     tokenStats.itemsRefined = (tokenStats.itemsRefined || 0) + 1;
     updateTokenStatsDisplay();
-    log(`🔥 Đã luyện hoá "${item.name}" [${catInfo.label}] (tốn ${cost} LS).`);
+    log(`🔥 Đã luyện hoá "${item.name}" [${catInfo.label}] [${breakdown.tier}] (tốn ${cost} LS).`);
     alert(`✅ Đã luyện hoá "${item.name}"!`);
   } catch (e) {
     alert("❌ Lỗi: " + e.message);
@@ -4045,6 +4376,7 @@ function renderInventoryVisual(itemsArray) {
     const catInfo = getItemCategoryInfo(catKey);
     const needsRefine = catInfo.needsRefine;
     const isRefined = item.isRefined === true;
+    const tierBadge = q ? getTierBadgeHtml(q) : '';
     const catBadge = `<span class="item-cat-badge ${catInfo.badgeClass}">${catInfo.icon} ${catInfo.label}</span>`;
     let refineBadge = '';
     let refineBtn = '';
@@ -4053,7 +4385,8 @@ function renderInventoryVisual(itemsArray) {
         refineBadge = `<span class="refine-status-refined">🔥 Đã luyện hoá</span>`;
       } else {
         refineBadge = `<span class="refine-status-pending">⏳ Chưa luyện hoá</span>`;
-        refineBtn = `<button onclick="refineInventoryItem('${safeName}','${safeQuality}','${catKey}')" title="Luyện hoá" style="position:absolute;bottom:6px;right:6px;background:rgba(210,153,34,.9);border:none;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:bold">🔥 Luyện hoá (${catInfo.refineCost} LS)</button>`;
+        const cost = getRefineCost(item);
+        refineBtn = `<button onclick="refineInventoryItem('${safeName}','${safeQuality}','${catKey}')" title="Luyện hoá" style="position:absolute;bottom:6px;right:6px;background:rgba(210,153,34,.9);border:none;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:bold">🔥 Luyện hoá (${cost} LS)</button>`;
       }
     } else if (catInfo.consumable) {
       refineBadge = `<span class="refine-status-consumable">⚡ Tiêu hao</span>`;
@@ -4068,7 +4401,7 @@ function renderInventoryVisual(itemsArray) {
           <span class="item-qty">x${item.quantity || 1}</span>
         </div>
         <div style="margin-bottom:4px">${catBadge}${refineBadge}</div>
-        <div class="item-quality">Phẩm chất: ${item.quality || 'Thường'}</div>
+        <div class="item-quality">Cấp bậc: ${tierBadge || (q || 'Thường')}</div>
         <div class="${effectClass}">${item.effect || 'Chưa rõ.'}</div>
       </div>
       ${canSplit ? `<button onclick="splitInventoryItem('${safeName}','${safeQuality}')" title="Tách phẩm chất" style="position:absolute;top:6px;right:6px;background:rgba(137,87,229,.85);border:none;color:#fff;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:12px">✂️</button>` : ''}
@@ -4431,9 +4764,24 @@ function showVersionLog() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.2 (2026-10-15)</div><div class="thiendao-result-body">🎨 <b>LAYOUT + UNDO FIX</b>:<br>• Tag "HỒNG ĐỨC TU TIÊN LỘ" chuyển sang trái dưới nút ☰<br>• Tab "🎮 Game" chuyển lên header cạnh nút Khởi Tạo Game<br>• Fix undo: khởi tạo stateSnapshots trong DOMContentLoaded<br>• Fix undo: siết điều kiện, snapshot cho refresh<br>• Reset snapshot sau refreshGameStateFromHistory</div></div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.1 (2026-10-15)</div><div class="thiendao-result-body">🔥 <b>HOTFIX PHẨM CHẤT HỖN HỢP</b>:<br>• Thêm <code>findAllMatchingItems()</code> gom tất cả item cùng tên<br>• Sửa <code>deductVirtual()</code> trừ dồn theo phẩm chất (Hạ → Tiên)<br>• Sửa <code>removeItem()</code> tương tự<br>• Thêm rules 31.5 + 31.6 buộc AI tách giao dịch theo phẩm chất<br>• Thêm hint trong Codex Memory Prompt</div></div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4 (2026-10-15)</div><div class="thiendao-result-body">🔄 <b>REFRESH STATE + PROFESSION STATS + GAME TAG</b>:<br>• Thêm Tố chất tu luyện: Thể chất / Thần niệm / Thiên phú<br>• Công thức luyện đan: 1 phần dược liệu → 5 viên hạ phẩm (base)<br>• Tố chất ảnh hưởng SỐ LƯỢNG và PHẨM CHẤT thành phẩm<br>• Nút "🔄 CẬP NHẬT" quét 5 lượt gần nhất<br>• Fix: Load game tự động nhận đúng trạng thái mới nhất</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title" style="color:#e3702d">v2.8.5 (2026-10-16)</div><div class="thiendao-result-body">
+🎨 <b>HEADER LAYOUT FIX</b>:<br>
+• Header 2 hàng gọn gàng, responsive mobile<br>
+• Hàng 1: [☰] [TAG GAME] [🎮 Game] [⚡ Khởi Tạo]<br>
+• Hàng 2: Music controls centered<br><br>
+📦 <b>ITEM SYSTEM OVERHAUL</b>:<br>
+• Sắp xếp PRIORITY detectItemCategory đúng<br>
+• Fix bug "Tụ Khí Đan" bị xếp vào Pháp Bảo<br>
+• Loại bỏ keyword generic khỏi PHAP_BAO<br>
+• 8 nhóm CẦN luyện hoá + 7 nhóm KHÔNG CẦN<br>
+• 15 loại category rõ ràng với baseRefineCost riêng<br>
+• Tier system 8 cấp: Phàm/Hạ/Trung/Thượng/Cực/Linh/Tiên/Thần<br>
+• Công thức giá luyện hoá: baseCost × tierMult × realmBonus<br>
+• Nút "📦 Hệ Thống Phân Loại Vật Phẩm" trong sidebar
+</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.2 (2026-10-15)</div><div class="thiendao-result-body">🎨 LAYOUT + UNDO FIX</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.1 (2026-10-15)</div><div class="thiendao-result-body">🔥 HOTFIX PHẨM CHẤT HỖN HỢP</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4 (2026-10-15)</div><div class="thiendao-result-body">🔄 REFRESH STATE + PROFESSION STATS + GAME TAG</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #8957e5"><div class="thiendao-result-title">v2.8.3</div><div class="thiendao-result-body">🔧 BREAKTHROUGH FIX — phân biệt TIỂU vs ĐẠI đột phá</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #d29922"><div class="thiendao-result-title">v2.8.2</div><div class="thiendao-result-body">🏷️ SYSTEM TAGS + DASHBOARD</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title">v2.8.1</div><div class="thiendao-result-body">🎯 QUEST DELEGATION FIX</div></div>`;
@@ -5547,7 +5895,6 @@ function prevalidateTransaction(actionText) {
         };
       }
     }
-    // 🆕 v2.8.4.1: Dùng findAllMatchingItems để kiểm tra tổng số lượng qua nhiều phẩm chất
     const allMatches = findAllMatchingItems(matchedItem.name, inv);
     const totalAvail = allMatches.reduce((s, i) => s + (i.quantity || 1), 0);
     if (intent.qty > totalAvail) {
@@ -5566,7 +5913,7 @@ function prevalidateTransaction(actionText) {
 }
 
 // ============================================================
-// POST-VALIDATE — 🆕 v2.8.4.1 SỬA ĐỂ HỖ TRỢ PHẨM CHẤT HỖN HỢP
+// POST-VALIDATE — HỖ TRỢ PHẨM CHẤT HỖN HỢP
 // ============================================================
 function postValidateTransactions(txList, currentInv) {
   const valid = [];
@@ -5578,7 +5925,6 @@ function postValidateTransactions(txList, currentInv) {
   })();
   const virtualInv = currentInv.map(i => ({ ...i }));
 
-  // 🆕 v2.8.4.1: Trừ dồn theo phẩm chất (Hạ → Trung → Thượng → Cực → Tiên)
   const deductVirtual = (name, quality, qty) => {
     let candidates = findAllMatchingItems(name, virtualInv)
       .filter(i => !isIngredientForDifferentRecipe(i.name, name));
@@ -5695,7 +6041,7 @@ function postValidateTransactions(txList, currentInv) {
 }
 
 // ============================================================
-// TRANSACTION PROCESSOR — 🆕 v2.8.4.1 SỬA removeItem
+// TRANSACTION PROCESSOR
 // ============================================================
 function autoSyncReceivedItem(tx) {
   if (!tx || !tx.name) return false;
@@ -5782,7 +6128,6 @@ function processTransactions(transactionsList) {
     return { isNew: true, newQty: qty };
   };
 
-  // 🆕 v2.8.4.1: Trừ dồn theo phẩm chất
   const removeItem = (name, quality, qty) => {
     let candidates = findAllMatchingItems(name, inv)
       .filter(i => !isIngredientForDifferentRecipe(i.name, name));
@@ -5966,7 +6311,7 @@ function getProfessionAIContext() {
     const state = professionState[profId];
     txt += `• ${profDef.icon} ${profDef.name}: Cấp ${rankInfo.rank} (${rankInfo.info.name}) | EXP ${state.exp}/${rankInfo.info.expNeed} | Bonus phẩm chất +${(rankInfo.info.qualityBonus * 100).toFixed(0)}% | Chế được: ${rankInfo.info.canCraftTier}\n`;
   }
-  txt += '\n📌 v2.8.4 TỐ CHẤT NVC ẢNH HƯỞNG LUYỆN CHẾ:\n';
+  txt += '\n📌 v2.8.5 TỐ CHẤT NVC ẢNH HƯỞNG LUYỆN CHẾ:\n';
   txt += `• Thể chất: ${mcStats.theChat} | Thần niệm: ${mcStats.thanNiem} | Thiên phú: ${mcStats.thienPhu}\n`;
   txt += '• 1 phần dược liệu → base 5 viên đan hạ phẩm.\n';
   txt += '• Tố chất cao → tăng số lượng (thêm 1-3 viên) và tăng phẩm chất (Thượng/Cực phẩm).\n';
@@ -6063,41 +6408,43 @@ ${getPriceMemoryPrompt()}
 - Khi NVC CƯỚP được vật phẩm từ NPC khác → BẮT BUỘC ghi "receive" trong transactionsList.
 - ⚠️ Vật phẩm trong [Pháp bảo] KHÔNG được tính là NVC sở hữu cho đến khi có "receive".
 
-📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN:
-- **Pháp bảo / Pháp khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn... → CẦN LUYỆN HOÁ.
-- **Trận bàn / Trận kỳ**: dùng bày trận, tái sử dụng → CẦN LUYỆN HOÁ.
-- **Phù lục tái sử dụng**: linh phù, tiên phù → CẦN LUYỆN HOÁ.
-- **Phù lục tiêu hao**: hỏa cầu phù, tốc hành phù → KHÔNG cần luyện hoá, tiêu hao 1 lần.
-- **Đan dược**: tụ khí đan, trúc cơ đan → KHÔNG cần luyện hoá, tiêu hao 1 lần.
-- **Nguyên liệu**: linh thảo, khoáng thạch → KHÔNG cần luyện hoá, tiêu hao 1 lần.
-- **Linh thạch**: tiền tệ tu tiên.
-- **Bí tịch / Ngọc giản**: đọc 1 lần để học công pháp.
-- **Lệnh Bài / Token**: vật phẩm thuê/mượn, TIÊU HAO khi hết hạn.
+📦 v2.8.5 — HỆ THỐNG PHÂN LOẠI ĐỒ VẬT TU TIÊN:
 
-⚠️⚠️⚠️ ĐẶC BIỆT LƯU Ý VỀ NGUYÊN LIỆU LUYỆN ĐAN:
-- "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan" ≠ "Nguyên liệu Trúc Cơ Đan"...
-- Đây là các NGUYÊN LIỆU KHÁC NHAU HOÀN TOÀN, KHÔNG ĐƯỢC GỘP CHUNG.
+🔮 **NHÓM CẦN LUYỆN HOÁ** (đả thông cấm chế, nhận chủ):
+1. **Pháp Bảo / Pháp Khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn... → CẦN LUYỆN HOÁ.
+2. **Linh Bảo**: Thông Thiên Linh Bảo, Tiên Thiên/Hậu Thiên Linh Bảo → CẦN LUYỆN HOÁ.
+3. **Cổ Bảo / Thần Binh**: bảo vật thời cổ đại, chứa sát khí/cấm chế mạnh → CẦN LUYỆN HOÁ (cần tinh huyết/linh lực cấp cao).
+4. **Trữ Vật Đồ**: túi trữ vật, nhẫn trữ vật, lạc bảo phù → CẦN LUYỆN HOÁ (để lại thần thức ấn ký).
+5. **Trận Bàn / Trận Kỳ**: bộ trận pháp cao cấp → CẦN LUYỆN HOÁ (để làm trận nhãn).
+6. **Khôi Lỗi**: rối, khôi lỗi chiến đấu → CẦN LUYỆN HOÁ (đặt thần thức phân thân).
+7. **Dị Hỏa / Thiên Địa Linh Vật** → CẦN LUYỆN HOÁ (khu phục sát khí, hợp nhất).
+8. **Yêu Đan / Nội Đan** → CẦN LUYỆN HOÁ (loại bỏ tạp chất trước khi hấp thụ).
 
-⚡ v2.8.4 — ĐỘT PHÁ CẢNH GIỚI (CỰC KỲ QUAN TRỌNG):
-**TIỂU ĐỘT PHÁ** (tăng tầng/cảnh giới nhỏ trong CÙNG đại cảnh giới):
-- Luyện Khí tầng 1→2→3→...→13 (13 tầng)
-- Trúc Cơ sơ→trung→hậu
-- Kim Đan sơ→trung→hậu
-- Nguyên Anh sơ→trung→hậu
-- Hóa Thần sơ→trung→hậu
-- Luyện Hư sơ→trung→hậu
-→ CHỈ cần tích lũy EXP. KHÔNG cần đan dược. Tỷ lệ cao (85%+).
+✅ **NHÓM KHÔNG CẦN LUYỆN HOÁ**:
+1. **Đan Dược**: cơ thể tự hấp thụ dược lực khi vận công.
+2. **Linh Thảo / Nguyên Liệu**: ăn trực tiếp hoặc chế biến.
+3. **Phù Lục Tiêu Hao**: dùng 1 lần rồi mất.
+4. **Linh Thạch**: tiền tệ, dùng trực tiếp.
+5. **Bí Tịch / Ngọc Giản**: dán lên trán, chìm thần thức để đọc.
+6. **Lệnh Bài / Token**: vật phẩm thuê/mượn có thời hạn.
 
-**ĐẠI ĐỘT PHÁ** (chuyển ĐẠI cảnh giới):
-- Luyện Khí tầng 13 → Trúc Cơ sơ: 12,000 EXP + Trúc Cơ Đan
-- Trúc Cơ hậu → Kim Đan sơ: 80,000 EXP + Kim Nguyên Đan
-- Kim Đan hậu → Nguyên Anh sơ: 600,000 EXP + Ngưng Anh Đan
-- Nguyên Anh hậu → Hóa Thần sơ: 5,000,000 EXP + Hóa Thần Đan
-- Hóa Thần hậu → Luyện Hư sơ: 50,000,000 EXP + Luyện Hư Đan
-→ CẦN cả EXP + đan dược + điều kiện. Tỷ lệ thấp (5-40%).
-→ AI KHÔNG ĐƯỢC tự ý đổi đại cảnh giới của NVC.
+⛔ **CẢNH BÁO QUAN TRỌNG**: "Tụ Khí Đan", "Thanh Tâm Đan" là ĐAN DƯỢC, KHÔNG PHẢI PHÁP BẢO dù có chữ "Khí"! KHÔNG nhầm lẫn.
 
-⚒️ v2.8.4 — LUYỆN CHẾ VỚI TỐ CHẤT:
+⭐ **CẤP BẬC VẬT PHẨM (TIER)**: Phàm → Hạ → Trung → Thượng → Cực → Linh → Tiên → Thần
+💰 **Hệ số giá luyện hoá**: ×1 → ×2 → ×4 → ×8 → ×16 → ×40 → ×100 → ×300
+
+⚡ v2.8.5 — ĐỘT PHÁ CẢNH GIỚI:
+**TIỂU ĐỘT PHÁ**: LK 1→13 tầng | TC/KĐ/NA/HT/LH sơ→trung→hậu → CHỈ cần tích lũy EXP. Tỷ lệ 85%+.
+**ĐẠI ĐỘT PHÁ** (chuyển đại cảnh giới):
+- LK13→TC: 12,000 EXP + Trúc Cơ Đan
+- TC hậu→KĐ: 80,000 EXP + Kim Nguyên Đan
+- KĐ hậu→NA: 600,000 EXP + Ngưng Anh Đan
+- NA hậu→HT: 5,000,000 EXP + Hóa Thần Đan
+- HT hậu→LH: 50,000,000 EXP + Luyện Hư Đan
+→ CẦN cả EXP + đan dược + điều kiện. Tỷ lệ 5-40%.
+🚫 AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới của NVC.
+
+⚒️ v2.8.5 — LUYỆN CHẾ VỚI TỐ CHẤT:
 - 1 phần dược liệu → base 5 viên đan hạ phẩm.
 - Thể chất/Thần niệm/Thiên phú NVC ảnh hưởng: số lượng + phẩm chất.
 - Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
@@ -6163,7 +6510,7 @@ function buildSystemRules(scopeInput = 'default') {
   const profCtx = getProfessionAIContext();
   const statsNote = `\n# 🌟 TỐ CHẤT NVC: Thể chất=${mcStats.theChat} | Thần niệm=${mcStats.thanNiem} | Thiên phú=${mcStats.thienPhu}\n`;
 
-  return `${exemplarBlock}${scopeChainNote}${scopeHandledNote}# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.4'}".
+  return `${exemplarBlock}${scopeChainNote}${scopeHandledNote}# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.5'}".
 
 # QUY TẮC TỐI CAO
 ${v('supremeMotifRule') || 'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt, không buff NVC vô lý.'}
@@ -6187,7 +6534,7 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 26. Khi NVC nhờ NPC bán hộ → vật phẩm rời túi NVC (dùng "give").
 27. ⚠️ TRƯỚC KHI kể "cho thành công" vật phẩm → PHẢI kiểm tra [Túi] trong Codex.
 28. ⚡ Khi NVC NHẬN vật phẩm → BẮT BUỘC ghi type "receive".
-29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT: Pháp bảo/trận bàn/phù tái sử dụng CẦN LUYỆN HOÁ. Phù tiêu hao/đan dược/nguyên liệu KHÔNG cần luyện hoá.
+29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT v2.8.5: Pháp bảo/linh bảo/cổ bảo/trữ vật đồ/trận bàn cao cấp/khôi lỗi/dị hỏa/yêu đan CẦN LUYỆN HOÁ. Đan dược/nguyên liệu/phù tiêu hao/linh thạch/bí tịch/lệnh bài KHÔNG cần luyện hoá.
 30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords vào JSON Codex.
 31. 🛡️ INGREDIENT GUARD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan"... KHÔNG gộp chung.
 31.5. ⚠️⚠️ PHẨM CHẤT HỖN HỢP: Khi NVC sở hữu CÙNG 1 vật phẩm với NHIỀU phẩm chất khác nhau (VD: 4 Thanh Tâm Đan Hạ phẩm + 1 Thanh Tâm Đan Trung phẩm), BẮT BUỘC tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất. TUYỆT ĐỐI KHÔNG ghi gộp "Thanh Tâm Đan x5".
@@ -6199,9 +6546,9 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 34. 📊 Tỷ lệ phẩm chất khi luyện chế PHỤ THUỘC vào CẤP NGHỀ của NVC.
 35. 🎯 QUEST DELEGATION: Khi NVC "giao nhiệm vụ cho NPC" → NVC KHÔNG cần có sẵn tài nguyên. CHỈ ghi transactionsList cho (1) NVC đưa đồ cho NPC (give), (2) NPC mang kết quả về (receive).
 36. ⛓️ TRANSACTION CHAIN: Khi câu có "sau đó" / "rồi" + >=2 verb kinh tế → CHUỖI giao dịch.
-37. ⚡ v2.8.4 BREAKTHROUGH FIX: Phân biệt TIỂU đột phá (tăng tầng trong cùng đại cảnh giới — chỉ cần EXP) vs ĐẠI đột phá (chuyển đại cảnh giới — cần EXP + đan dược). AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới của NVC.
+37. ⚡ v2.8.5 BREAKTHROUGH FIX: Phân biệt TIỂU đột phá (tăng tầng trong cùng đại cảnh giới — chỉ cần EXP) vs ĐẠI đột phá (chuyển đại cảnh giới — cần EXP + đan dược). AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới của NVC.
 38. 🌟 TỐ CHẤT NVC ẢNH HƯỞNG LUYỆN CHẾ: Thể chất/Thần niệm/Thiên phú càng cao → SỐ LƯỢNG + PHẨM CHẤT thành phẩm càng cao.
-39. 📌 v2.8.4: 1 phần dược liệu → base 5 viên đan hạ phẩm. Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
+39. 📌 v2.8.5: 1 phần dược liệu → base 5 viên đan hạ phẩm. Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
 40. 🏷️ SCOPE HANDLING: Scope CODE-HANDLED → KHÔNG tự bịa số. Scope HYBRID → code tính số chính. Scope STYLE → AI tự do văn phong.`}
 
 # THẾ GIỚI
@@ -6222,7 +6569,7 @@ Khi NVC thực hiện CHUỖI hành động:
 
 ${profCtx}
 
-# ⚡ v2.8.4 — BREAKTHROUGH SYSTEM
+# ⚡ v2.8.5 — BREAKTHROUGH SYSTEM
 **TIỂU ĐỘT PHÁ** (trong cùng đại cảnh giới):
 - LK 1→2→...→13 tầng | TC/KD/NA/HT/LH sơ→trung→hậu
 - Chỉ cần EXP. Không cần đan. Tỷ lệ ~85%+.
@@ -6237,7 +6584,7 @@ ${profCtx}
 
 🚫 AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới. Chỉ mô tả đột phá khi người chơi đủ điều kiện.
 
-# 🌟 v2.8.4 — LUYỆN CHẾ VỚI TỐ CHẤT
+# 🌟 v2.8.5 — LUYỆN CHẾ VỚI TỐ CHẤT
 - 1 phần dược liệu → base 5 viên đan hạ phẩm.
 - Thể chất/Thần niệm/Thiên phú NVC ảnh hưởng: số lượng + phẩm chất.
 - Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
@@ -6256,7 +6603,7 @@ Khi câu có "sau đó" / "rồi" / "tiếp theo" + >=2 verb kinh tế → CHU�
 - HYBRID: Code tính số chính — AI thêm flavor (<10%).
 - STYLE-ONLY: AI tự do văn phong.
 
-# 💊 PHẨM CHẤT HỖN HỢP (v2.8.4.1)
+# 💊 PHẨM CHẤT HỖN HỢP (v2.8.5)
 Khi NVC sở hữu CÙNG 1 vật phẩm với NHIỀU phẩm chất khác nhau:
 - BẮT BUỘC tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất.
 - VD túi có: "Thanh Tâm Đan Hạ phẩm x4" + "Thanh Tâm Đan Trung phẩm x1"
@@ -6283,15 +6630,30 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 - CHỈ VIẾT TIẾNG VIỆT CÓ DẤU.
 - KHÔNG dùng ký tự Hán/Nhật/Hàn.
 
-# 📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN
-## 🔥 NHÓM CẦN LUYỆN HOÁ:
-- Pháp bảo / Pháp khí: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn...
-- Trận bàn / Trận kỳ
-- Phù lục tái sử dụng
+# 📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN (v2.8.5)
+## 🔮 NHÓM CẦN LUYỆN HOÁ:
+- **Pháp bảo / Pháp khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn...
+- **Linh bảo**: Thông Thiên / Tiên Thiên / Hậu Thiên Linh Bảo
+- **Cổ bảo / Thần binh**: bảo vật thời cổ đại, chứa sát khí mạnh
+- **Trữ vật đồ**: túi trữ vật, nhẫn trữ vật, lạc bảo phù
+- **Trận bàn / Trận kỳ**: bộ trận pháp cao cấp
+- **Khôi lỗi**: rối chiến đấu
+- **Dị hỏa / Thiên địa linh vật**
+- **Yêu đan / Nội đan**: loại bỏ tạp chất trước khi dùng
 
-## ⚡ NHÓM TIÊU HAO:
-- Phù lục tiêu hao, Đan dược, Nguyên liệu, Linh thạch
-- Lệnh Bài / Token
+## ⚡ NHÓM KHÔNG CẦN LUYỆN HOÁ:
+- **Đan dược**: cơ thể tự hấp thụ dược lực
+- **Nguyên liệu**: linh thảo, khoáng thạch
+- **Phù lục tiêu hao**: dùng 1 lần
+- **Linh thạch**: tiền tệ
+- **Bí tịch / Ngọc giản**: đọc trực tiếp
+- **Lệnh bài / Token**: vật phẩm thuê
+- **Phù lục tái sử dụng cấp thấp**
+
+## ⛔ CẢNH BÁO: "Tụ Khí Đan" là ĐAN DƯỢC, KHÔNG PHẢI PHÁP BẢO dù có chữ "Khí"!
+
+## ⭐ CẤP BẬC (TIER): Phàm → Hạ → Trung → Thượng → Cực → Linh → Tiên → Thần
+## 💰 Hệ số giá luyện hoá: ×1 → ×2 → ×4 → ×8 → ×16 → ×40 → ×100 → ×300
 
 # ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT
 1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).
@@ -6670,9 +7032,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
   }
   let formatted = formatSummaryBox(fullResponseText);
   return buildTurnHtml(formatted);
-}
-
-// ============================================================
+}// ============================================================
 // INDEXEDDB
 // ============================================================
 let _dbInstance = null;
@@ -6757,7 +7117,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    _saveVersion: 'v2.8.4.2',
+    _saveVersion: 'v2.8.5',
     inputs: {}
   };
   inputIds.forEach(id => {
@@ -6850,7 +7210,6 @@ async function loadGame() {
         if (el && id !== 'modelListInput') el.value = gameData.inputs[id];
       });
     }
-    // v2.8.4.2 FIX: Khởi tạo snapshot sau khi load để undo hoạt động
     stateSnapshots = [captureStateSnapshot()];
     updateTokenStatsDisplay();
     updateExpUI();
@@ -6886,7 +7245,7 @@ async function exportSaveFile() {
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "hongduc_tutien_v2.8.4.2_save.json";
+  a.download = "hongduc_tutien_v2.8.5_save.json";
   a.click();
   log("Xuất save thành công.");
 }
@@ -6918,7 +7277,7 @@ function handleFileSelect(event) {
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle'];
   const cfg = {
-    _version: 'v2.8.4.2',
+    _version: 'v2.8.5',
     _type: 'worldConfig',
     scopes: scopeRegistry,
     professions: professionState,
@@ -6932,7 +7291,7 @@ function exportWorldConfig() {
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'hongduc_world_config_v2.8.4.2.json';
+  a.download = 'hongduc_world_config_v2.8.5.json';
   a.click();
   log('📤 Xuất World Config thành công.');
   alert('📤 Đã xuất World Config!');
@@ -6982,11 +7341,10 @@ function handleWorldConfigImport(event) {
 }
 
 // ============================================================
-// v2.8.4.2: UNDO — ĐÃ FIX
+// UNDO
 // ============================================================
 function undoLastTurn() {
   stopTTS();
-  // v2.8.4.2 FIX: cần ít nhất 2 snapshot (snapshot hiện tại + snapshot trước đó) để undo
   if (chatHistory.length <= 2) {
     alert("⚠️ Không thể quay lại! Đã ở lượt đầu tiên.");
     return;
@@ -6995,11 +7353,9 @@ function undoLastTurn() {
     alert("⚠️ Không thể quay lại! (không có snapshot)\n\n💡 Mẹo: Bấm '🔄 CẬP NHẬT' để khởi tạo snapshot mới, sau đó thử lại.");
     return;
   }
-  // Pop 2 tin nhắn cuối (user + model)
   chatHistory.pop();
   chatHistory.pop();
   if (turnHtmlHistory.length > 1) turnHtmlHistory.pop();
-  // Pop snapshot hiện tại (tương ứng lượt vừa gửi), restore snapshot trước đó
   stateSnapshots.pop();
   const snap = stateSnapshots[stateSnapshots.length - 1];
   restoreStateSnapshot(snap);
@@ -7162,7 +7518,7 @@ const startGame = async () => {
   document.getElementById('cjkWarningBox').style.display = 'none';
   storyBox.innerHTML = '<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   updateExpUI();
-  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.4'}".
+  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.5'}".
 
 [THÔNG TIN NVC]:
 - Tên & Thân phận: ${document.getElementById('mcName').value}
@@ -7186,7 +7542,6 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thi�
     storyBox.innerHTML = formattedHtml;
     storyBox.scrollTop = 0;
     turnHtmlHistory.push(storyBox.innerHTML);
-    // v2.8.4.2 FIX: Khởi tạo snapshot ban đầu sau khi start
     stateSnapshots = [captureStateSnapshot()];
     updateExpUI();
     await saveGame(false);
@@ -7222,7 +7577,6 @@ const sendAction = async () => {
       log(`❓ Câu hỏi thông tin — không phải giao dịch.`);
     }
   }
-  // v2.8.4.2: Push snapshot TRƯỚC khi gửi (để có thể undo về trạng thái trước lượt này)
   stateSnapshots.push(captureStateSnapshot());
   if (stateSnapshots.length > MAX_SNAPSHOTS) stateSnapshots.shift();
   inputEl.value = '';
@@ -7261,11 +7615,11 @@ const sendAction = async () => {
   let delegationNote = '';
   if (classification) {
     if (classification.type === 'quest_delegation') {
-      delegationNote = `\n\n🎯 v2.8.4 — QUEST DELEGATION DETECTED:\nĐây là câu giao nhiệm vụ cho NPC, KHÔNG phải giao dịch tức thời.\n• NVC KHÔNG cần có sẵn tài nguyên trong túi.\n• NPC sẽ tự thực hiện chuỗi hành động (bán/mua/thuê).\n• transactionsList CHỈ ghi: (1) NVC đưa tài nguyên cho NPC → "give", (2) NPC mang kết quả về → "receive".\n• Các giao dịch TRUNG GIAN của NPC (NPC tự bán/mua/thuê) KHÔNG ghi vào transactionsList.`;
+      delegationNote = `\n\n🎯 v2.8.5 — QUEST DELEGATION DETECTED:\nĐây là câu giao nhiệm vụ cho NPC, KHÔNG phải giao dịch tức thời.\n• NVC KHÔNG cần có sẵn tài nguyên trong túi.\n• NPC sẽ tự thực hiện chuỗi hành động (bán/mua/thuê).\n• transactionsList CHỈ ghi: (1) NVC đưa tài nguyên cho NPC → "give", (2) NPC mang kết quả về → "receive".\n• Các giao dịch TRUNG GIAN của NPC (NPC tự bán/mua/thuê) KHÔNG ghi vào transactionsList.`;
     } else if (classification.type === 'transaction_chain') {
-      delegationNote = `\n\n⛓️ v2.8.4 — TRANSACTION CHAIN DETECTED:\nĐây là CHUỖI giao dịch phụ thuộc (có "sau đó"/"rồi" + nhiều verb kinh tế).\n• AI mô tả tuần tự các bước.\n• transactionsList phản ánh KẾT QUẢ CUỐI CÙNG.`;
+      delegationNote = `\n\n⛓️ v2.8.5 — TRANSACTION CHAIN DETECTED:\nĐây là CHUỖI giao dịch phụ thuộc (có "sau đó"/"rồi" + nhiều verb kinh tế).\n• AI mô tả tuần tự các bước.\n• transactionsList phản ánh KẾT QUẢ CUỐI CÙNG.`;
     } else if (classification.type === 'question') {
-      delegationNote = `\n\n❓ v2.8.4 — CÂU HỎI THÔNG TIN:\nĐây là câu hỏi thông tin (hỏi giá, vị trí...), KHÔNG phải giao dịch.\n• AI trả lời thông tin.\n• Nếu có giá cụ thể → ghi "priceRecords" trong JSON Codex.\n• KHÔNG ghi transactionsList.`;
+      delegationNote = `\n\n❓ v2.8.5 — CÂU HỎI THÔNG TIN:\nĐây là câu hỏi thông tin (hỏi giá, vị trí...), KHÔNG phải giao dịch.\n• AI trả lời thông tin.\n• Nếu có giá cụ thể → ghi "priceRecords" trong JSON Codex.\n• KHÔNG ghi transactionsList.`;
     }
   }
   const formatReminder = `${lengthGuard}${delegationNote}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + craftResultList + mcExpGain nếu có).${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.`;
@@ -7277,7 +7631,6 @@ const sendAction = async () => {
     turnHtmlHistory.push(storyBox.innerHTML);
     await saveGame(false);
   } else {
-    // Nếu AI fail: pop snapshot vì lượt không thành công
     if (stateSnapshots.length > 0) stateSnapshots.pop();
     storyBox.innerHTML += `<div style="color:var(--accent-red);padding:8px;border:1px solid #da3633;border-radius:4px;margin:8px 0">❌ Không thể nhận phản hồi. Bấm "🔄 Reset Key" để thử lại.</div>`;
   }
@@ -7297,7 +7650,7 @@ document.getElementById('openRouterModel').addEventListener('change', function (
 });
 
 // ============================================================
-// DOM READY — v2.8.4.2: KHỞI TẠO stateSnapshots
+// DOM READY — v2.8.5: KHỞI TẠO + MIGRATION ITEM SYSTEM
 // ============================================================
 window.addEventListener('DOMContentLoaded', async () => {
   initializeDefaultScopes();
@@ -7370,16 +7723,48 @@ window.addEventListener('DOMContentLoaded', async () => {
   normalizeGameTimeField();
   updateSystemDashboard();
 
+  // ══════════════════════════════════════════════════════════════
+  // v2.8.5 MIGRATION — Chuyển item cũ (phap_bao sai) → category mới
+  // ══════════════════════════════════════════════════════════════
   try {
     const invRaw = document.getElementById('mcInventory').value;
     if (invRaw && invRaw.trim().startsWith('[')) {
       const inv = JSON.parse(invRaw);
       let changed = false;
+      let migratedCount = 0;
       inv.forEach(item => {
-        if (!item.category) {
-          item.category = detectItemCategory(item.name, item.quality, item.effect);
+        const newCat = detectItemCategory(item.name, item.quality, item.effect);
+
+        // Migration: nếu category cũ là 'phap_bao' (generic) nhưng detect mới ra khác
+        // → chuyển sang category đúng (VD: Tụ Khí Đan từ phap_bao → dan_duoc)
+        if (item.category === 'phap_bao' && newCat !== 'PHAP_BAO' && newCat !== 'KHAC') {
+          log(`🔄 Migrate: "${item.name}" từ phap_bao → ${newCat}`);
+          item.category = newCat;
+          changed = true;
+          migratedCount++;
+          // Nếu category mới không cần refine → xóa isRefined
+          const newInfo = getItemCategoryInfo(newCat);
+          if (!newInfo.needsRefine && item.isRefined !== undefined) {
+            delete item.isRefined;
+          }
+        }
+        // Nếu chưa có category → gán category mới
+        else if (!item.category) {
+          item.category = newCat;
           changed = true;
         }
+        // Nếu category cũ không match detect mới → cập nhật lại (v2.8.5 priority fix)
+        else if (item.category !== newCat) {
+          const oldCatLower = (item.category || '').toLowerCase();
+          const newCatUpper = newCat.toUpperCase();
+          // Chỉ migrate nếu category cũ là 1 trong các category có thể bị nhầm do priority cũ
+          if (oldCatLower === 'phap_bao' || oldCatLower === 'khac') {
+            item.category = newCat;
+            changed = true;
+            migratedCount++;
+          }
+        }
+        // Đảm bảo item cần refine có isRefined field
         const catInfo = getItemCategoryInfo(item.category);
         if (catInfo.needsRefine && item.isRefined === undefined) {
           item.isRefined = false;
@@ -7388,7 +7773,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
       if (changed) {
         document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
-        log(`🔄 Đã migrate ${inv.length} item sang category system.`);
+        log(`🔄 Đã migrate ${inv.length} item sang Item System v2.8.5 (${migratedCount} item đổi category).`);
       }
       renderInventoryVisual(inv);
     }
@@ -7439,12 +7824,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateMusicUI();
   updateMusicTitle();
 
-  // v2.8.4.2 CRITICAL FIX: Khởi tạo stateSnapshots sau khi đã load tất cả dữ liệu
-  // Điều này đảm bảo nút "↩ QUAY LẠI" hoạt động đúng sau khi reload trang
+  // Khởi tạo snapshot ban đầu
   stateSnapshots = [captureStateSnapshot()];
   log(`📸 Đã khởi tạo snapshot ban đầu (stateSnapshots.length = ${stateSnapshots.length}).`);
 
-  log("✅ v2.8.4.2 loaded. UNDO FIX + HEADER LAYOUT + HỖ TRỢ PHẨM CHẤT HỖN HỢP ready.");
+  log("✅ v2.8.5 loaded. HEADER 2 HÀNG + ITEM SYSTEM OVERHAUL + TIER COST ready.");
 });
 </script>
 </body>

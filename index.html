@@ -301,8 +301,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .mc-stat-select{font-size:12px;padding:6px}
 .mc-stats-summary{font-size:11px;color:#4dd0e1;margin-top:8px;padding:8px;background:rgba(31,158,176,.08);border-radius:4px;border-left:3px solid #4dd0e1;line-height:1.5}
 </style>
-</head>
-<body>
+</head><body>
 
 <div class="header">
   <div class="header-row header-row-main">
@@ -834,7 +833,9 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   </div>
 </div>
 <div id="sysLogs" class="log-box">> System v2.8.5 (Header + Item System) initialized... Ready.</div>
-</div><div id="thienDaoModal" class="thiendao-modal">
+</div>
+
+<div id="thienDaoModal" class="thiendao-modal">
 <div class="thiendao-content">
 <div class="thiendao-header">
 <div class="thiendao-title">🔍 THIÊN ĐẠO</div>
@@ -846,10 +847,11 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div id="thienDaoResults"></div>
 </div>
-</div><script>
+</div>
+
+<script>
 // ============================================================
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.5 — FULL REWRITE
-// FIX 6 BUG: NSFW/ITEM/PURCHASE/SCOPE/QUEST/CLASSIFY
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.5 — FULL REWRITE + OPTION RESOLVER + ACTION ANCHOR
 // ============================================================
 const DB_NAME = 'HongDucTuTienDB';
 const STORE_NAME = 'GameSaves';
@@ -872,24 +874,13 @@ const LS_MODEL_KEY = 'hongduc_gemini_models_v1';
 const REFRESH_STATE_TURNS = 5;
 
 // ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG: MATCH HELPERS — 3 CẤP ĐỘ SO KHỚP AN TOÀN
-// Thay thế pattern "normalize + includes" cũ bằng word boundary
+// ⚡ v2.8.5 FIX: MATCH HELPERS — 3 CẤP ĐỘ SO KHỚP AN TOÀN
 // ══════════════════════════════════════════════════════════════
-
-/**
- * So khớp CHÍNH XÁC (có dấu, case-insensitive).
- * Dùng cho keyword ngắn, keyword có nghĩa rõ ràng.
- */
 function exactMatch(text, keyword) {
   if (!text || !keyword) return false;
   return text.toLowerCase().includes(keyword.toLowerCase());
 }
 
-/**
- * So khớp WORD BOUNDARY — chỉ match khi keyword đứng riêng (có ranh giới).
- * Dùng cho verb (give/receive/sell/buy/question/command).
- * Fix bug "thực hiện" → "hiến", "muốn mua" → "mượn".
- */
 function wordBoundaryMatch(text, keyword) {
   if (!text || !keyword) return false;
   const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -897,19 +888,10 @@ function wordBoundaryMatch(text, keyword) {
   return re.test(text);
 }
 
-/**
- * So khớp MỀM — normalize bỏ dấu + substring.
- * CHỈ dùng cho tên vật phẩm (dung sai AI ghi không dấu).
- */
 function softMatch(text, keyword) {
   return normalizeVN(text).includes(normalizeVN(keyword));
 }
 
-/**
- * Bảng từ mơ hồ sau khi normalize bỏ dấu.
- * Key = dạng không dấu; Value = danh sách các từ có dấu có thể xuất phát từ key đó.
- * Phần tử đầu tiên = nghĩa GỐC (dùng để check an toàn).
- */
 const AMBIGUOUS_AFTER_NORMALIZE = {
   'hien': ['hiện', 'hiến', 'hiền', 'hiển', 'hiên', 'hiện'],
   'ban': ['bán', 'ban', 'bàn', 'bạn', 'bản', 'bần', 'bận'],
@@ -969,12 +951,6 @@ const AMBIGUOUS_AFTER_NORMALIZE = {
   'linh': ['linh', 'lĩnh', 'lình', 'lịnh']
 };
 
-/**
- * Kiểm tra match normalize có an toàn không.
- * Nếu keyword nằm trong AMBIGUOUS_AFTER_NORMALIZE:
- *   - Text gốc PHẢI chứa variant đầu tiên (nghĩa gốc) có dấu.
- *   - Nếu không → từ này bị nhầm nghĩa → an toàn.
- */
 function isSafeNormalizedMatch(originalText, keyword) {
   if (!originalText || !keyword) return false;
   const kwNorm = normalizeVN(keyword);
@@ -985,11 +961,6 @@ function isSafeNormalizedMatch(originalText, keyword) {
   return lower.includes(intendedMeaning.toLowerCase());
 }
 
-/**
- * Match an toàn: 
- *  - Nếu keyword ngắn (≤4 chars normalized) hoặc nằm trong AMBIGUOUS → dùng word boundary + check nghĩa.
- *  - Ngược lại (dài, rõ nghĩa) → match substring thoải mái.
- */
 function safeKeywordMatch(text, keyword) {
   if (!text || !keyword) return false;
   const kwNorm = normalizeVN(keyword);
@@ -997,21 +968,16 @@ function safeKeywordMatch(text, keyword) {
   const isShort = kwNorm.length <= 4;
 
   if (isAmbiguous || isShort) {
-    // Word boundary trên text GỐC (có dấu)
     if (wordBoundaryMatch(text, keyword)) return true;
-    // Nếu keyword có dấu khác với text gốc, thử word boundary trên normalize
     if (kwNorm.length >= 3) {
       const textNorm = normalizeVN(text);
       const re = new RegExp(`(?:^|\\s)${kwNorm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s|$)`, 'i');
       if (re.test(textNorm)) {
-        // Có match normalized → check nghĩa gốc
         return isSafeNormalizedMatch(text, keyword);
       }
     }
     return false;
   }
-
-  // Keyword dài, rõ nghĩa → match substring
   return text.toLowerCase().includes(keyword.toLowerCase()) 
     || normalizeVN(text).includes(kwNorm);
 }
@@ -1049,6 +1015,13 @@ let turnCounter = 0;
 let npcList = [];
 let eventList = [];
 let storySummary = "";
+
+// ══════════════════════════════════════════════════════════════
+// ⚡ v2.8.5 FIX: LAST OPTIONS — danh sách option của lượt AI trước
+// Dùng để resolve "1", "2", "3" → text option đầy đủ
+// ══════════════════════════════════════════════════════════════
+let lastOptions = [];
+
 let tokenStats = {
   input: 0, output: 0, requests: 0, errors: 0,
   geminiReq: 0, geminiIn: 0, geminiOut: 0,
@@ -1063,7 +1036,9 @@ let tokenStats = {
   breakthroughsAttempted: 0, breakthroughsSucceeded: 0, breakthroughsFailed: 0,
   minorBreakthroughsAttempted: 0, minorBreakthroughsSucceeded: 0, minorBreakthroughsFailed: 0,
   majorBreakthroughsAttempted: 0, majorBreakthroughsSucceeded: 0, majorBreakthroughsFailed: 0,
-  tokenSavedByOptimization: 0, stateRefreshes: 0
+  tokenSavedByOptimization: 0, stateRefreshes: 0,
+  // ═══ v2.8.5 FIX: thống kê phát hiện AI không thực thi hành động ═══
+  actionMismatchWarnings: 0, actionAnchoredTurns: 0
 };
 
 let systemRulesSentThisSession = false;
@@ -1227,9 +1202,7 @@ const BREAKTHROUGH_REQUIREMENTS = {
 const MINOR_SUCCESS_BONUS = { 'Đơn': 0.15, 'Song': 0.10, 'Tam': 0.05, 'Tứ': 0, 'Ngũ': -0.05, 'Dị': 0.20 };
 const MAJOR_SUCCESS_BONUS = { 'Đơn': 0.20, 'Song': 0.10, 'Tam': 0, 'Tứ': -0.05, 'Ngũ': -0.10, 'Dị': 0.40 };
 const MINOR_BASE_SUCCESS_RATE = 0.85;
-const MINOR_FAIL_EXP_LOSS = 0.10;
-
-// ══════════════════════════════════════════════════════════════
+const MINOR_FAIL_EXP_LOSS = 0.10;// ══════════════════════════════════════════════════════════════
 // ITEM TIERS
 // ══════════════════════════════════════════════════════════════
 const ITEM_TIERS = {
@@ -1281,8 +1254,7 @@ function getTierBadgeHtml(quality) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #2: ITEM CATEGORIES — LOẠI BỎ KEYWORD NGẮN KHỎI PHAP_BAO
-// Chỉ giữ keyword rõ nghĩa, ≥2 âm tiết hoặc ≥5 ký tự
+// ITEM CATEGORIES (v2.8.5)
 // ══════════════════════════════════════════════════════════════
 const ITEM_CATEGORIES = {
   LINH_THACH: {
@@ -1383,40 +1355,31 @@ const ITEM_CATEGORIES = {
     baseRefineCost: 75,
     keywords: ['linh bảo', 'linh bao', 'thông thiên linh bảo', 'thong thien linh bao', 'hậu thiên linh bảo', 'hau thien linh bao', 'tiên thiên linh bảo', 'tien thien linh bao']
   },
-  // ⚡ FIX BUG #2: CHỈ GIỮ KEYWORD RÕ NGHĨA ≥2 ÂM TIẾT
-  // ĐÃ XÓA: 'kiem','thuong','nhan','kinh','phien','chau','thap','binh','phan','dao','ho','ky','an','con','roi'
-  // GIỮ: cụm 2 âm tiết trở lên, hoặc keyword rõ nghĩa
   PHAP_BAO: {
     id: 'phap_bao', label: 'Pháp Bảo / Pháp Khí', icon: '⚔️',
     needsRefine: true, consumable: false,
     badgeClass: 'cat-phap-bao', priority: 15,
     baseRefineCost: 50,
     keywords: [
-      // Cụm rõ nghĩa ≥2 âm tiết
       'pháp bảo', 'phap bao', 'pháp khí', 'phap khi', 'linh khí', 'linh khi',
       'phi kiếm', 'phi kiem', 'phi đao', 'phi dao', 'phi thương', 'phi thuong',
       'linh kiếm', 'linh kiem', 'linh đao', 'linh dao',
       'bản mệnh pháp bảo', 'ban menh phap bao', 'bản mệnh kiếm', 'ban menh kiem',
       'huyết kiếm', 'huyet kiem', 'phệ huyết kiếm', 'phe huyet kiem',
-      // Cụm ghép với "phi", "linh", "bản mệnh"
       'phi kiếm', 'phi đao', 'phi thương',
       'linh chu', 'linh thuyền', 'linh thuyen',
       'phi thuyền', 'phi thuyen', 'bảo thuyền', 'bao thuyen',
       'đan lô', 'dan lo', 'luyện khí lô', 'luyen khi lo',
-      // Cụm ghép với tên đầy đủ
       'thanh phong kiếm', 'thanh phong kiem',
       'tru tiên kiếm', 'tru tien kiem',
       'huyền thiết kiếm', 'huyen thiet kiem',
       'kim quang kiếm', 'kim quang kiem',
       'bạch ngọc kiếm', 'bach ngoc kiem',
-      // Cụm ghép với "kiếm quyết", "kiếm pháp"
       'kiếm quyết', 'kiem quyet', 'kiếm pháp', 'kiem phap',
       'đao pháp', 'dao phap', 'thương pháp', 'thuong phap',
       'chưởng pháp', 'chuong phap', 'quyền pháp', 'quyen phap',
-      // Cụm ghép với "pháp khí" đặc thù
       'đỉnh', 'đỉnh lô', 'bảo đỉnh', 'bao dinh',
       'ấn pháp', 'an phap',
-      // Cụm ghép với loại pháp bảo
       'trấn hồn chung', 'tran hon chung',
       'chiêu hồn phiên', 'chieu hon phien',
       'lôi điện chùy', 'loi dien chuy',
@@ -1433,24 +1396,16 @@ const ITEM_CATEGORIES = {
   }
 };
 
-// Sắp xếp category theo priority (cao → thấp)
 const ITEM_CATEGORY_PRIORITY = Object.entries(ITEM_CATEGORIES)
   .sort((a, b) => a[1].priority - b[1].priority)
   .map(([k, v]) => k);
 
-// ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #2: DETECT ITEM CATEGORY — AN TOÀN HƠN
-// - Ưu tiên match CHÍNH XÁC tên trước
-// - Fallback dùng safeKeywordMatch (có word boundary cho keyword ngắn)
-// - KHÔNG match keyword ngắn trong effect
-// ══════════════════════════════════════════════════════════════
 function detectItemCategory(name, quality, effect) {
   const rawName = (name || '').trim();
   if (!rawName) return 'KHAC';
   const nameLower = rawName.toLowerCase();
   const nameNorm = normalizeVN(rawName);
 
-  // BƯỚC 1: Match CHÍNH XÁC tên với keyword (bất kể độ dài)
   for (const catKey of ITEM_CATEGORY_PRIORITY) {
     if (catKey === 'KHAC') continue;
     const cat = ITEM_CATEGORIES[catKey];
@@ -1458,19 +1413,14 @@ function detectItemCategory(name, quality, effect) {
       const kwLower = kw.toLowerCase().trim();
       const kwNorm = normalizeVN(kwLower);
       if (!kwLower) continue;
-      // Match chính xác hoàn toàn
       if (nameLower === kwLower || nameNorm === kwNorm) return catKey;
-      // Match khi keyword là cụm ≥2 âm tiết và tên chứa nó
       const kwWordCount = kwLower.split(/\s+/).filter(w => w.length > 0).length;
       if (kwWordCount >= 2 && nameLower.includes(kwLower)) return catKey;
       if (kwNorm.length >= 5 && nameNorm.includes(kwNorm)) return catKey;
-      // Match khi keyword đứng đầu tên (VD: "Phi Kiếm Thanh Phong" chứa "phi kiếm")
       if (kwWordCount >= 2 && nameLower.startsWith(kwLower)) return catKey;
     }
   }
 
-  // BƯỚC 2: Match đầu tên (first word sau khi normalize)
-  // VD: tên "Phi Kiếm..." → check "phi" có trong keyword "phi kiếm" không
   const nameTokens = nameNorm.split(/\s+/).filter(t => t.length >= 2);
   if (nameTokens.length > 0) {
     for (const catKey of ITEM_CATEGORY_PRIORITY) {
@@ -1487,7 +1437,6 @@ function detectItemCategory(name, quality, effect) {
     }
   }
 
-  // BƯỚC 3: Match toàn bộ text (name+quality+effect) — CHỈ keyword DÀI ≥6 ký tự
   const fullText = (rawName + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
   const fullNorm = normalizeVN(fullText);
   for (const catKey of ITEM_CATEGORY_PRIORITY) {
@@ -1497,7 +1446,6 @@ function detectItemCategory(name, quality, effect) {
       const kwLower = kw.toLowerCase().trim();
       const kwNorm = normalizeVN(kwLower);
       const kwWordCount = kwLower.split(/\s+/).filter(w => w.length > 0).length;
-      // CHỈ match effect nếu keyword ≥2 âm tiết VÀ ≥6 ký tự normalize
       if (kwWordCount >= 2 && kwNorm.length >= 6) {
         if (fullNorm.includes(kwNorm)) return catKey;
       }
@@ -1561,7 +1509,9 @@ function getRefineCostBreakdown(item) {
     realmBonus,
     finalCost
   };
-}function showItemSystemInfo() {
+}
+
+function showItemSystemInfo() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:#e3702d;font-size:14px;margin-bottom:10px;font-weight:bold">📦 HỆ THỐNG PHÂN LOẠI VẬT PHẨM v2.8.5</div>`;
@@ -2071,37 +2021,26 @@ const DEFAULT_SCOPES = [
 let scopeRegistry = [];
 
 // ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #3 + #5: VERBS — CHỈ GIỮ CỤM ≥2 ÂM TIẾT
-// Xóa các verb đơn lẻ nguy hiểm: 'cho', 'ban', 'hien', 'mua', 'muon', 'thue', 'tra', 'doi'
-// và giữ cụm rõ nghĩa: 'cho', 'tặng', 'biếu', 'đưa'... 
-// Lưu ý: 'cho' vẫn cần giữ vì là verb chính, NHƯNG wordBoundaryMatch sẽ chặn
-// các trường hợp như "cho rằng", "cho nên" — vì vậy ta giữ nhưng phải dùng đúng regex
+// VERBS — CHỈ CỤM ≥2 ÂM TIẾT (v2.8.5)
 // ══════════════════════════════════════════════════════════════
-
-// Verbs GIVE — CHỈ giữ cụm đủ nghĩa
 const GIVE_VERBS = [
   'cho', 'tặng', 'tang', 'biếu', 'bieu', 'đưa', 'dua', 'gửi', 'gui', 'trao', 'giao', 'cấp', 'cap', 'phát', 'phat', 'thưởng', 'thuong', 'ban', 'ban cho', 'cống nạp', 'cong nap', 'hiến', 'hien', 'dâng', 'dang', 'nộp', 'nop', 'cung cấp', 'cung cap', 'chia', 'chia sẻ', 'chia se', 'lì xì', 'li xi', 'đưa cho', 'dua cho', 'giao cho', 'trao cho', 'đưa tặng', 'dua tang', 'gửi tặng', 'gui tang', 'tặng cho', 'tang cho', 'bố thí', 'bo thi', 'ban thưởng', 'ban thuong', 'khen thưởng', 'khen thuong', 'thuê', 'thue', 'cho thuê', 'cho thue'
 ];
 
-// Verbs RECEIVE
 const RECEIVE_VERBS = [
   'nhận', 'nhan', 'lĩnh', 'linh', 'thu', 'thu được', 'thu duoc', 'được cho', 'duoc cho', 'được tặng', 'duoc tang', 'được biếu', 'duoc bieu', 'được ban', 'duoc ban', 'được thưởng', 'duoc thuong', 'được cấp', 'duoc cap', 'được giao', 'duoc giao', 'được phát', 'duoc phat', 'được nhận', 'duoc nhan', 'thu hoạch', 'thu hoach', 'lấy được', 'lay duoc', 'chiếm được', 'chiem duoc', 'đoạt được', 'doat duoc', 'cướp được', 'cuop duoc', 'hưởng', 'huong', 'nhận được', 'nhan duoc', 'lĩnh được', 'linh duoc', 'thu vào', 'thu vao', 'bỏ vào túi', 'bo vao tui', 'cất vào túi', 'cat vao tui', 'nhặt được', 'nhat duoc', 'thuê', 'thue', 'mượn', 'muon'
 ];
 
-// Verbs SELL
 const SELL_VERBS = [
   'bán', 'ban', 'trao đổi', 'trao doi', 'đổi', 'doi', 'quy đổi', 'quy doi', 'thanh lý', 'thanh ly', 'bán lại', 'ban lai', 'sang nhượng', 'sang nhuong', 'kí gửi', 'ki gui', 'ký gửi', 'ky gui', 'đổi lấy', 'doi lay', 'bán đổi', 'ban doi'
 ];
 
-// Verbs BUY
 const BUY_VERBS = [
   'mua', 'tậu', 'tau', 'sắm', 'sam', 'thu mua', 'đặt mua', 'dat mua', 'mua lại', 'mua lai', 'săn', 'san', 'săn lùng', 'san lung', 'tìm mua', 'tim mua', 'mua đứt', 'mua dut', 'mua buôn', 'mua buon', 'nhập hàng', 'nhap hang', 'thuê', 'thue'
 ];
 
-// ⚡ FIX: Build regex với WORD BOUNDARY thật sự
 function buildVerbRegex(verbs) {
   const escaped = verbs.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  // Word boundary: bắt đầu chuỗi hoặc sau khoảng trắng/dấu câu, kết thúc chuỗi hoặc trước khoảng trắng/dấu câu
   return new RegExp(`(?:^|[\\s,.;!?()\\[\\]{}'"\\-/])(?:${escaped.join('|')})(?:[\\s,.;!?()\\[\\]{}'"\\-/]|$)`, 'i');
 }
 
@@ -2437,6 +2376,7 @@ Fallback: ${tokenStats.fallbackCount} | Rotations: ${tokenStats.keyRotations || 
 🚧 Give-Guard chặn: ${tokenStats.giveGuardBlocked || 0}<br>
 🛡️ Ingredient Guard: ${tokenStats.ingredientGuardBlocked || 0}<br>
 🔗 World-Item Auto-Sync: ${tokenStats.worldItemAutoSync || 0}<br>
+🎯 Action Mismatch: ${tokenStats.actionMismatchWarnings || 0}<br>
 💾 Token saved: ~${(tokenStats.tokenSavedByOptimization || 0).toLocaleString()}<br>
 Tổng: ${tokenStats.requests} req | TB ~${avgIn} in / ~${avgOut} out<br>
 Errors: ${tokenStats.errors}`;
@@ -2457,13 +2397,32 @@ function resetTokenStats() {
     breakthroughsAttempted: 0, breakthroughsSucceeded: 0, breakthroughsFailed: 0,
     minorBreakthroughsAttempted: 0, minorBreakthroughsSucceeded: 0, minorBreakthroughsFailed: 0,
     majorBreakthroughsAttempted: 0, majorBreakthroughsSucceeded: 0, majorBreakthroughsFailed: 0,
-    tokenSavedByOptimization: 0, stateRefreshes: 0
+    tokenSavedByOptimization: 0, stateRefreshes: 0,
+    actionMismatchWarnings: 0, actionAnchoredTurns: 0
   };
   updateTokenStatsDisplay();
   log("Đã reset token stats.");
 }
 
 // ══════════════════════════════════════════════════════════════
+// ⚡ v2.8.5 FIX: OPTION PARSER
+// Parse các dòng "1. ", "2. " ... từ reply AI → danh sách option
+// ══════════════════════════════════════════════════════════════
+function parseOptionsFromReply(reply) {
+  const options = [];
+  if (!reply) return options;
+  const lines = reply.split('\n');
+  for (const line of lines) {
+    const m = line.match(/^\s*(\d+)[\.\)]\s+(.+)$/);
+    if (m) {
+      const txt = m[2].trim();
+      if (txt.length >= 3) {
+        options.push({ num: parseInt(m[1]), text: txt });
+      }
+    }
+  }
+  return options;
+}// ══════════════════════════════════════════════════════════════
 // REFRESH STATE FROM HISTORY
 // ══════════════════════════════════════════════════════════════
 async function refreshGameStateFromHistory() {
@@ -2730,7 +2689,9 @@ function captureStateSnapshot() {
     turnCounter: turnCounter,
     tokenStats: JSON.parse(JSON.stringify(tokenStats)),
     priceMemory: JSON.parse(JSON.stringify(priceMemory)),
-    professionState: JSON.parse(JSON.stringify(professionState))
+    professionState: JSON.parse(JSON.stringify(professionState)),
+    // ═══ v2.8.5 FIX: Lưu lastOptions trong snapshot để undo khôi phục đúng ═══
+    lastOptions: JSON.parse(JSON.stringify(lastOptions))
   };
 }
 
@@ -2757,6 +2718,8 @@ function restoreStateSnapshot(snap) {
   if (snap.tokenStats) tokenStats = JSON.parse(JSON.stringify(snap.tokenStats));
   if (snap.priceMemory) priceMemory = JSON.parse(JSON.stringify(snap.priceMemory));
   if (snap.professionState) professionState = JSON.parse(JSON.stringify(snap.professionState));
+  // ═══ v2.8.5 FIX: Khôi phục lastOptions từ snapshot ═══
+  if (snap.lastOptions) lastOptions = JSON.parse(JSON.stringify(snap.lastOptions));
   renderNpcs();
   renderEventsVisual();
   updateExpUI();
@@ -4135,11 +4098,6 @@ function openTagLegend() {
   resultsDiv.innerHTML = html;
 }
 
-// ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #4: detectSceneScopes — DÙNG safeKeywordMatch
-// Trigger ngắn như 'phái','các','môn','về','đánh','đổi' sẽ KHÔNG match
-// nếu không đứng riêng (có word boundary) và không đúng nghĩa gốc
-// ══════════════════════════════════════════════════════════════
 function detectSceneScopes(actionText) {
   if (!actionText) return ['default'];
   const matches = [];
@@ -4149,7 +4107,6 @@ function detectSceneScopes(actionText) {
     for (const trigger of scope.triggers) {
       const tLower = trigger.toLowerCase().trim();
       if (!tLower) continue;
-      // Dùng safeKeywordMatch để tránh bug "phải" → "phái", "món" → "môn", "vẻ" → "về"
       if (safeKeywordMatch(actionText, tLower)) {
         const pos = actionText.toLowerCase().indexOf(tLower);
         if (pos !== -1 && (bestPos === -1 || pos < bestPos)) bestPos = pos;
@@ -4361,7 +4318,9 @@ function toggleLockRules(index) {
     log(`${npcList[index].lockedRules ? '🔒 Khóa' : '🔓 Mở'} [${npcList[index].name}]`);
     renderNpcs();
   }
-}// ══════════════════════════════════════════════════════════════
+}
+
+// ══════════════════════════════════════════════════════════════
 // RENDER LOCATIONS / EVENTS / WEAPONS / INVENTORY
 // ══════════════════════════════════════════════════════════════
 function renderLocationsVisual(locArray) {
@@ -4947,6 +4906,7 @@ function thienDaoStats() {
   html += `<div class="thiendao-result"><div class="thiendao-result-title">👥 NPC</div><div class="thiendao-result-body">Sống: ${npcList.length} | Chết: ${(document.getElementById('npcArchive').value || '').split('\n').filter(l => l.trim()).length}</div></div>`;
   html += `<div class="thiendao-result"><div class="thiendao-result-title">💬 Chat</div><div class="thiendao-result-body">Tổng: ${chatHistory.length} tin</div></div>`;
   html += `<div class="thiendao-result"><div class="thiendao-result-title">🎵 Nhạc</div><div class="thiendao-result-body">Playlist: ${musicPlaylist.length} bài<br>Đang phát: ${musicPlaylist[currentMusicIndex]?.name || '(không)'}</div></div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #d29922"><div class="thiendao-result-title" style="color:#d29922">🎯 Action Mismatch</div><div class="thiendao-result-body">Cảnh báo AI không thực thi hành động: ${tokenStats.actionMismatchWarnings || 0}<br>Số lượt có Action Anchor: ${tokenStats.actionAnchoredTurns || 0}</div></div>`;
   resultsDiv.innerHTML = html;
 }
 
@@ -4954,6 +4914,16 @@ function showVersionLog() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.6 (2026-10-17) — OPTION RESOLVER + ACTION ANCHOR</div><div class="thiendao-result-body">
+🎯 <b>MAJOR FIXES</b>:<br>
+• <b>OPTION RESOLVER</b>: Gõ "1", "2", "3" → tự động resolve thành text option đầy đủ<br>
+• <b>ACTION ANCHOR</b>: Block cứng ở đầu prompt buộc AI thực thi đúng hành động<br>
+• <b>COMPACT RULES</b>: Rút gọn rules sau lượt 1 để giảm lost-in-the-middle<br>
+• <b>POST-CHECK ACTION</b>: Cảnh báo nếu AI kể chuyện không liên quan đến hành động<br>
+• <b>lastOptions</b>: Lưu danh sách option sau mỗi lượt AI để resolve lượt sau<br>
+• <b>Snapshot lastOptions</b>: Undo khôi phục đúng option list<br><br>
+📊 <b>NEW STATS</b>: actionMismatchWarnings, actionAnchoredTurns
+</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title" style="color:#e3702d">v2.8.5 (2026-10-16) — 6 BUG FIX</div><div class="thiendao-result-body">
 🐛 <b>BUG FIXES</b>:<br>
 • #1 detectNsfwIntent() — word boundary + AMBIGUOUS_AFTER_NORMALIZE<br>
@@ -5308,10 +5278,6 @@ function checkCJKOnSave() {
   return true;
 }
 
-// ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #1: NSFW DETECTION — DÙNG safeKeywordMatch
-// Thay vì lower.includes(kw) + normalized.includes(kwNorm) không có boundary
-// ══════════════════════════════════════════════════════════════
 const NSFW_KEYWORDS_VI = [
   'song tu', 'làm tình', 'giao hoan', 'mây mưa', 'ái ân', 'hoan ái', 'ân ái',
   'thân mật', 'hôn', 'ôm', 'vuốt ve', 'cởi', 'lột', 'hở hang', 'khỏa thân',
@@ -5329,21 +5295,14 @@ const NSFW_KEYWORDS_EN = ['sex', 'intercourse', 'rape', 'fuck', 'kiss', 'naked',
 
 function detectNsfwIntent(actionText) {
   if (!actionText) return false;
-  // Vietnamese keywords — dùng safeKeywordMatch để tránh bug
-  // "cường giả" match "cưỡng", "chất lượng" match "chặt", "trời ơi" match "trói",
-  // "đức tính" match "dục", "đầm lầy" match "dâm", "coi thường" match "cởi",
-  // "hôn mê" match "hôn", "hiệp sĩ" match "hiếp", "tôm hùm" match "ôm"
   for (const kw of NSFW_KEYWORDS_VI) {
     if (safeKeywordMatch(actionText, kw)) return true;
   }
-  // English keywords — word boundary
   for (const kw of NSFW_KEYWORDS_EN) {
     if (wordBoundaryMatch(actionText, kw)) return true;
   }
   return false;
-}
-
-// ============================================================
+}// ============================================================
 // CALL GEMINI
 // ============================================================
 async function callGeminiInternal(promptText, preferredModel, maxTokens = 1000) {
@@ -5355,9 +5314,7 @@ async function callGeminiInternal(promptText, preferredModel, maxTokens = 1000) 
   const startKeyIdx = currentKeyIndex;
   const keyOrder = [];
   if (settings.autoRotate) {
-    for (let i = 0; i < keys.length; i++) {
-      keyOrder.push((startKeyIdx + i) % keys.length);
-    }
+    for (let i = 0; i < keys.length; i++) keyOrder.push((startKeyIdx + i) % keys.length);
   } else {
     keyOrder.push(startKeyIdx);
   }
@@ -5375,11 +5332,8 @@ async function callGeminiInternal(promptText, preferredModel, maxTokens = 1000) 
           const errMsg = data.error.message || JSON.stringify(data.error);
           const errCode = data.error.code;
           const isQuota = errCode === 429 || (errMsg || '').toLowerCase().includes('quota') || (errMsg || '').toLowerCase().includes('exceeded');
-          if (isQuota) {
-            markModelExhausted(keyIdx, model);
-          } else {
-            markModelError(keyIdx, model);
-          }
+          if (isQuota) markModelExhausted(keyIdx, model);
+          else markModelError(keyIdx, model);
           lastError = errMsg;
           continue;
         }
@@ -5394,9 +5348,7 @@ async function callGeminiInternal(promptText, preferredModel, maxTokens = 1000) 
           return data.candidates[0].content.parts[0].text.trim();
         }
         lastError = "No candidates";
-      } catch (e) {
-        lastError = e.message;
-      }
+      } catch (e) { lastError = e.message; }
     }
   }
   throw new Error(`Summary thất bại. Lỗi cuối: ${lastError || 'unknown'}`);
@@ -5421,16 +5373,12 @@ async function generateStorySummary() {
       }
       await saveGame(false);
     }
-  } catch (e) {
-    log("❌ Lỗi tóm tắt: " + e.message);
-  }
+  } catch (e) { log("❌ Lỗi tóm tắt: " + e.message); }
 }
 
 async function callGemini(promptText, isFirstCall = false, scopeInput = 'default') {
   const keys = getGeminiKeys();
-  if (keys.length === 0) {
-    throw new Error("Chưa nhập Gemini API Key");
-  }
+  if (keys.length === 0) throw new Error("Chưa nhập Gemini API Key");
   ensureKeyStatusStructure();
   const models = getGeminiModels();
   const currentMessage = { role: "user", parts: [{ text: promptText }] };
@@ -5456,12 +5404,8 @@ async function callGemini(promptText, isFirstCall = false, scopeInput = 'default
   let lastError = null;
   const keyOrder = [];
   if (settings.autoRotate) {
-    for (let i = 0; i < keys.length; i++) {
-      keyOrder.push((startKeyIdx + i) % keys.length);
-    }
-  } else {
-    keyOrder.push(startKeyIdx);
-  }
+    for (let i = 0; i < keys.length; i++) keyOrder.push((startKeyIdx + i) % keys.length);
+  } else { keyOrder.push(startKeyIdx); }
   for (const keyIdx of keyOrder) {
     const key = keys[keyIdx];
     if (!key) continue;
@@ -5479,8 +5423,7 @@ async function callGemini(promptText, isFirstCall = false, scopeInput = 'default
           if (isQuotaError) {
             log(`💀 [Key ${keyIdx + 1}][${model}] HẾT QUOTA`);
             markModelExhausted(keyIdx, model);
-            lastError = errMsg;
-            continue;
+            lastError = errMsg; continue;
           } else {
             log(`⚠️ [Key ${keyIdx + 1}][${model}]: ${errMsg.substring(0, 100)}`);
             markModelError(keyIdx, model);
@@ -5536,19 +5479,13 @@ async function callGemini(promptText, isFirstCall = false, scopeInput = 'default
 async function callOpenRouter(promptText, scopeInput = 'default') {
   const rawKey = document.getElementById('openRouterKey').value;
   const key = rawKey.trim();
-  if (!key) {
-    throw new Error("Chưa nhập OpenRouter Key");
-  }
-  if (!key.startsWith('sk-or-v1-')) {
-    throw new Error("Key sai định dạng");
-  }
+  if (!key) throw new Error("Chưa nhập OpenRouter Key");
+  if (!key.startsWith('sk-or-v1-')) throw new Error("Key sai định dạng");
   let model = document.getElementById('openRouterModel').value;
   if (model === 'custom') {
     const customInput = document.getElementById('openRouterCustomModel');
     model = customInput ? customInput.value.trim() : '';
-    if (!model) {
-      throw new Error("Chưa nhập model ID!");
-    }
+    if (!model) throw new Error("Chưa nhập model ID!");
   }
   const currentMessage = { role: "user", content: promptText };
   const recentHistory = chatHistory.slice(-MAX_RECENT_TURNS * 2).map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.parts[0].text }));
@@ -5589,9 +5526,7 @@ async function callOpenRouter(promptText, scopeInput = 'default') {
       }
       if (data.choices && data.choices[0] && data.choices[0].message) {
         let aiReply = data.choices[0].message.content;
-        if (!aiReply || aiReply.trim() === '') {
-          throw new Error("Empty response");
-        }
+        if (!aiReply || aiReply.trim() === '') throw new Error("Empty response");
         aiReply = filterCJKFromResponse(aiReply);
         if (data.usage) {
           const inT = data.usage.prompt_tokens || 0;
@@ -5650,12 +5585,8 @@ async function callAI(promptText, isFirstCall = false, scopeInput = 'default') {
         log("🔄 Fallback về Gemini...");
         tokenStats.fallbackCount++;
         updateTokenStatsDisplay();
-        try {
-          return await callGemini(promptText, isFirstCall, scopes);
-        } catch (e2) {
-          log(`❌ Gemini fail: ${e2.message}`);
-          return null;
-        }
+        try { return await callGemini(promptText, isFirstCall, scopes); }
+        catch (e2) { log(`❌ Gemini fail: ${e2.message}`); return null; }
       }
       return null;
     }
@@ -5667,12 +5598,8 @@ async function callAI(promptText, isFirstCall = false, scopeInput = 'default') {
       log(`❌ Gemini fail: ${e.message}`);
       if (orKey) {
         log("🔄 Thử OpenRouter...");
-        try {
-          return await callOpenRouter(promptText, scopes);
-        } catch (e2) {
-          log(`❌ OpenRouter fail: ${e2.message}`);
-          return null;
-        }
+        try { return await callOpenRouter(promptText, scopes); }
+        catch (e2) { log(`❌ OpenRouter fail: ${e2.message}`); return null; }
       }
       return null;
     }
@@ -5754,22 +5681,17 @@ async function aiGenField(fieldId, promptMsg) {
       res = filterCJKFromResponse(res);
       field.value = res;
       log(`✅ AI Gen xong: ${fieldId}`);
-    } else {
-      field.value = originalVal;
-    }
+    } else { field.value = originalVal; }
   } catch (e) {
     log("AI Gen lỗi: " + e.message);
     field.value = originalVal;
     alert("❌ AI Gen thất bại:\n" + e.message);
-  } finally {
-    isAiGenCall = false;
-  }
+  } finally { isAiGenCall = false; }
 }
 
-// ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #3: PURCHASE INTENT — DÙNG wordBoundaryMatch
-// Thay vì GIVE_VERB_REGEX.test(textRaw) + includes → wordBoundaryMatch
-// ══════════════════════════════════════════════════════════════
+// ============================================================
+// DETECT PURCHASE INTENT
+// ============================================================
 function detectPurchaseIntent(actionText) {
   if (!actionText) return null;
   const raw = actionText.toLowerCase().trim();
@@ -5779,7 +5701,6 @@ function detectPurchaseIntent(actionText) {
   const tryMatch = (re) => textRaw.match(re) || textNorm.match(re);
   const unit = '(?:vien|cai|chiec|tam|la|cuc|thanh|bo|hop|goi|phan|manh|khuc|binh|lo|chai|cuon|tap|xap|chong|nham|nam|dot)';
 
-  // Give linh thach
   const giveLSPatterns = [
     new RegExp(`(?:${GIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i'),
     new RegExp(`(?:${GIVE_ALT})\\s+(?:[a-zà-ỹ]+\\s+){0,2}?(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i')
@@ -5788,7 +5709,6 @@ function detectPurchaseIntent(actionText) {
     const m = tryMatch(re);
     if (m) {
       const matchedText = m[0];
-      // ⚡ FIX: Dùng wordBoundaryMatch cho verb check
       if (wordBoundaryMatch(matchedText, 'bán') || wordBoundaryMatch(matchedText, 'mua') || 
           wordBoundaryMatch(matchedText, 'thuê') || wordBoundaryMatch(matchedText, 'đổi') || 
           wordBoundaryMatch(matchedText, 'trao đổi') || wordBoundaryMatch(matchedText, 'nộp') || 
@@ -5819,17 +5739,13 @@ function detectPurchaseIntent(actionText) {
     }
   }
 
-  // ⚡ FIX: Dùng wordBoundaryMatch thay vì GIVE_VERB_REGEX.test() 
-  // để tránh "thực hiện" match "hiến", "hiện tại" match "hiến"
   const hasGiveVerb = GIVE_VERBS.some(v => wordBoundaryMatch(textRaw, v) || wordBoundaryMatch(textNorm, v));
   if (hasGiveVerb) {
     const candidate = extractItemCandidate(textRaw);
     if (candidate && candidate.length >= 2) {
       const numMatch = textRaw.match(/(\d[\d.,]*\s*[vk]?)/);
       const qty = numMatch ? parseQty(numMatch[1]) : 1;
-      if (qty > 0) {
-        return { action: 'give', qty, itemName: candidate, raw: textRaw };
-      }
+      if (qty > 0) return { action: 'give', qty, itemName: candidate, raw: textRaw };
     }
   }
 
@@ -5853,9 +5769,7 @@ function detectPurchaseIntent(actionText) {
     if (m) {
       const qty = parseQty(m[1]);
       const itemName = (m[2] || '').trim();
-      if (qty > 0 && itemName.length >= 2) {
-        return { action: 'receive', qty, itemName, raw: m[0] };
-      }
+      if (qty > 0 && itemName.length >= 2) return { action: 'receive', qty, itemName, raw: m[0] };
     }
   }
 
@@ -5879,14 +5793,10 @@ function detectPurchaseIntent(actionText) {
     const m = tryMatch(re);
     if (m) {
       const nums = m.slice(1).map(x => parseQty(x)).filter(n => n > 0);
-      if (nums.length >= 2) {
-        return { action: 'buy', qty: nums[0], totalCost: nums[nums.length - 1], raw: m[0] };
-      } else if (nums.length === 1) {
-        return { action: 'buy', qty: 1, totalCost: nums[0], raw: m[0] };
-      }
+      if (nums.length >= 2) return { action: 'buy', qty: nums[0], totalCost: nums[nums.length - 1], raw: m[0] };
+      else if (nums.length === 1) return { action: 'buy', qty: 1, totalCost: nums[0], raw: m[0] };
     }
   }
-  // ⚡ FIX: Dùng wordBoundaryMatch cho fallback buy
   const hasBuyVerb = BUY_VERBS.some(v => wordBoundaryMatch(textRaw, v) || wordBoundaryMatch(textNorm, v));
   if (hasBuyVerb) {
     const lsMatch = tryMatch(/(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i);
@@ -5898,34 +5808,25 @@ function detectPurchaseIntent(actionText) {
   return null;
 }
 
-// ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #5: QUEST DELEGATION — DÙNG wordBoundaryMatch
-// Thay vì 'sai ', 'bảo ', 'kêu ', 'nhờ' match substring
-// ══════════════════════════════════════════════════════════════
+// ============================================================
+// QUEST DELEGATION / CLASSIFY
+// ============================================================
 function isQuestDelegation(actionText) {
   if (!actionText) return false;
   if (!settings.questDelegation) return false;
   const lower = actionText.toLowerCase();
   const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
   const npcNames = npcList.map(n => (n.name || '').toLowerCase().trim()).filter(n => n.length >= 2);
   const hasNpcName = npcNames.some(n => lower.includes(n));
 
-  // ⚡ FIX: command verbs phải dùng wordBoundaryMatch
   const commandVerbs = [
     'giao nhiệm vụ', 'giao cho', 'ra lệnh', 'sai', 'sai khiến', 'sai bảo', 'sai hắn', 'sai nó',
     'bảo hắn', 'bảo nó', 'yêu cầu', 'phân phó', 'kêu hắn', 'kêu nó', 'sai người', 'cử người',
     'hướng dẫn', 'chỉ thị', 'đi mua', 'đi bán', 'đi thuê', 'đi làm', 'đi nộp', 'đi đổi',
     'nhờ', 'hãy', 'hãy đi', 'hãy đến', 'bảo', 'kêu', 'sai đi'
   ];
-  // ⚡ FIX: Chỉ match verb nếu có word boundary
-  // "bảo vệ" KHÔNG match "bảo", "sai lầm" KHÔNG match "sai", "nhỡ bước" KHÔNG match "nhờ"
   const hasCommandVerb = commandVerbs.some(v => {
-    // Cụm ≥2 âm tiết → dùng wordBoundaryMatch trên cụm đầy đủ
-    if (v.includes(' ')) {
-      return wordBoundaryMatch(actionText, v);
-    }
-    // Từ đơn → dùng wordBoundaryMatch
+    if (v.includes(' ')) return wordBoundaryMatch(actionText, v);
     return wordBoundaryMatch(actionText, v);
   });
 
@@ -5933,32 +5834,23 @@ function isQuestDelegation(actionText) {
   const hasSequence = sequenceMarkers.some(m => lower.includes(m));
 
   const economicVerbs = ['bán', 'mua', 'thuê', 'đổi', 'trao đổi', 'nộp', 'trả'];
-  // ⚡ FIX: economic verbs cũng phải word boundary
   const economicCount = economicVerbs.filter(v => wordBoundaryMatch(actionText, v)).length;
 
   const directGivePattern = new RegExp(`(?:đưa|cho|tặng|giao)\\s+(?:\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+)?(?:linh\\s*thach|linh\\s*thạch)`, 'i');
   const hasDirectGive = directGivePattern.test(actionText);
 
   if (hasDirectGive && !hasSequence) return false;
-
   return hasNpcName && hasCommandVerb && (hasSequence || economicCount >= 2);
 }
 
-// ══════════════════════════════════════════════════════════════
-// ⚡ FIX BUG #6: CLASSIFY TRANSACTION — DÙNG wordBoundaryMatch
-// ══════════════════════════════════════════════════════════════
 function classifyTransactionIntent(actionText) {
   if (!actionText) return { type: 'none' };
   const lower = actionText.toLowerCase();
-  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
   if (isQuestDelegation(actionText)) {
     tokenStats.questDelegationsDetected = (tokenStats.questDelegationsDetected || 0) + 1;
     updateTokenStatsDisplay();
     return { type: 'quest_delegation', note: 'NPC sẽ tự thực hiện — bỏ qua pre-validate' };
   }
-
-  // ⚡ FIX: question markers phải có word boundary
   const questionMarkers = ['hỏi', 'thăm dò', 'tìm hiểu', 'xem giá', 'giá bao nhiêu', 'giá cả', 'ở đâu', 'như thế nào', 'ra sao', 'là gì', 'có không', 'được không', 'bao nhiêu', 'thế nào'];
   const hasQuestion = questionMarkers.some(v => wordBoundaryMatch(actionText, v));
   if (hasQuestion) {
@@ -5970,21 +5862,17 @@ function classifyTransactionIntent(actionText) {
       return { type: 'question', note: 'Chỉ hỏi thông tin — không giao dịch' };
     }
   }
-
   const sequenceMarkers = ['sau đó', ' rồi ', 'tiếp theo', 'kế tiếp', 'sau ấy', 'rồi mới', 'xong rồi', 'sau khi'];
   const hasSequence = sequenceMarkers.some(m => lower.includes(m));
   const economicVerbs = ['bán', 'mua', 'thuê', 'đổi', 'trao đổi', 'nộp', 'trả'];
-  // ⚡ FIX: economic verbs word boundary
   const economicCount = economicVerbs.filter(v => wordBoundaryMatch(actionText, v)).length;
   if (hasSequence && economicCount >= 2) {
     tokenStats.transactionChainsDetected = (tokenStats.transactionChainsDetected || 0) + 1;
     updateTokenStatsDisplay();
     return { type: 'transaction_chain', note: 'Chuỗi giao dịch — cần AI xử lý tuần tự' };
   }
-
   const intent = detectPurchaseIntent(actionText);
   if (intent) return { type: 'single_transaction', intent };
-
   return { type: 'none' };
 }
 
@@ -6008,9 +5896,7 @@ function showQuestDelegationStats() {
       VD: "Gọi Lý Hổ vào giao nhiệm vụ: đưa hắn đan đi bán, sau đó mua nguyên liệu"<br>
       → Hệ thống KHÔNG pre-validate như giao dịch tức thời.<br><br>
       <b>Transaction chain</b> = chuỗi giao dịch có "sau đó/rồi" + nhiều verb kinh tế.<br>
-      → AI xử lý tuần tự, transactionsList phản ánh kết quả cuối.<br><br>
-      <b>Question</b> = chỉ hỏi thông tin (giá, vị trí).<br>
-      → Không pre-validate.
+      → AI xử lý tuần tự, transactionsList phản ánh kết quả cuối.
     </div>
   </div>`;
   resultsDiv.innerHTML = html;
@@ -6021,26 +5907,16 @@ function showQuestDelegationStats() {
 // ============================================================
 function prevalidateTransaction(actionText) {
   const classification = classifyTransactionIntent(actionText);
-
   if (classification.type !== 'single_transaction') {
-    if (classification.type === 'quest_delegation') {
-      log(`🎯 Quest delegation — bỏ qua pre-validate (NPC sẽ tự thực hiện).`);
-    } else if (classification.type === 'transaction_chain') {
-      log(`⛓️ Transaction chain — bỏ qua pre-validate tức thời (AI xử lý tuần tự).`);
-    } else if (classification.type === 'question') {
-      log(`❓ Câu hỏi thông tin — bỏ qua pre-validate.`);
-    }
+    if (classification.type === 'quest_delegation') log(`🎯 Quest delegation — bỏ qua pre-validate (NPC sẽ tự thực hiện).`);
+    else if (classification.type === 'transaction_chain') log(`⛓️ Transaction chain — bỏ qua pre-validate tức thời (AI xử lý tuần tự).`);
+    else if (classification.type === 'question') log(`❓ Câu hỏi thông tin — bỏ qua pre-validate.`);
     return { ok: true, classification };
   }
-
   const intent = classification.intent;
   if (!intent) return { ok: true };
   let inv = [];
-  try {
-    inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
-  } catch (e) {
-    inv = [];
-  }
+  try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
   inv = inv.filter(i => i && i.name && (i.quantity === undefined || i.quantity > 0));
   const currentLS = (() => {
     const ls = inv.find(i => normalizeVN(i.name).includes('linh thach'));
@@ -6052,8 +5928,7 @@ function prevalidateTransaction(actionText) {
       tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1;
       updateTokenStatsDisplay();
       return {
-        ok: false,
-        type: 'buy',
+        ok: false, type: 'buy',
         message: `❌ KHÔNG ĐỦ LINH THẠCH!\n\n💰 Bạn có: ${currentLS.toLocaleString()} linh thạch\n💸 Cần: ${intent.totalCost.toLocaleString()} linh thạch\n⚠️ Thiếu: ${(intent.totalCost - currentLS).toLocaleString()} linh thạch\n\n🚫 Không thể thực hiện giao dịch này.\n\n👉 Hãy chọn hành động khác:\n  • Kiếm thêm linh thạch (bán đồ, làm nhiệm vụ)\n  • Mặc cả giảm giá\n  • Hủy mua\n  • Vay mượn (nếu có NPC phù hợp)`
       };
     }
@@ -6069,8 +5944,7 @@ function prevalidateTransaction(actionText) {
         tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1;
         updateTokenStatsDisplay();
         return {
-          ok: false,
-          type: 'give',
+          ok: false, type: 'give',
           message: `❌ KHÔNG ĐỦ LINH THẠCH ĐỂ CHO!\n\n💰 Bạn có: ${currentLS.toLocaleString()} linh thạch\n🎁 Muốn cho: ${intent.qty.toLocaleString()} linh thạch\n⚠️ Thiếu: ${(intent.qty - currentLS).toLocaleString()} linh thạch\n\n🚫 Không thể cho số linh thạch lớn hơn số đang có.`
         };
       }
@@ -6088,7 +5962,6 @@ function prevalidateTransaction(actionText) {
       matchedItem = findMatchingInventoryItem(c, inv);
       if (matchedItem) break;
     }
-
     if (!matchedItem) {
       const worldMatch = findInWorldItems(itemNameRaw) || findInWorldItems(uniqCandidates[uniqCandidates.length - 1] || '');
       if (worldMatch) {
@@ -6096,9 +5969,7 @@ function prevalidateTransaction(actionText) {
         const catKey = detectItemCategory(worldMatch.name, worldMatch.rank, worldMatch.usage);
         const catInfo = getItemCategoryInfo(catKey);
         const newItem = { name: worldMatch.name, icon: worldMatch.icon || catInfo.icon, quantity: 1, quality: worldMatch.rank || 'Thường', effect: worldMatch.usage || '', category: catKey };
-        if (catInfo.needsRefine) {
-          newItem.isRefined = true;
-        }
+        if (catInfo.needsRefine) newItem.isRefined = true;
         const existing = findMatchingInventoryItem(worldMatch.name, inv);
         if (existing) {
           existing.quantity = (existing.quantity || 1) + 1;
@@ -6119,8 +5990,7 @@ function prevalidateTransaction(actionText) {
         const itemShown = itemNameRaw || uniqCandidates[uniqCandidates.length - 1] || '(không rõ)';
         const invList = inv.length > 0 ? inv.map(i => `  • ${i.name}${i.quality ? ` [${i.quality}]` : ''} x${i.quantity || 1}`).join('\n') : '  (túi đồ trống)';
         return {
-          ok: false,
-          type: 'give',
+          ok: false, type: 'give',
           message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Bạn muốn cho: "${itemShown}"\n📦 Túi đồ của bạn KHÔNG có vật phẩm này (cũng không có trong Pháp Bảo).\n\n📋 Túi đồ hiện tại:\n${invList}\n\n🚫 Không thể cho/tặng vật phẩm mà bạn KHÔNG sở hữu.`
         };
       }
@@ -6132,8 +6002,7 @@ function prevalidateTransaction(actionText) {
       tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked || 0) + 1;
       updateTokenStatsDisplay();
       return {
-        ok: false,
-        type: 'give',
+        ok: false, type: 'give',
         message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}\n📦 Bạn có: ${totalAvail} (qua ${allMatches.length} phẩm chất)\n🎁 Muốn cho: ${intent.qty}\n⚠️ Thiếu: ${intent.qty - totalAvail}\n\n🚫 Không thể cho nhiều hơn số đang có.`
       };
     }
@@ -6143,7 +6012,7 @@ function prevalidateTransaction(actionText) {
 }
 
 // ============================================================
-// POST-VALIDATE — HỖ TRỢ PHẨM CHẤT HỖN HỢP
+// POST-VALIDATE
 // ============================================================
 function postValidateTransactions(txList, currentInv) {
   const valid = [];
@@ -6156,18 +6025,13 @@ function postValidateTransactions(txList, currentInv) {
   const virtualInv = currentInv.map(i => ({ ...i }));
 
   const deductVirtual = (name, quality, qty) => {
-    let candidates = findAllMatchingItems(name, virtualInv)
-      .filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    let candidates = findAllMatchingItems(name, virtualInv).filter(i => !isIngredientForDifferentRecipe(i.name, name));
     if (candidates.length === 0) return { ok: false, reason: 'not_found' };
     if (quality && quality.trim()) {
       const qLower = quality.toLowerCase().trim();
-      const qualityMatched = candidates.filter(i =>
-        (i.quality || '').toLowerCase().includes(qLower)
-      );
+      const qualityMatched = candidates.filter(i => (i.quality || '').toLowerCase().includes(qLower));
       const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0);
-      if (qualityMatched.length > 0 && qualityTotal >= qty) {
-        candidates = qualityMatched;
-      }
+      if (qualityMatched.length > 0 && qualityTotal >= qty) candidates = qualityMatched;
     }
     const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
     if (qty > totalAvail) return { ok: false, reason: 'insufficient', have: totalAvail, need: qty };
@@ -6197,9 +6061,7 @@ function postValidateTransactions(txList, currentInv) {
     const catKey = detectItemCategory(name, quality, '');
     const catInfo = getItemCategoryInfo(catKey);
     const newItem = { name, quality: quality || 'Thường', quantity: qty, icon: catInfo.icon, effect: '', category: catKey };
-    if (catInfo.needsRefine) {
-      newItem.isRefined = isRefined === true;
-    }
+    if (catInfo.needsRefine) newItem.isRefined = isRefined === true;
     virtualInv.push(newItem);
   };
 
@@ -6211,61 +6073,44 @@ function postValidateTransactions(txList, currentInv) {
     const isLS = normalizeVN(txName).includes('linh thach');
 
     if (tx.type === 'sell') {
-      if (isLS) {
-        invalid.push({ tx, reason: 'Không thể BÁN linh thạch (đây là tiền tệ).' });
-        continue;
-      }
+      if (isLS) { invalid.push({ tx, reason: 'Không thể BÁN linh thạch (đây là tiền tệ).' }); continue; }
       const r = deductVirtual(txName, tx.quality, qty);
       if (!r.ok) {
         const msg = r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để bán.`
           : (r.reason === 'different_recipe' ? `AI bịa: "${txName}" là nguyên liệu KHÁC recipe.`
             : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể bán ${qty}.`);
-        invalid.push({ tx, reason: msg });
-        continue;
+        invalid.push({ tx, reason: msg }); continue;
       }
       valid.push({ ...tx, _validatedName: r.matchedName });
     }
     else if (tx.type === 'give') {
       if (isLS) {
-        if (qty > lsBalance) {
-          invalid.push({ tx, reason: `AI bịa: cho ${qty} linh thạch nhưng chỉ có ${lsBalance}.` });
-          continue;
-        }
-        lsBalance -= qty;
-        valid.push(tx);
-        continue;
+        if (qty > lsBalance) { invalid.push({ tx, reason: `AI bịa: cho ${qty} linh thạch nhưng chỉ có ${lsBalance}.` }); continue; }
+        lsBalance -= qty; valid.push(tx); continue;
       }
       const r = deductVirtual(txName, tx.quality, qty);
       if (!r.ok) {
         const msg = r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để cho/tặng.`
           : (r.reason === 'different_recipe' ? `AI bịa: "${txName}" là nguyên liệu KHÁC recipe.`
             : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể cho ${qty}.`);
-        invalid.push({ tx, reason: msg });
-        continue;
+        invalid.push({ tx, reason: msg }); continue;
       }
       valid.push({ ...tx, _validatedName: r.matchedName });
     }
     else if (tx.type === 'buy') {
       const unitPrice = parseFloat(tx.unitPrice) || 0;
       const totalPrice = parseFloat(tx.totalPrice) || (unitPrice * qty);
-      if (totalPrice > lsBalance) {
-        invalid.push({ tx, reason: `AI bịa: mua hết ${totalPrice} LS nhưng chỉ có ${lsBalance}.` });
-        continue;
-      }
+      if (totalPrice > lsBalance) { invalid.push({ tx, reason: `AI bịa: mua hết ${totalPrice} LS nhưng chỉ có ${lsBalance}.` }); continue; }
       lsBalance -= totalPrice;
       addVirtual(txName, tx.quality, qty);
       valid.push(tx);
     }
     else if (tx.type === 'receive') {
-      if (isLS) {
-        lsBalance += qty;
-      }
+      if (isLS) lsBalance += qty;
       addVirtual(txName, tx.quality, qty, tx.isRefined);
       valid.push(tx);
     }
-    else {
-      invalid.push({ tx, reason: `Loại giao dịch không hợp lệ: "${tx.type}".` });
-    }
+    else { invalid.push({ tx, reason: `Loại giao dịch không hợp lệ: "${tx.type}".` }); }
   }
   return { valid, invalid };
 }
@@ -6282,11 +6127,7 @@ function autoSyncReceivedItem(tx) {
   const catKey = tx.category || detectItemCategory(txName, quality, tx.effect || (worldItem && worldItem.usage) || '');
   const catInfo = getItemCategoryInfo(catKey);
   let inv = [];
-  try {
-    inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
-  } catch (e) {
-    inv = [];
-  }
+  try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
   const fullName = quality ? `${txName} ${quality}` : txName;
   const existing = findMatchingInventoryItem(fullName, inv) || findMatchingInventoryItem(txName, inv);
   if (existing) {
@@ -6311,17 +6152,12 @@ function autoSyncReceivedItem(tx) {
     }
   }
   const newItem = { name: txName, icon: tx.icon || (worldItem && worldItem.icon) || catInfo.icon, quantity: qty, quality: quality || (worldItem && worldItem.rank) || 'Thường', effect: (worldItem && worldItem.usage) || tx.effect || '', category: catKey };
-  if (catInfo.needsRefine) {
-    newItem.isRefined = tx.isRefined === true;
-  }
+  if (catInfo.needsRefine) newItem.isRefined = tx.isRefined === true;
   inv.push(newItem);
   document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
   renderInventoryVisual(inv);
-  if (worldItem) {
-    log(`🎁 Auto-sync từ Pháp Bảo: "${worldItem.name}" [${catInfo.label}] → túi.`);
-  } else {
-    log(`🎁 Auto-sync: tạo mới "${txName}" [${catInfo.label}] x${qty}.`);
-  }
+  if (worldItem) log(`🎁 Auto-sync từ Pháp Bảo: "${worldItem.name}" [${catInfo.label}] → túi.`);
+  else log(`🎁 Auto-sync: tạo mới "${txName}" [${catInfo.label}] x${qty}.`);
   tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync || 0) + 1;
   updateTokenStatsDisplay();
   return true;
@@ -6330,11 +6166,7 @@ function autoSyncReceivedItem(tx) {
 function processTransactions(transactionsList) {
   if (!transactionsList || !Array.isArray(transactionsList) || transactionsList.length === 0) return null;
   let inv = [];
-  try {
-    inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
-  } catch (e) {
-    inv = [];
-  }
+  try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
   let processedCount = 0;
   const logs = [];
 
@@ -6351,26 +6183,19 @@ function processTransactions(transactionsList) {
     const catKey = detectItemCategory(name, quality, effect);
     const catInfo = getItemCategoryInfo(catKey);
     const newItem = { name: name, icon: icon || catInfo.icon, quantity: qty, quality: quality || 'Thường', effect: effect || '', category: catKey };
-    if (catInfo.needsRefine) {
-      newItem.isRefined = false;
-    }
+    if (catInfo.needsRefine) newItem.isRefined = false;
     inv.push(newItem);
     return { isNew: true, newQty: qty };
   };
 
   const removeItem = (name, quality, qty) => {
-    let candidates = findAllMatchingItems(name, inv)
-      .filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    let candidates = findAllMatchingItems(name, inv).filter(i => !isIngredientForDifferentRecipe(i.name, name));
     if (candidates.length === 0) return { ok: false, reason: 'Không tìm thấy' };
     if (quality && quality.trim()) {
       const qLower = quality.toLowerCase().trim();
-      const qualityMatched = candidates.filter(i =>
-        (i.quality || '').toLowerCase().includes(qLower)
-      );
+      const qualityMatched = candidates.filter(i => (i.quality || '').toLowerCase().includes(qLower));
       const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0);
-      if (qualityMatched.length > 0 && qualityTotal >= qty) {
-        candidates = qualityMatched;
-      }
+      if (qualityMatched.length > 0 && qualityTotal >= qty) candidates = qualityMatched;
     }
     const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
     if (totalAvail < qty) return { ok: false, reason: `Chỉ có ${totalAvail}` };
@@ -6396,14 +6221,8 @@ function processTransactions(transactionsList) {
       const idx = inv.indexOf(e);
       if (idx !== -1) inv.splice(idx, 1);
     });
-    const remainTotal = findAllMatchingItems(name, inv)
-      .reduce((s, i) => s + (i.quantity || 1), 0);
-    return {
-      ok: true,
-      removed,
-      emptied: emptiedItems.length > 0,
-      remain: remainTotal
-    };
+    const remainTotal = findAllMatchingItems(name, inv).reduce((s, i) => s + (i.quantity || 1), 0);
+    return { ok: true, removed, emptied: emptiedItems.length > 0, remain: remainTotal };
   };
 
   transactionsList.forEach(tx => {
@@ -6421,22 +6240,14 @@ function processTransactions(transactionsList) {
         logs.push(`💰 BÁN: ${r.removed}x ${txName}${txQuality ? ` [${txQuality}]` : ''} → +${totalPrice} linh thạch${r.emptied ? ' (HẾT HÀNG)' : ` (còn ${r.remain})`}`);
         addItem('Linh thạch', '', totalPrice, '💎', 'Tiền tệ tu tiên');
         processedCount++;
-      } else {
-        logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}"! (${r.reason})`);
-      }
+      } else { logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}"! (${r.reason})`); }
     }
     else if (tx.type === 'buy') {
       const lsItem = inv.find(i => normalizeVN(i.name).includes('linh thach'));
       const currentLS = lsItem ? (lsItem.quantity || 0) : 0;
-      if (currentLS < totalPrice) {
-        logs.push(`🚫 MUA THẤT BẠI: Không đủ linh thạch (có ${currentLS}, cần ${totalPrice})`);
-        return;
-      }
+      if (currentLS < totalPrice) { logs.push(`🚫 MUA THẤT BẠI: Không đủ linh thạch (có ${currentLS}, cần ${totalPrice})`); return; }
       const pay = removeItem('Linh thạch', '', totalPrice);
-      if (!pay.ok) {
-        logs.push(`🚫 MUA THẤT BẠI: Không trừ được linh thạch`);
-        return;
-      }
+      if (!pay.ok) { logs.push(`🚫 MUA THẤT BẠI: Không trừ được linh thạch`); return; }
       const r = addItem(txName, txQuality, qty, tx.icon, tx.effect);
       logs.push(`🛒 MUA: ${qty}x ${txName}${txQuality ? ` [${txQuality}]` : ''} → -${totalPrice} linh thạch${r.isNew ? ' (MỚI)' : ` (tổng ${r.newQty})`}`);
       processedCount++;
@@ -6446,9 +6257,7 @@ function processTransactions(transactionsList) {
       if (r.ok) {
         logs.push(`🎁 CHO/TẶNG: ${r.removed}x ${txName}${txQuality ? ` [${txQuality}]` : ''} (KHÔNG nhận linh thạch)${r.emptied ? ' (HẾT HÀNG)' : ` (còn ${r.remain})`}`);
         processedCount++;
-      } else {
-        logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}"! (${r.reason})`);
-      }
+      } else { logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}"! (${r.reason})`); }
     }
     else if (tx.type === 'receive') {
       const catKey = detectItemCategory(txName, txQuality, tx.effect || '');
@@ -6458,9 +6267,7 @@ function processTransactions(transactionsList) {
       processedCount++;
       autoSyncReceivedItem(tx);
     }
-    else {
-      logs.push(`⚠️ Loại giao dịch không hợp lệ: "${tx.type}"`);
-    }
+    else { logs.push(`⚠️ Loại giao dịch không hợp lệ: "${tx.type}"`); }
   });
 
   if (processedCount > 0) {
@@ -6473,9 +6280,6 @@ function processTransactions(transactionsList) {
   return { inventory: inv, count: processedCount, logs };
 }
 
-// ============================================================
-// CRAFT RESULT PROCESSOR
-// ============================================================
 function processCraftResults(craftList) {
   if (!craftList || !Array.isArray(craftList) || craftList.length === 0) return null;
   let totalExpGained = 0;
@@ -6483,10 +6287,7 @@ function processCraftResults(craftList) {
   for (const craft of craftList) {
     if (!craft || !craft.profession) continue;
     const profId = craft.profession;
-    if (!professionState[profId]) {
-      logs.push(`⚠️ Nghề không hợp lệ: "${profId}"`);
-      continue;
-    }
+    if (!professionState[profId]) { logs.push(`⚠️ Nghề không hợp lệ: "${profId}"`); continue; }
     const recipe = craft.recipe || 'Vật phẩm';
     const tier = (craft.tier || 'LK').toUpperCase();
     const results = craft.results || [];
@@ -6503,9 +6304,7 @@ function processCraftResults(craftList) {
       const result = addProfessionExp(profId, craftExp, recipe);
       totalExpGained += craftExp;
       logs.push(`⚒️ ${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}: +${craftExp} EXP (${recipe} [${tier}] x${totalProduced})`);
-      if (result && result.leveledUp) {
-        logs.push(`🎉 LÊN CẤP NGHỀ: ${PROFESSION_TYPES[profId].name} Cấp ${result.oldRank} → ${result.newRank} (${PROFESSION_RANKS[result.newRank].name})`);
-      }
+      if (result && result.leveledUp) logs.push(`🎉 LÊN CẤP NGHỀ: ${PROFESSION_TYPES[profId].name} Cấp ${result.oldRank} → ${result.newRank} (${PROFESSION_RANKS[result.newRank].name})`);
     }
   }
   if (totalExpGained > 0) {
@@ -6526,9 +6325,7 @@ function getPriceReferenceString() {
       txt += `- ${item}: `;
       const parts = Object.entries(prices).map(([q, p]) => `${q}=${p}LS`);
       txt += parts.join(' | ') + '\n';
-    } else {
-      txt += `- ${item}: ${prices} linh thạch\n`;
-    }
+    } else { txt += `- ${item}: ${prices} linh thạch\n`; }
   }
   return txt;
 }
@@ -6550,11 +6347,6 @@ function getProfessionAIContext() {
   txt += '  EXP = BASE_EXP[tier] × QUALITY_MULT[quality] × quantity\n';
   txt += '  BASE_EXP: LK=10, TC=50, KĐ=200, NA=800, HT=3000\n';
   txt += '  QUALITY_MULT: Hạ=1.0, Trung=1.5, Thượng=2.5, Cực=5.0, Tiên=15.0\n';
-  txt += '\n📌 KHI NVC LUYỆN CHẾ:\n';
-  txt += '  1. AI mô tả quá trình luyện chế (dài, có chi tiết kỹ thuật).\n';
-  txt += '  2. AI ghi "craftResultList" trong JSON Codex để hệ thống tự tính EXP:\n';
-  txt += '     "craftResultList":[{"profession":"luyen_dan","recipe":"Tụ Khí Đan","tier":"LK","results":[{"quality":"Hạ phẩm","quantity":4},{"quality":"Trung phẩm","quantity":1}]}]\n';
-  txt += '  3. HỆ THỐNG SẼ TỰ ĐỘNG TÍNH VÀ CỘNG EXP NGHỀ.\n';
   return txt;
 }
 
@@ -6584,17 +6376,13 @@ function getCodexMemoryPrompt() {
   try {
     const locs = JSON.parse(document.getElementById('locations').value || '[]');
     locSummary = locs.length > 0 ? locs.map(l => `• ${l.name}(${l.danger || 'Thấp'})`).join('\n') : 'Chưa có';
-  } catch (e) {
-    locSummary = 'Chưa có';
-  }
+  } catch (e) { locSummary = 'Chưa có'; }
 
   let weaponSummary = '';
   try {
     const weapons = JSON.parse(document.getElementById('worldItems').value || '[]');
     weaponSummary = weapons.length > 0 ? weapons.map(w => `• ${w.name}[${w.rank || '?'}]`).join('\n') : 'Chưa có';
-  } catch (e) {
-    weaponSummary = 'Chưa có';
-  }
+  } catch (e) { weaponSummary = 'Chưa có'; }
 
   let invSummary = '';
   try {
@@ -6605,9 +6393,7 @@ function getCodexMemoryPrompt() {
       const refineTag = catInfo.needsRefine ? (i.isRefined ? ' (đã luyện hoá)' : ' (chưa luyện hoá)') : '';
       return `• ${i.name}x${i.quantity || 1}(${i.quality || 'Thường'}) [${catInfo.label}${refineTag}]`;
     }).join('\n') : 'Trống';
-  } catch (e) {
-    invSummary = document.getElementById('mcInventory').value || 'Trống';
-  }
+  } catch (e) { invSummary = document.getElementById('mcInventory').value || 'Trống'; }
 
   const archive = document.getElementById('npcArchive').value || 'Chưa có';
   const expLine = `${mcExp}/${mcExpMax} (Linh căn: ${mcLinhCan})`;
@@ -6636,64 +6422,25 @@ ${getPriceMemoryPrompt()}
 - [Pháp bảo] (worldItems) = vật phẩm TỒN TẠI TRONG THẾ GIỚI.
 - [Túi] (mcInventory) = vật phẩm NVC ĐANG SỞ HỮU và CÓ THỂ SỬ DỤNG.
 - Khi NVC CƯỚP được vật phẩm từ NPC khác → BẮT BUỘC ghi "receive" trong transactionsList.
-- ⚠️ Vật phẩm trong [Pháp bảo] KHÔNG được tính là NVC sở hữu cho đến khi có "receive".
 
-📦 v2.8.5 — HỆ THỐNG PHÂN LOẠI ĐỒ VẬT TU TIÊN:
+📦 v2.8.5 — PHÂN LOẠI ĐỒ VẬT:
+🔮 CẦN LUYỆN HOÁ: Pháp bảo/pháp khí, linh bảo, cổ bảo/thần binh, trữ vật đồ, trận bàn/trận kỳ, khôi lỗi, dị hỏa/linh vật, yêu đan/nội đan.
+✅ KHÔNG CẦN LUYỆN HOÁ: Đan dược, linh thảo/nguyên liệu, phù lục tiêu hao, linh thạch, bí tịch/ngọc giản, lệnh bài/token.
+⛔ "Tụ Khí Đan", "Thanh Tâm Đan" là ĐAN DƯỢC, KHÔNG PHẢI PHÁP BẢO.
+⭐ TIER: Phàm→Hạ→Trung→Thượng→Cực→Linh→Tiên→Thần. Hệ số giá: ×1→×2→×4→×8→×16→×40→×100→×300.
 
-🔮 **NHÓM CẦN LUYỆN HOÁ** (đả thông cấm chế, nhận chủ):
-1. **Pháp Bảo / Pháp Khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn... → CẦN LUYỆN HOÁ.
-2. **Linh Bảo**: Thông Thiên Linh Bảo, Tiên Thiên/Hậu Thiên Linh Bảo → CẦN LUYỆN HOÁ.
-3. **Cổ Bảo / Thần Binh**: bảo vật thời cổ đại, chứa sát khí/cấm chế mạnh → CẦN LUYỆN HOÁ (cần tinh huyết/linh lực cấp cao).
-4. **Trữ Vật Đồ**: túi trữ vật, nhẫn trữ vật, lạc bảo phù → CẦN LUYỆN HOÁ (để lại thần thức ấn ký).
-5. **Trận Bàn / Trận Kỳ**: bộ trận pháp cao cấp → CẦN LUYỆN HOÁ (để làm trận nhãn).
-6. **Khôi Lỗi**: rối, khôi lỗi chiến đấu → CẦN LUYỆN HOÁ (đặt thần thức phân thân).
-7. **Dị Hỏa / Thiên Địa Linh Vật** → CẦN LUYỆN HOÁ (khu phục sát khí, hợp nhất).
-8. **Yêu Đan / Nội Đan** → CẦN LUYỆN HOÁ (loại bỏ tạp chất trước khi hấp thụ).
-
-✅ **NHÓM KHÔNG CẦN LUYỆN HOÁ**:
-1. **Đan Dược**: cơ thể tự hấp thụ dược lực khi vận công.
-2. **Linh Thảo / Nguyên Liệu**: ăn trực tiếp hoặc chế biến.
-3. **Phù Lục Tiêu Hao**: dùng 1 lần rồi mất.
-4. **Linh Thạch**: tiền tệ, dùng trực tiếp.
-5. **Bí Tịch / Ngọc Giản**: dán lên trán, chìm thần thức để đọc.
-6. **Lệnh Bài / Token**: vật phẩm thuê/mượn có thời hạn.
-
-⛔ **CẢNH BÁO QUAN TRỌNG**: "Tụ Khí Đan", "Thanh Tâm Đan" là ĐAN DƯỢC, KHÔNG PHẢI PHÁP BẢO dù có chữ "Khí"! KHÔNG nhầm lẫn.
-
-⭐ **CẤP BẬC VẬT PHẨM (TIER)**: Phàm → Hạ → Trung → Thượng → Cực → Linh → Tiên → Thần
-💰 **Hệ số giá luyện hoá**: ×1 → ×2 → ×4 → ×8 → ×16 → ×40 → ×100 → ×300
-
-⚡ v2.8.5 — ĐỘT PHÁ CẢNH GIỚI:
-**TIỂU ĐỘT PHÁ**: LK 1→13 tầng | TC/KĐ/NA/HT/LH sơ→trung→hậu → CHỈ cần tích lũy EXP. Tỷ lệ 85%+.
-**ĐẠI ĐỘT PHÁ** (chuyển đại cảnh giới):
-- LK13→TC: 12,000 EXP + Trúc Cơ Đan
-- TC hậu→KĐ: 80,000 EXP + Kim Nguyên Đan
-- KĐ hậu→NA: 600,000 EXP + Ngưng Anh Đan
-- NA hậu→HT: 5,000,000 EXP + Hóa Thần Đan
-- HT hậu→LH: 50,000,000 EXP + Luyện Hư Đan
-→ CẦN cả EXP + đan dược + điều kiện. Tỷ lệ 5-40%.
+⚡ ĐỘT PHÁ:
+**TIỂU ĐỘT PHÁ**: LK 1→13 tầng | TC/KĐ/NA/HT/LH sơ→trung→hậu — chỉ cần EXP. Tỷ lệ 85%+.
+**ĐẠI ĐỘT PHÁ**: LK13→TC:12K EXP + Trúc Cơ Đan | TC→KĐ:80K + Kim Nguyên Đan | KĐ→NA:600K + Ngưng Anh Đan | NA→HT:5M + Hóa Thần Đan | HT→LH:50M + Luyện Hư Đan.
 🚫 AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới của NVC.
 
-⚒️ v2.8.5 — LUYỆN CHẾ VỚI TỐ CHẤT:
-- 1 phần dược liệu → base 5 viên đan hạ phẩm.
-- Thể chất/Thần niệm/Thiên phú NVC ảnh hưởng: số lượng + phẩm chất.
-- Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
+⚒️ LUYỆN CHẾ VỚI TỐ CHẤT: 1 phần dược liệu → base 5 viên hạ phẩm. Tố chất NVC ảnh hưởng số lượng + phẩm chất.
 
-🎯 QUEST DELEGATION vs GIAO DỊCH TỨC THỜI:
-Khi NVC nói "giao nhiệm vụ cho NPC" → QUEST DELEGATION — khác giao dịch tức thời.
-  • NVC KHÔNG cần có sẵn tài nguyên.
-  • CHỈ ghi transactionsList cho: (1) NVC đưa tài nguyên cho NPC (give), (2) NPC mang kết quả về (receive).
+🎯 QUEST DELEGATION: Khi NVC "giao nhiệm vụ cho NPC" → NVC KHÔNG cần có sẵn tài nguyên. CHỈ ghi transactionsList cho: (1) NVC đưa đồ cho NPC (give), (2) NPC mang kết quả về (receive).
 
-⛓️ CHUỖI GIAO DỊCH PHỤ THUỘC:
-Khi câu có "sau đó" / "rồi" + >=2 verb kinh tế (bán/mua/thuê/đổi) → chuỗi giao dịch phụ thuộc.
-
-💊 NHẮC ĐẶC BIỆT VỀ PHẨM CHẤT HỖN HỢP (v2.8.4.1):
-- Khi NVC sở hữu cùng tên vật phẩm với nhiều phẩm chất → tách giao dịch riêng.
-- VD túi có: "Thanh Tâm Đan Hạ phẩm x4", "Thanh Tâm Đan Trung phẩm x1"
-- NVC nói "cho hết 5 viên Thanh Tâm Đan" → transactionsList PHẢI là:
-  [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},
-   {"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
-- ⛔ KHÔNG BAO GIỜ viết gộp: [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
+💊 PHẨM CHẤT HỖN HỢP: NVC sở hữu cùng tên vật phẩm nhiều phẩm chất → tách mỗi phẩm chất 1 dòng giao dịch riêng.
+VD SAI: [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
+VD ĐÚNG: [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},{"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
 
 🔥 QUY TẮC GHI TRANSACTIONS:
 1. "sell" — BÁN: trừ vật phẩm, CỘNG linh thạch.
@@ -6701,34 +6448,24 @@ Khi câu có "sau đó" / "rồi" + >=2 verb kinh tế (bán/mua/thuê/đổi) �
 3. "give" — CHO/TẶNG: trừ vật phẩm, KHÔNG nhận linh thạch.
 4. "receive" — NHẬN QUÀ: cộng vật phẩm, KHÔNG trừ linh thạch.
 
-⚒️ QUY TẮC GHI CRAFT RESULTS:
-- Khi NVC luyện chế → BẮT BUỘC ghi "craftResultList".
-- Format: "craftResultList":[{"profession":"luyen_dan","recipe":"Tụ Khí Đan","tier":"LK","results":[{"quality":"Hạ phẩm","quantity":4}]}]
+⚒️ CRAFT: Khi NVC luyện chế → BẮT BUỘC ghi "craftResultList":[{"profession":"luyen_dan","recipe":"Tên","tier":"LK","results":[{"quality":"Hạ phẩm","quantity":4}]}]
 
-💰 QUY TẮC GHI NHỚ GIÁ:
-- Khi NVC HỎI GIÁ → ghi "priceRecords": [{"item":"Tụ Khí Đan","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}]
+💰 PRICE: Khi NVC HỎI GIÁ → ghi "priceRecords": [{"item":"Tên","quality":"Hạ phẩm","price":3,"unit":"Linh thạch","source":"Lý Hổ"}]
 
-📊 QUY TẮC EXP TU LUYỆN:
-Format: "mcExpGain": N, "mcExpLoss": N, "mcLinhCan": "...", "mcExpReason": "..."
+📊 EXP: "mcExpGain": N, "mcExpLoss": N, "mcLinhCan": "...", "mcExpReason": "..."
 
-⚠️ NHẮC LẠI FORMAT OUTPUT:
+⚠️ FORMAT OUTPUT:
 1. [TÓM TẮT]: 2-3 câu
-2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số)
-3. Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + craftResultList + mcExpGain nếu có)
+2. ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.)
+3. Khối \`\`\`json cập nhật Codex
 
-🎭 NHẮC LẠI VĂN PHONG:
-- Ngôi thứ 2 (ngươi). NVC là bạn.
-- 2-3 đoạn nội tâm 《...》 mỗi lượt.
-- NPC nói theo hảo cảm.
-- Show don't tell.
-
+🎭 VĂN PHONG: Ngôi 2 (ngươi). 2-3 đoạn nội tâm 《...》. NPC nói theo hảo cảm. Show don't tell.
 🚨 CHỐNG THOÁI HÓA: Mỗi lượt PHẢI dài ≥${MIN_TURN_WORDS} từ.
-
 🈶 CHỈ TIẾNG VIỆT CÓ DẤU. KHÔNG ký tự Trung Quốc.`;
 }
 
 // ============================================================
-// SYSTEM RULES
+// SYSTEM RULES (FULL)
 // ============================================================
 function buildSystemRules(scopeInput = 'default') {
   const v = id => document.getElementById(id)?.value || '';
@@ -6764,22 +6501,20 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 26. Khi NVC nhờ NPC bán hộ → vật phẩm rời túi NVC (dùng "give").
 27. ⚠️ TRƯỚC KHI kể "cho thành công" vật phẩm → PHẢI kiểm tra [Túi] trong Codex.
 28. ⚡ Khi NVC NHẬN vật phẩm → BẮT BUỘC ghi type "receive".
-29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT v2.8.5: Pháp bảo/linh bảo/cổ bảo/trữ vật đồ/trận bàn cao cấp/khôi lỗi/dị hỏa/yêu đan CẦN LUYỆN HOÁ. Đan dược/nguyên liệu/phù tiêu hao/linh thạch/bí tịch/lệnh bài KHÔNG cần luyện hoá.
-30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords vào JSON Codex.
+29. 🔥 PHÂN BIỆT LOẠI ĐỒ VẬT: Pháp bảo/linh bảo/cổ bảo/trữ vật đồ/trận bàn cao cấp/khôi lỗi/dị hỏa/yêu đan CẦN LUYỆN HOÁ. Đan dược/nguyên liệu/phù tiêu hao/linh thạch/bí tịch/lệnh bài KHÔNG cần luyện hoá.
+30. 💰 Khi NVC HỎI GIÁ → BẮT BUỘC ghi priceRecords.
 31. 🛡️ INGREDIENT GUARD: "Nguyên liệu Tụ Khí Đan" ≠ "Nguyên liệu Thanh Tâm Đan"... KHÔNG gộp chung.
-31.5. ⚠️⚠️ PHẨM CHẤT HỖN HỢP: Khi NVC sở hữu CÙNG 1 vật phẩm với NHIỀU phẩm chất khác nhau (VD: 4 Thanh Tâm Đan Hạ phẩm + 1 Thanh Tâm Đan Trung phẩm), BẮT BUỘC tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất. TUYỆT ĐỐI KHÔNG ghi gộp "Thanh Tâm Đan x5".
-     Ví dụ SAI:  [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
-     Ví dụ ĐÚNG: [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},{"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
-31.6. 📦 Khi NVC ra lệnh "đưa hết đan dược cho NPC" mà không nêu rõ phẩm chất → AI PHẢI tự đọc [Túi] trong Codex, liệt kê TỪNG phẩm chất 1 dòng giao dịch riêng.
-32. 🎫 "Token phòng luyện đan" → PHẢI gọi "Lệnh Bài Phòng Luyện Đan". Là vật phẩm thuê có thời hạn.
-33. ⚒️ Khi NVC LUYỆN CHẾ → BẮT BUỘC ghi "craftResultList" trong JSON Codex.
+31.5. ⚠️ PHẨM CHẤT HỖN HỢP: Tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất. VD SAI: [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]. VD ĐÚNG: [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},{"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
+32. 🎫 "Token phòng luyện đan" → PHẢI gọi "Lệnh Bài Phòng Luyện Đan". Vật phẩm thuê có thời hạn.
+33. ⚒️ Khi NVC LUYỆN CHẾ → BẮT BUỘC ghi "craftResultList".
 34. 📊 Tỷ lệ phẩm chất khi luyện chế PHỤ THUỘC vào CẤP NGHỀ của NVC.
-35. 🎯 QUEST DELEGATION: Khi NVC "giao nhiệm vụ cho NPC" → NVC KHÔNG cần có sẵn tài nguyên. CHỈ ghi transactionsList cho (1) NVC đưa đồ cho NPC (give), (2) NPC mang kết quả về (receive).
-36. ⛓️ TRANSACTION CHAIN: Khi câu có "sau đó" / "rồi" + >=2 verb kinh tế → CHUỖI giao dịch.
-37. ⚡ v2.8.5 BREAKTHROUGH FIX: Phân biệt TIỂU đột phá (tăng tầng trong cùng đại cảnh giới — chỉ cần EXP) vs ĐẠI đột phá (chuyển đại cảnh giới — cần EXP + đan dược). AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới của NVC.
+35. 🎯 QUEST DELEGATION: Khi NVC "giao nhiệm vụ cho NPC" → NVC KHÔNG cần có sẵn tài nguyên. CHỈ ghi transactionsList cho: (1) NVC đưa đồ cho NPC (give), (2) NPC mang kết quả về (receive).
+36. ⛓️ TRANSACTION CHAIN: Khi câu có "sau đó"/"rồi" + ≥2 verb kinh tế → CHUỖI giao dịch.
+37. ⚡ v2.8.5 BREAKTHROUGH: Phân biệt TIỂU vs ĐẠI đột phá. AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới NVC.
 38. 🌟 TỐ CHẤT NVC ẢNH HƯỞNG LUYỆN CHẾ: Thể chất/Thần niệm/Thiên phú càng cao → SỐ LƯỢNG + PHẨM CHẤT thành phẩm càng cao.
-39. 📌 v2.8.5: 1 phần dược liệu → base 5 viên đan hạ phẩm. Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
-40. 🏷️ SCOPE HANDLING: Scope CODE-HANDLED → KHÔNG tự bịa số. Scope HYBRID → code tính số chính. Scope STYLE → AI tự do văn phong.`}
+39. 📌 1 phần dược liệu → base 5 viên đan hạ phẩm. Thần niệm "Biến Dị" ×100 = cực phẩm/tiên phẩm.
+40. 🏷️ SCOPE HANDLING: CODE-HANDLED → KHÔNG tự bịa số. HYBRID → code tính số chính. STYLE → AI tự do văn phong.
+41. ⚠️ v2.8.6: NẾU người chơi chọn 1 hành động CỤ THỂ → PHẢI thực thi hành động đó NGAY, KHÔNG bỏ qua, KHÔNG thay đổi nội dung.`}
 
 # THẾ GIỚI
 - Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom') || 'mặc định'}
@@ -6791,59 +6526,26 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 - Cảnh giới: ${v('powerSystem') || 'Luyện Khí → Trúc Cơ → Kim Đan → Nguyên Anh → Hóa Thần → Luyện Hư'}
 - Văn phong: ${v('writingStyle') || 'Ngôi thứ 2, nội tâm 《...》, NPC nói theo hảo cảm.'}
 
-# ⏱️ QUY TẮC THỜI GIAN ĐA HÀNH ĐỘNG
-Khi NVC thực hiện CHUỖI hành động:
-1. AI PHẢI tách thành các bước con theo thứ tự thời gian.
-2. Tính thời gian TỪNG bước dựa trên scope tương ứng.
-3. CỘNG DỒN vào mcGameTime theo format "X ngày Y giờ" hoặc "X năm Y tháng Z ngày".
+# ⏱️ THỜI GIAN ĐA HÀNH ĐỘNG
+Khi NVC thực hiện CHUỖI hành động: tách thành các bước con, tính thời gian TỪNG bước theo scope, CỘNG DỒN vào mcGameTime.
 
 ${profCtx}
 
-# ⚡ v2.8.5 — BREAKTHROUGH SYSTEM
-**TIỂU ĐỘT PHÁ** (trong cùng đại cảnh giới):
-- LK 1→2→...→13 tầng | TC/KD/NA/HT/LH sơ→trung→hậu
-- Chỉ cần EXP. Không cần đan. Tỷ lệ ~85%+.
+# ⚡ BREAKTHROUGH SYSTEM
+**TIỂU ĐỘT PHÁ** (LK 1→13 tầng | TC/KĐ/NA/HT/LH sơ→trung→hậu): Chỉ cần EXP. Tỷ lệ ~85%+.
+**ĐẠI ĐỘT PHÁ**: LK13→TC:12K + Trúc Cơ Đan | TC→KĐ:80K + Kim Nguyên Đan | KĐ→NA:600K + Ngưng Anh Đan | NA→HT:5M + Hóa Thần Đan | HT→LH:50M + Luyện Hư Đan. Tỷ lệ 5-40%.
+🚫 AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới.
 
-**ĐẠI ĐỘT PHÁ** (chuyển đại cảnh giới):
-- LK13→TC: 12,000 EXP + Trúc Cơ Đan
-- TC hậu→KĐ: 80,000 EXP + Kim Nguyên Đan
-- KĐ hậu→NA: 600,000 EXP + Ngưng Anh Đan
-- NA hậu→HT: 5,000,000 EXP + Hóa Thần Đan
-- HT hậu→LH: 50,000,000 EXP + Luyện Hư Đan
-- Cần EXP + đan dược + điều kiện. Tỷ lệ 5-40%.
+# 🌟 LUYỆN CHẾ VỚI TỐ CHẤT
+1 phần dược liệu → base 5 viên đan hạ phẩm. Tố chất NVC ảnh hưởng số lượng + phẩm chất.
 
-🚫 AI KHÔNG ĐƯỢC tự ý đổi ĐẠI cảnh giới. Chỉ mô tả đột phá khi người chơi đủ điều kiện.
+# 🎯 QUEST DELEGATION / ⛓️ TRANSACTION CHAIN
+Như mục rules ở trên.
 
-# 🌟 v2.8.5 — LUYỆN CHẾ VỚI TỐ CHẤT
-- 1 phần dược liệu → base 5 viên đan hạ phẩm.
-- Thể chất/Thần niệm/Thiên phú NVC ảnh hưởng: số lượng + phẩm chất.
-- Thần niệm "Biến Dị" ×100 = thần thức biến dị siêu mạnh → cực phẩm/tiên phẩm.
+# 💊 PHẨM CHẤT HỖN HỢP
+Tách mỗi phẩm chất 1 dòng giao dịch riêng. TUYỆT ĐỐI KHÔNG ghi gộp.
 
-# 🎯 QUEST DELEGATION
-Khi NVC nói "giao nhiệm vụ cho NPC":
-  • Quest delegation — khác giao dịch tức thời.
-  • NVC KHÔNG cần có sẵn tài nguyên.
-  • CHỈ ghi transactionsList cho: (1) NVC đưa tài nguyên cho NPC (give), (2) NPC mang kết quả về (receive).
-
-# ⛓️ TRANSACTION CHAIN
-Khi câu có "sau đó" / "rồi" / "tiếp theo" + >=2 verb kinh tế → CHUỖI giao dịch.
-
-# 🏷️ SCOPE HANDLING
-- CODE-HANDLED: AI KHÔNG tự bịa số — code tính sẵn.
-- HYBRID: Code tính số chính — AI thêm flavor (<10%).
-- STYLE-ONLY: AI tự do văn phong.
-
-# 💊 PHẨM CHẤT HỖN HỢP (v2.8.5)
-Khi NVC sở hữu CÙNG 1 vật phẩm với NHIỀU phẩm chất khác nhau:
-- BẮT BUỘC tách transactionsList thành NHIỀU dòng riêng theo từng phẩm chất.
-- VD túi có: "Thanh Tâm Đan Hạ phẩm x4" + "Thanh Tâm Đan Trung phẩm x1"
-- NVC nói "cho hết 5 viên Thanh Tâm Đan" → transactionsList PHẢI là:
-  [{"type":"give","name":"Thanh Tâm Đan","quality":"Hạ phẩm","quantity":4},
-   {"type":"give","name":"Thanh Tâm Đan","quality":"Trung phẩm","quantity":1}]
-- ⛔ TUYỆT ĐỐI KHÔNG viết gộp: [{"type":"give","name":"Thanh Tâm Đan","quantity":5}]
-
-# 📊 QUY TẮC EXP TU LUYỆN
-Mỗi lượt AI phải ước lượng EXP tu luyện NVC nhận được.
+# 📊 EXP TU LUYỆN
 Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason": "..."
 
 # 🎭 VĂN PHONG NHẬP VAI
@@ -6856,34 +6558,9 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
   • ❤50-80: gọi tên, xưng "huynh/muội".
   • ❤>80: tri kỷ, sẵn sàng hy sinh.
 
-# 🈶 QUY TẮC NGÔN NGỮ
+# 🈶 NGÔN NGỮ
 - CHỈ VIẾT TIẾNG VIỆT CÓ DẤU.
 - KHÔNG dùng ký tự Hán/Nhật/Hàn.
-
-# 📦 PHÂN LOẠI ĐỒ VẬT TU TIÊN (v2.8.5)
-## 🔮 NHÓM CẦN LUYỆN HOÁ:
-- **Pháp bảo / Pháp khí**: kiếm, đao, nhẫn, kính, phiến, châu, tháp, chung, ấn...
-- **Linh bảo**: Thông Thiên / Tiên Thiên / Hậu Thiên Linh Bảo
-- **Cổ bảo / Thần binh**: bảo vật thời cổ đại, chứa sát khí mạnh
-- **Trữ vật đồ**: túi trữ vật, nhẫn trữ vật, lạc bảo phù
-- **Trận bàn / Trận kỳ**: bộ trận pháp cao cấp
-- **Khôi lỗi**: rối chiến đấu
-- **Dị hỏa / Thiên địa linh vật**
-- **Yêu đan / Nội đan**: loại bỏ tạp chất trước khi dùng
-
-## ⚡ NHÓM KHÔNG CẦN LUYỆN HOÁ:
-- **Đan dược**: cơ thể tự hấp thụ dược lực
-- **Nguyên liệu**: linh thảo, khoáng thạch
-- **Phù lục tiêu hao**: dùng 1 lần
-- **Linh thạch**: tiền tệ
-- **Bí tịch / Ngọc giản**: đọc trực tiếp
-- **Lệnh bài / Token**: vật phẩm thuê
-- **Phù lục tái sử dụng cấp thấp**
-
-## ⛔ CẢNH BÁO: "Tụ Khí Đan" là ĐAN DƯỢC, KHÔNG PHẢI PHÁP BẢO dù có chữ "Khí"!
-
-## ⭐ CẤP BẬC (TIER): Phàm → Hạ → Trung → Thượng → Cực → Linh → Tiên → Thần
-## 💰 Hệ số giá luyện hoá: ×1 → ×2 → ×4 → ×8 → ×16 → ×40 → ×100 → ×300
 
 # ⚠️ OUTPUT BẮT BUỘC MỖI LƯỢT
 1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).
@@ -6921,6 +6598,31 @@ Format JSON: "mcExpGain": 50, "mcExpLoss": 0, "mcLinhCan": "Ngũ", "mcExpReason"
 }
 
 // ============================================================
+// ⚡ v2.8.5 FIX: COMPACT RULES — dùng cho các lượt 2+ để tránh lost-in-the-middle
+// ============================================================
+function buildCompactRules() {
+  return `# ⚡ CỐT LÕI v2.8.5
+- Ngôi thứ 2 (ngươi). Tiếng Việt có dấu. KHÔNG ký tự Trung Quốc.
+- Viết 3-6 đoạn văn (≥${MIN_TURN_WORDS} từ) + 2-3 đoạn nội tâm 《...》.
+- ⚠️ PHẢI thực thi ĐÚNG hành động NVC chọn — KHÔNG bỏ qua, KHÔNG đổi nội dung.
+- Nếu trao vật phẩm/NPC nhận gì → mô tả cảnh trao tay + NPC phản ứng rõ ràng.
+- Có giao dịch → transactionsList. Không có → mcInventoryList.
+- Nếu NVC luyện chế → craftResultList.
+- Cuối lượt: [TÓM TẮT] 2-3 câu + 2-4 lựa chọn đánh số (1., 2., 3., 4.) + json Codex.`;
+}
+
+// ============================================================
+// ⚡ v2.8.5 FIX: ACTION KEYWORD EXTRACTION FOR POST-CHECK
+// ============================================================
+function extractActionKeywordsForPostCheck(text) {
+  const STOP = new Set(['nguoi', 'toi', 'minh', 'ho', 'chung', 'nhung', 'cac', 'mot', 'hai', 'ba', 'bon', 'nam', 'sau', 'bay', 'tam', 'chin', 'muoi', 'voi', 'cho', 'cua', 'trong', 'ngoai', 'tren', 'duoi', 'truoc', 'sau', 'ben', 'giua', 'nay', 'kia', 'do', 'ay', 'day', 'thi', 'la', 'ma', 'nhung', 'hoac', 'va', 'roi', 'da', 'dang', 'se', 'van', 'con', 'nua', 'rat', 'di', 'den', 've', 'tu', 'boi', 'vi', 'nen', 'phai', 'can', 'muon', 'co', 'khong', 'chua', 'duoc', 'bi', 'nhan', 'tang', 'dua', 'gui', 'trao', 'ban', 'mua', 'hien', 'dang', 'nay', 'gio', 'luc', 'khi', 'vua', 'moi', 'cung', 'cung', 'deu', 'het', 'chi', 'con', 'nhieu', 'it', 'lon', 'nho', 'cao', 'thap', 'dai', 'ngan']);
+  return text.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 4 && !STOP.has(w));
+}
+
+// ============================================================
 // FORMAT + PARSE CODEX
 // ============================================================
 function formatSummaryBox(text) {
@@ -6945,9 +6647,8 @@ function buildTurnHtml(rawText) {
 
 function safeParseJSON(str) {
   if (!str) return null;
-  try {
-    return JSON.parse(str);
-  } catch (e) {
+  try { return JSON.parse(str); }
+  catch (e) {
     try {
       const cleaned = str.replace(/,\s*([}\]])/g, '$1').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
       return JSON.parse(cleaned);
@@ -6972,11 +6673,8 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       if (codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList) && codexData.transactionsList.length > 0) {
         hasTransactions = true;
         let currentInv = [];
-        try {
-          currentInv = JSON.parse(document.getElementById('mcInventory').value || '[]');
-        } catch (e) {
-          currentInv = [];
-        }
+        try { currentInv = JSON.parse(document.getElementById('mcInventory').value || '[]'); }
+        catch (e) { currentInv = []; }
         currentInv = currentInv.filter(i => i && i.name && (i.quantity === undefined || i.quantity > 0));
         const { valid, invalid } = postValidateTransactions(codexData.transactionsList, currentInv);
         if (invalid.length > 0) {
@@ -6993,17 +6691,13 @@ function parseAndAutoUpdateCodex(fullResponseText) {
         }
         if (valid.length > 0) {
           const result = processTransactions(valid);
-          if (result && result.count > 0) {
-            log(`💰 Đã xử lý ${result.count}/${codexData.transactionsList.length} giao dịch hợp lệ.`);
-          }
+          if (result && result.count > 0) log(`💰 Đã xử lý ${result.count}/${codexData.transactionsList.length} giao dịch hợp lệ.`);
         }
         codexData.mcInventoryList = undefined;
       }
       if (codexData.priceRecords !== undefined && Array.isArray(codexData.priceRecords)) {
         codexData.priceRecords.forEach(pr => {
-          if (pr && pr.item && pr.price !== undefined) {
-            recordPrice(pr.item, pr.quality, pr.price, pr.unit, pr.source);
-          }
+          if (pr && pr.item && pr.price !== undefined) recordPrice(pr.item, pr.quality, pr.price, pr.unit, pr.source);
         });
       }
       if (codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList)) {
@@ -7012,9 +6706,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       if (codexData.craftResultList !== undefined && Array.isArray(codexData.craftResultList) && codexData.craftResultList.length > 0) {
         log(`⚒️ Đang xử lý ${codexData.craftResultList.length} kết quả luyện chế...`);
         const craftResult = processCraftResults(codexData.craftResultList);
-        if (craftResult && craftResult.totalExpGained > 0) {
-          log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained}`);
-        }
+        if (craftResult && craftResult.totalExpGained > 0) log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained}`);
       }
       const oldLevel = document.getElementById('mcLevel').value;
       if (codexData.mcLevel !== undefined && String(codexData.mcLevel).trim() !== "") document.getElementById('mcLevel').value = codexData.mcLevel;
@@ -7027,21 +6719,13 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       }
       if (codexData.mcExpGain !== undefined) {
         const gain = parseInt(codexData.mcExpGain) || 0;
-        if (gain > 0) {
-          mcExp += gain;
-          log(`✨ +${gain} EXP tu luyện (${codexData.mcExpReason || 'tu luyện'})`);
-        }
+        if (gain > 0) { mcExp += gain; log(`✨ +${gain} EXP tu luyện (${codexData.mcExpReason || 'tu luyện'})`); }
       }
       if (codexData.mcExpLoss !== undefined) {
         const loss = parseInt(codexData.mcExpLoss) || 0;
-        if (loss > 0) {
-          mcExp = Math.max(0, mcExp - loss);
-          log(`💔 -${loss} EXP`);
-        }
+        if (loss > 0) { mcExp = Math.max(0, mcExp - loss); log(`💔 -${loss} EXP`); }
       }
-      if (codexData.mcLinhCan) {
-        mcLinhCan = codexData.mcLinhCan;
-      }
+      if (codexData.mcLinhCan) mcLinhCan = codexData.mcLinhCan;
       const newLevel = document.getElementById('mcLevel').value;
       if (oldLevel && newLevel && oldLevel !== newLevel) {
         const oldParsed = parseRealmLevel(oldLevel);
@@ -7088,9 +6772,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
               splitInventory.push({ ...item, quality: qPart, quantity: thisQty });
             });
             log(`🔀 Tách phẩm chất: "${item.name}" [${item.quality}] x${totalQty} → ${parts.length} object`);
-          } else {
-            splitInventory.push(item);
-          }
+          } else { splitInventory.push(item); }
         });
         const mergedInventory = [];
         splitInventory.forEach(item => {
@@ -7108,15 +6790,11 @@ function parseAndAutoUpdateCodex(fullResponseText) {
             tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked || 0) + 1;
             updateTokenStatsDisplay();
             mergedInventory.push({ ...item, quantity: qty });
-          } else {
-            mergedInventory.push({ ...item, quantity: qty });
-          }
+          } else { mergedInventory.push({ ...item, quantity: qty }); }
         });
         const validInventory = mergedInventory.filter(item => (item.quantity === undefined || item.quantity > 0));
         validInventory.forEach(item => {
-          if (!item.category) {
-            item.category = detectItemCategory(item.name, item.quality, item.effect);
-          }
+          if (!item.category) item.category = detectItemCategory(item.name, item.quality, item.effect);
         });
         renderInventoryVisual(validInventory);
         document.getElementById('mcInventory').value = JSON.stringify(validInventory, null, 2);
@@ -7171,9 +6849,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       if (codexData.locationsList !== undefined && Array.isArray(codexData.locationsList)) {
         let currentLocsText = document.getElementById('locations').value;
         let existingLocs = [];
-        try {
-          if (currentLocsText.trim().startsWith('[')) existingLocs = JSON.parse(currentLocsText);
-        } catch (e) { }
+        try { if (currentLocsText.trim().startsWith('[')) existingLocs = JSON.parse(currentLocsText); } catch (e) { }
         codexData.locationsList.forEach(newLoc => {
           if (!newLoc || !newLoc.name) return;
           let found = existingLocs.find(l => l.name.toLowerCase().trim() === newLoc.name.toLowerCase().trim());
@@ -7182,9 +6858,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
             if (newLoc.position) found.position = newLoc.position;
             if (newLoc.desc) found.desc = newLoc.desc;
             if (newLoc.icon) found.icon = newLoc.icon;
-          } else {
-            existingLocs.push(newLoc);
-          }
+          } else { existingLocs.push(newLoc); }
         });
         renderLocationsVisual(existingLocs);
         document.getElementById('locations').value = JSON.stringify(existingLocs, null, 2);
@@ -7219,9 +6893,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
         if (typeof codexData.npcArchive === 'object') {
           if (Array.isArray(codexData.npcArchive)) archiveStr = codexData.npcArchive.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n');
           else archiveStr = JSON.stringify(codexData.npcArchive, null, 2);
-        } else {
-          archiveStr = String(codexData.npcArchive);
-        }
+        } else { archiveStr = String(codexData.npcArchive); }
         document.getElementById('npcArchive').value = archiveStr;
       }
       const archiveLower = (document.getElementById('npcArchive').value || '').toLowerCase();
@@ -7243,26 +6915,34 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       renderNpcs();
       updateSystemDashboard();
       log("> Cập nhật Codex thành công!");
+
       let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
+
+      // ══════════════════════════════════════════════════════════════
+      // ⚡ v2.8.5 FIX: LƯU OPTIONS CHO LƯỢT SAU
+      // ══════════════════════════════════════════════════════════════
+      lastOptions = parseOptionsFromReply(cleanText);
+      log(`📋 Đã lưu ${lastOptions.length} option cho lượt sau.`);
+
       let formatted = formatSummaryBox(cleanText);
       let html = buildTurnHtml(formatted);
       if (postValidateWarningHtml) {
         html = html.replace('</div><div class="tts-btn-container"', postValidateWarningHtml + '</div><div class="tts-btn-container"');
-        if (!html.includes(postValidateWarningHtml)) {
-          html += postValidateWarningHtml;
-        }
+        if (!html.includes(postValidateWarningHtml)) html += postValidateWarningHtml;
       }
-      try {
-        autoRecordPricesFromNarrative(cleanText);
-      } catch (e) { }
+      try { autoRecordPricesFromNarrative(cleanText); } catch (e) { }
       return html;
     }
   } catch (e) {
     log("Lỗi Parse JSON: " + e.message);
   }
   let formatted = formatSummaryBox(fullResponseText);
+  // Fallback: parse options từ full text nếu parse JSON fail
+  lastOptions = parseOptionsFromReply(fullResponseText);
   return buildTurnHtml(formatted);
-}// ============================================================
+}
+
+// ============================================================
 // INDEXEDDB
 // ============================================================
 let _dbInstance = null;
@@ -7280,19 +6960,11 @@ function openDB() {
     };
     req.onsuccess = (evt) => {
       _dbInstance = evt.target.result;
-      _dbInstance.onversionchange = () => {
-        _dbInstance.close();
-        _dbInstance = null;
-        log('⚠️ DB versionchange — đã đóng.');
-      };
+      _dbInstance.onversionchange = () => { _dbInstance.close(); _dbInstance = null; log('⚠️ DB versionchange — đã đóng.'); };
       resolve(_dbInstance);
     };
-    req.onerror = (evt) => {
-      reject("Lỗi IDB: " + evt.target.error);
-    };
-    req.onblocked = () => {
-      log('⚠️ IDB bị BLOCKED — đóng tab khác!');
-    };
+    req.onerror = (evt) => { reject("Lỗi IDB: " + evt.target.error); };
+    req.onblocked = () => { log('⚠️ IDB bị BLOCKED — đóng tab khác!'); };
   });
 }
 
@@ -7347,7 +7019,8 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    _saveVersion: 'v2.8.5',
+    lastOptions, // ═══ v2.8.5 FIX: Lưu lastOptions ═══
+    _saveVersion: 'v2.8.6',
     inputs: {}
   };
   inputIds.forEach(id => {
@@ -7357,22 +7030,14 @@ async function saveGame(isManual = false) {
   try {
     await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData);
     log("Game saved.");
-    if (isManual) {
-      alert("💾 Đã lưu game!");
-      toggleSidebar();
-    }
-  } catch (e) {
-    alert("Lỗi lưu: " + e);
-  }
+    if (isManual) { alert("💾 Đã lưu game!"); toggleSidebar(); }
+  } catch (e) { alert("Lỗi lưu: " + e); }
 }
 
 async function loadGame() {
   try {
     const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
-    if (!gameData) {
-      alert("⚠️ Chưa có bản lưu!");
-      return;
-    }
+    if (!gameData) { alert("⚠️ Chưa có bản lưu!"); return; }
     if (gameData.scopeRegistry && Array.isArray(gameData.scopeRegistry)) {
       scopeRegistry = gameData.scopeRegistry;
       migrateScopes();
@@ -7396,7 +7061,8 @@ async function loadGame() {
       breakthroughsAttempted: 0, breakthroughsSucceeded: 0, breakthroughsFailed: 0,
       minorBreakthroughsAttempted: 0, minorBreakthroughsSucceeded: 0, minorBreakthroughsFailed: 0,
       majorBreakthroughsAttempted: 0, majorBreakthroughsSucceeded: 0, majorBreakthroughsFailed: 0,
-      tokenSavedByOptimization: 0, stateRefreshes: 0
+      tokenSavedByOptimization: 0, stateRefreshes: 0,
+      actionMismatchWarnings: 0, actionAnchoredTurns: 0
     }, gameData.tokenStats || {});
     if (gameData.mcExp !== undefined) mcExp = gameData.mcExp;
     if (gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
@@ -7408,6 +7074,10 @@ async function loadGame() {
     if (gameData.currentKeyIndex !== undefined) currentKeyIndex = gameData.currentKeyIndex;
     if (gameData.priceMemory) priceMemory = gameData.priceMemory;
     if (gameData.professionState) professionState = Object.assign(professionState, gameData.professionState);
+    if (gameData.lastOptions && Array.isArray(gameData.lastOptions)) {
+      lastOptions = gameData.lastOptions;
+      log(`📋 Khôi phục ${lastOptions.length} option từ save.`);
+    }
     if (gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)) {
       musicPlaylist = gameData.musicPlaylist;
       renderMusicPlaylist();
@@ -7430,10 +7100,7 @@ async function loadGame() {
       });
       renderNpcs();
     }
-    if (gameData.eventList) {
-      eventList = gameData.eventList;
-      renderEventsVisual();
-    }
+    if (gameData.eventList) { eventList = gameData.eventList; renderEventsVisual(); }
     if (gameData.inputs) {
       Object.keys(gameData.inputs).forEach(id => {
         const el = document.getElementById(id);
@@ -7453,9 +7120,7 @@ async function loadGame() {
     alert("📂 Khôi phục thành công!\n\n💡 Nếu túi đồ/NPC chưa đúng, bấm nút '🔄 CẬP NHẬT' để AI quét lại 5 lượt gần nhất.");
     toggleSidebar();
     openTab('play');
-  } catch (e) {
-    alert("Lỗi tải: " + e);
-  }
+  } catch (e) { alert("Lỗi tải: " + e); }
 }
 
 function syncToggleUI() {
@@ -7475,14 +7140,12 @@ async function exportSaveFile() {
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "hongduc_tutien_v2.8.5_save.json";
+  a.download = "hongduc_tutien_v2.8.6_save.json";
   a.click();
   log("Xuất save thành công.");
 }
 
-function importSaveFile() {
-  document.getElementById('fileInput').click();
-}
+function importSaveFile() { document.getElementById('fileInput').click(); }
 
 function handleFileSelect(event) {
   const file = event.target.files[0];
@@ -7494,9 +7157,7 @@ function handleFileSelect(event) {
       await saveToIDB('HONDUC_TU_TIEN_SAVE', content);
       await loadGame();
       alert("📥 Import thành công!");
-    } catch (err) {
-      alert("❌ File không hợp lệ!");
-    }
+    } catch (err) { alert("❌ File không hợp lệ!"); }
   };
   reader.readAsText(file);
 }
@@ -7506,14 +7167,7 @@ function handleFileSelect(event) {
 // ============================================================
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle'];
-  const cfg = {
-    _version: 'v2.8.5',
-    _type: 'worldConfig',
-    scopes: scopeRegistry,
-    professions: professionState,
-    mcStats: mcStats,
-    fields: {}
-  };
+  const cfg = { _version: 'v2.8.6', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
   worldIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) cfg.fields[id] = el.value;
@@ -7521,15 +7175,13 @@ function exportWorldConfig() {
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'hongduc_world_config_v2.8.5.json';
+  a.download = 'hongduc_world_config_v2.8.6.json';
   a.click();
   log('📤 Xuất World Config thành công.');
   alert('📤 Đã xuất World Config!');
 }
 
-function importWorldConfig() {
-  document.getElementById('worldConfigFileInput').click();
-}
+function importWorldConfig() { document.getElementById('worldConfigFileInput').click(); }
 
 function handleWorldConfigImport(event) {
   const file = event.target.files[0];
@@ -7538,34 +7190,19 @@ function handleWorldConfigImport(event) {
   reader.onload = function (e) {
     try {
       const cfg = JSON.parse(e.target.result);
-      if (!cfg || cfg._type !== 'worldConfig') {
-        alert('❌ File không phải World Config!');
-        return;
-      }
+      if (!cfg || cfg._type !== 'worldConfig') { alert('❌ File không phải World Config!'); return; }
       if (cfg.fields) {
         Object.keys(cfg.fields).forEach(id => {
           const el = document.getElementById(id);
           if (el) el.value = cfg.fields[id];
         });
       }
-      if (cfg.scopes && Array.isArray(cfg.scopes)) {
-        scopeRegistry = cfg.scopes;
-        migrateScopes();
-        renderScopeRegistry();
-      }
-      if (cfg.professions) {
-        professionState = Object.assign(professionState, cfg.professions);
-        renderProfessionUI();
-      }
-      if (cfg.mcStats) {
-        mcStats = cfg.mcStats;
-        loadMcStatsUI();
-      }
+      if (cfg.scopes && Array.isArray(cfg.scopes)) { scopeRegistry = cfg.scopes; migrateScopes(); renderScopeRegistry(); }
+      if (cfg.professions) { professionState = Object.assign(professionState, cfg.professions); renderProfessionUI(); }
+      if (cfg.mcStats) { mcStats = cfg.mcStats; loadMcStatsUI(); }
       log('📥 Import World Config thành công.');
       alert('📥 Đã import World Config!');
-    } catch (err) {
-      alert('❌ File lỗi: ' + err.message);
-    }
+    } catch (err) { alert('❌ File lỗi: ' + err.message); }
   };
   reader.readAsText(file);
 }
@@ -7575,10 +7212,7 @@ function handleWorldConfigImport(event) {
 // ============================================================
 function undoLastTurn() {
   stopTTS();
-  if (chatHistory.length <= 2) {
-    alert("⚠️ Không thể quay lại! Đã ở lượt đầu tiên.");
-    return;
-  }
+  if (chatHistory.length <= 2) { alert("⚠️ Không thể quay lại! Đã ở lượt đầu tiên."); return; }
   if (stateSnapshots.length < 2) {
     alert("⚠️ Không thể quay lại! (không có snapshot)\n\n💡 Mẹo: Bấm '🔄 CẬP NHẬT' để khởi tạo snapshot mới, sau đó thử lại.");
     return;
@@ -7589,7 +7223,7 @@ function undoLastTurn() {
   stateSnapshots.pop();
   const snap = stateSnapshots[stateSnapshots.length - 1];
   restoreStateSnapshot(snap);
-  log(`↩ Đã quay lại lượt trước (khôi phục túi đồ, cảnh giới, EXP, NPC, nghề, giá cả, ...)`);
+  log(`↩ Đã quay lại lượt trước (khôi phục túi đồ, cảnh giới, EXP, NPC, nghề, giá cả, options, ...)`);
   alert("↩ Đã quay lại lượt trước!");
 }
 
@@ -7618,6 +7252,7 @@ async function resetAllFields() {
   mcStats = { theChat: 'Phàm', thanNiem: 'Phàm', thienPhu: 'Thường' };
   stateSnapshots = [];
   priceMemory = {};
+  lastOptions = []; // ═══ v2.8.5 FIX: Reset lastOptions ═══
   for (const k of Object.keys(professionState)) {
     professionState[k] = { rank: 1, exp: 0, totalCrafts: 0, totalSuccess: 0, lastRecipe: '' };
   }
@@ -7648,34 +7283,21 @@ async function resetAllFields() {
 // ============================================================
 async function testOpenRouterKey() {
   const k = document.getElementById('openRouterKey').value.trim();
-  if (!k) {
-    alert("⚠️ Chưa nhập OpenRouter Key!");
-    return;
-  }
+  if (!k) { alert("⚠️ Chưa nhập OpenRouter Key!"); return; }
   log("🔍 Test OpenRouter key...");
-  if (!k.startsWith('sk-or-v1-')) {
-    alert("❌ Key sai định dạng!");
-    return;
-  }
+  if (!k.startsWith('sk-or-v1-')) { alert("❌ Key sai định dạng!"); return; }
   try {
     const res = await fetch('https://openrouter.ai/api/v1/auth/key', { method: 'GET', headers: { 'Authorization': 'Bearer ' + k } });
     const data = await res.json();
     if (res.ok && data.data) {
       alert("✅ HỢP LỆ!\n\nLabel: " + (data.data.label || 'N/A') + "\nUsage: " + (data.data.usage || 0) + " / " + (data.data.limit || '∞'));
-    } else {
-      alert("❌ Không hợp lệ!\n\n" + (data.error?.message || ""));
-    }
-  } catch (e) {
-    alert("❌ Lỗi: " + e.message);
-  }
+    } else { alert("❌ Không hợp lệ!\n\n" + (data.error?.message || "")); }
+  } catch (e) { alert("❌ Lỗi: " + e.message); }
 }
 
 async function testAllGeminiKeys() {
   const keys = getGeminiKeys();
-  if (keys.length === 0) {
-    alert("⚠️ Chưa nhập key!");
-    return;
-  }
+  if (keys.length === 0) { alert("⚠️ Chưa nhập key!"); return; }
   const models = getGeminiModels();
   log(`🔍 Test ${keys.length} keys × ${models.length} models...`);
   let msg = `📊 TEST ${keys.length} KEYS:\n\n`;
@@ -7694,17 +7316,13 @@ async function testAllGeminiKeys() {
           if (data.error.code === 429 || (data.error.message || '').toLowerCase().includes('quota')) {
             msg += `  💀 ${model}: HẾT QUOTA\n`;
             markModelExhausted(i, model);
-          } else {
-            msg += `  ⚠️ ${model}: ${(data.error.message || '').substring(0, 60)}\n`;
-          }
+          } else { msg += `  ⚠️ ${model}: ${(data.error.message || '').substring(0, 60)}\n`; }
         } else if (data.candidates) {
           msg += `  ✅ ${model}: OK\n`;
           if (!keyStatus[i]) keyStatus[i] = {};
           keyStatus[i][model] = 'healthy';
         }
-      } catch (e) {
-        msg += `  ❌ ${model}: Lỗi kết nối\n`;
-      }
+      } catch (e) { msg += `  ❌ ${model}: Lỗi kết nối\n`; }
     }
     msg += `\n`;
   }
@@ -7714,7 +7332,7 @@ async function testAllGeminiKeys() {
 
 function forceResendRules() {
   systemRulesSentThisSession = false;
-  tokenStats.resendCount = (tokenStats.resendCount || 0) + 1;
+  tokenStats.resendRulesCount = (tokenStats.resendRulesCount || 0) + 1;
   updateTokenStatsDisplay();
   alert("✅ Lượt tiếp theo sẽ gửi lại TOÀN BỘ system rules!");
   toggleSidebar();
@@ -7743,6 +7361,7 @@ const startGame = async () => {
   systemRulesSentThisSession = false;
   mcExp = 0;
   stateSnapshots = [];
+  lastOptions = []; // ═══ v2.8.5 FIX ═══
   resetTokenStats();
   document.getElementById('degradationWarning').style.display = 'none';
   document.getElementById('cjkWarningBox').style.display = 'none';
@@ -7781,14 +7400,43 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thi�
 };
 
 // ============================================================
-// SEND ACTION
+// ⚡ v2.8.5 FIX: SEND ACTION — OPTION RESOLVER + ACTION ANCHOR + POST-CHECK
 // ============================================================
 const sendAction = async () => {
   const inputEl = document.getElementById('userInput');
-  const actionText = inputEl.value.trim();
+  let actionText = inputEl.value.trim();
   if (!actionText) return;
   stopTTS();
   const storyBox = document.getElementById('story-box');
+
+  // ══════════════════════════════════════════════════════════════
+  // ⚡ v2.8.5 FIX: OPTION RESOLVER — resolve "1", "2", "3" → full text
+  // ══════════════════════════════════════════════════════════════
+  let displayAction = actionText;
+  const numMatch = actionText.match(/^\s*(\d+)\s*[\.\)]?\s*$/);
+  if (numMatch && lastOptions.length > 0) {
+    const chosenNum = parseInt(numMatch[1]);
+    const chosen = lastOptions.find(o => o.num === chosenNum);
+    if (chosen) {
+      log(`🎯 Resolve option ${chosenNum} → "${chosen.text}"`);
+      actionText = chosen.text;
+      displayAction = `[Chọn ${chosenNum}] ${chosen.text}`;
+      tokenStats.actionAnchoredTurns = (tokenStats.actionAnchoredTurns || 0) + 1;
+    } else {
+      log(`⚠️ Option ${chosenNum} không tồn tại. Có: ${lastOptions.map(o => o.num).join(', ')}`);
+      storyBox.innerHTML += `<div class="prevalidation-block">⚠️ KHÔNG CÓ LỰA CHỌN SỐ ${chosenNum}!\n\nCác lựa chọn hiện có:\n${lastOptions.map(o => `  ${o.num}. ${o.text}`).join('\n')}\n\n👉 Hãy chọn lại số đúng hoặc gõ đầy đủ hành động.</div>`;
+      storyBox.scrollTop = storyBox.scrollHeight;
+      inputEl.value = '';
+      return;
+    }
+  } else if (numMatch && lastOptions.length === 0) {
+    log(`⚠️ Chưa có option nào được lưu (lượt đầu hoặc save cũ).`);
+    storyBox.innerHTML += `<div class="prevalidation-block">⚠️ Chưa có danh sách lựa chọn để chọn số ${numMatch[1]}!\n\n👉 Hãy gõ đầy đủ hành động thay vì chỉ số.</div>`;
+    storyBox.scrollTop = storyBox.scrollHeight;
+    inputEl.value = '';
+    return;
+  }
+
   const precheck = prevalidateTransaction(actionText);
   if (!precheck.ok) {
     inputEl.value = '';
@@ -7799,24 +7447,21 @@ const sendAction = async () => {
   }
   if (precheck.classification) {
     const c = precheck.classification;
-    if (c.type === 'quest_delegation') {
-      log(`🎯 Quest delegation detected — AI sẽ xử lý tuần tự.`);
-    } else if (c.type === 'transaction_chain') {
-      log(`⛓️ Transaction chain detected — AI sẽ xử lý tuần tự.`);
-    } else if (c.type === 'question') {
-      log(`❓ Câu hỏi thông tin — không phải giao dịch.`);
-    }
+    if (c.type === 'quest_delegation') log(`🎯 Quest delegation detected — AI sẽ xử lý tuần tự.`);
+    else if (c.type === 'transaction_chain') log(`⛓️ Transaction chain detected — AI sẽ xử lý tuần tự.`);
+    else if (c.type === 'question') log(`❓ Câu hỏi thông tin — không phải giao dịch.`);
   }
   stateSnapshots.push(captureStateSnapshot());
   if (stateSnapshots.length > MAX_SNAPSHOTS) stateSnapshots.shift();
   inputEl.value = '';
   const actionId = 'action_' + Date.now();
-  const userHtml = `<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${actionText}</span>`;
+  const userHtml = `<span id="${actionId}" class="player-action-highlight">▶ Lựa chọn / Hành động: ${displayAction}</span>`;
   storyBox.innerHTML += userHtml;
   setTimeout(() => {
     const actionEl = document.getElementById(actionId);
     if (actionEl) actionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 50);
+
   const needRulesResend = (chatHistory.length === 0);
   const sceneScopes = detectSceneScopes(actionText);
   const primaryScope = sceneScopes[0] || 'default';
@@ -7824,6 +7469,7 @@ const sendAction = async () => {
   log(`🎬 Scopes: ${scopeChain}`);
   const hasRealScope = sceneScopes.some(s => s !== 'default');
   const styleReminder = sceneScopes.length > 1 ? `\n⛓️ CHUỖI HÀNH ĐỘNG (theo thứ tự thời gian): ${scopeChain}\n→ AI PHẢI tính thời gian TÍCH LŨY cho TỪNG scope.\n` : (hasRealScope ? `\n⚡ SCOPE "${primaryScope}" — áp dụng số liệu + quy tắc.\n` : '');
+
   let lengthGuard = '';
   if (settings.antiShortening) {
     const lastAiMsg = [...chatHistory].reverse().find(m => m.role === 'model');
@@ -7841,23 +7487,81 @@ const sendAction = async () => {
     }
   }
   const styleReminderEnd = settings.styleReminder ? `\n\n🎭 NHẮC LẠI VĂN PHONG (BẮT BUỘC):\n- Ngôi thứ 2 (ngươi). NVC là bạn.\n- 2-3 đoạn nội tâm NVC đặt trong 《...》.\n- Show don't tell.\n- NPC nói chuyện theo hảo cảm.\n- Từ ngữ cổ phong: đạo hữu, tiền bối, các hạ, bổn tọa.` : '';
+
   const classification = precheck.classification;
   let delegationNote = '';
   if (classification) {
     if (classification.type === 'quest_delegation') {
-      delegationNote = `\n\n🎯 v2.8.5 — QUEST DELEGATION DETECTED:\nĐây là câu giao nhiệm vụ cho NPC, KHÔNG phải giao dịch tức thời.\n• NVC KHÔNG cần có sẵn tài nguyên trong túi.\n• NPC sẽ tự thực hiện chuỗi hành động (bán/mua/thuê).\n• transactionsList CHỈ ghi: (1) NVC đưa tài nguyên cho NPC → "give", (2) NPC mang kết quả về → "receive".\n• Các giao dịch TRUNG GIAN của NPC (NPC tự bán/mua/thuê) KHÔNG ghi vào transactionsList.`;
+      delegationNote = `\n\n🎯 v2.8.5 — QUEST DELEGATION DETECTED:\nĐây là câu giao nhiệm vụ cho NPC, KHÔNG phải giao dịch tức thời.\n• NVC KHÔNG cần có sẵn tài nguyên trong túi.\n• NPC sẽ tự thực hiện chuỗi hành động (bán/mua/thuê).\n• transactionsList CHỈ ghi: (1) NVC đưa tài nguyên cho NPC → "give", (2) NPC mang kết quả về → "receive".\n• Các giao dịch TRUNG GIAN của NPC KHÔNG ghi vào transactionsList.`;
     } else if (classification.type === 'transaction_chain') {
       delegationNote = `\n\n⛓️ v2.8.5 — TRANSACTION CHAIN DETECTED:\nĐây là CHUỖI giao dịch phụ thuộc (có "sau đó"/"rồi" + nhiều verb kinh tế).\n• AI mô tả tuần tự các bước.\n• transactionsList phản ánh KẾT QUẢ CUỐI CÙNG.`;
     } else if (classification.type === 'question') {
       delegationNote = `\n\n❓ v2.8.5 — CÂU HỎI THÔNG TIN:\nĐây là câu hỏi thông tin (hỏi giá, vị trí...), KHÔNG phải giao dịch.\n• AI trả lời thông tin.\n• Nếu có giá cụ thể → ghi "priceRecords" trong JSON Codex.\n• KHÔNG ghi transactionsList.`;
     }
   }
+
+  // ══════════════════════════════════════════════════════════════
+  // ⚡ v2.8.5 FIX: ACTION ANCHOR — block cứng buộc AI thực thi hành động
+  // ══════════════════════════════════════════════════════════════
+  const actionAnchor = `\n╔══════════════════════════════════════════════════════════╗
+║ 🎯 HÀNH ĐỘNG BẮT BUỘC PHẢI THỰC HIỆN                     ║
+╚══════════════════════════════════════════════════════════╝
+"${actionText}"
+
+⛔ TUYỆT ĐỐI KHÔNG ĐƯỢC:
+- Thay đổi nội dung hành động
+- Bỏ qua hành động và kể chuyện khác
+- Nhảy sang cảnh khác khi chưa thực hiện hành động trên
+
+✅ BẮT BUỘC:
+- Mô tả NVC THỰC HIỆN hành động trên NGAY trong lượt này
+- Nếu trao vật phẩm cho NPC → miêu tả cảnh trao tay + NPC phản ứng cụ thể
+- Nếu có giao dịch → ghi transactionsList tương ứng
+- Nếu trao đan dược → miêu tả dược lực/khí tức tỏa ra khi trao, NPC đón nhận thế nào
+`;
+
   const formatReminder = `${lengthGuard}${delegationNote}\n\n⚠️ BẮT BUỘC TRẢ VỀ ĐÚNG FORMAT:\n1) Dẫn chuyện DÀI 3-6 đoạn văn (tối thiểu ${MIN_TURN_WORDS} từ).\n2) [TÓM TẮT]: 2-3 câu.\n3) ⚡ 2-4 LỰA CHỌN HÀNH ĐỘNG (đánh số 1., 2., 3., 4.).\n4) Khối \`\`\`json cập nhật Codex (transactionsList + priceRecords + craftResultList + mcExpGain nếu có).${styleReminderEnd}\n\n🈶 CHỈ TIẾNG VIỆT, KHÔNG ký tự Trung Quốc.`;
-  const promptWithCodex = needRulesResend ? `${buildSystemRules(sceneScopes)}\n\n---\n\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}` : `[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
+
+  // ══════════════════════════════════════════════════════════════
+  // ⚡ v2.8.5 FIX: COMPACT RULES — dùng cho lượt 2+ để giảm lost-in-the-middle
+  // ══════════════════════════════════════════════════════════════
+  let rulesPrefix = '';
+  if (!needRulesResend && chatHistory.length > 2 && settings.periodicRules) {
+    const turnNumber = Math.floor(chatHistory.length / 2);
+    if (turnNumber % RULES_RESEND_INTERVAL !== 0) {
+      rulesPrefix = buildCompactRules() + '\n\n';
+    }
+  }
+
+  const promptWithCodex = needRulesResend
+    ? `${buildSystemRules(sceneScopes)}\n\n---\n\n${actionAnchor}\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`
+    : `${rulesPrefix}${actionAnchor}\n[HÀNH ĐỘNG]: "${actionText}"\n${styleReminder}\n${getCodexMemoryPrompt()}${formatReminder}`;
+
   const reply = await callAI(promptWithCodex, false, sceneScopes);
+
   if (reply) {
     const formattedHtml = parseAndAutoUpdateCodex(reply);
-    storyBox.innerHTML += formattedHtml;
+
+    // ══════════════════════════════════════════════════════════════
+    // ⚡ v2.8.5 FIX: POST-CHECK — kiểm tra AI có thực thi hành động không
+    // ══════════════════════════════════════════════════════════════
+    let postCheckWarning = '';
+    if (actionText && actionText.length >= 10) {
+      const actionKeywords = extractActionKeywordsForPostCheck(actionText);
+      if (actionKeywords.length >= 3) {
+        const replyNorm = normalizeVN(reply);
+        const matched = actionKeywords.filter(kw => replyNorm.includes(kw));
+        const matchRatio = matched.length / actionKeywords.length;
+        if (matchRatio < 0.25) {
+          tokenStats.actionMismatchWarnings = (tokenStats.actionMismatchWarnings || 0) + 1;
+          updateTokenStatsDisplay();
+          log(`⚠️ POST-CHECK: AI không nhắc đến hành động "${actionText.substring(0, 60)}..." (chỉ ${matched.length}/${actionKeywords.length} từ khóa: ${matched.join(', ') || 'không có'})`);
+          postCheckWarning = `<div class="degradation-guard" style="margin-top:8px">⚠️ <b>CẢNH BÁO:</b> AI có thể không thực thi đúng hành động của bạn (chỉ đề cập ${matched.length}/${actionKeywords.length} từ khóa chính). Nếu câu chuyện không khớp, hãy bấm "↩ QUAY LẠI" và gõ lại hành động đầy đủ.</div>`;
+        }
+      }
+    }
+
+    storyBox.innerHTML += formattedHtml + postCheckWarning;
     turnHtmlHistory.push(storyBox.innerHTML);
     await saveGame(false);
   } else {
@@ -7926,6 +7630,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (gameData.currentKeyIndex !== undefined) currentKeyIndex = gameData.currentKeyIndex;
       if (gameData.priceMemory) priceMemory = gameData.priceMemory;
       if (gameData.professionState) professionState = Object.assign(professionState, gameData.professionState);
+      if (gameData.lastOptions && Array.isArray(gameData.lastOptions)) {
+        lastOptions = gameData.lastOptions;
+        log(`📋 Khôi phục ${lastOptions.length} option từ save.`);
+      }
       if (gameData.musicPlaylist && Array.isArray(gameData.musicPlaylist)) {
         musicPlaylist = gameData.musicPlaylist;
         if (gameData.currentMusicIndex !== undefined) currentMusicIndex = gameData.currentMusicIndex;
@@ -7954,7 +7662,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateSystemDashboard();
 
   // ══════════════════════════════════════════════════════════════
-  // v2.8.5 MIGRATION — Chuyển item cũ (phap_bao sai) → category mới
+  // v2.8.5 MIGRATION — Chuyển item cũ sang category mới
   // ══════════════════════════════════════════════════════════════
   try {
     const invRaw = document.getElementById('mcInventory').value;
@@ -7964,37 +7672,24 @@ window.addEventListener('DOMContentLoaded', async () => {
       let migratedCount = 0;
       inv.forEach(item => {
         const newCat = detectItemCategory(item.name, item.quality, item.effect);
-
-        // Migration: nếu category cũ là 'phap_bao' (generic) nhưng detect mới ra khác
-        // → chuyển sang category đúng (VD: Tụ Khí Đan từ phap_bao → dan_duoc)
         if (item.category === 'phap_bao' && newCat !== 'PHAP_BAO' && newCat !== 'KHAC') {
           log(`🔄 Migrate: "${item.name}" từ phap_bao → ${newCat}`);
           item.category = newCat;
           changed = true;
           migratedCount++;
-          // Nếu category mới không cần refine → xóa isRefined
           const newInfo = getItemCategoryInfo(newCat);
-          if (!newInfo.needsRefine && item.isRefined !== undefined) {
-            delete item.isRefined;
-          }
-        }
-        // Nếu chưa có category → gán category mới
-        else if (!item.category) {
+          if (!newInfo.needsRefine && item.isRefined !== undefined) delete item.isRefined;
+        } else if (!item.category) {
           item.category = newCat;
           changed = true;
-        }
-        // Nếu category cũ không match detect mới → cập nhật lại (v2.8.5 priority fix)
-        else if (item.category !== newCat) {
+        } else if (item.category !== newCat) {
           const oldCatLower = (item.category || '').toLowerCase();
-          const newCatUpper = newCat.toUpperCase();
-          // Chỉ migrate nếu category cũ là 1 trong các category có thể bị nhầm do priority cũ
           if (oldCatLower === 'phap_bao' || oldCatLower === 'khac') {
             item.category = newCat;
             changed = true;
             migratedCount++;
           }
         }
-        // Đảm bảo item cần refine có isRefined field
         const catInfo = getItemCategoryInfo(item.category);
         if (catInfo.needsRefine && item.isRefined === undefined) {
           item.isRefined = false;
@@ -8054,11 +7749,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateMusicUI();
   updateMusicTitle();
 
-  // Khởi tạo snapshot ban đầu
   stateSnapshots = [captureStateSnapshot()];
   log(`📸 Đã khởi tạo snapshot ban đầu (stateSnapshots.length = ${stateSnapshots.length}).`);
 
-  log("✅ v2.8.5 loaded. HEADER 2 HÀNG + ITEM SYSTEM OVERHAUL + TIER COST + 6 BUG FIX ready.");
+  log("✅ v2.8.6 loaded. OPTION RESOLVER + ACTION ANCHOR + COMPACT RULES + POST-CHECK ACTIVE.");
 });
 </script>
 </body>

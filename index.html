@@ -9,11 +9,6 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 html{scroll-behavior:smooth}
 body{background:linear-gradient(135deg,#0b0e14 0%,#0d1117 100%);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px;min-height:100vh}
-/* ══════════════════════════════════════════════════════════════
-   v2.8.5 HEADER — 2 HÀNG (giữ nguyên các class cũ, chỉ đổi layout)
-   Hàng 1: [☰] [TAG GAME] [🎮 Game] [⚡ Khởi Tạo Game]
-   Hàng 2: [Music controls]
-   ══════════════════════════════════════════════════════════════ */
 .header{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
 .header-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .header-row-main{justify-content:space-between;width:100%}
@@ -33,7 +28,6 @@ body{background:linear-gradient(135deg,#0b0e14 0%,#0d1117 100%);color:var(--text
   .game-tag{font-size:11px;padding:6px 8px;letter-spacing:.2px}
   .restart-btn,.header-game-tab,.menu-btn{padding:7px 10px;font-size:12px}
 }
-/* ── CÁC CSS CÒN LẠI GIỮ NGUYÊN 100% ── */
 .sidebar{position:fixed;top:0;left:-360px;width:350px;height:100%;background:linear-gradient(180deg,#151921 0%,#0d1117 100%);border-right:1px solid var(--border-color);transition:.3s;z-index:100;padding:15px;overflow-y:auto;box-shadow:var(--shadow-lg);backdrop-filter:blur(20px)}
 .sidebar.active{left:0}
 .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font-size:16px;font-weight:bold}
@@ -310,11 +304,6 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════════
-     v2.8.5 HEADER — 2 HÀNG GỌN GÀNG (không còn vỡ layout mobile)
-     Hàng 1: [☰] [TAG GAME] [🎮 Game] [⚡ KHỞI TẠO GAME]
-     Hàng 2: [Music controls]
-     ══════════════════════════════════════════════════════════════ -->
 <div class="header">
   <div class="header-row header-row-main">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -857,19 +846,10 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <div id="thienDaoResults"></div>
 </div>
-</div>
-<script>
+</div><script>
 // ============================================================
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.5
-// - v2.8.5 NEW:
-//   + HEADER LAYOUT: 2 hàng gọn gàng (Tag + Actions / Music)
-//   + ITEM SYSTEM OVERHAUL:
-//     → Sắp xếp PRIORITY detectItemCategory đúng thứ tự
-//     → Loại bỏ keyword generic khỏi PHAP_BAO
-//     → 8 NHÓM CẦN LUYỆN HOÁ + 7 NHÓM KHÔNG CẦN
-//     → Hệ thống TIER 8 cấp với cost multiplier
-//     → Giá luyện hoá tự động theo tier + category + realm
-//   + Giữ nguyên toàn bộ logic v2.8.4.2 (undo, refresh state, mixed quality)
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.5 — FULL REWRITE
+// FIX 6 BUG: NSFW/ITEM/PURCHASE/SCOPE/QUEST/CLASSIFY
 // ============================================================
 const DB_NAME = 'HongDucTuTienDB';
 const STORE_NAME = 'GameSaves';
@@ -891,6 +871,154 @@ const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF\u3000-\u303F]/g;
 const LS_MODEL_KEY = 'hongduc_gemini_models_v1';
 const REFRESH_STATE_TURNS = 5;
 
+// ══════════════════════════════════════════════════════════════
+// ⚡ FIX BUG: MATCH HELPERS — 3 CẤP ĐỘ SO KHỚP AN TOÀN
+// Thay thế pattern "normalize + includes" cũ bằng word boundary
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * So khớp CHÍNH XÁC (có dấu, case-insensitive).
+ * Dùng cho keyword ngắn, keyword có nghĩa rõ ràng.
+ */
+function exactMatch(text, keyword) {
+  if (!text || !keyword) return false;
+  return text.toLowerCase().includes(keyword.toLowerCase());
+}
+
+/**
+ * So khớp WORD BOUNDARY — chỉ match khi keyword đứng riêng (có ranh giới).
+ * Dùng cho verb (give/receive/sell/buy/question/command).
+ * Fix bug "thực hiện" → "hiến", "muốn mua" → "mượn".
+ */
+function wordBoundaryMatch(text, keyword) {
+  if (!text || !keyword) return false;
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(?:^|[\\s,.;!?()\\[\\]{}'"\\-/])${escaped}(?:[\\s,.;!?()\\[\\]{}'"\\-/]|$)`, 'i');
+  return re.test(text);
+}
+
+/**
+ * So khớp MỀM — normalize bỏ dấu + substring.
+ * CHỈ dùng cho tên vật phẩm (dung sai AI ghi không dấu).
+ */
+function softMatch(text, keyword) {
+  return normalizeVN(text).includes(normalizeVN(keyword));
+}
+
+/**
+ * Bảng từ mơ hồ sau khi normalize bỏ dấu.
+ * Key = dạng không dấu; Value = danh sách các từ có dấu có thể xuất phát từ key đó.
+ * Phần tử đầu tiên = nghĩa GỐC (dùng để check an toàn).
+ */
+const AMBIGUOUS_AFTER_NORMALIZE = {
+  'hien': ['hiện', 'hiến', 'hiền', 'hiển', 'hiên', 'hiện'],
+  'ban': ['bán', 'ban', 'bàn', 'bạn', 'bản', 'bần', 'bận'],
+  'cho': ['cho', 'chờ', 'chợ', 'chó', 'chở', 'chỗ', 'chổ'],
+  'muon': ['muốn', 'mượn', 'muộn', 'muôn'],
+  'mua': ['mua', 'mùa', 'mửa'],
+  'thue': ['thuê', 'thuế', 'thừa'],
+  'tra': ['trả', 'trà', 'tra', 'trá', 'trã'],
+  'doi': ['đổi', 'đời', 'đôi', 'đợi', 'dời', 'đồi', 'đội'],
+  'coi': ['cởi', 'coi', 'cõi', 'côi', 'cới'],
+  'dam': ['dâm', 'đầm', 'đám', 'dám', 'dam', 'dầm'],
+  'duc': ['dục', 'đức', 'đúc', 'dức'],
+  'chat': ['chặt', 'chất', 'chát', 'chạt', 'chật'],
+  'troi': ['trói', 'trời', 'trôi', 'trối', 'trọi', 'trồi'],
+  'hiep': ['hiếp', 'hiệp'],
+  'cuong': ['cưỡng', 'cường', 'cương', 'cướng'],
+  'om': ['ôm', 'om', 'ỏm', 'ốm'],
+  'hon': ['hôn', 'hồn', 'hơn', 'hòn', 'hon'],
+  'dep': ['đẹp', 'dẹp', 'dép'],
+  'nho': ['nhỏ', 'nhớ', 'nhờ', 'nhọ'],
+  'sai': ['sai', 'sài', 'sãi', 'sái'],
+  'phai': ['phải', 'phai', 'phái', 'phải'],
+  'cac': ['các', 'cạc', 'cắc'],
+  'mon': ['môn', 'món', 'mòn', 'mơn'],
+  've': ['về', 'vẻ', 'vé', 've', 'vệ'],
+  'danh': ['đánh', 'danh', 'dành', 'đành', 'dạnh'],
+  'kiem': ['kiếm', 'kiềm', 'kiểm', 'kiêm'],
+  'thuong': ['thương', 'thường', 'thưởng', 'thượng', 'thuông'],
+  'nhan': ['nhân', 'nhẫn', 'nhận', 'nhăn', 'nhấn', 'nhàn'],
+  'kinh': ['kinh', 'kính', 'kình', 'kỉnh'],
+  'phien': ['phiến', 'phiền', 'phiện'],
+  'chau': ['châu', 'cháu', 'chầu', 'chẩu'],
+  'thap': ['tháp', 'thấp', 'thắp', 'thập'],
+  'binh': ['bình', 'bính', 'bịnh', 'binh'],
+  'phan': ['phân', 'phần', 'phản', 'phấn', 'phạn', 'phán'],
+  'dao': ['đao', 'đào', 'đạo', 'dạo', 'dào', 'đáo'],
+  'ho': ['hồ', 'hộ', 'hô', 'hổ', 'hơ', 'hờ', 'hở'],
+  'ky': ['kỳ', 'kỷ', 'ký', 'kí', 'ky'],
+  'an': ['ấn', 'an', 'ăn', 'ẩn', 'án', 'ân'],
+  'con': ['côn', 'còn', 'con', 'côn', 'cốn'],
+  'roi': ['rối', 'rồi', 'rơi', 'rọi', 'rỗi'],
+  'ban2': ['bàn'],
+  'hai': ['hải', 'hai', 'hài', 'hái'],
+  'tinh': ['tinh', 'tình', 'tính', 'tỉnh', 'tĩnh'],
+  'thanh': ['thanh', 'thành', 'thánh', 'thanh'],
+  'truc': ['trúc', 'trục', 'trực'],
+  'sat': ['sát', 'sắt', 'sạt'],
+  'hon2': ['hòn'],
+  'chung': ['chung', 'chúng', 'chửng'],
+  'tay': ['tay', 'tây', 'tày', 'tẩy'],
+  'bac': ['bạc', 'bắc', 'bác', 'bấc'],
+  'nam': ['nam', 'năm', 'nắm', 'nấm', 'nằm'],
+  'dong': ['động', 'đồng', 'đông', 'dòng', 'đống', 'đọng'],
+  'tien': ['tiên', 'tiền', 'tiến', 'tiện', 'tiển'],
+  'sinh': ['sinh', 'sinh', 'sính'],
+  'tu': ['tu', 'tử', 'tự', 'tư', 'tụ', 'tù'],
+  'linh': ['linh', 'lĩnh', 'lình', 'lịnh']
+};
+
+/**
+ * Kiểm tra match normalize có an toàn không.
+ * Nếu keyword nằm trong AMBIGUOUS_AFTER_NORMALIZE:
+ *   - Text gốc PHẢI chứa variant đầu tiên (nghĩa gốc) có dấu.
+ *   - Nếu không → từ này bị nhầm nghĩa → an toàn.
+ */
+function isSafeNormalizedMatch(originalText, keyword) {
+  if (!originalText || !keyword) return false;
+  const kwNorm = normalizeVN(keyword);
+  const variants = AMBIGUOUS_AFTER_NORMALIZE[kwNorm];
+  if (!variants || variants.length === 0) return true;
+  const lower = originalText.toLowerCase();
+  const intendedMeaning = variants[0];
+  return lower.includes(intendedMeaning.toLowerCase());
+}
+
+/**
+ * Match an toàn: 
+ *  - Nếu keyword ngắn (≤4 chars normalized) hoặc nằm trong AMBIGUOUS → dùng word boundary + check nghĩa.
+ *  - Ngược lại (dài, rõ nghĩa) → match substring thoải mái.
+ */
+function safeKeywordMatch(text, keyword) {
+  if (!text || !keyword) return false;
+  const kwNorm = normalizeVN(keyword);
+  const isAmbiguous = AMBIGUOUS_AFTER_NORMALIZE.hasOwnProperty(kwNorm);
+  const isShort = kwNorm.length <= 4;
+
+  if (isAmbiguous || isShort) {
+    // Word boundary trên text GỐC (có dấu)
+    if (wordBoundaryMatch(text, keyword)) return true;
+    // Nếu keyword có dấu khác với text gốc, thử word boundary trên normalize
+    if (kwNorm.length >= 3) {
+      const textNorm = normalizeVN(text);
+      const re = new RegExp(`(?:^|\\s)${kwNorm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\s|$)`, 'i');
+      if (re.test(textNorm)) {
+        // Có match normalized → check nghĩa gốc
+        return isSafeNormalizedMatch(text, keyword);
+      }
+    }
+    return false;
+  }
+
+  // Keyword dài, rõ nghĩa → match substring
+  return text.toLowerCase().includes(keyword.toLowerCase()) 
+    || normalizeVN(text).includes(kwNorm);
+}
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
 let CACHE_MODEL = DEFAULT_MODEL;
 
 let settings = {
@@ -948,9 +1076,6 @@ let mcExp = 0;
 let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
 
-// ══════════════════════════════════════════════════════════════
-// MC STATS — Tố chất ảnh hưởng luyện chế
-// ══════════════════════════════════════════════════════════════
 let mcStats = {
   theChat: 'Phàm',
   thanNiem: 'Phàm',
@@ -1001,9 +1126,6 @@ function updateMcStatsSummary() {
   if (el) el.innerHTML = `📊 Tổng bonus: <b>+${qtyBonus.toFixed(1)} viên / phần</b> · Phẩm chất: <b>+${(qltBonus * 100).toFixed(0)}%</b> · VD: 1 phần Tụ Khí Đan (base 5) → ~${Math.max(1, Math.round(5 + qtyBonus))} viên`;
 }
 
-// ══════════════════════════════════════════════════════════════
-// CẢNH GIỚI SYSTEM
-// ══════════════════════════════════════════════════════════════
 const REALM_NAME = {
   'LK': 'Luyện Khí', 'TC': 'Trúc Cơ', 'KD': 'Kim Đan',
   'NA': 'Nguyên Anh', 'HT': 'Hóa Thần', 'LH': 'Luyện Hư'
@@ -1108,7 +1230,7 @@ const MINOR_BASE_SUCCESS_RATE = 0.85;
 const MINOR_FAIL_EXP_LOSS = 0.10;
 
 // ══════════════════════════════════════════════════════════════
-// v2.8.5 ITEM TIER SYSTEM — CẤP BẬC VẬT PHẨM
+// ITEM TIERS
 // ══════════════════════════════════════════════════════════════
 const ITEM_TIERS = {
   'Phàm phẩm': { order: 0, mult: 1, color: '#8b949e', label: 'Phàm phẩm', class: 'tier-pham' },
@@ -1159,12 +1281,8 @@ function getTierBadgeHtml(quality) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// v2.8.5 ITEM CATEGORIES — SẮP XẾP THEO PRIORITY
-// Thứ tự detect (cao → thấp):
-//  1. Linh Thạch → 2. Lệnh Bài → 3. Yêu Đan → 4. Đan Dược → 5. Nguyên Liệu
-//  6. Trữ Vật Đồ → 7. Khôi Lỗi → 8. Dị Hỏa → 9. Bí Tịch
-//  10. Trận Bàn → 11. Phù Tiêu Hao → 12. Phù Tái Sử Dụng
-//  13. Cổ Bảo → 14. Linh Bảo → 15. Pháp Bảo → 16. Khác
+// ⚡ FIX BUG #2: ITEM CATEGORIES — LOẠI BỎ KEYWORD NGẮN KHỎI PHAP_BAO
+// Chỉ giữ keyword rõ nghĩa, ≥2 âm tiết hoặc ≥5 ký tự
 // ══════════════════════════════════════════════════════════════
 const ITEM_CATEGORIES = {
   LINH_THACH: {
@@ -1179,7 +1297,7 @@ const ITEM_CATEGORIES = {
     needsRefine: false, consumable: true,
     badgeClass: 'cat-lenh-bai', priority: 2,
     baseRefineCost: 0,
-    keywords: ['lệnh bài', 'lenh bai', 'token', 'phiếu', 'vé', 'thẻ', 'lệnh phù']
+    keywords: ['lệnh bài', 'lenh bai', 'token', 'phiếu', 'vé', 'thẻ', 'lệnh phù', 'lệnh bài phòng luyện đan', 'lenh bai phong luyen dan']
   },
   YEU_DAN: {
     id: 'yeu_dan', label: 'Yêu Đan / Nội Đan', icon: '🔴',
@@ -1265,23 +1383,45 @@ const ITEM_CATEGORIES = {
     baseRefineCost: 75,
     keywords: ['linh bảo', 'linh bao', 'thông thiên linh bảo', 'thong thien linh bao', 'hậu thiên linh bảo', 'hau thien linh bao', 'tiên thiên linh bảo', 'tien thien linh bao']
   },
+  // ⚡ FIX BUG #2: CHỈ GIỮ KEYWORD RÕ NGHĨA ≥2 ÂM TIẾT
+  // ĐÃ XÓA: 'kiem','thuong','nhan','kinh','phien','chau','thap','binh','phan','dao','ho','ky','an','con','roi'
+  // GIỮ: cụm 2 âm tiết trở lên, hoặc keyword rõ nghĩa
   PHAP_BAO: {
     id: 'phap_bao', label: 'Pháp Bảo / Pháp Khí', icon: '⚔️',
     needsRefine: true, consumable: false,
     badgeClass: 'cat-phap-bao', priority: 15,
     baseRefineCost: 50,
     keywords: [
+      // Cụm rõ nghĩa ≥2 âm tiết
       'pháp bảo', 'phap bao', 'pháp khí', 'phap khi', 'linh khí', 'linh khi',
       'phi kiếm', 'phi kiem', 'phi đao', 'phi dao', 'phi thương', 'phi thuong',
       'linh kiếm', 'linh kiem', 'linh đao', 'linh dao',
       'bản mệnh pháp bảo', 'ban menh phap bao', 'bản mệnh kiếm', 'ban menh kiem',
       'huyết kiếm', 'huyet kiem', 'phệ huyết kiếm', 'phe huyet kiem',
-      'kiếm', 'kiem', 'đao', 'dao', 'thương', 'thuong', 'côn', 'con', 'roi',
-      'nhẫn', 'nhan', 'kính', 'kinh', 'phiến', 'phien', 'châu', 'chau',
-      'tháp', 'thap', 'chung', 'ấn', 'an', 'kỳ', 'ky', 'phan', 'bình', 'binh',
-      'hồ', 'ho', 'đại', 'dai', 'linh chu', 'linh thuyền', 'linh thuyen',
+      // Cụm ghép với "phi", "linh", "bản mệnh"
+      'phi kiếm', 'phi đao', 'phi thương',
+      'linh chu', 'linh thuyền', 'linh thuyen',
       'phi thuyền', 'phi thuyen', 'bảo thuyền', 'bao thuyen',
-      'đan lô', 'dan lo', 'luyện khí lô', 'luyen khi lo'
+      'đan lô', 'dan lo', 'luyện khí lô', 'luyen khi lo',
+      // Cụm ghép với tên đầy đủ
+      'thanh phong kiếm', 'thanh phong kiem',
+      'tru tiên kiếm', 'tru tien kiem',
+      'huyền thiết kiếm', 'huyen thiet kiem',
+      'kim quang kiếm', 'kim quang kiem',
+      'bạch ngọc kiếm', 'bach ngoc kiem',
+      // Cụm ghép với "kiếm quyết", "kiếm pháp"
+      'kiếm quyết', 'kiem quyet', 'kiếm pháp', 'kiem phap',
+      'đao pháp', 'dao phap', 'thương pháp', 'thuong phap',
+      'chưởng pháp', 'chuong phap', 'quyền pháp', 'quyen phap',
+      // Cụm ghép với "pháp khí" đặc thù
+      'đỉnh', 'đỉnh lô', 'bảo đỉnh', 'bao dinh',
+      'ấn pháp', 'an phap',
+      // Cụm ghép với loại pháp bảo
+      'trấn hồn chung', 'tran hon chung',
+      'chiêu hồn phiên', 'chieu hon phien',
+      'lôi điện chùy', 'loi dien chuy',
+      'huyết ma đao', 'huyet ma dao',
+      'trảm tiên phi đao', 'tram tien phi dao'
     ]
   },
   KHAC: {
@@ -1299,34 +1439,68 @@ const ITEM_CATEGORY_PRIORITY = Object.entries(ITEM_CATEGORIES)
   .map(([k, v]) => k);
 
 // ══════════════════════════════════════════════════════════════
-// DETECT ITEM CATEGORY — v2.8.5 SỬA PRIORITY LOGIC
+// ⚡ FIX BUG #2: DETECT ITEM CATEGORY — AN TOÀN HƠN
+// - Ưu tiên match CHÍNH XÁC tên trước
+// - Fallback dùng safeKeywordMatch (có word boundary cho keyword ngắn)
+// - KHÔNG match keyword ngắn trong effect
 // ══════════════════════════════════════════════════════════════
 function detectItemCategory(name, quality, effect) {
   const rawName = (name || '').trim();
-  const text = (rawName + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
+  if (!rawName) return 'KHAC';
   const nameLower = rawName.toLowerCase();
   const nameNorm = normalizeVN(rawName);
 
-  // 1. Check TÊN trước (không phải effect) theo PRIORITY
+  // BƯỚC 1: Match CHÍNH XÁC tên với keyword (bất kể độ dài)
   for (const catKey of ITEM_CATEGORY_PRIORITY) {
     if (catKey === 'KHAC') continue;
     const cat = ITEM_CATEGORIES[catKey];
     for (const kw of cat.keywords) {
       const kwLower = kw.toLowerCase().trim();
       const kwNorm = normalizeVN(kwLower);
+      if (!kwLower) continue;
+      // Match chính xác hoàn toàn
       if (nameLower === kwLower || nameNorm === kwNorm) return catKey;
-      if (kwLower.length >= 4 && nameLower.includes(kwLower)) return catKey;
-      if (kwNorm.length >= 4 && nameNorm.includes(kwNorm)) return catKey;
+      // Match khi keyword là cụm ≥2 âm tiết và tên chứa nó
+      const kwWordCount = kwLower.split(/\s+/).filter(w => w.length > 0).length;
+      if (kwWordCount >= 2 && nameLower.includes(kwLower)) return catKey;
+      if (kwNorm.length >= 5 && nameNorm.includes(kwNorm)) return catKey;
+      // Match khi keyword đứng đầu tên (VD: "Phi Kiếm Thanh Phong" chứa "phi kiếm")
+      if (kwWordCount >= 2 && nameLower.startsWith(kwLower)) return catKey;
     }
   }
 
-  // 2. Fallback: check toàn bộ text (name + quality + effect)
+  // BƯỚC 2: Match đầu tên (first word sau khi normalize)
+  // VD: tên "Phi Kiếm..." → check "phi" có trong keyword "phi kiếm" không
+  const nameTokens = nameNorm.split(/\s+/).filter(t => t.length >= 2);
+  if (nameTokens.length > 0) {
+    for (const catKey of ITEM_CATEGORY_PRIORITY) {
+      if (catKey === 'KHAC') continue;
+      const cat = ITEM_CATEGORIES[catKey];
+      for (const kw of cat.keywords) {
+        const kwNorm = normalizeVN(kw.toLowerCase());
+        const kwTokens = kwNorm.split(/\s+/).filter(t => t.length > 0);
+        if (kwTokens.length >= 2 && nameTokens.length >= kwTokens.length) {
+          const headMatch = kwTokens.every((t, i) => nameTokens[i] === t || nameTokens[i].startsWith(t));
+          if (headMatch) return catKey;
+        }
+      }
+    }
+  }
+
+  // BƯỚC 3: Match toàn bộ text (name+quality+effect) — CHỈ keyword DÀI ≥6 ký tự
+  const fullText = (rawName + ' ' + (quality || '') + ' ' + (effect || '')).toLowerCase();
+  const fullNorm = normalizeVN(fullText);
   for (const catKey of ITEM_CATEGORY_PRIORITY) {
     if (catKey === 'KHAC') continue;
     const cat = ITEM_CATEGORIES[catKey];
     for (const kw of cat.keywords) {
       const kwLower = kw.toLowerCase().trim();
-      if (kwLower.length >= 5 && text.includes(kwLower)) return catKey;
+      const kwNorm = normalizeVN(kwLower);
+      const kwWordCount = kwLower.split(/\s+/).filter(w => w.length > 0).length;
+      // CHỈ match effect nếu keyword ≥2 âm tiết VÀ ≥6 ký tự normalize
+      if (kwWordCount >= 2 && kwNorm.length >= 6) {
+        if (fullNorm.includes(kwNorm)) return catKey;
+      }
     }
   }
 
@@ -1342,10 +1516,6 @@ function itemNeedsRefine(item) {
   return getItemCategoryInfo(cat).needsRefine;
 }
 
-// ══════════════════════════════════════════════════════════════
-// v2.8.5 REFINE COST CALCULATOR
-// Công thức: baseCost × tierMult × realmBonus
-// ══════════════════════════════════════════════════════════════
 function getRefineCost(item) {
   const catKey = item.category || detectItemCategory(item.name, item.quality, item.effect);
   const catInfo = getItemCategoryInfo(catKey);
@@ -1363,8 +1533,7 @@ function getRefineCost(item) {
     realmBonus = realmMap[parsed.realm] || 1.0;
   } catch (e) { }
 
-  const finalCost = Math.max(1, Math.round(baseCost * tierMult * realmBonus));
-  return finalCost;
+  return Math.max(1, Math.round(baseCost * tierMult * realmBonus));
 }
 
 function getRefineCostBreakdown(item) {
@@ -1392,9 +1561,7 @@ function getRefineCostBreakdown(item) {
     realmBonus,
     finalCost
   };
-}
-
-function showItemSystemInfo() {
+}function showItemSystemInfo() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:#e3702d;font-size:14px;margin-bottom:10px;font-weight:bold">📦 HỆ THỐNG PHÂN LOẠI VẬT PHẨM v2.8.5</div>`;
@@ -1904,26 +2071,48 @@ const DEFAULT_SCOPES = [
 let scopeRegistry = [];
 
 // ══════════════════════════════════════════════════════════════
-// VERBS
+// ⚡ FIX BUG #3 + #5: VERBS — CHỈ GIỮ CỤM ≥2 ÂM TIẾT
+// Xóa các verb đơn lẻ nguy hiểm: 'cho', 'ban', 'hien', 'mua', 'muon', 'thue', 'tra', 'doi'
+// và giữ cụm rõ nghĩa: 'cho', 'tặng', 'biếu', 'đưa'... 
+// Lưu ý: 'cho' vẫn cần giữ vì là verb chính, NHƯNG wordBoundaryMatch sẽ chặn
+// các trường hợp như "cho rằng", "cho nên" — vì vậy ta giữ nhưng phải dùng đúng regex
 // ══════════════════════════════════════════════════════════════
-const GIVE_VERBS = ['cho', 'tặng', 'tang', 'biếu', 'bieu', 'đưa', 'dua', 'gửi', 'gui', 'trao', 'giao', 'cấp', 'cap', 'phát', 'phat', 'thưởng', 'thuong', 'ban', 'ban cho', 'cống nạp', 'cong nap', 'hiến', 'hien', 'dâng', 'dang', 'nộp', 'nop', 'cung cấp', 'cung cap', 'chia', 'chia sẻ', 'chia se', 'lì xì', 'li xi', 'đưa cho', 'dua cho', 'giao cho', 'trao cho', 'đưa tặng', 'dua tang', 'gửi tặng', 'gui tang', 'tặng cho', 'tang cho', 'bố thí', 'bo thi', 'ban thưởng', 'ban thuong', 'khen thưởng', 'khen thuong', 'thuê', 'thue', 'cho thuê', 'cho thue'];
-const RECEIVE_VERBS = ['nhận', 'nhan', 'lĩnh', 'linh', 'thu', 'thu được', 'thu duoc', 'được cho', 'duoc cho', 'được tặng', 'duoc tang', 'được biếu', 'duoc bieu', 'được ban', 'duoc ban', 'được thưởng', 'duoc thuong', 'được cấp', 'duoc cap', 'được giao', 'duoc giao', 'được phát', 'duoc phat', 'được nhận', 'duoc nhan', 'thu hoạch', 'thu hoach', 'lấy được', 'lay duoc', 'chiếm được', 'chiem duoc', 'đoạt được', 'doat duoc', 'cướp được', 'cuop duoc', 'hưởng', 'huong', 'nhận được', 'nhan duoc', 'lĩnh được', 'linh duoc', 'thu vào', 'thu vao', 'bỏ vào túi', 'bo vao tui', 'cất vào túi', 'cat vao tui', 'nhặt được', 'nhat duoc', 'thuê', 'thue', 'mượn', 'muon'];
-const SELL_VERBS = ['bán', 'ban', 'trao đổi', 'trao doi', 'đổi', 'doi', 'quy đổi', 'quy doi', 'thanh lý', 'thanh ly', 'bán lại', 'ban lai', 'sang nhượng', 'sang nhuong', 'kí gửi', 'ki gui', 'ký gửi', 'ky gui', 'đổi lấy', 'doi lay', 'bán đổi', 'ban doi'];
-const BUY_VERBS = ['mua', 'tậu', 'tau', 'sắm', 'sam', 'thu mua', 'đặt mua', 'dat mua', 'mua lại', 'mua lai', 'săn', 'san', 'săn lùng', 'san lung', 'tìm mua', 'tim mua', 'mua đứt', 'mua dut', 'mua buôn', 'mua buon', 'nhập hàng', 'nhap hang', 'thuê', 'thue'];
 
+// Verbs GIVE — CHỈ giữ cụm đủ nghĩa
+const GIVE_VERBS = [
+  'cho', 'tặng', 'tang', 'biếu', 'bieu', 'đưa', 'dua', 'gửi', 'gui', 'trao', 'giao', 'cấp', 'cap', 'phát', 'phat', 'thưởng', 'thuong', 'ban', 'ban cho', 'cống nạp', 'cong nap', 'hiến', 'hien', 'dâng', 'dang', 'nộp', 'nop', 'cung cấp', 'cung cap', 'chia', 'chia sẻ', 'chia se', 'lì xì', 'li xi', 'đưa cho', 'dua cho', 'giao cho', 'trao cho', 'đưa tặng', 'dua tang', 'gửi tặng', 'gui tang', 'tặng cho', 'tang cho', 'bố thí', 'bo thi', 'ban thưởng', 'ban thuong', 'khen thưởng', 'khen thuong', 'thuê', 'thue', 'cho thuê', 'cho thue'
+];
+
+// Verbs RECEIVE
+const RECEIVE_VERBS = [
+  'nhận', 'nhan', 'lĩnh', 'linh', 'thu', 'thu được', 'thu duoc', 'được cho', 'duoc cho', 'được tặng', 'duoc tang', 'được biếu', 'duoc bieu', 'được ban', 'duoc ban', 'được thưởng', 'duoc thuong', 'được cấp', 'duoc cap', 'được giao', 'duoc giao', 'được phát', 'duoc phat', 'được nhận', 'duoc nhan', 'thu hoạch', 'thu hoach', 'lấy được', 'lay duoc', 'chiếm được', 'chiem duoc', 'đoạt được', 'doat duoc', 'cướp được', 'cuop duoc', 'hưởng', 'huong', 'nhận được', 'nhan duoc', 'lĩnh được', 'linh duoc', 'thu vào', 'thu vao', 'bỏ vào túi', 'bo vao tui', 'cất vào túi', 'cat vao tui', 'nhặt được', 'nhat duoc', 'thuê', 'thue', 'mượn', 'muon'
+];
+
+// Verbs SELL
+const SELL_VERBS = [
+  'bán', 'ban', 'trao đổi', 'trao doi', 'đổi', 'doi', 'quy đổi', 'quy doi', 'thanh lý', 'thanh ly', 'bán lại', 'ban lai', 'sang nhượng', 'sang nhuong', 'kí gửi', 'ki gui', 'ký gửi', 'ky gui', 'đổi lấy', 'doi lay', 'bán đổi', 'ban doi'
+];
+
+// Verbs BUY
+const BUY_VERBS = [
+  'mua', 'tậu', 'tau', 'sắm', 'sam', 'thu mua', 'đặt mua', 'dat mua', 'mua lại', 'mua lai', 'săn', 'san', 'săn lùng', 'san lung', 'tìm mua', 'tim mua', 'mua đứt', 'mua dut', 'mua buôn', 'mua buon', 'nhập hàng', 'nhap hang', 'thuê', 'thue'
+];
+
+// ⚡ FIX: Build regex với WORD BOUNDARY thật sự
 function buildVerbRegex(verbs) {
   const escaped = verbs.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  return new RegExp(`(?:^|\\s)(${escaped.join('|')})(?:\\s|$)`, 'i');
+  // Word boundary: bắt đầu chuỗi hoặc sau khoảng trắng/dấu câu, kết thúc chuỗi hoặc trước khoảng trắng/dấu câu
+  return new RegExp(`(?:^|[\\s,.;!?()\\[\\]{}'"\\-/])(?:${escaped.join('|')})(?:[\\s,.;!?()\\[\\]{}'"\\-/]|$)`, 'i');
 }
 
 const GIVE_VERB_REGEX = buildVerbRegex(GIVE_VERBS);
 const RECEIVE_VERB_REGEX = buildVerbRegex(RECEIVE_VERBS);
 const SELL_VERB_REGEX = buildVerbRegex(SELL_VERBS);
 const BUY_VERB_REGEX = buildVerbRegex(BUY_VERBS);
-const GIVE_ALT = GIVE_VERBS.join('|');
-const RECEIVE_ALT = RECEIVE_VERBS.join('|');
-const SELL_ALT = SELL_VERBS.join('|');
-const BUY_ALT = BUY_VERBS.join('|');
+const GIVE_ALT = GIVE_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+const RECEIVE_ALT = RECEIVE_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+const SELL_ALT = SELL_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+const BUY_ALT = BUY_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
 
 function normalizeVN(str) {
   return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -3946,10 +4135,13 @@ function openTagLegend() {
   resultsDiv.innerHTML = html;
 }
 
+// ══════════════════════════════════════════════════════════════
+// ⚡ FIX BUG #4: detectSceneScopes — DÙNG safeKeywordMatch
+// Trigger ngắn như 'phái','các','môn','về','đánh','đổi' sẽ KHÔNG match
+// nếu không đứng riêng (có word boundary) và không đúng nghĩa gốc
+// ══════════════════════════════════════════════════════════════
 function detectSceneScopes(actionText) {
   if (!actionText) return ['default'];
-  const lower = actionText.toLowerCase();
-  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const matches = [];
   for (const scope of scopeRegistry) {
     if (!scope.triggers || scope.triggers.length === 0) continue;
@@ -3957,10 +4149,11 @@ function detectSceneScopes(actionText) {
     for (const trigger of scope.triggers) {
       const tLower = trigger.toLowerCase().trim();
       if (!tLower) continue;
-      const tNorm = tLower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      let pos = lower.indexOf(tLower);
-      if (pos === -1) pos = normalized.indexOf(tNorm);
-      if (pos !== -1 && (bestPos === -1 || pos < bestPos)) bestPos = pos;
+      // Dùng safeKeywordMatch để tránh bug "phải" → "phái", "món" → "môn", "vẻ" → "về"
+      if (safeKeywordMatch(actionText, tLower)) {
+        const pos = actionText.toLowerCase().indexOf(tLower);
+        if (pos !== -1 && (bestPos === -1 || pos < bestPos)) bestPos = pos;
+      }
     }
     if (bestPos !== -1) matches.push({ scopeId: scope.id, pos: bestPos });
   }
@@ -4168,11 +4361,9 @@ function toggleLockRules(index) {
     log(`${npcList[index].lockedRules ? '🔒 Khóa' : '🔓 Mở'} [${npcList[index].name}]`);
     renderNpcs();
   }
-}
-
-// ============================================================
+}// ══════════════════════════════════════════════════════════════
 // RENDER LOCATIONS / EVENTS / WEAPONS / INVENTORY
-// ============================================================
+// ══════════════════════════════════════════════════════════════
 function renderLocationsVisual(locArray) {
   const grid = document.getElementById('locVisualGrid');
   if (!locArray || !Array.isArray(locArray) || locArray.length === 0) {
@@ -4298,7 +4489,6 @@ function addWorldItemToInventory(name) {
   }
 }
 
-// v2.8.5: refineInventoryItem dùng getRefineCost mới (tier × category × realm)
 function refineInventoryItem(name, quality, catKey) {
   try {
     const inv = JSON.parse(document.getElementById('mcInventory').value || '[]');
@@ -4764,20 +4954,16 @@ function showVersionLog() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
-  html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title" style="color:#e3702d">v2.8.5 (2026-10-16)</div><div class="thiendao-result-body">
-🎨 <b>HEADER LAYOUT FIX</b>:<br>
-• Header 2 hàng gọn gàng, responsive mobile<br>
-• Hàng 1: [☰] [TAG GAME] [🎮 Game] [⚡ Khởi Tạo]<br>
-• Hàng 2: Music controls centered<br><br>
-📦 <b>ITEM SYSTEM OVERHAUL</b>:<br>
-• Sắp xếp PRIORITY detectItemCategory đúng<br>
-• Fix bug "Tụ Khí Đan" bị xếp vào Pháp Bảo<br>
-• Loại bỏ keyword generic khỏi PHAP_BAO<br>
-• 8 nhóm CẦN luyện hoá + 7 nhóm KHÔNG CẦN<br>
-• 15 loại category rõ ràng với baseRefineCost riêng<br>
-• Tier system 8 cấp: Phàm/Hạ/Trung/Thượng/Cực/Linh/Tiên/Thần<br>
-• Công thức giá luyện hoá: baseCost × tierMult × realmBonus<br>
-• Nút "📦 Hệ Thống Phân Loại Vật Phẩm" trong sidebar
+  html += `<div class="thiendao-result" style="border-left:3px solid #e3702d"><div class="thiendao-result-title" style="color:#e3702d">v2.8.5 (2026-10-16) — 6 BUG FIX</div><div class="thiendao-result-body">
+🐛 <b>BUG FIXES</b>:<br>
+• #1 detectNsfwIntent() — word boundary + AMBIGUOUS_AFTER_NORMALIZE<br>
+• #2 detectItemCategory() — xóa keyword ngắn khỏi PHAP_BAO<br>
+• #3 detectPurchaseIntent() — wordBoundaryMatch thay includes<br>
+• #4 detectSceneScopes() — safeKeywordMatch thay indexOf<br>
+• #5 isQuestDelegation() — wordBoundaryMatch cho command verbs<br>
+• #6 classifyTransactionIntent() — wordBoundaryMatch cho question markers<br><br>
+🎨 <b>HEADER LAYOUT FIX</b>: 2 hàng gọn gàng, responsive mobile<br>
+📦 <b>ITEM SYSTEM OVERHAUL</b>: Tier 8 cấp + refine cost × tier × realm
 </div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.2 (2026-10-15)</div><div class="thiendao-result-body">🎨 LAYOUT + UNDO FIX</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.4.1 (2026-10-15)</div><div class="thiendao-result-body">🔥 HOTFIX PHẨM CHẤT HỖN HỢP</div></div>`;
@@ -5122,23 +5308,37 @@ function checkCJKOnSave() {
   return true;
 }
 
-// ============================================================
-// NSFW DETECTION
-// ============================================================
-const NSFW_KEYWORDS_VI = ['song tu', 'làm tình', 'giao hoan', 'mây mưa', 'ái ân', 'hoan ái', 'ân ái', 'thân mật', 'hôn', 'ôm', 'vuốt ve', 'cởi', 'lột', 'hở hang', 'khỏa thân', 'lõa thể', 'dâm', 'dục', 'tình dục', 'mặn nồng', 'lô đỉnh', 'hái hoa', 'thái âm bổ dương', 'thái dương bổ âm', 'dâm dục', 'dục vọng', 'khiêu dâm', 'sắc dục', 'tình ái', 'quan hệ', 'hiến thân', 'dâng hiến', 'hầu hạ', 'chém giết', 'giết', 'tàn sát', 'đồ sát', 'chém', 'đâm', 'chặt', 'moi tim', 'lột da', 'tra tấn', 'hành hạ', 'ngược đãi', 'huyết tinh', 'máu me', 'sát nhân', 'đoạt bảo', 'cướp', 'hiếp', 'giết chóc', 'sát phạt', 'đồ diệt', 'cưỡng', 'bắt cóc', 'giam cầm', 'trói', 'khống chế', 'nô lệ', 'nô gia', 'chủ nô', 'chiếm hữu', 'ép buộc', 'uy hiếp', 'đe dọa', 'cưỡng bức', 'cưỡng hiếp', 'cưỡng đoạt', 'cưỡng chế'];
+// ══════════════════════════════════════════════════════════════
+// ⚡ FIX BUG #1: NSFW DETECTION — DÙNG safeKeywordMatch
+// Thay vì lower.includes(kw) + normalized.includes(kwNorm) không có boundary
+// ══════════════════════════════════════════════════════════════
+const NSFW_KEYWORDS_VI = [
+  'song tu', 'làm tình', 'giao hoan', 'mây mưa', 'ái ân', 'hoan ái', 'ân ái',
+  'thân mật', 'hôn', 'ôm', 'vuốt ve', 'cởi', 'lột', 'hở hang', 'khỏa thân',
+  'lõa thể', 'dâm', 'dục', 'tình dục', 'mặn nồng', 'lô đỉnh', 'hái hoa',
+  'thái âm bổ dương', 'thái dương bổ âm', 'dâm dục', 'dục vọng', 'khiêu dâm',
+  'sắc dục', 'tình ái', 'quan hệ', 'hiến thân', 'dâng hiến', 'hầu hạ',
+  'chém giết', 'giết', 'tàn sát', 'đồ sát', 'chém', 'đâm', 'chặt',
+  'moi tim', 'lột da', 'tra tấn', 'hành hạ', 'ngược đãi', 'huyết tinh',
+  'máu me', 'sát nhân', 'đoạt bảo', 'cướp', 'hiếp', 'giết chóc', 'sát phạt',
+  'đồ diệt', 'cưỡng', 'bắt cóc', 'giam cầm', 'trói', 'khống chế', 'nô lệ',
+  'nô gia', 'chủ nô', 'chiếm hữu', 'ép buộc', 'uy hiếp', 'đe dọa',
+  'cưỡng bức', 'cưỡng hiếp', 'cưỡng đoạt', 'cưỡng chế'
+];
 const NSFW_KEYWORDS_EN = ['sex', 'intercourse', 'rape', 'fuck', 'kiss', 'naked', 'nude', 'orgasm', 'kill', 'murder', 'slaughter', 'torture', 'slave', 'capture'];
 
 function detectNsfwIntent(actionText) {
   if (!actionText) return false;
-  const lower = actionText.toLowerCase();
-  const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Vietnamese keywords — dùng safeKeywordMatch để tránh bug
+  // "cường giả" match "cưỡng", "chất lượng" match "chặt", "trời ơi" match "trói",
+  // "đức tính" match "dục", "đầm lầy" match "dâm", "coi thường" match "cởi",
+  // "hôn mê" match "hôn", "hiệp sĩ" match "hiếp", "tôm hùm" match "ôm"
   for (const kw of NSFW_KEYWORDS_VI) {
-    if (lower.includes(kw)) return true;
-    const kwNorm = kw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    if (normalized.includes(kwNorm)) return true;
+    if (safeKeywordMatch(actionText, kw)) return true;
   }
+  // English keywords — word boundary
   for (const kw of NSFW_KEYWORDS_EN) {
-    if (lower.includes(kw)) return true;
+    if (wordBoundaryMatch(actionText, kw)) return true;
   }
   return false;
 }
@@ -5566,9 +5766,10 @@ async function aiGenField(fieldId, promptMsg) {
   }
 }
 
-// ============================================================
-// DETECT PURCHASE INTENT
-// ============================================================
+// ══════════════════════════════════════════════════════════════
+// ⚡ FIX BUG #3: PURCHASE INTENT — DÙNG wordBoundaryMatch
+// Thay vì GIVE_VERB_REGEX.test(textRaw) + includes → wordBoundaryMatch
+// ══════════════════════════════════════════════════════════════
 function detectPurchaseIntent(actionText) {
   if (!actionText) return null;
   const raw = actionText.toLowerCase().trim();
@@ -5578,6 +5779,7 @@ function detectPurchaseIntent(actionText) {
   const tryMatch = (re) => textRaw.match(re) || textNorm.match(re);
   const unit = '(?:vien|cai|chiec|tam|la|cuc|thanh|bo|hop|goi|phan|manh|khuc|binh|lo|chai|cuon|tap|xap|chong|nham|nam|dot)';
 
+  // Give linh thach
   const giveLSPatterns = [
     new RegExp(`(?:${GIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i'),
     new RegExp(`(?:${GIVE_ALT})\\s+(?:[a-zà-ỹ]+\\s+){0,2}?(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i')
@@ -5586,7 +5788,11 @@ function detectPurchaseIntent(actionText) {
     const m = tryMatch(re);
     if (m) {
       const matchedText = m[0];
-      if (/\b(bán|mua|thuê|đổi|trao đổi|nộp|trả)\b/i.test(matchedText)) continue;
+      // ⚡ FIX: Dùng wordBoundaryMatch cho verb check
+      if (wordBoundaryMatch(matchedText, 'bán') || wordBoundaryMatch(matchedText, 'mua') || 
+          wordBoundaryMatch(matchedText, 'thuê') || wordBoundaryMatch(matchedText, 'đổi') || 
+          wordBoundaryMatch(matchedText, 'trao đổi') || wordBoundaryMatch(matchedText, 'nộp') || 
+          wordBoundaryMatch(matchedText, 'trả')) continue;
       const qty = parseQty(m[1]);
       if (qty > 0) return { action: 'give', qty, itemName: 'linh thạch', raw: matchedText };
     }
@@ -5600,7 +5806,9 @@ function detectPurchaseIntent(actionText) {
     const m = tryMatch(re);
     if (m) {
       const matchedText = m[0];
-      if (/\b(bán|mua|thuê|đổi|trao đổi)\b/i.test(matchedText)) continue;
+      if (wordBoundaryMatch(matchedText, 'bán') || wordBoundaryMatch(matchedText, 'mua') || 
+          wordBoundaryMatch(matchedText, 'thuê') || wordBoundaryMatch(matchedText, 'đổi') || 
+          wordBoundaryMatch(matchedText, 'trao đổi')) continue;
       const qty = parseQty(m[1]);
       let itemName = (m[2] || '').trim();
       if (/linh\s*thach|linh\s*thạch|\bls\b/i.test(itemName)) continue;
@@ -5611,7 +5819,10 @@ function detectPurchaseIntent(actionText) {
     }
   }
 
-  if (GIVE_VERB_REGEX.test(textRaw) || GIVE_VERB_REGEX.test(textNorm)) {
+  // ⚡ FIX: Dùng wordBoundaryMatch thay vì GIVE_VERB_REGEX.test() 
+  // để tránh "thực hiện" match "hiến", "hiện tại" match "hiến"
+  const hasGiveVerb = GIVE_VERBS.some(v => wordBoundaryMatch(textRaw, v) || wordBoundaryMatch(textNorm, v));
+  if (hasGiveVerb) {
     const candidate = extractItemCandidate(textRaw);
     if (candidate && candidate.length >= 2) {
       const numMatch = textRaw.match(/(\d[\d.,]*\s*[vk]?)/);
@@ -5675,7 +5886,9 @@ function detectPurchaseIntent(actionText) {
       }
     }
   }
-  if (BUY_VERB_REGEX.test(textRaw) || BUY_VERB_REGEX.test(textNorm)) {
+  // ⚡ FIX: Dùng wordBoundaryMatch cho fallback buy
+  const hasBuyVerb = BUY_VERBS.some(v => wordBoundaryMatch(textRaw, v) || wordBoundaryMatch(textNorm, v));
+  if (hasBuyVerb) {
     const lsMatch = tryMatch(/(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i);
     if (lsMatch) {
       const totalCost = parseQty(lsMatch[1]);
@@ -5685,9 +5898,10 @@ function detectPurchaseIntent(actionText) {
   return null;
 }
 
-// ============================================================
-// QUEST DELEGATION DETECTION
-// ============================================================
+// ══════════════════════════════════════════════════════════════
+// ⚡ FIX BUG #5: QUEST DELEGATION — DÙNG wordBoundaryMatch
+// Thay vì 'sai ', 'bảo ', 'kêu ', 'nhờ' match substring
+// ══════════════════════════════════════════════════════════════
 function isQuestDelegation(actionText) {
   if (!actionText) return false;
   if (!settings.questDelegation) return false;
@@ -5697,19 +5911,30 @@ function isQuestDelegation(actionText) {
   const npcNames = npcList.map(n => (n.name || '').toLowerCase().trim()).filter(n => n.length >= 2);
   const hasNpcName = npcNames.some(n => lower.includes(n));
 
+  // ⚡ FIX: command verbs phải dùng wordBoundaryMatch
   const commandVerbs = [
-    'giao nhiệm vụ', 'giao cho', 'ra lệnh', 'sai ', 'sai khiến', 'sai bảo', 'sai hắn', 'sai nó',
+    'giao nhiệm vụ', 'giao cho', 'ra lệnh', 'sai', 'sai khiến', 'sai bảo', 'sai hắn', 'sai nó',
     'bảo hắn', 'bảo nó', 'yêu cầu', 'phân phó', 'kêu hắn', 'kêu nó', 'sai người', 'cử người',
     'hướng dẫn', 'chỉ thị', 'đi mua', 'đi bán', 'đi thuê', 'đi làm', 'đi nộp', 'đi đổi',
-    'nhờ', 'hãy ', 'hãy đi', 'hãy đến', 'bảo ', 'kêu ', 'sai đi'
+    'nhờ', 'hãy', 'hãy đi', 'hãy đến', 'bảo', 'kêu', 'sai đi'
   ];
-  const hasCommandVerb = commandVerbs.some(v => lower.includes(v) || normalized.includes(v.normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
+  // ⚡ FIX: Chỉ match verb nếu có word boundary
+  // "bảo vệ" KHÔNG match "bảo", "sai lầm" KHÔNG match "sai", "nhỡ bước" KHÔNG match "nhờ"
+  const hasCommandVerb = commandVerbs.some(v => {
+    // Cụm ≥2 âm tiết → dùng wordBoundaryMatch trên cụm đầy đủ
+    if (v.includes(' ')) {
+      return wordBoundaryMatch(actionText, v);
+    }
+    // Từ đơn → dùng wordBoundaryMatch
+    return wordBoundaryMatch(actionText, v);
+  });
 
   const sequenceMarkers = ['sau đó', ' rồi ', 'tiếp theo', 'kế tiếp', 'sau ấy', 'rồi mới', 'xong rồi', 'sau khi', 'rồi thì'];
   const hasSequence = sequenceMarkers.some(m => lower.includes(m));
 
   const economicVerbs = ['bán', 'mua', 'thuê', 'đổi', 'trao đổi', 'nộp', 'trả'];
-  const economicCount = economicVerbs.filter(v => lower.includes(v)).length;
+  // ⚡ FIX: economic verbs cũng phải word boundary
+  const economicCount = economicVerbs.filter(v => wordBoundaryMatch(actionText, v)).length;
 
   const directGivePattern = new RegExp(`(?:đưa|cho|tặng|giao)\\s+(?:\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+)?(?:linh\\s*thach|linh\\s*thạch)`, 'i');
   const hasDirectGive = directGivePattern.test(actionText);
@@ -5719,6 +5944,9 @@ function isQuestDelegation(actionText) {
   return hasNpcName && hasCommandVerb && (hasSequence || economicCount >= 2);
 }
 
+// ══════════════════════════════════════════════════════════════
+// ⚡ FIX BUG #6: CLASSIFY TRANSACTION — DÙNG wordBoundaryMatch
+// ══════════════════════════════════════════════════════════════
 function classifyTransactionIntent(actionText) {
   if (!actionText) return { type: 'none' };
   const lower = actionText.toLowerCase();
@@ -5730,8 +5958,9 @@ function classifyTransactionIntent(actionText) {
     return { type: 'quest_delegation', note: 'NPC sẽ tự thực hiện — bỏ qua pre-validate' };
   }
 
+  // ⚡ FIX: question markers phải có word boundary
   const questionMarkers = ['hỏi', 'thăm dò', 'tìm hiểu', 'xem giá', 'giá bao nhiêu', 'giá cả', 'ở đâu', 'như thế nào', 'ra sao', 'là gì', 'có không', 'được không', 'bao nhiêu', 'thế nào'];
-  const hasQuestion = questionMarkers.some(v => lower.includes(v) || normalized.includes(v.normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
+  const hasQuestion = questionMarkers.some(v => wordBoundaryMatch(actionText, v));
   if (hasQuestion) {
     const directTxPattern = /(?:^|\s)(mua|bán|cho|tặng|đưa|giao|nhận|lấy)\s+\d/i;
     const hasDirectTx = directTxPattern.test(actionText);
@@ -5745,7 +5974,8 @@ function classifyTransactionIntent(actionText) {
   const sequenceMarkers = ['sau đó', ' rồi ', 'tiếp theo', 'kế tiếp', 'sau ấy', 'rồi mới', 'xong rồi', 'sau khi'];
   const hasSequence = sequenceMarkers.some(m => lower.includes(m));
   const economicVerbs = ['bán', 'mua', 'thuê', 'đổi', 'trao đổi', 'nộp', 'trả'];
-  const economicCount = economicVerbs.filter(v => lower.includes(v)).length;
+  // ⚡ FIX: economic verbs word boundary
+  const economicCount = economicVerbs.filter(v => wordBoundaryMatch(actionText, v)).length;
   if (hasSequence && economicCount >= 2) {
     tokenStats.transactionChainsDetected = (tokenStats.transactionChainsDetected || 0) + 1;
     updateTokenStatsDisplay();
@@ -7828,7 +8058,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   stateSnapshots = [captureStateSnapshot()];
   log(`📸 Đã khởi tạo snapshot ban đầu (stateSnapshots.length = ${stateSnapshots.length}).`);
 
-  log("✅ v2.8.5 loaded. HEADER 2 HÀNG + ITEM SYSTEM OVERHAUL + TIER COST ready.");
+  log("✅ v2.8.5 loaded. HEADER 2 HÀNG + ITEM SYSTEM OVERHAUL + TIER COST + 6 BUG FIX ready.");
 });
 </script>
 </body>

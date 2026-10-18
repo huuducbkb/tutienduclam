@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2 — TIME SKIP ĐA HOẠT ĐỘNG</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3 — TIME SKIP ĐA HOẠT ĐỘNG</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e;--shadow-sm:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--transition-fast:150ms cubic-bezier(0.4,0,0.2,1);--transition-base:250ms cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -326,7 +326,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .prof-table-wrapper tr.current-row{background:rgba(77,208,225,.1)}
 .prof-table-wrapper tr.current-row td{color:#4dd0e1;font-weight:bold}
 .prof-table-title{background:linear-gradient(90deg,rgba(31,107,235,.15),transparent);border-left:3px solid #1f6beb;padding:8px 12px;font-size:12px;font-weight:bold;color:#79c0ff}
-/* ═══ v2.8.7.2 TIME SKIP MODAL ═══ */
+/* ═══ v2.8.7.3 TIME SKIP MODAL ═══ */
 .timeskip-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:250;justify-content:center;align-items:center;padding:15px;backdrop-filter:blur(8px)}
 .timeskip-modal.active{display:flex}
 .timeskip-content{background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border:2px solid var(--accent-gold);border-radius:12px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;padding:20px;box-shadow:0 0 40px rgba(210,153,34,.5)}
@@ -375,7 +375,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="header">
   <div class="header-row header-row-main">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2</span>
+    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3</span>
     <div class="header-actions">
       <button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
       <button class="header-game-tab btn-timeskip-option" onclick="openTimeSkipModal()" title="Mô phỏng cày level đa hoạt động">⏩ Cày Level</button>
@@ -396,7 +396,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 
-<div class="section-header">🔄 v2.8.7.2 CẬP NHẬT</div>
+<div class="section-header">🔄 v2.8.7.3 CẬP NHẬT</div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#d29922,#e3702d);font-size:12px" onclick="openTimeSkipModal()">⏩ CÀY LEVEL — TIME SKIP ĐA HOẠT ĐỘNG</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#db61a2);font-size:12px" onclick="refreshGameStateFromHistory()">🔄 Cập Nhật Trạng Thái (5 lượt)</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#e3702d,#d29922);font-size:12px" onclick="showItemSystemInfo()">📦 Hệ Thống Phân Loại Vật Phẩm</button>
@@ -464,21 +464,21 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
 
-<div class="section-header">⚒️ Nghề Nghiệp (v2.8.7.2)</div>
+<div class="section-header">⚒️ Nghề Nghiệp (v2.8.7.3)</div>
 <div class="toggle-row"><span>Bật Profession System</span><div class="toggle-switch active" id="toggleProfessionSystem" onclick="toggleSetting('professionSystem')"></div></div>
 <div class="toggle-row"><span>Auto-tính EXP nghề (×2)</span><div class="toggle-switch active" id="toggleProfessionAutoExp" onclick="toggleSetting('professionAutoExp')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-cyan);font-size:12px" onclick="showProfessionStats()">📊 Thống Kê Nghề</button>
 <button class="sidebar-item" style="background:var(--accent-pink);font-size:11px" onclick="simulateCraft('luyen_dan')">🧪 Mô Phỏng Luyện Đan</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="resetProfessions()">🔄 Reset Nghề</button>
 
-<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.7.2)</div>
+<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.7.3)</div>
 <div class="toggle-row"><span>Bật Breakthrough Requirements</span><div class="toggle-switch active" id="toggleBreakthroughReq" onclick="toggleSetting('breakthroughReq')"></div></div>
 <div class="toggle-row"><span>Cảnh báo thiếu điều kiện</span><div class="toggle-switch active" id="toggleBreakthroughWarn" onclick="toggleSetting('breakthroughWarn')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-gold);color:#000;font-size:12px" onclick="openBreakthroughPanel()">⚡ Kiểm Tra Đột Phá</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showBreakthroughTable()">📖 Bảng Yêu Cầu Đột Phá</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#388bfd,#1f6beb);font-size:11px" onclick="showRealmProgressionTable()">📈 Bảng Lộ Trình Cảnh Giới</button>
 
-<div class="section-header">🎯 Quest Delegation (v2.8.7.2)</div>
+<div class="section-header">🎯 Quest Delegation (v2.8.7.3)</div>
 <div class="toggle-row"><span>Bật Quest Delegation Detection</span><div class="toggle-switch active" id="toggleQuestDelegation" onclick="toggleSetting('questDelegation')"></div></div>
 <div class="toggle-row"><span>Bật Transaction Chain Detection</span><div class="toggle-switch active" id="toggleTransactionChain" onclick="toggleSetting('transactionChain')"></div></div>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showQuestDelegationStats()">📊 Thống Kê Quest Delegation</button>
@@ -489,7 +489,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="sidebar-item" style="background:#7d2828;font-size:12px;margin-top:8px" onclick="scanChineseChars()">🔍 Quét CJK</button>
 <button class="sidebar-item" style="background:#8b2020;font-size:12px" onclick="autoCleanCJK()">🧹 Xóa CJK</button>
 
-<div class="section-header">🎨 Scope Registry v2.8.7.2</div>
+<div class="section-header">🎨 Scope Registry v2.8.7.3</div>
 <button class="sidebar-item" style="background:var(--accent-purple);font-size:12px" onclick="restoreDefaultScopes()">🔄 Khôi Phục 16 Scope</button>
 <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px" onclick="showScopeStats()">📊 Thống Kê Scope</button>
 <button class="sidebar-item" style="background:#444;font-size:11px" onclick="openTagLegend()">🏷️ Xem Chú Thích Tag</button>
@@ -631,14 +631,14 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.7.2</div>
+  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.7.3</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
   <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
     <div class="input-header">
       <div>
-        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.7.2</div>
+        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.7.3</div>
         <div class="label-desc">16 scope được phân nhóm theo <b>handledBy</b>: <span style="color:#3fb950">🤖 CODE</span> · <span style="color:#d29922">⚖️ HYBRID</span> · <span style="color:#8b949e">🎨 STYLE</span>.</div>
       </div>
       <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM</button>
@@ -676,7 +676,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
@@ -795,7 +795,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e"></textarea></div>
 </div>
 <!-- END PART 3/14 --><div id="prof" class="tab-content">
-<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.7.2 — EXP×2)</div>
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.7.3 — EXP×2)</div>
 <div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. <b style="color:#d29922">⚡ EXP ×2</b>.</div>
 
 <div class="prof-container">
@@ -821,7 +821,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.7.2 — 665 công thức)</div>
+  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.7.3 — 665 công thức)</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
@@ -919,7 +919,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.8.7.2 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.8.7.3 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -937,7 +937,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- v2.8.7.2 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
+<!-- v2.8.7.3 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <div id="timeskipModal" class="timeskip-modal">
 <div class="timeskip-content">
@@ -1020,7 +1020,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <!-- END PART 5/14 --><script>
 // ══════════════════════════════════════════════════════════════
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2 — TIME SKIP ĐA HOẠT ĐỘNG
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3 — TIME SKIP ĐA HOẠT ĐỘNG
 // PHẦN 6/14: SCRIPT MỞ ĐẦU — CONSTANTS + HELPERS + STATE
 // ══════════════════════════════════════════════════════════════
 const DB_NAME = 'HongDucTuTienDB';
@@ -1187,14 +1187,14 @@ const REALM_NAME = { 'LK': 'Luyện Khí', 'TC': 'Trúc Cơ', 'KD': 'Kim Đan', 
 const PHASE_LABEL = { 's': 'sơ kỳ', 't': 'trung kỳ', 'h': 'hậu kỳ' };
 
 const EXP_TABLE = {
-  'LK1': 200, 'LK2': 300, 'LK3': 440, 'LK4': 640, 'LK5': 900,
-  'LK6': 1240, 'LK7': 1700, 'LK8': 2300, 'LK9': 3000, 'LK10': 4000,
-  'LK11': 5200, 'LK12': 6800, 'LK13': 9000,
-  'TC_s': 24000, 'TC_t': 40000, 'TC_h': 64000,
-  'KD_s': 160000, 'KD_t': 300000, 'KD_h': 500000,
-  'NA_s': 1200000, 'NA_t': 2400000, 'NA_h': 4000000,
-  'HT_s': 10000000, 'HT_t': 20000000, 'HT_h': 36000000,
-  'LH_s': 100000000, 'LH_t': 200000000, 'LH_h': 360000000
+  'LK1': 1000, 'LK2': 2000, 'LK3': 4000, 'LK4': 8000, 'LK5': 15000,
+  'LK6': 30000, 'LK7': 55000, 'LK8': 100000, 'LK9': 180000, 'LK10': 320000,
+  'LK11': 550000, 'LK12': 900000, 'LK13': 1500000,
+  'TC_s': 3000000, 'TC_t': 5000000, 'TC_h': 8000000,
+  'KD_s': 20000000, 'KD_t': 35000000, 'KD_h': 55000000,
+  'NA_s': 120000000, 'NA_t': 240000000, 'NA_h': 400000000,
+  'HT_s': 800000000, 'HT_t': 1600000000, 'HT_h': 3000000000,
+  'LH_s': 8000000000, 'LH_t': 16000000000, 'LH_h': 30000000000
 };
 const LINH_CAN_COEF = { 'Đơn': 1.0, 'Song': 0.7, 'Tam': 0.5, 'Tứ': 0.3, 'Ngũ': 0.15, 'Dị': 1.5 };
 const REALM_MULTIPLIER = { 'LK': 1.0, 'TC': 2.5, 'KD': 5.0, 'NA': 10.0, 'HT': 20.0, 'LH': 40.0 };
@@ -1207,11 +1207,11 @@ const MINOR_LEVEL_MAP = {
   'LH': { type: 'phase', getNext: (sub) => sub === 's' ? 't' : (sub === 't' ? 'h' : null), getKey: (sub) => `LH_${sub}`, getDisplay: (sub) => `Luyện Hư ${PHASE_LABEL[sub]}` }
 };
 const BREAKTHROUGH_REQUIREMENTS = {
-  'LK→TC': { minExp: 24000, requiredItems: ['Trúc Cơ Đan'], requiredCondition: ['tâm cảnh viên mãn', 'linh khí đủ'], failurePenalty: { expLoss: 0.3, injury: 'kinh mạch tổn thương 1-3 tháng' }, baseSuccessRate: 0.4 },
-  'TC→KD': { minExp: 160000, requiredItems: ['Kim Nguyên Đan'], requiredCondition: ['đan điền ổn định', 'không tẩu hỏa'], failurePenalty: { expLoss: 0.5, injury: 'đan điền nứt 1-3 năm' }, baseSuccessRate: 0.3 },
-  'KD→NA': { minExp: 1200000, requiredItems: ['Ngưng Anh Đan'], requiredCondition: ['ngộ đạo', 'thiên địa linh khí dồi dào'], failurePenalty: { expLoss: 0.7, injury: 'kim đan rạn nứt, tụt 1 tiểu cảnh giới' }, baseSuccessRate: 0.2 },
-  'NA→HT': { minExp: 10000000, requiredItems: ['Hóa Thần Đan'], requiredCondition: ['thiên kiếp vượt qua', 'thần thức đủ mạnh'], failurePenalty: { expLoss: 0.9, injury: 'nguyên anh tổn hại nặng' }, baseSuccessRate: 0.1 },
-  'HT→LH': { minExp: 100000000, requiredItems: ['Luyện Hư Đan'], requiredCondition: ['độ kiếp thành công', 'thần hồn đủ mạnh'], failurePenalty: { expLoss: 0.95, injury: 'thần hồn tổn hại cực nặng' }, baseSuccessRate: 0.05 }
+  'LK→TC': { minExp: 3000000, requiredItems: ['Trúc Cơ Đan'], requiredCondition: ['tâm cảnh viên mãn', 'linh khí đủ'], failurePenalty: { expLoss: 0.3, injury: 'kinh mạch tổn thương 1-3 tháng' }, baseSuccessRate: 0.4 },
+  'TC→KD': { minExp: 20000000, requiredItems: ['Kim Nguyên Đan'], requiredCondition: ['đan điền ổn định', 'không tẩu hỏa'], failurePenalty: { expLoss: 0.5, injury: 'đan điền nứt 1-3 năm' }, baseSuccessRate: 0.3 },
+  'KD→NA': { minExp: 120000000, requiredItems: ['Ngưng Anh Đan'], requiredCondition: ['ngộ đạo', 'thiên địa linh khí dồi dào'], failurePenalty: { expLoss: 0.7, injury: 'kim đan rạn nứt, tụt 1 tiểu cảnh giới' }, baseSuccessRate: 0.2 },
+  'NA→HT': { minExp: 800000000, requiredItems: ['Hóa Thần Đan'], requiredCondition: ['thiên kiếp vượt qua', 'thần thức đủ mạnh'], failurePenalty: { expLoss: 0.9, injury: 'nguyên anh tổn hại nặng' }, baseSuccessRate: 0.1 },
+  'HT→LH': { minExp: 8000000000, requiredItems: ['Luyện Hư Đan'], requiredCondition: ['độ kiếp thành công', 'thần hồn đủ mạnh'], failurePenalty: { expLoss: 0.95, injury: 'thần hồn tổn hại cực nặng' }, baseSuccessRate: 0.05 }
 };
 const MINOR_SUCCESS_BONUS = { 'Đơn': 0.15, 'Song': 0.10, 'Tam': 0.05, 'Tứ': 0, 'Ngũ': -0.05, 'Dị': 0.20 };
 const MAJOR_SUCCESS_BONUS = { 'Đơn': 0.20, 'Song': 0.10, 'Tam': 0, 'Tứ': -0.05, 'Ngũ': -0.10, 'Dị': 0.40 };
@@ -2835,7 +2835,7 @@ function copyUnifiedLog() {
   const storyText = document.getElementById('story-box')?.innerText || '';
   const logsText = document.getElementById('sysLogs')?.innerText || '';
   const statsText = document.getElementById('tokenStats')?.innerText || '';
-  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
+  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
   const full = header + `━━━━━━━ 📜 NHẬT KÝ CHƠI GAME ━━━━━━━\n\n${storyText}\n\n` + `━━━━━━━ 🔧 SYSTEM LOGS ━━━━━━━\n\n${logsText}\n\n` + `━━━━━━━ 📊 TOKEN STATS ━━━━━━━\n\n${statsText}`;
   if (!storyText || storyText.includes('Chưa có dữ liệu')) { alert("⚠️ Chưa có nội dung để copy!"); return; }
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3479,7 +3479,18 @@ function addProfessionExp(profId, expAmount, recipeName) {
   state.totalSuccess = (state.totalSuccess || 0) + 1;
   state.lastRecipe = recipeName || state.lastRecipe;
   let leveledUp = false;
-  while (state.rank < 9) { const curRankInfo = ranks[state.rank]; if (state.exp >= curRankInfo.expNeed) { state.exp -= curRankInfo.expNeed; state.rank += 1; leveledUp = true; } else break; }
+  if (state.rank < 9) {
+    const curRankInfo = ranks[state.rank];
+    if (state.exp >= curRankInfo.expNeed) {
+      state.exp -= curRankInfo.expNeed;
+      state.rank += 1;
+      leveledUp = true;
+      const nextRankInfo = ranks[state.rank];
+      if (nextRankInfo && state.rank < 9 && state.exp >= nextRankInfo.expNeed) {
+        state.exp = nextRankInfo.expNeed - 1;
+      }
+    }
+  }
   tokenStats.professionExpGained = (tokenStats.professionExpGained || 0) + expAmount;
   if (leveledUp) tokenStats.professionLevelUps = (tokenStats.professionLevelUps || 0) + 1;
   return { oldRank, newRank: state.rank, leveledUp, expGained: expAmount, expRemain: state.exp };
@@ -3556,7 +3567,7 @@ function renderProfessionRankTable(profId) {
 function showProfessionStats() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
-  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.7.2</div>`;
+  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.7.3</div>`;
   for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
     const state = professionState[profId];
     const rankInfo = getProfessionRankInfo(profId);
@@ -4421,7 +4432,7 @@ function detectSceneScopes(actionText) {
   return Array.from(detected);
 }
 // END PART 11/14// ══════════════════════════════════════════════════════════════
-// TIME SKIP CORE LOGIC — v2.8.7.2
+// TIME SKIP CORE LOGIC — v2.8.7.3
 // ══════════════════════════════════════════════════════════════
 
 let tsCurrentActivity = 'luyen_dan';
@@ -4540,7 +4551,7 @@ function renderPreviewHtml(r) {
     html += `⚡ Tu luyện: <b>${r.trainQty.toLocaleString()}</b> sp → <b>+${r.totalExpGain.toLocaleString()} EXP</b><br>`;
     html += `⚒️ EXP nghề: <b>+${r.craftExpGain.toLocaleString()}</b>`;
   } else if (r.activityId === 'tu_luyen') {
-    html += `🧘 EXP/ngày: <b>${r.expPerDay.toLocaleString()}</b><br>`;
+    html += `🧘 EXP/ngày (trước giảm hiệu suất): <b>${r.expPerDay.toLocaleString()}</b><br>`;
     html += `<span class="profit">⚡ TỔNG EXP: +${r.totalExpGain.toLocaleString()}</span><br>`;
     html += `💸 Chi phí: <b>-${r.materialCost.toLocaleString()} LS</b>`;
   } else if (r.activityId === 'trong_trot') {
@@ -4604,10 +4615,16 @@ function calcTimeSkipCraft(profId, daysElapsed) {
   const revenue = soldQty * sellPrice;
   const materialCost = totalBatches * materialCostPerBatch;
   const profit = revenue - materialCost;
-  const mcExpPerPill = Math.round((BASE_EXP_PER_QUALITY[recipe.tier] || 10) * (QUALITY_EXP_MULT['Hạ phẩm'] || 1.0) * EXP_MULTIPLIER);
-  const totalExpGain = trainQty * mcExpPerPill;
-  const craftExpGain = calcProfessionExp(recipe.tier, 'Hạ phẩm', totalProduced);
-  return { ok: true, activityId: profId, activityName: TS_ACTIVITY_CONFIG[profId].name, daysElapsed, recipeName, recipe, qtyPerBatch, totalBatches, totalProduced, soldQty, trainQty, sellPrice, materialCostPerBatch, revenue, materialCost, profit, mcExpPerPill, totalExpGain, craftExpGain, rankBefore: rankInfo.rank, rankNameBefore: rankInfo.info.name };
+  const skipYears = Math.max(1, daysElapsed / 365);
+  const skipYearCount = Math.ceil(skipYears);
+  let effSum = 0;
+  for (let y = 1; y <= skipYearCount; y++) { effSum += Math.max(0.2, 1.0 - (y - 1) * 0.15); }
+  const efficiency = effSum / skipYearCount;
+  const effectiveTrainQty = Math.round(trainQty * efficiency);
+  const mcExpPerPill = Math.round((BASE_EXP_PER_QUALITY[recipe.tier] || 10) * (QUALITY_EXP_MULT['Hạ phẩm'] || 1.0));
+  const totalExpGain = effectiveTrainQty * mcExpPerPill;
+  const craftExpGain = Math.round(calcProfessionExp(recipe.tier, 'Hạ phẩm', totalProduced) * efficiency);
+  return { ok: true, activityId: profId, activityName: TS_ACTIVITY_CONFIG[profId].name, daysElapsed, recipeName, recipe, qtyPerBatch, totalBatches, totalProduced, soldQty, trainQty, sellPrice, materialCostPerBatch, revenue, materialCost, profit, efficiency, effectiveTrainQty, mcExpPerPill, totalExpGain, craftExpGain, rankBefore: rankInfo.rank, rankNameBefore: rankInfo.info.name };
 }
 function calcTimeSkipCultivation(daysElapsed) {
   const locationId = document.getElementById('tsCultivationLocation')?.value || 'dong_phu';
@@ -4620,7 +4637,12 @@ function calcTimeSkipCultivation(daysElapsed) {
   const lcCoef = LINH_CAN_COEF[mcLinhCan] || 0.15;
   const basePerDay = 10 * realmMult * lcCoef * location.bonus * linhKhiMult * (hoursPerDay / 12);
   const expPerDay = Math.round(basePerDay);
-  const totalExpGain = expPerDay * daysElapsed;
+  const skipYears = Math.max(1, daysElapsed / 365);
+  const skipYearCount = Math.ceil(skipYears);
+  let effSum = 0;
+  for (let y = 1; y <= skipYearCount; y++) { effSum += Math.max(0.2, 1.0 - (y - 1) * 0.15); }
+  const efficiency = effSum / skipYearCount;
+  const totalExpGain = Math.round(expPerDay * daysElapsed * efficiency);
   const materialCost = location.cost * daysElapsed;
   return { ok: true, activityId: 'tu_luyen', activityName: 'Tu Luyện', daysElapsed, location, locationId, linhKhiMult, hoursPerDay, realmMult, lcCoef, expPerDay, totalExpGain, materialCost, revenue: 0, profit: -materialCost };
 }
@@ -4689,7 +4711,7 @@ function buildTimeSkipConfirmMsg(r) {
   if (r.activityId === 'luyen_dan' || r.activityId === 'luyen_khi' || r.activityId === 've_phu' || r.activityId === 'tran_phap') {
     msg += `📦 Sản xuất: ${r.totalProduced.toLocaleString()}\n💰 Bán: ${r.soldQty.toLocaleString()} × ${r.sellPrice} LS = ${r.revenue.toLocaleString()} LS\n🌿 Mua NL: -${r.materialCost.toLocaleString()} LS\n💎 Lợi nhuận: ${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS\n⚡ Tu luyện: ${r.trainQty.toLocaleString()} → +${r.totalExpGain.toLocaleString()} EXP\n⚒️ EXP nghề: +${r.craftExpGain.toLocaleString()}\n`;
   } else if (r.activityId === 'tu_luyen') {
-    msg += `🧘 EXP/ngày: ${r.expPerDay.toLocaleString()}\n⚡ TỔNG EXP: +${r.totalExpGain.toLocaleString()}\n💸 Chi phí: -${r.materialCost.toLocaleString()} LS\n`;
+    msg += `🧘 EXP/ngày (trước giảm hiệu suất): ${r.expPerDay.toLocaleString()}\n⚡ TỔNG EXP: +${r.totalExpGain.toLocaleString()}\n💸 Chi phí: -${r.materialCost.toLocaleString()} LS\n`;
   } else if (r.activityId === 'trong_trot') {
     msg += `🌾 Số vụ: ${r.totalHarvests}\n📦 Sản lượng: ${r.totalProduced} kg\n💰 Bán: ${r.soldQty} kg → ${r.revenue.toLocaleString()} LS\n🌱 Chi phí: -${r.materialCost.toLocaleString()} LS\n💎 Lợi nhuận: ${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS\n⚡ EXP: +${r.totalExpGain.toLocaleString()}\n`;
   } else if (r.activityId === 'san_thu') {
@@ -4761,11 +4783,11 @@ function renderTimeSkipReport(r, applyReport) {
     html += `<div class="stat-line"><span>💰 Bán:</span><b>${r.soldQty.toLocaleString()} × ${r.sellPrice} LS = ${r.revenue.toLocaleString()} LS</b></div>`;
     html += `<div class="stat-line"><span>🌿 Chi phí NL:</span><b>-${r.materialCost.toLocaleString()} LS</b></div>`;
     html += `<div class="stat-line"><span>💎 LỢI NHUẬN RÒNG:</span><b style="color:${r.profit >= 0 ? '#3fb950' : '#f85149'};font-size:14px">${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS</b></div>`;
-    html += `<div class="stat-line"><span>⚡ Tu luyện:</span><b>${r.trainQty.toLocaleString()} × ${r.mcExpPerPill} = +${r.totalExpGain.toLocaleString()} EXP</b></div>`;
+    html += `<div class="stat-line"><span>⚡ Tu luyện:</span><b>${r.effectiveTrainQty.toLocaleString()} (quy đổi hiệu suất) × ${r.mcExpPerPill} = +${r.totalExpGain.toLocaleString()} EXP</b></div>`;
     html += `<div class="stat-line"><span>⚒️ EXP nghề:</span><b>+${r.craftExpGain.toLocaleString()}</b></div>`;
   } else if (r.activityId === 'tu_luyen') {
     html += `<div class="stat-line"><span>🏔️ Địa điểm:</span><b>${r.location.name} (×${r.location.bonus})</b></div>`;
-    html += `<div class="stat-line"><span>🧘 EXP/ngày:</span><b>${r.expPerDay.toLocaleString()}</b></div>`;
+    html += `<div class="stat-line"><span>🧘 EXP/ngày (trước giảm hiệu suất):</span><b>${r.expPerDay.toLocaleString()}</b></div>`;
     html += `<div class="stat-line"><span>⚡ TỔNG EXP:</span><b style="color:#3fb950;font-size:14px">+${r.totalExpGain.toLocaleString()}</b></div>`;
     html += `<div class="stat-line"><span>💸 Chi phí:</span><b>-${r.materialCost.toLocaleString()} LS</b></div>`;
   } else if (r.activityId === 'trong_trot') {
@@ -4836,7 +4858,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.7.2', inputs: {}
+    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.7.3', inputs: {}
   };
   inputIds.forEach(id => { const el = document.getElementById(id); if (el) gameData.inputs[id] = el.value; });
   try { await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData); log("Game saved."); if (isManual) { alert("💾 Đã lưu game!"); toggleSidebar(); } }
@@ -4932,7 +4954,7 @@ async function exportSaveFile() {
   const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
   if (!gameData) return;
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.7.2_save.json"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.7.3_save.json"; a.click();
   log("Xuất save thành công.");
 }
 function importSaveFile() { const fi = document.getElementById('fileInput'); if (fi) fi.click(); }
@@ -4945,10 +4967,10 @@ function handleFileSelect(event) {
 }
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle'];
-  const cfg = { _version: 'v2.8.7.2', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
+  const cfg = { _version: 'v2.8.7.3', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if (el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.7.2.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.7.3.json'; a.click();
   log('📤 Xuất World Config thành công.'); alert('📤 Đã xuất!');
 }
 function importWorldConfig() { const fi = document.getElementById('worldConfigFileInput'); if (fi) fi.click(); }
@@ -5083,7 +5105,7 @@ function buildSystemRules(scopeInput = 'default') {
   else scopeIds = ['default'];
   const scopeExemplarBlock = getStyleExemplarBlockMulti(scopeIds);
   if (scopeExemplarBlock && scopeExemplarBlock.trim()) log(`🎨 Inject scope exemplar: ${scopeIds.filter(s => s !== 'default').join(', ')}`);
-  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2'}".
+  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3'}".
 
 # QUY TẮC TỐI CAO
 ${v('supremeMotifRule') || 'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt.'}
@@ -5122,7 +5144,7 @@ ${scopeExemplarBlock}
 5) Khối \`\`\`json Codex`;
 }
 function buildCompactRules() {
-  return `# ⚡ v2.8.7.2
+  return `# ⚡ v2.8.7.3
 - Ngôi 2. Tiếng Việt có dấu. KHÔNG CJK.
 - ≥${MIN_TURN_WORDS} từ + 《...》.
 - Cuối lượt: [TÓM TẮT] + 2-4 lựa chọn + json Codex.`;
@@ -5649,7 +5671,7 @@ const startGame = async () => {
   document.getElementById('cjkWarningBox').style.display = 'none';
   storyBox.innerHTML = '<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   updateExpUI();
-  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.2'}".
+  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3'}".
 
 [THÔNG TIN NVC]:
 - Tên & Thân phận: ${document.getElementById('mcName').value}
@@ -5853,7 +5875,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     log(`📚 Recipe Library: Trận Pháp ${c.tran_phap || 0} | Phù Lục ${c.ve_phu || 0} | Luyện Khí ${c.luyen_khi || 0} | Luyện Đan ${c.luyen_dan || 0} | TỔNG ${c._total || 0}`);
   }
 
-  log("✅ v2.8.7.2 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
+  log("✅ v2.8.7.3 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
   log("🎯 7 loại cày level: Luyện Đan / Khí / Phù / Trận / Tu Luyện / Trồng Trọt / Săn Thú.");
   log("⏩ Nhấn '⏩ Cày Level' trên header hoặc chọn option 5 trong lượt để dùng.");
   log("💡 Lần đầu: nhập API Key Gemini ở sidebar, bấm ⚡ KHỞI TẠO để bắt đầu.");

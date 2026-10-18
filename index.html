@@ -1830,10 +1830,11 @@ function findMatchingInventoryItem(nameToFind, inv) {
   let match = inv.find(i => normalizeVN(i.name) === needle);
   if (match) return match;
   const QUALITY_WORDS = ['ha pham', 'trung pham', 'thuong pham', 'cuc pham', 'tien pham', 'linh pham', 'than pham', 'pham pham'];
-  const stripQuality = (s) => { let r = s; for (const q of QUALITY_WORDS) r = r.replace(new RegExp('\\s*' + q + '\\s*', 'g'), ' ').trim(); return r; };
+  const detectedQuality = QUALITY_WORDS.find(q => needle.includes(q));
+  const stripQuality = (s) => { let r = s; for (const q of QUALITY_WORDS) r = r.replace(new RegExp('\\s*' + q + '\\s*', 'g'), ' ').trim(); return r.replace(/[\[\]]/g, '').trim(); };
   const needleStripped = stripQuality(needle);
   if (needleStripped.length >= 2 && needleStripped !== needle) {
-    match = inv.find(i => stripQuality(normalizeVN(i.name)) === needleStripped);
+    match = inv.find(i => stripQuality(normalizeVN(i.name)) === needleStripped && (!detectedQuality || normalizeVN(i.quality || '').includes(detectedQuality)));
     if (match) return match;
   }
   match = inv.find(i => { const n = normalizeVN(i.name); if (n.length < 2) return false; if (_isConflictingName(n, needle)) return false; return (n.includes(needle) || needle.includes(n)) && Math.abs(n.length - needle.length) <= 4; });
@@ -1850,6 +1851,14 @@ function findAllMatchingItems(nameToFind, inv) {
   if (!needle || needle.length < 2) return [];
   let matches = inv.filter(i => normalizeVN(i.name) === needle);
   if (matches.length > 0) return matches;
+  const QUALITY_WORDS = ['ha pham', 'trung pham', 'thuong pham', 'cuc pham', 'tien pham', 'linh pham', 'than pham', 'pham pham'];
+  const detectedQuality = QUALITY_WORDS.find(q => needle.includes(q));
+  const stripQuality = (s) => { let r = s; for (const q of QUALITY_WORDS) r = r.replace(new RegExp('\\s*' + q + '\\s*', 'g'), ' ').trim(); return r.replace(/[\[\]]/g, '').trim(); };
+  const needleStripped = stripQuality(needle);
+  if (detectedQuality && needleStripped.length >= 2 && needleStripped !== needle) {
+    matches = inv.filter(i => stripQuality(normalizeVN(i.name)) === needleStripped && (!detectedQuality || normalizeVN(i.quality || '').includes(detectedQuality)));
+    if (matches.length > 0) return matches;
+  }
   matches = inv.filter(i => { const n = normalizeVN(i.name); if (n.length < 2) return false; if (_isConflictingName(n, needle)) return false; return (n.includes(needle) || needle.includes(n)) && Math.abs(n.length - needle.length) <= 4; });
   if (matches.length > 0) return matches;
   const tokens = needle.split(/\s+/).filter(t => t.length >= 3 && !ITEM_STOPWORDS.has(t));

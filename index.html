@@ -1768,7 +1768,20 @@ const RECEIVE_ALT = RECEIVE_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$
 const SELL_ALT = SELL_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
 const BUY_ALT = BUY_VERBS.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
 
-const ITEM_STOPWORDS = new Set(['cho', 'tang', 'bieu', 'dua', 'gui', 'trao', 'ban', 'nhan', 'mua', 'toi', 'ta', 'minh', 'tao', 'to', 'em', 'anh', 'chi', 'no', 'ho', 'nguoi', 'ay', 'do', 'kia', 'vi', 'mot', 'hai', 'ba', 'bon', 'nam', 'cai', 'chiec', 'la', 'vien', 'cuc', 'thanh', 'bo', 'hop', 'goi', 'phan', 'manh', 'khuc', 'linh', 'thach', 'ls', 'v', 'k', 'nghin', 'ngan', 'trieu', 'tr', 'trong', 'tu', 'cua', 'va', 'voi', 'de', 'roi', 'day', 'nay', 'ra', 'vao', 'lai', 'di', 've', 'den', 'item', 'unknown', 'none', 'null', 'so', 'luong', 'tong', 'het', 'con', 'du', 'thieu', 'them', 'bot', 'phap', 'bao', 'dao', 'kiem', 'khi', 'phu', 'luc', 'dan', 'duoc', 'hoa', 'thuoc', 'thue', 'muon']);
+// 🔧 FIX v2.8.7.2: MỞ RỘNG ITEM_STOPWORDS
+// Lý do: Các từ như "tinh", "trung", "vào", "ra" bị extractItemCandidate() nhặt nhầm
+//        khi người chơi nhập hành động chiến đấu/sinh hoạt (VD: "bắn tinh vào...").
+// Giải pháp: Bổ sung các từ thường gặp trong văn cảnh chiến đấu, sinh hoạt, tình dục
+//            để chúng bị loại khỏi candidate — tránh trigger detectPurchaseIntent nhầm.
+const ITEM_STOPWORDS = new Set([
+  // Từ giao dịch cơ bản (cũ)
+  'cho', 'tang', 'bieu', 'dua', 'gui', 'trao', 'ban', 'nhan', 'mua', 'toi', 'ta', 'minh', 'tao', 'to', 'em', 'anh', 'chi', 'no', 'ho', 'nguoi', 'ay', 'do', 'kia', 'vi', 'mot', 'hai', 'ba', 'bon', 'nam', 'cai', 'chiec', 'la', 'vien', 'cuc', 'thanh', 'bo', 'hop', 'goi', 'phan', 'manh', 'khuc', 'linh', 'thach', 'ls', 'v', 'k', 'nghin', 'ngan', 'trieu', 'tr', 'trong', 'tu', 'cua', 'va', 'voi', 'de', 'roi', 'day', 'nay', 'ra', 'vao', 'lai', 'di', 've', 'den', 'item', 'unknown', 'none', 'null', 'so', 'luong', 'tong', 'het', 'con', 'du', 'thieu', 'them', 'bot', 'phap', 'bao', 'dao', 'kiem', 'khi', 'phu', 'luc', 'dan', 'duoc', 'hoa', 'thuoc', 'thue', 'muon',
+  // 🔧 MỚI THÊM: Từ chiến đấu/tấn công (tránh nhầm "bắn tinh", "chém gió"...)
+  'tinh', 'trung', 'chem', 'gio', 'dap', 'nem', 'phong', 'bang', 'sat', 'thuong', 'quyen', 'chan', 'dau', 'da', 'can', 'len', 'xuong', 'nham', 'liem', 'hut', 'thoi', 'thoai', 'lui', 'tien', 'xong', 'het', 'nhat', 'quat', 'diet', 'tieu', 'huy', 'pha', 'bien', 'tan', 'cong', 'thu', 'kien', 'manh', 'yeu',
+  // 🔧 MỚI THÊM: Từ sinh hoạt/tình dục (tránh nhầm "bắn tinh vào lồn...")
+  'vao', 'trong', 'ra', 'ngoai', 'tren', 'duoi', 'sau', 'truoc', 'giua', 'ben', 'canh', 'sat', 'gan', 'xa', 'day', 'do', 'kia', 'nay', 'ay', 'no', 'chung', 'minh', 'toi', 'tao', 'ban', 'ban', 'em', 'anh', 'chi', 'ong', 'ba', 'co', 'chu', 'bac', 'cau', 'di', 'chu', 'thim', 'lo', 'lon', 'cua', 'quy', 'buom', 'chim', 'trym', 'cu', 'ca', 'nai', 'vu', 'mong', 'dui', 'mong', 'nguc', 'hong', 'dao', 'dau', 'moi', 'luoi', 'rang', 'toc', 'da', 'thit', 'xuong', 'mau', 'nuoc', 'suoi', 'hot', 'tho', 'mieng', 'mom', 'mui', 'mat', 'mat', 'tai', 'co', 'vai', 'lung', 'bung', 'hong', 'eo', 'hong', 'chan', 'tay', 'ngon', 'dau', 'ngon', 'long', 'ban', 'tay'
+]);
+
 const NPC_PREFIX_STOPWORDS = new Set(['ly', 'ho', 'vuong', 'trieu', 'tran', 'le', 'nguyen', 'pham', 'dang', 'bui', 'do', 'hoang', 'phan', 'lao', 'tien', 'su', 'muoi', 'ty', 'de', 'huynh', 'ong', 'ba', 'thang', 'con', 'nha', 'chu', 'npc', 'ten', 'ga', 'y', 'thi', 'cac', 'vi']);
 
 function stripNpcPhrase(rawText) {
@@ -3996,15 +4009,38 @@ function detectNsfwIntent(actionText) {
   return false;
 }
 // END PART 10/14// ══════════════════════════════════════════════════════════════
-// NSFW DETECTION — (đã gửi cuối Phần 10)
+// 🔧 FIX v2.8.7.2: THÊM HÀM hasTransactionContext
+// Mục đích: Kiểm tra ngữ cảnh có phải là giao dịch thật hay không.
+// Loại bỏ các trường hợp mơ hồ như "bắn tinh vào lồn tuyết cơ" (chiến đấu/sinh hoạt/tình dục)
+// để tránh trigger nhầm detectPurchaseIntent → prevalidateTransaction → báo lỗi.
 // ══════════════════════════════════════════════════════════════
-// [ĐÃ GỬI Ở PHẦN 10 — không lặp lại]
+const COMBAT_SIGNALS = ['bắn', 'bắn ra', 'chém', 'đánh', 'đập', 'ném', 'phóng', 'bắn tinh', 'xuất tinh', 'hôn', 'liếm', 'mút', 'bú', 'sờ', 'vuốt', 'ôm', 'húc', 'thúc', 'đâm', 'xuyên', 'cắm', 'chọt', 'đấm', 'đá', 'cào', 'cấu'];
+const COMBAT_SIGNAL_REGEX = new RegExp(`(?:^|[\\s,.;!?()\\[\\]{}'"\\-/])(?:${COMBAT_SIGNALS.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?:[\\s,.;!?()\\[\\]{}'"\\-/]|$)`, 'i');
+function hasTransactionContext(actionText) {
+  if (!actionText) return false;
+  // Nếu có signal chiến đấu/sinh hoạt mạnh → KHÔNG phải giao dịch
+  if (COMBAT_SIGNAL_REGEX.test(actionText)) {
+    // Kiểm tra xem có từ giao dịch mạnh + số lượng + đơn vị không.
+    // Nếu vẫn có dạng "cho 5 viên X" rõ ràng thì ưu tiên giao dịch.
+    const strongTxPattern = /(?:^|\s)(cho|tặng|bán|mua|giao|gửi|trao)\s+\d[\d.,]*\s*(?:viên|cái|chiếc|lá|cục|hạt|bình|túi|hộp|phần)\s+[a-zA-Zà-ỹ]/i;
+    if (strongTxPattern.test(actionText)) return true;
+    return false;
+  }
+  // Không có signal chiến đấu → có khả năng là giao dịch (sẽ để detectPurchaseIntent xử lý)
+  return true;
+}
 
 // ══════════════════════════════════════════════════════════════
-// DETECT PURCHASE INTENT
+// 🔧 FIX v2.8.7.2: SỬA detectPurchaseIntent — PHIÊN BẢN THÔNG MINH
+// Thay đổi so với bản gốc:
+// 1. Gọi hasTransactionContext() đầu tiên → loại bỏ ngữ cảnh chiến đấu/sinh hoạt.
+// 2. Trong nhánh fallback (hasGiveVerb), YÊU CẦU phải có số lượng hoặc giới từ nhận rõ ràng.
+// 3. Xóa từ "ban" khỏi so sánh textNorm trong fallback (chỉ so khớp wordBoundaryMatch trên textRaw).
 // ══════════════════════════════════════════════════════════════
 function detectPurchaseIntent(actionText) {
   if (!actionText) return null;
+  // 🔧 BƯỚC 1: Kiểm tra ngữ cảnh — nếu là chiến đấu/sinh hoạt thì KHÔNG phải giao dịch
+  if (!hasTransactionContext(actionText)) return null;
   const raw = actionText.toLowerCase().trim();
   const normalized = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const textRaw = raw; const textNorm = normalized;
@@ -4039,8 +4075,21 @@ function detectPurchaseIntent(actionText) {
       if (qty > 0 && itemName.length >= 2) return { action: 'give', qty, itemName, raw: matchedText };
     }
   }
-  const hasGiveVerb = GIVE_VERBS.some(v => wordBoundaryMatch(textRaw, v) || wordBoundaryMatch(textNorm, v));
-  if (hasGiveVerb) { const candidate = extractItemCandidate(textRaw); if (candidate && candidate.length >= 2) { const numMatch = textRaw.match(/(\d[\d.,]*\s*[vk]?)/); const qty = numMatch ? parseQty(numMatch[1]) : 1; if (qty > 0) return { action: 'give', qty, itemName: candidate, raw: textRaw }; } }
+  // 🔧 FALLBACK: Chỉ chạy khi có số lượng cụ thể HOẶC giới từ nhận rõ ràng (cho/tặng/giao NPC)
+  // Và PHẢI so khớp wordBoundaryMatch trên textRaw (có dấu) — KHÔNG dùng textNorm
+  const hasGiveVerbStrict = GIVE_VERBS.some(v => wordBoundaryMatch(textRaw, v));
+  if (hasGiveVerbStrict) {
+    const candidate = extractItemCandidate(textRaw);
+    if (candidate && candidate.length >= 2) {
+      const numMatch = textRaw.match(/(\d[\d.,]*\s*[vk]?)/);
+      const qty = numMatch ? parseQty(numMatch[1]) : 0;
+      // 🔧 ĐIỀU KIỆN MỚI: phải có số lượng > 0 HOẶC có giới từ nhận rõ ràng
+      const hasExplicitRecipient = /(?:cho|tặng|giao|gửi|trao)\s+(?:[A-ZÀ-Ỹ][a-zà-ỹ]+|[a-zà-ỹ]+\s+[A-ZÀ-Ỹ][a-zà-ỹ]+)/.test(textRaw);
+      if (qty > 0 || hasExplicitRecipient) {
+        return { action: 'give', qty: qty || 1, itemName: candidate, raw: textRaw };
+      }
+    }
+  }
   const receivePatterns = [new RegExp(`(?:${RECEIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s*(?:vien\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i')];
   for (const re of receivePatterns) { const m = tryMatch(re); if (m) { const qty = parseQty(m[1]); if (qty > 0) return { action: 'receive', qty, itemName: 'linh thạch', raw: m[0] }; } }
   const receiveItemPatterns = [
@@ -4106,6 +4155,7 @@ function prevalidateTransaction(actionText) {
     if (classification.type === 'quest_delegation') log(`🎯 Quest delegation — bỏ qua pre-validate.`);
     else if (classification.type === 'transaction_chain') log(`⛓️ Transaction chain — bỏ qua pre-validate.`);
     else if (classification.type === 'question') log(`❓ Câu hỏi thông tin — bỏ qua pre-validate.`);
+    else if (classification.type === 'none') log(`🎬 Hành động tự do — không phải giao dịch.`);
     return { ok: true, classification };
   }
   const intent = classification.intent;
@@ -5787,4 +5837,4 @@ window.addEventListener('DOMContentLoaded', async () => {
 </script>
 </body>
 </html>
-<!-- END PART 14/14 — HOÀN CHỈNH v2.8.7.1 -->
+<!-- END PART 14/14 — HOÀN CHỈNH v2.8.7.2 -->

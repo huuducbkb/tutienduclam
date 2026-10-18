@@ -4009,7 +4009,7 @@ function detectNsfwIntent(actionText) {
   return false;
 }
 // END PART 10/14// ══════════════════════════════════════════════════════════════
-// 🔧 FIX v2.8.7.3: THÊM HÀM hasTransactionContext
+// 🔧 FIX v2.8.7.2: THÊM HÀM hasTransactionContext
 // Mục đích: Kiểm tra ngữ cảnh có phải là giao dịch thật hay không.
 // Loại bỏ các trường hợp mơ hồ như "bắn tinh vào lồn tuyết cơ" (chiến đấu/sinh hoạt/tình dục)
 // để tránh trigger nhầm detectPurchaseIntent → prevalidateTransaction → báo lỗi.
@@ -4018,31 +4018,47 @@ const COMBAT_SIGNALS = ['bắn', 'bắn ra', 'chém', 'đánh', 'đập', 'ném'
 const COMBAT_SIGNAL_REGEX = new RegExp(`(?:^|[\\s,.;!?()\\[\\]{}'"\\-/])(?:${COMBAT_SIGNALS.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?:[\\s,.;!?()\\[\\]{}'"\\-/]|$)`, 'i');
 function hasTransactionContext(actionText) {
   if (!actionText) return false;
+  // Nếu có signal chiến đấu/sinh hoạt mạnh → KHÔNG phải giao dịch
   if (COMBAT_SIGNAL_REGEX.test(actionText)) {
+    // Kiểm tra xem có từ giao dịch mạnh + số lượng + đơn vị không.
+    // Nếu vẫn có dạng "cho 5 viên X" rõ ràng thì ưu tiên giao dịch.
     const strongTxPattern = /(?:^|\s)(cho|tặng|bán|mua|giao|gửi|trao)\s+\d[\d.,]*\s*(?:viên|cái|chiếc|lá|cục|hạt|bình|túi|hộp|phần)\s+[a-zA-Zà-ỹ]/i;
     if (strongTxPattern.test(actionText)) return true;
     return false;
   }
+  // Không có signal chiến đấu → có khả năng là giao dịch (sẽ để detectPurchaseIntent xử lý)
   return true;
 }
 
 // ══════════════════════════════════════════════════════════════
-// 🔧 FIX v2.8.7.3: SỬA detectPurchaseIntent — PHIÊN BẢN THÔNG MINH HƠN
+// 🔧 FIX v2.8.7.2: SỬA detectPurchaseIntent — PHIÊN BẢN THÔNG MINH
 // Thay đổi so với bản gốc:
 // 1. Gọi hasTransactionContext() đầu tiên → loại bỏ ngữ cảnh chiến đấu/sinh hoạt.
-// 2. Sửa Regex giveItemPatterns: Hỗ trợ cả trường hợp "cho X 5 viên Y" (item name trước số lượng) và "cho 5 viên Y cho X".
-// 3. Thêm hàm normalizeItemNameForMatching() để chuẩn hóa tên vật phẩm (xóa hậu tố "hạ phẩm", "trung phẩm"...) khi so khớp.
+// 2. Trong nhánh fallback (hasGiveVerb), YÊU CẦU phải có số lượng hoặc giới từ nhận rõ ràng.
+// 3. Xóa từ "ban" khỏi so sánh textNorm trong fallback (chỉ so khớp wordBoundaryMatch trên textRaw).
 // ══════════════════════════════════════════════════════════════
 function detectPurchaseIntent(actionText) {
   if (!actionText) return null;
+  // 🔧 BƯỚC 1: Kiểm tra ngữ cảnh — nếu là chiến đấu/sinh hoạt thì KHÔNG phải giao dịch
   if (!hasTransactionContext(actionText)) return null;
   const raw = actionText.toLowerCase().trim();
   const normalized = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const textRaw = raw; const textNorm = normalized;
   const tryMatch = (re) => textRaw.match(re) || textNorm.match(re);
   const unit = '(?:vien|cai|chiec|tam|la|cuc|thanh|bo|hop|goi|phan|manh|khuc|binh|lo|chai|cuon|tap|xap|chong|nham|nam|dot)';
-  
-  // Mẫu 1: "cho NPC X 5 viên Y" (NPC đứng trước số lượng)
+  const giveLSPatterns = [
+    new RegExp(`(?:${GIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i'),
+    new RegExp(`(?:${GIVE_ALT})\\s+(?:[a-zà-ỹ]+\\s+){0,2}?(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i')
+  ];
+  for (const re of giveLSPatterns) {
+    const m = tryMatch(re);
+    if (m) {
+      const matchedText = m[0];
+      if (wordBoundaryMatch(matchedText, 'bán') || wordBoundaryMatch(matchedText, 'mua') || wordBoundaryMatch(matchedText, 'thuê') || wordBoundaryMatch(matchedText, 'đổi') || wordBoundaryMatch(matchedText, 'trao đổi') || wordBoundaryMatch(matchedText, 'nộp') || wordBoundaryMatch(matchedText, 'trả')) continue;
+      const qty = parseQty(m[1]);
+      if (qty > 0) return { action: 'give', qty, itemName: 'linh thạch', raw: matchedText };
+    }
+  }
   const giveItemPatterns = [
     new RegExp(`(?:${GIVE_ALT})\\s+(?:[a-zà-ỹ]+\\s+){0,5}?(\\d[\\d.,]*\\s*[vk]?)\\s+${unit}\\s+([a-zà-ỹ][a-zà-ỹ0-9\\s]{2,50}?)(?:\\s+(?:cho|cua|roi|va|de|,|\\.|$))`, 'i'),
     new RegExp(`(?:${GIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+${unit}\\s+([a-zà-ỹ][a-zà-ỹ0-9\\s]{2,50}?)(?:\\s+(?:cho|cua|roi|va|de|,|\\.|$))`, 'i')
@@ -4059,54 +4075,21 @@ function detectPurchaseIntent(actionText) {
       if (qty > 0 && itemName.length >= 2) return { action: 'give', qty, itemName, raw: matchedText };
     }
   }
-
-  // Mẫu 2: "cho 5 viên Y cho NPC" (số lượng đứng trước, NPC đứng sau)
-  const giveItemPatterns2 = [
-    new RegExp(`(?:${GIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+${unit}\\s+([a-zà-ỹ][a-zà-ỹ0-9\\s]{2,50}?)(?:\\s+(?:cho|tặng|giao|gửi)\\s+(?:[a-zà-ỹ]+\\s+){1,5}?([a-zà-ỹ]+)?)?`, 'i'),
-  ];
-  for (const re of giveItemPatterns2) {
-    const m = tryMatch(re);
-    if (m) {
-      const matchedText = m[0];
-      if (wordBoundaryMatch(matchedText, 'bán') || wordBoundaryMatch(matchedText, 'mua') || wordBoundaryMatch(matchedText, 'thuê') || wordBoundaryMatch(matchedText, 'đổi') || wordBoundaryMatch(matchedText, 'trao đổi')) continue;
-      const qty = parseQty(m[1]);
-      let itemName = (m[2] || '').trim();
-      if (/linh\s*thach|linh\s*thạch|\bls\b/i.test(itemName)) continue;
-      itemName = itemName.replace(new RegExp(`^${unit}\\s+`, 'i'), '').trim();
-      if (qty > 0 && itemName.length >= 2) return { action: 'give', qty, itemName, raw: matchedText };
-    }
-  }
-
-  // Xử lý Linh Thạch (giữ nguyên)
-  const giveLSPatterns = [
-    new RegExp(`(?:${GIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i'),
-    new RegExp(`(?:${GIVE_ALT})\\s+(?:[a-zà-ỹ]+\\s+){0,2}?(\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+|cục\\s+|hạt\\s+|đồng\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i')
-  ];
-  for (const re of giveLSPatterns) {
-    const m = tryMatch(re);
-    if (m) {
-      const matchedText = m[0];
-      if (wordBoundaryMatch(matchedText, 'bán') || wordBoundaryMatch(matchedText, 'mua') || wordBoundaryMatch(matchedText, 'thuê') || wordBoundaryMatch(matchedText, 'đổi') || wordBoundaryMatch(matchedText, 'trao đổi') || wordBoundaryMatch(matchedText, 'nộp') || wordBoundaryMatch(matchedText, 'trả')) continue;
-      const qty = parseQty(m[1]);
-      if (qty > 0) return { action: 'give', qty, itemName: 'linh thạch', raw: matchedText };
-    }
-  }
-
-  // Fallback: Chỉ chạy khi có số lượng cụ thể HOẶC giới từ nhận rõ ràng (cho/tặng/giao NPC)
+  // 🔧 FALLBACK: Chỉ chạy khi có số lượng cụ thể HOẶC giới từ nhận rõ ràng (cho/tặng/giao NPC)
+  // Và PHẢI so khớp wordBoundaryMatch trên textRaw (có dấu) — KHÔNG dùng textNorm
   const hasGiveVerbStrict = GIVE_VERBS.some(v => wordBoundaryMatch(textRaw, v));
   if (hasGiveVerbStrict) {
     const candidate = extractItemCandidate(textRaw);
     if (candidate && candidate.length >= 2) {
       const numMatch = textRaw.match(/(\d[\d.,]*\s*[vk]?)/);
       const qty = numMatch ? parseQty(numMatch[1]) : 0;
+      // 🔧 ĐIỀU KIỆN MỚI: phải có số lượng > 0 HOẶC có giới từ nhận rõ ràng
       const hasExplicitRecipient = /(?:cho|tặng|giao|gửi|trao)\s+(?:[A-ZÀ-Ỹ][a-zà-ỹ]+|[a-zà-ỹ]+\s+[A-ZÀ-Ỹ][a-zà-ỹ]+)/.test(textRaw);
       if (qty > 0 || hasExplicitRecipient) {
         return { action: 'give', qty: qty || 1, itemName: candidate, raw: textRaw };
       }
     }
   }
-
-  // Các pattern mua/bán/nhận giữ nguyên
   const receivePatterns = [new RegExp(`(?:${RECEIVE_ALT})\\s+(\\d[\\d.,]*\\s*[vk]?)\\s*(?:vien\\s+)?(?:linh\\s*thach|linh\\s*thạch|\\bls\\b)`, 'i')];
   for (const re of receivePatterns) { const m = tryMatch(re); if (m) { const qty = parseQty(m[1]); if (qty > 0) return { action: 'receive', qty, itemName: 'linh thạch', raw: m[0] }; } }
   const receiveItemPatterns = [
@@ -4125,7 +4108,295 @@ function detectPurchaseIntent(actionText) {
   if (hasBuyVerb) { const lsMatch = tryMatch(/(\d[\d.,]*\s*[vk]?)\s*(?:vien\s+)?(?:linh\s*thach|linh\s*thạch|\bls\b)/i); if (lsMatch) { const totalCost = parseQty(lsMatch[1]); if (totalCost > 0) return { action: 'buy', qty: 1, totalCost, raw: lsMatch[0], fallback: true }; } }
   return null;
 }
-// END PART 11/14// ═════════════════════ TIME SKIP CORE LOGIC — v2.8.7
+
+// ══════════════════════════════════════════════════════════════
+// QUEST DELEGATION + CLASSIFY
+// ══════════════════════════════════════════════════════════════
+function isQuestDelegation(actionText) {
+  if (!actionText) return false;
+  if (!settings.questDelegation) return false;
+  const lower = actionText.toLowerCase();
+  const npcNames = npcList.map(n => (n.name || '').toLowerCase().trim()).filter(n => n.length >= 2);
+  const hasNpcName = npcNames.some(n => lower.includes(n));
+  const commandVerbs = ['giao nhiệm vụ', 'giao cho', 'ra lệnh', 'sai', 'sai khiến', 'sai bảo', 'sai hắn', 'sai nó', 'bảo hắn', 'bảo nó', 'yêu cầu', 'phân phó', 'kêu hắn', 'kêu nó', 'sai người', 'cử người', 'hướng dẫn', 'chỉ thị', 'đi mua', 'đi bán', 'đi thuê', 'đi làm', 'đi nộp', 'đi đổi', 'nhờ', 'hãy', 'hãy đi', 'hãy đến', 'bảo', 'kêu', 'sai đi'];
+  const hasCommandVerb = commandVerbs.some(v => wordBoundaryMatch(actionText, v));
+  const sequenceMarkers = ['sau đó', ' rồi ', 'tiếp theo', 'kế tiếp', 'sau ấy', 'rồi mới', 'xong rồi', 'sau khi', 'rồi thì'];
+  const hasSequence = sequenceMarkers.some(m => lower.includes(m));
+  const economicVerbs = ['bán', 'mua', 'thuê', 'đổi', 'trao đổi', 'nộp', 'trả'];
+  const economicCount = economicVerbs.filter(v => wordBoundaryMatch(actionText, v)).length;
+  const directGivePattern = new RegExp(`(?:đưa|cho|tặng|giao)\\s+(?:\\d[\\d.,]*\\s*[vk]?)\\s+(?:viên\\s+)?(?:linh\\s*thach|linh\\s*thạch)`, 'i');
+  const hasDirectGive = directGivePattern.test(actionText);
+  if (hasDirectGive && !hasSequence) return false;
+  return hasNpcName && hasCommandVerb && (hasSequence || economicCount >= 2);
+}
+function classifyTransactionIntent(actionText) {
+  if (!actionText) return { type: 'none' };
+  const lower = actionText.toLowerCase();
+  if (isQuestDelegation(actionText)) { tokenStats.questDelegationsDetected = (tokenStats.questDelegationsDetected || 0) + 1; updateTokenStatsDisplay(); return { type: 'quest_delegation', note: 'NPC sẽ tự thực hiện' }; }
+  const questionMarkers = ['hỏi', 'thăm dò', 'tìm hiểu', 'xem giá', 'giá bao nhiêu', 'giá cả', 'ở đâu', 'như thế nào', 'ra sao', 'là gì', 'có không', 'được không', 'bao nhiêu', 'thế nào'];
+  const hasQuestion = questionMarkers.some(v => wordBoundaryMatch(actionText, v));
+  if (hasQuestion) { const directTxPattern = /(?:^|\s)(mua|bán|cho|tặng|đưa|giao|nhận|lấy)\s+\d/i; const hasDirectTx = directTxPattern.test(actionText); if (!hasDirectTx) { tokenStats.questionsDetected = (tokenStats.questionsDetected || 0) + 1; updateTokenStatsDisplay(); return { type: 'question', note: 'Chỉ hỏi thông tin' }; } }
+  const sequenceMarkers = ['sau đó', ' rồi ', 'tiếp theo', 'kế tiếp', 'sau ấy', 'rồi mới', 'xong rồi', 'sau khi'];
+  const hasSequence = sequenceMarkers.some(m => lower.includes(m));
+  const economicVerbs = ['bán', 'mua', 'thuê', 'đổi', 'trao đổi', 'nộp', 'trả'];
+  const economicCount = economicVerbs.filter(v => wordBoundaryMatch(actionText, v)).length;
+  if (hasSequence && economicCount >= 2) { tokenStats.transactionChainsDetected = (tokenStats.transactionChainsDetected || 0) + 1; updateTokenStatsDisplay(); return { type: 'transaction_chain', note: 'Chuỗi giao dịch' }; }
+  const intent = detectPurchaseIntent(actionText);
+  if (intent) return { type: 'single_transaction', intent };
+  return { type: 'none' };
+}
+
+// ══════════════════════════════════════════════════════════════
+// PRE / POST VALIDATE
+// ══════════════════════════════════════════════════════════════
+function prevalidateTransaction(actionText) {
+  const classification = classifyTransactionIntent(actionText);
+  if (classification.type !== 'single_transaction') {
+    if (classification.type === 'quest_delegation') log(`🎯 Quest delegation — bỏ qua pre-validate.`);
+    else if (classification.type === 'transaction_chain') log(`⛓️ Transaction chain — bỏ qua pre-validate.`);
+    else if (classification.type === 'question') log(`❓ Câu hỏi thông tin — bỏ qua pre-validate.`);
+    else if (classification.type === 'none') log(`🎬 Hành động tự do — không phải giao dịch.`);
+    return { ok: true, classification };
+  }
+  const intent = classification.intent;
+  if (!intent) return { ok: true };
+  let inv = []; try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
+  inv = inv.filter(i => i && i.name && (i.quantity === undefined || i.quantity > 0));
+  const currentLS = (() => { const ls = inv.find(i => normalizeVN(i.name).includes('linh thach')); return ls ? (ls.quantity || 0) : 0; })();
+  if (intent.action === 'buy') {
+    if (currentLS < intent.totalCost) { tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1; updateTokenStatsDisplay(); return { ok: false, type: 'buy', message: `❌ KHÔNG ĐỦ LINH THẠCH!\n\n💰 Bạn có: ${currentLS.toLocaleString()}\n💸 Cần: ${intent.totalCost.toLocaleString()}\n⚠️ Thiếu: ${(intent.totalCost - currentLS).toLocaleString()}` }; }
+    return { ok: true };
+  }
+  if (intent.action === 'give') {
+    const rawText = (intent.raw || actionText || '').toLowerCase();
+    const itemNameRaw = (intent.itemName || '').trim();
+    const isGivingLS = /linh\s*thach|linh\s*thạch|\bls\b/i.test(itemNameRaw) || /linh\s*thach|linh\s*thạch|\bls\b/i.test(rawText);
+    if (isGivingLS) { if (currentLS < intent.qty) { tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1; updateTokenStatsDisplay(); return { ok: false, type: 'give', message: `❌ KHÔNG ĐỦ LINH THẠCH ĐỂ CHO!\n\n💰 Bạn có: ${currentLS.toLocaleString()}\n🎁 Muốn cho: ${intent.qty.toLocaleString()}` }; } return { ok: true }; }
+    const candidates = []; if (itemNameRaw) { candidates.push(normalizeVN(itemNameRaw)); candidates.push(extractItemCandidate(itemNameRaw)); } candidates.push(extractItemCandidate(rawText));
+    const uniqCandidates = [...new Set(candidates.filter(s => s && s.length >= 2))];
+    let matchedItem = null;
+    for (const c of uniqCandidates) { matchedItem = findMatchingInventoryItem(c, inv); if (matchedItem) break; }
+    if (!matchedItem) {
+      const worldMatch = findInWorldItems(itemNameRaw) || findInWorldItems(uniqCandidates[uniqCandidates.length - 1] || '');
+      if (worldMatch) {
+        log(`🔗 Give-Guard: Tự động chuyển "${worldMatch.name}" từ Pháp Bảo → Túi đồ.`);
+        const catKey = detectItemCategory(worldMatch.name, worldMatch.rank, worldMatch.usage);
+        const catInfo = getItemCategoryInfo(catKey);
+        const newItem = { name: worldMatch.name, icon: worldMatch.icon || catInfo.icon, quantity: 1, quality: worldMatch.rank || 'Thường', effect: worldMatch.usage || '', category: catKey };
+        if (catInfo.needsRefine) newItem.isRefined = true;
+        const existing = findMatchingInventoryItem(worldMatch.name, inv);
+        if (existing) { existing.quantity = (existing.quantity || 1) + 1; matchedItem = existing; }
+        else { inv.push(newItem); matchedItem = newItem; }
+        document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
+        renderInventoryVisual(inv);
+        tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync || 0) + 1;
+        updateTokenStatsDisplay();
+        intent.itemName = worldMatch.name;
+      } else {
+        tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1;
+        tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked || 0) + 1;
+        updateTokenStatsDisplay();
+        const itemShown = itemNameRaw || uniqCandidates[uniqCandidates.length - 1] || '(không rõ)';
+        const invList = inv.length > 0 ? inv.map(i => `  • ${i.name}${i.quality ? ` [${i.quality}]` : ''} x${i.quantity || 1}`).join('\n') : '  (túi đồ trống)';
+        return { ok: false, type: 'give', message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Muốn cho: "${itemShown}"\n📦 Túi đồ:\n${invList}\n\n🚫 Không thể cho vật phẩm KHÔNG sở hữu.` };
+      }
+    }
+    const allMatches = findAllMatchingItems(matchedItem.name, inv);
+    const totalAvail = allMatches.reduce((s, i) => s + (i.quantity || 1), 0);
+    if (intent.qty > totalAvail) { tokenStats.prevalidationBlocked = (tokenStats.prevalidationBlocked || 0) + 1; tokenStats.giveGuardBlocked = (tokenStats.giveGuardBlocked || 0) + 1; updateTokenStatsDisplay(); return { ok: false, type: 'give', message: `❌ KHÔNG ĐỦ SỐ LƯỢNG ĐỂ CHO!\n\n🎁 Vật phẩm: ${matchedItem.name}\n📦 Bạn có: ${totalAvail}\n🎁 Muốn cho: ${intent.qty}` }; }
+    return { ok: true };
+  }
+  return { ok: true };
+}
+function postValidateTransactions(txList, currentInv) {
+  const valid = []; const invalid = [];
+  if (!Array.isArray(txList)) return { valid, invalid };
+  let lsBalance = (() => { const ls = currentInv.find(i => normalizeVN(i.name).includes('linh thach')); return ls ? (ls.quantity || 0) : 0; })();
+  const virtualInv = currentInv.map(i => ({ ...i }));
+  const deductVirtual = (name, quality, qty) => {
+    let candidates = findAllMatchingItems(name, virtualInv).filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    if (candidates.length === 0) return { ok: false, reason: 'not_found' };
+    if (quality && quality.trim()) { const qLower = quality.toLowerCase().trim(); const qualityMatched = candidates.filter(i => (i.quality || '').toLowerCase().includes(qLower)); const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0); if (qualityMatched.length > 0 && qualityTotal >= qty) candidates = qualityMatched; }
+    const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
+    if (qty > totalAvail) return { ok: false, reason: 'insufficient', have: totalAvail, need: qty };
+    const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
+    candidates.sort((a, b) => { const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q)); const bi = QUALITY_ORDER.findIndex(q => (b.quality || '').toLowerCase().includes(q)); return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi); });
+    let remaining = qty;
+    for (const item of candidates) { if (remaining <= 0) break; const avail = item.quantity || 1; const take = Math.min(avail, remaining); item.quantity = avail - take; remaining -= take; }
+    return { ok: true, matchedName: candidates[0].name };
+  };
+  const addVirtual = (name, quality, qty, isRefined) => {
+    const m = findMatchingInventoryItem(name, virtualInv);
+    if (m && !isIngredientForDifferentRecipe(m.name, name)) { m.quantity = (m.quantity || 1) + qty; return; }
+    const catKey = detectItemCategory(name, quality, '');
+    const catInfo = getItemCategoryInfo(catKey);
+    const newItem = { name, quality: quality || 'Thường', quantity: qty, icon: catInfo.icon, effect: '', category: catKey };
+    if (catInfo.needsRefine) newItem.isRefined = isRefined === true;
+    virtualInv.push(newItem);
+  };
+  for (const tx of txList) {
+    if (!tx || !tx.type || !tx.name) continue;
+    const qty = parseInt(tx.quantity) || 0; if (qty <= 0) continue;
+    const txName = String(tx.name).trim();
+    const isLS = normalizeVN(txName).includes('linh thach');
+    if (tx.type === 'sell') {
+      if (isLS) { invalid.push({ tx, reason: 'Không thể BÁN linh thạch.' }); continue; }
+      const r = deductVirtual(txName, tx.quality, qty);
+      if (!r.ok) { const msg = r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để bán.` : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể bán ${qty}.`; invalid.push({ tx, reason: msg }); continue; }
+      valid.push({ ...tx, _validatedName: r.matchedName });
+    } else if (tx.type === 'give') {
+      if (isLS) { if (qty > lsBalance) { invalid.push({ tx, reason: `AI bịa: cho ${qty} linh thạch nhưng chỉ có ${lsBalance}.` }); continue; } lsBalance -= qty; valid.push(tx); continue; }
+      const r = deductVirtual(txName, tx.quality, qty);
+      if (!r.ok) { const msg = r.reason === 'not_found' ? `AI bịa: KHÔNG có "${txName}" trong túi để cho.` : `AI bịa số lượng: "${txName}" chỉ có ${r.have}, không thể cho ${qty}.`; invalid.push({ tx, reason: msg }); continue; }
+      valid.push({ ...tx, _validatedName: r.matchedName });
+    } else if (tx.type === 'buy') {
+      const unitPrice = parseFloat(tx.unitPrice) || 0;
+      const totalPrice = parseFloat(tx.totalPrice) || (unitPrice * qty);
+      if (totalPrice > lsBalance) { invalid.push({ tx, reason: `AI bịa: mua hết ${totalPrice} LS nhưng chỉ có ${lsBalance}.` }); continue; }
+      lsBalance -= totalPrice;
+      addVirtual(txName, tx.quality, qty);
+      valid.push(tx);
+    } else if (tx.type === 'receive') {
+      if (isLS) lsBalance += qty;
+      addVirtual(txName, tx.quality, qty, tx.isRefined);
+      valid.push(tx);
+    } else { invalid.push({ tx, reason: `Loại giao dịch không hợp lệ: "${tx.type}".` }); }
+  }
+  return { valid, invalid };
+}
+
+// ══════════════════════════════════════════════════════════════
+// TRANSACTION PROCESSOR
+// ══════════════════════════════════════════════════════════════
+function autoSyncReceivedItem(tx) {
+  if (!tx || !tx.name) return false;
+  const txName = String(tx.name).trim();
+  const qty = parseInt(tx.quantity) || 1;
+  const quality = tx.quality || '';
+  const worldItem = findInWorldItems(txName);
+  const catKey = tx.category || detectItemCategory(txName, quality, tx.effect || (worldItem && worldItem.usage) || '');
+  const catInfo = getItemCategoryInfo(catKey);
+  let inv = []; try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
+  const fullName = quality ? `${txName} ${quality}` : txName;
+  const existing = findMatchingInventoryItem(fullName, inv) || findMatchingInventoryItem(txName, inv);
+  if (existing) {
+    if (isIngredientForDifferentRecipe(existing.name, txName)) { log(`🛡️ Ingredient Guard: "${txName}" KHÁC recipe.`); tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked || 0) + 1; updateTokenStatsDisplay(); }
+    else {
+      const existQuality = (existing.quality || '').toLowerCase().trim();
+      const newQuality = (quality || '').toLowerCase().trim();
+      if (existQuality && newQuality && existQuality !== newQuality) log(`⚠️ Quality khác → tạo item mới.`);
+      else { existing.quantity = (existing.quantity || 1) + qty; document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2); renderInventoryVisual(inv); log(`🎁 Auto-sync: cộng ${qty}x "${existing.name}" vào túi.`); tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync || 0) + 1; updateTokenStatsDisplay(); return true; }
+    }
+  }
+  const newItem = { name: txName, icon: tx.icon || (worldItem && worldItem.icon) || catInfo.icon, quantity: qty, quality: quality || (worldItem && worldItem.rank) || 'Thường', effect: (worldItem && worldItem.usage) || tx.effect || '', category: catKey };
+  if (catInfo.needsRefine) newItem.isRefined = tx.isRefined === true;
+  inv.push(newItem);
+  document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
+  renderInventoryVisual(inv);
+  if (worldItem) log(`🎁 Auto-sync từ Pháp Bảo: "${worldItem.name}" → túi.`);
+  else log(`🎁 Auto-sync: tạo mới "${txName}" x${qty}.`);
+  tokenStats.worldItemAutoSync = (tokenStats.worldItemAutoSync || 0) + 1;
+  updateTokenStatsDisplay();
+  return true;
+}
+function processTransactions(transactionsList) {
+  if (!transactionsList || !Array.isArray(transactionsList) || transactionsList.length === 0) return null;
+  let inv = []; try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
+  let processedCount = 0; const logs = [];
+  const addItem = (name, quality, qty, icon, effect) => {
+    const m = findMatchingInventoryItem(name, inv);
+    if (m && isIngredientForDifferentRecipe(m.name, name)) { log(`🛡️ Ingredient Guard.`); tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked || 0) + 1; updateTokenStatsDisplay(); }
+    else if (m) { m.quantity = (m.quantity || 1) + qty; return { isNew: false, newQty: m.quantity }; }
+    const catKey = detectItemCategory(name, quality, effect);
+    const catInfo = getItemCategoryInfo(catKey);
+    const newItem = { name, icon: icon || catInfo.icon, quantity: qty, quality: quality || 'Thường', effect: effect || '', category: catKey };
+    if (catInfo.needsRefine) newItem.isRefined = false;
+    inv.push(newItem);
+    return { isNew: true, newQty: qty };
+  };
+  const removeItem = (name, quality, qty) => {
+    let candidates = findAllMatchingItems(name, inv).filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    if (candidates.length === 0) return { ok: false, reason: 'Không tìm thấy' };
+    if (quality && quality.trim()) { const qLower = quality.toLowerCase().trim(); const qualityMatched = candidates.filter(i => (i.quality || '').toLowerCase().includes(qLower)); const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0); if (qualityMatched.length > 0 && qualityTotal >= qty) candidates = qualityMatched; }
+    const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
+    if (totalAvail < qty) return { ok: false, reason: `Chỉ có ${totalAvail}` };
+    const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
+    candidates.sort((a, b) => { const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q)); const bi = QUALITY_ORDER.findIndex(q => (b.quality || '').toLowerCase().includes(q)); return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi); });
+    let remaining = qty; let removed = 0; const emptiedItems = [];
+    for (const item of candidates) { if (remaining <= 0) break; const avail = item.quantity || 1; const take = Math.min(avail, remaining); item.quantity = avail - take; removed += take; remaining -= take; if (item.quantity <= 0) emptiedItems.push(item); }
+    emptiedItems.forEach(e => { const idx = inv.indexOf(e); if (idx !== -1) inv.splice(idx, 1); });
+    const remainTotal = findAllMatchingItems(name, inv).reduce((s, i) => s + (i.quantity || 1), 0);
+    return { ok: true, removed, emptied: emptiedItems.length > 0, remain: remainTotal };
+  };
+  transactionsList.forEach(tx => {
+    if (!tx || !tx.type || !tx.name) return;
+    const qty = parseInt(tx.quantity) || 0; if (qty <= 0) return;
+    const txName = String(tx.name).trim();
+    const txQuality = tx.quality ? String(tx.quality).trim() : '';
+    const unitPrice = parseFloat(tx.unitPrice) || 0;
+    const totalPrice = parseFloat(tx.totalPrice) || (unitPrice * qty);
+    if (tx.type === 'sell') { const r = removeItem(txName, txQuality, qty); if (r.ok) { logs.push(`💰 BÁN: ${r.removed}x ${txName}${txQuality ? ` [${txQuality}]` : ''} → +${totalPrice} linh thạch`); addItem('Linh thạch', '', totalPrice, '💎', 'Tiền tệ tu tiên'); processedCount++; } else logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}"!`); }
+    else if (tx.type === 'buy') {
+      const lsItem = inv.find(i => normalizeVN(i.name).includes('linh thach'));
+      const currentLS = lsItem ? (lsItem.quantity || 0) : 0;
+      if (currentLS < totalPrice) { logs.push(`🚫 MUA THẤT BẠI: Không đủ linh thạch`); return; }
+      const pay = removeItem('Linh thạch', '', totalPrice);
+      if (!pay.ok) { logs.push(`🚫 MUA THẤT BẠI`); return; }
+      addItem(txName, txQuality, qty, tx.icon, tx.effect);
+      logs.push(`🛒 MUA: ${qty}x ${txName} → -${totalPrice} linh thạch`);
+      processedCount++;
+    } else if (tx.type === 'give') { const r = removeItem(txName, txQuality, qty); if (r.ok) { logs.push(`🎁 CHO/TẶNG: ${r.removed}x ${txName}`); processedCount++; } else logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}"!`); }
+    else if (tx.type === 'receive') { const catKey = detectItemCategory(txName, txQuality, tx.effect || ''); const catInfo = getItemCategoryInfo(catKey); addItem(txName, txQuality, qty, tx.icon, tx.effect); logs.push(`🎁 NHẬN: ${qty}x ${txName} [${catInfo.label}]`); processedCount++; autoSyncReceivedItem(tx); }
+    else logs.push(`⚠️ Loại giao dịch không hợp lệ: "${tx.type}"`);
+  });
+  if (processedCount > 0) { document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2); renderInventoryVisual(inv); tokenStats.transactionsProcessed = (tokenStats.transactionsProcessed || 0) + processedCount; updateTokenStatsDisplay(); logs.forEach(l => log(l)); }
+  return { inventory: inv, count: processedCount, logs };
+}
+function processCraftResults(craftList) {
+  if (!craftList || !Array.isArray(craftList) || craftList.length === 0) return null;
+  let totalExpGained = 0; const logs = [];
+  for (const craft of craftList) {
+    if (!craft || !craft.profession) continue;
+    const profId = craft.profession;
+    if (!professionState[profId]) { logs.push(`⚠️ Nghề không hợp lệ: "${profId}"`); continue; }
+    const recipe = craft.recipe || 'Vật phẩm';
+    const tier = (craft.tier || 'LK').toUpperCase();
+    const results = craft.results || [];
+    let craftExp = 0; let totalProduced = 0;
+    for (const r of results) { const q = r.quality || 'Hạ phẩm'; const qty = parseInt(r.quantity) || 0; if (qty <= 0) continue; craftExp += calcProfessionExp(tier, q, qty); totalProduced += qty; }
+    if (craftExp > 0) {
+      const result = addProfessionExp(profId, craftExp, recipe);
+      totalExpGained += craftExp;
+      logs.push(`⚒️ ${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}: +${craftExp} EXP (×2) (${recipe} [${tier}] x${totalProduced})`);
+      if (result && result.leveledUp) { const ranks = PROFESSION_RANKS_BY_TYPE[profId] || PROFESSION_RANKS_BY_TYPE.luyen_dan; logs.push(`🎉 LÊN CẤP NGHỀ: ${PROFESSION_TYPES[profId].name} Cấp ${result.oldRank} → ${result.newRank} (${ranks[result.newRank].name})`); }
+    }
+  }
+  if (totalExpGained > 0) { renderProfessionUI(); logs.forEach(l => log(l)); return { totalExpGained }; }
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🔧 FIX v2.8.7.1: SCOPE DETECTION — THAY THẾ STUB detectSceneScopes()
+// Lý do: Stub cũ luôn trả ['default'] → scope_nsfw không bao giờ kích hoạt.
+// Giải pháp: Dùng safeKeywordMatch() quét triggers của từng scope trong scopeRegistry.
+// ══════════════════════════════════════════════════════════════
+function detectSceneScopes(actionText) {
+  if (!actionText) return ['default'];
+  const detected = new Set(['default']);
+  const lowerAction = actionText.toLowerCase();
+  for (const scope of scopeRegistry) {
+    if (!scope || !scope.triggers || scope.triggers.length === 0) continue;
+    for (const trigger of scope.triggers) {
+      if (!trigger) continue;
+      try {
+        if (safeKeywordMatch(actionText, trigger)) { detected.add(scope.id); break; }
+      } catch (e) { /* ignore trigger errors */ }
+    }
+  }
+  return Array.from(detected);
+}
+// END PART 11/14// ══════════════════════════════════════════════════════════════
+// TIME SKIP CORE LOGIC — v2.8.7
 // ══════════════════════════════════════════════════════════════
 
 let tsCurrentActivity = 'luyen_dan';

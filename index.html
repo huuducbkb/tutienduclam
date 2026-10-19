@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3 — TIME SKIP ĐA HOẠT ĐỘNG</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4 — TIME SKIP ĐA HOẠT ĐỘNG</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e;--shadow-sm:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--transition-fast:150ms cubic-bezier(0.4,0,0.2,1);--transition-base:250ms cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -326,7 +326,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .prof-table-wrapper tr.current-row{background:rgba(77,208,225,.1)}
 .prof-table-wrapper tr.current-row td{color:#4dd0e1;font-weight:bold}
 .prof-table-title{background:linear-gradient(90deg,rgba(31,107,235,.15),transparent);border-left:3px solid #1f6beb;padding:8px 12px;font-size:12px;font-weight:bold;color:#79c0ff}
-/* ═══ v2.8.7.3 TIME SKIP MODAL ═══ */
+/* ═══ v2.8.7.4 TIME SKIP MODAL ═══ */
 .timeskip-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:250;justify-content:center;align-items:center;padding:15px;backdrop-filter:blur(8px)}
 .timeskip-modal.active{display:flex}
 .timeskip-content{background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border:2px solid var(--accent-gold);border-radius:12px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;padding:20px;box-shadow:0 0 40px rgba(210,153,34,.5)}
@@ -375,7 +375,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="header">
   <div class="header-row header-row-main">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3</span>
+    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4</span>
     <div class="header-actions">
       <button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
       <button class="header-game-tab btn-timeskip-option" onclick="openTimeSkipModal()" title="Mô phỏng cày level đa hoạt động">⏩ Cày Level</button>
@@ -396,7 +396,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 
-<div class="section-header">🔄 v2.8.7.3 CẬP NHẬT</div>
+<div class="section-header">🔄 v2.8.7.4 CẬP NHẬT</div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#d29922,#e3702d);font-size:12px" onclick="openTimeSkipModal()">⏩ CÀY LEVEL — TIME SKIP ĐA HOẠT ĐỘNG</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#db61a2);font-size:12px" onclick="refreshGameStateFromHistory()">🔄 Cập Nhật Trạng Thái (5 lượt)</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#e3702d,#d29922);font-size:12px" onclick="showItemSystemInfo()">📦 Hệ Thống Phân Loại Vật Phẩm</button>
@@ -464,21 +464,21 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
 
-<div class="section-header">⚒️ Nghề Nghiệp (v2.8.7.3)</div>
+<div class="section-header">⚒️ Nghề Nghiệp (v2.8.7.4)</div>
 <div class="toggle-row"><span>Bật Profession System</span><div class="toggle-switch active" id="toggleProfessionSystem" onclick="toggleSetting('professionSystem')"></div></div>
 <div class="toggle-row"><span>Auto-tính EXP nghề (×2)</span><div class="toggle-switch active" id="toggleProfessionAutoExp" onclick="toggleSetting('professionAutoExp')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-cyan);font-size:12px" onclick="showProfessionStats()">📊 Thống Kê Nghề</button>
 <button class="sidebar-item" style="background:var(--accent-pink);font-size:11px" onclick="simulateCraft('luyen_dan')">🧪 Mô Phỏng Luyện Đan</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="resetProfessions()">🔄 Reset Nghề</button>
 
-<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.7.3)</div>
+<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.7.4)</div>
 <div class="toggle-row"><span>Bật Breakthrough Requirements</span><div class="toggle-switch active" id="toggleBreakthroughReq" onclick="toggleSetting('breakthroughReq')"></div></div>
 <div class="toggle-row"><span>Cảnh báo thiếu điều kiện</span><div class="toggle-switch active" id="toggleBreakthroughWarn" onclick="toggleSetting('breakthroughWarn')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-gold);color:#000;font-size:12px" onclick="openBreakthroughPanel()">⚡ Kiểm Tra Đột Phá</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showBreakthroughTable()">📖 Bảng Yêu Cầu Đột Phá</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#388bfd,#1f6beb);font-size:11px" onclick="showRealmProgressionTable()">📈 Bảng Lộ Trình Cảnh Giới</button>
 
-<div class="section-header">🎯 Quest Delegation (v2.8.7.3)</div>
+<div class="section-header">🎯 Quest Delegation (v2.8.7.4)</div>
 <div class="toggle-row"><span>Bật Quest Delegation Detection</span><div class="toggle-switch active" id="toggleQuestDelegation" onclick="toggleSetting('questDelegation')"></div></div>
 <div class="toggle-row"><span>Bật Transaction Chain Detection</span><div class="toggle-switch active" id="toggleTransactionChain" onclick="toggleSetting('transactionChain')"></div></div>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showQuestDelegationStats()">📊 Thống Kê Quest Delegation</button>
@@ -489,7 +489,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="sidebar-item" style="background:#7d2828;font-size:12px;margin-top:8px" onclick="scanChineseChars()">🔍 Quét CJK</button>
 <button class="sidebar-item" style="background:#8b2020;font-size:12px" onclick="autoCleanCJK()">🧹 Xóa CJK</button>
 
-<div class="section-header">🎨 Scope Registry v2.8.7.3</div>
+<div class="section-header">🎨 Scope Registry v2.8.7.4</div>
 <button class="sidebar-item" style="background:var(--accent-purple);font-size:12px" onclick="restoreDefaultScopes()">🔄 Khôi Phục 16 Scope</button>
 <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px" onclick="showScopeStats()">📊 Thống Kê Scope</button>
 <button class="sidebar-item" style="background:#444;font-size:11px" onclick="openTagLegend()">🏷️ Xem Chú Thích Tag</button>
@@ -548,6 +548,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <div id="world" class="tab-content active">
+<label for="playMode">Chế độ chơi</label><select id="playMode" onchange="changePlayMode()"><option value="song_hanh">Đồng thời với Hàn Lập</option><option value="thay_the">Thay thế Hàn Lập</option><option value="the_gioi_rieng">Thế giới riêng</option></select>
 <div class="system-dashboard" id="systemDashboard">
   <div class="sys-stat" style="border-color:#d29922">
     <div class="sys-stat-icon">⚡</div>
@@ -631,14 +632,14 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.7.3</div>
+  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.7.4</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
   <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
     <div class="input-header">
       <div>
-        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.7.3</div>
+        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.7.4</div>
         <div class="label-desc">16 scope được phân nhóm theo <b>handledBy</b>: <span style="color:#3fb950">🤖 CODE</span> · <span style="color:#d29922">⚖️ HYBRID</span> · <span style="color:#8b949e">🎨 STYLE</span>.</div>
       </div>
       <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM</button>
@@ -665,7 +666,15 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="collapsible-body">
   <div class="form-group" style="background:#1c1012;padding:10px;border-radius:6px;border:1px solid #7d2828">
     <div class="input-header"><div><div class="label-title" style="color:#f85149">🚨 QUY TẮC AI & PACING</div></div><button class="btn-aigen" style="background:var(--accent-red)" onclick="aiGenField('aiRules','Viết danh sách 24 quy tắc đánh số.')">✨ AI GEN</button></div>
-    <textarea id="aiRules" style="border-color:#7d2828;min-height:250px"></textarea>
+    <textarea id="aiRules" style="border-color:#7d2828;min-height:250px">QUY TẮC AI
+1. Luôn có lựa chọn đào tẩu khi nguy hiểm, nhưng đào tẩu có thể phải trả giá.
+2. Không buff vô lý, không ban tài nguyên vô hạn hay kỳ ngộ không có nguyên nhân.
+3. NPC không tử tế vô điều kiện; lợi ích, tính cách và thiện cảm chi phối hành động.
+4. Không tự đột phá hộ người chơi; không sửa tuổi, linh căn, kháng dược hoặc cờ Đan Vân do hệ thống tính.
+5. Hậu quả tuân theo quy tắc thế giới; tôn trọng mốc thời gian và nhịp chậm.
+6. Đan Vân dùng nút hấp thu của hệ thống, EXP và giá bán gấp đôi đan thường cùng phẩm chất; không cộng EXP lần nữa trong Codex.
+7. Giao dịch tặng phải ghi target là tên NPC; giá giao dịch là giá đan thường, hệ thống tự nhân phần Đan Vân.
+8. Tẩy Tủy Đan phải dùng nút riêng, không tự đổi linh căn trong lời kể.</textarea>
   </div>
 </div>
 </div>
@@ -676,11 +685,33 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
-  <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px"></textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px">BỐI CẢNH
+Thiên Nam Vực, khởi đầu tại Việt Quốc. Người chơi rời làng Ngũ Lý Câu, lên Thất Huyền Môn ở Thái Lĩnh Sơn rồi tìm đường gia nhập Hoàng Phong Cốc.
+
+ĐỊA LÝ
+Việt Quốc thất đại tông: Hoàng Phong Cốc, Yểm Nguyệt Tông, Thanh Hư Môn, Thiên Khuyết Bảo, Hóa Đao Ổ, Linh Thú Sơn, Cự Kiếm Môn.
+Kính Châu và Gia Nguyên Thành là đầu mối phàm tục; Thái Nam Sơn có Thái Nam Tiểu Hội. Huyết Sắc Cấm Địa là nơi tranh linh thảo luyện Trúc Cơ Đan, mỗi bước đều có thể mất mạng.
+Địch thủ là Ma Đạo Lục Tông: Quỷ Linh Môn, Hợp Hoan Tông, Ma Diễm Môn, Thiên Ma Tông, Ngự Linh Tông, Khôi Lỗi Môn.
+Vùng xa: Loạn Tinh Hải với Tinh Cung, Nghịch Tinh Minh, Hư Thiên Điện, Âm Minh Chi Địa; Đại Tấn Hoàng Triều với Côn Ngô Sơn.
+
+NPC PHỤ
+Mặc Đại Phu: thầy thuốc Thất Huyền Môn, mưu mô, toan đoạt xá đệ tử.
+Lệ Phi Vũ: bằng hữu thiếu thời, nóng nảy nhưng trọng tình nghĩa.
+Lý Hóa Nguyên: trưởng lão Kết Đan Hoàng Phong Cốc, sư phụ danh nghĩa, thực dụng và giữ thể diện.
+Trần Xảo Thiến: đồng môn thầm thương, kín đáo, tình cảm nhưng biết tự trọng.
+Nam Cung Uyển: trưởng lão Yểm Nguyệt Tông, duyên phận Huyết Sắc Cấm Địa, kiêu hãnh và quyết đoán.
+Vương Thiền: thiếu chủ Quỷ Linh Môn, đối thủ truyền kiếp, tàn nhẫn và thù dai.
+Yến Như Yên: thiên linh căn Yến gia, thông tuệ, đặt trọng trách gia tộc lên trước.
+Tử Linh: môn chủ Diệu Âm Môn, hồng nhan tri kỷ, khéo léo và kiên cường.
+Ngân Nguyệt: hồn phách hồ ly trong bảo vật, trợ thủ trung thành, tinh tế và cảnh giác.
+Đại Diễn Thần Quân: tàn hồn cổ tu trong khôi lỗi, truyền đạo, cao ngạo nhưng uyên bác.
+
+MỐC THỜI GIAN
+Năm game 1: nhập Thất Huyền Môn. Năm 8–11: Huyết Sắc Thí Luyện tranh Trúc Cơ Đan. Khoảng năm 14: Ma Đạo Lục Tông xâm lăng Việt Quốc. Từ năm 20: phiêu bạt Loạn Tinh Hải. Khoảng năm 140: Hư Thiên Điện. Khoảng năm 200: Nguyên Anh. Khoảng năm 870: Hóa Thần. AI không cho đột phá nhanh hơn nhịp thời gian này; kỳ ngộ không thay thế công phu tích lũy.</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">MỐC THỜI GIAN</div><button class="btn-aigen" onclick="aiGenField('startTime','1-2 câu mốc thời gian.')">✨ AI GEN</button></div><textarea id="startTime" style="min-height:120px"></textarea></div>
-  <div class="form-group"><div class="input-header"><div class="label-title">KỊCH BẢN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startScript','Kịch bản mở đầu 3-5 câu.')">✨ AI GEN</button></div><textarea id="startScript" style="min-height:150px"></textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">KỊCH BẢN MỞ ĐẦU</div><button class="btn-aigen" onclick="aiGenField('startScript','Kịch bản mở đầu 3-5 câu.')">✨ AI GEN</button></div><textarea id="startScript" style="min-height:150px">Năm game 1, làng Ngũ Lý Câu thuộc Việt Quốc. Sương sớm còn phủ mái nhà, người thiếu niên mười sáu tuổi từ biệt gia đình, theo đoàn tuyển đệ tử lên Thái Lĩnh Sơn nhập Thất Huyền Môn. Trước mắt là thử thách leo núi, cuộc gặp thầy thuốc Mặc Đại Phu và tình bằng hữu với Lệ Phi Vũ. Chưa có tu vi hay bảo vật ngoài những gì túi đồ ghi nhận. Hãy mở đầu chậm rãi, cho lựa chọn dự tuyển, tìm hiểu tình hình hoặc rút lui; không tự ban đột phá.</textarea></div>
 </div>
 </div>
 
@@ -690,10 +721,16 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','10-12 quy tắc đánh số.')">✨ AI GEN</button></div><textarea id="worldRules" style="min-height:300px"></textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','10-12 quy tắc đánh số.')">✨ AI GEN</button></div><textarea id="worldRules" style="min-height:300px">QUY TẮC THẾ GIỚI
+Kẻ mạnh nuốt kẻ yếu. Giấu tu vi bằng Liễm Khí Thuật là cách sống còn, không phải bảo đảm tuyệt đối. Quan hệ dựa trên lợi ích và thiện cảm, không có người bảo hộ vô điều kiện. Tài nguyên khan hiếm, tranh đoạt kéo theo thù oán. Lạm dụng đan sinh kháng dược. Thọ nguyên ép người tu hành chuẩn bị đột phá; đoạt xá là lối thoát cuối với giá nặng, thất bại vẫn tiêu tốn cơ hội sống còn.
+
+PACING
+Nhịp chậm chính tông. Mỗi đại đột phá là một chuỗi chuẩn bị đan dược, vật phẩm, bí pháp và thời gian bế quan. Không rút ngắn hàng trăm năm thành vài lượt. Nguyên Anh khoảng năm 200, Hóa Thần khoảng năm 870; người chơi vẫn phải tự bấm đột phá khi đủ điều kiện.</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC ĐẶT TÊN</div><button class="btn-aigen" onclick="aiGenField('namingRules','8-10 quy tắc đặt tên.')">✨ AI GEN</button></div><textarea id="namingRules" style="min-height:150px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">THỂ LOẠI</div><button class="btn-aigen" onclick="aiGenField('genre','5-6 câu thể loại.')">✨ AI GEN</button></div><textarea id="genre" style="min-height:120px"></textarea></div>
-  <div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','7 cảnh giới chính tu tiên.')">✨ AI GEN</button></div><textarea id="powerSystem" style="min-height:300px"></textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','7 cảnh giới chính tu tiên.')">✨ AI GEN</button></div><textarea id="powerSystem" style="min-height:300px">HỆ THỐNG SỨC MẠNH
+Luyện Khí (LK) có 13 tầng, thọ 120 năm; Trúc Cơ (TC) thọ 250; Kim Đan (KD) thọ 600; Nguyên Anh (NA) thọ 1200; Hóa Thần (HT) thọ 3000; Luyện Hư (LH) thọ vô hạn. Sau Luyện Khí, mỗi đại cảnh giới có sơ kỳ, trung kỳ, hậu kỳ.
+Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đại đột phá cần đủ EXP, đan dược như Trúc Cơ Đan, Kim Nguyên Đan cùng điều kiện tương ứng; tỷ lệ cơ bản giảm dần, thất bại phải trả giá. Chỉ người chơi chủ động bấm đột phá, AI không tự nâng cảnh giới.</textarea></div>
 </div>
 </div>
 
@@ -725,6 +762,8 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group"><div class="input-header"><div class="label-title" style="color:var(--accent-gold)">⭐ CẢNH GIỚI HIỆN TẠI</div><button class="btn-aigen" onclick="aiGenField('mcLevel','Cảnh giới. VD: Luyện Khí tầng 3.')">✨ AI GEN</button></div><input type="text" id="mcLevel" style="border-color:var(--accent-gold)" onchange="updateExpUI()"></div>
 
 <div class="mc-stats-panel">
+<div id="lifespanStatus" aria-live="polite">🕐 Thọ nguyên: 16 / 120 năm</div><div id="lifespanGraceStatus" style="color:#f85149"></div>
+<button id="possessionButton" hidden onclick="attemptPossession()">🩸 ĐOẠT XÁ</button> <button id="washRootButton" disabled onclick="useWashRootPill()">🌱 Tẩy Tủy Đan</button>
   <div class="label-title" style="color:#4dd0e1">🌟 TỐ CHẤT TU LUYỆN</div>
   <div class="label-desc">Thể chất + Thần niệm + Thiên phú quyết định SỐ LƯỢNG và PHẨM CHẤT thành phẩm.</div>
   <div class="mc-stats-grid">
@@ -795,7 +834,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e"></textarea></div>
 </div>
 <!-- END PART 3/14 --><div id="prof" class="tab-content">
-<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.7.3 — EXP×2)</div>
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.7.4 — EXP×2)</div>
 <div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. <b style="color:#d29922">⚡ EXP ×2</b>.</div>
 
 <div class="prof-container">
@@ -821,7 +860,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.7.3 — 665 công thức)</div>
+  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.7.4 — 665 công thức)</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
@@ -873,6 +912,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <div id="npc" class="tab-content">
+<button onclick="seedPhamNhanNpcs()">Khởi tạo NPC Phàm Nhân</button>
 <div class="section-tag"><span>👥 NPCs</span><button class="btn-aigen" style="background:var(--accent-green)" onclick="addNewNpcCard()">➕ THÊM NPC</button></div>
 <div class="label-desc">⚡ Mỗi NPC có ID riêng. 📌 Ghim. 🔒 Khóa rules. 🎭 Auto sinh npcRules.</div>
 <div id="npcContainer" class="npc-grid"></div>
@@ -919,7 +959,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.8.7.3 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.8.7.4 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -937,7 +977,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- v2.8.7.3 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
+<!-- v2.8.7.4 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <div id="timeskipModal" class="timeskip-modal">
 <div class="timeskip-content">
@@ -1020,7 +1060,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 </div>
 <!-- END PART 5/14 --><script>
 // ══════════════════════════════════════════════════════════════
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3 — TIME SKIP ĐA HOẠT ĐỘNG
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4 — TIME SKIP ĐA HOẠT ĐỘNG
 // PHẦN 6/14: SCRIPT MỞ ĐẦU — CONSTANTS + HELPERS + STATE
 // ══════════════════════════════════════════════════════════════
 const DB_NAME = 'HongDucTuTienDB';
@@ -1174,6 +1214,139 @@ const MAX_SNAPSHOTS = 20;
 let mcExp = 0;
 let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
+
+// v2.8.7.4 — state is migrated independently of the IndexedDB schema.
+const REALM_LIFESPAN = { LK:120, TC:250, KD:600, NA:1200, HT:3000, LH:Infinity };
+let mcAge = 16, mcLifespanGrace = false, mcLifespanDeadline = null, mcDead = false;
+let mcPillTolerance = {}, mcToleranceDays = 0, mcLastAgeHours = null;
+const pnGiftAffinity = new Map();
+const PHAM_NHAN_DEFAULTS = {
+  "worldContext": "BỐI CẢNH\nThiên Nam Vực, khởi đầu tại Việt Quốc. Người chơi rời làng Ngũ Lý Câu, lên Thất Huyền Môn ở Thái Lĩnh Sơn rồi tìm đường gia nhập Hoàng Phong Cốc.\n\nĐỊA LÝ\nViệt Quốc thất đại tông: Hoàng Phong Cốc, Yểm Nguyệt Tông, Thanh Hư Môn, Thiên Khuyết Bảo, Hóa Đao Ổ, Linh Thú Sơn, Cự Kiếm Môn.\nKính Châu và Gia Nguyên Thành là đầu mối phàm tục; Thái Nam Sơn có Thái Nam Tiểu Hội. Huyết Sắc Cấm Địa là nơi tranh linh thảo luyện Trúc Cơ Đan, mỗi bước đều có thể mất mạng.\nĐịch thủ là Ma Đạo Lục Tông: Quỷ Linh Môn, Hợp Hoan Tông, Ma Diễm Môn, Thiên Ma Tông, Ngự Linh Tông, Khôi Lỗi Môn.\nVùng xa: Loạn Tinh Hải với Tinh Cung, Nghịch Tinh Minh, Hư Thiên Điện, Âm Minh Chi Địa; Đại Tấn Hoàng Triều với Côn Ngô Sơn.\n\nNPC PHỤ\nMặc Đại Phu: thầy thuốc Thất Huyền Môn, mưu mô, toan đoạt xá đệ tử.\nLệ Phi Vũ: bằng hữu thiếu thời, nóng nảy nhưng trọng tình nghĩa.\nLý Hóa Nguyên: trưởng lão Kết Đan Hoàng Phong Cốc, sư phụ danh nghĩa, thực dụng và giữ thể diện.\nTrần Xảo Thiến: đồng môn thầm thương, kín đáo, tình cảm nhưng biết tự trọng.\nNam Cung Uyển: trưởng lão Yểm Nguyệt Tông, duyên phận Huyết Sắc Cấm Địa, kiêu hãnh và quyết đoán.\nVương Thiền: thiếu chủ Quỷ Linh Môn, đối thủ truyền kiếp, tàn nhẫn và thù dai.\nYến Như Yên: thiên linh căn Yến gia, thông tuệ, đặt trọng trách gia tộc lên trước.\nTử Linh: môn chủ Diệu Âm Môn, hồng nhan tri kỷ, khéo léo và kiên cường.\nNgân Nguyệt: hồn phách hồ ly trong bảo vật, trợ thủ trung thành, tinh tế và cảnh giác.\nĐại Diễn Thần Quân: tàn hồn cổ tu trong khôi lỗi, truyền đạo, cao ngạo nhưng uyên bác.\n\nMỐC THỜI GIAN\nNăm game 1: nhập Thất Huyền Môn. Năm 8–11: Huyết Sắc Thí Luyện tranh Trúc Cơ Đan. Khoảng năm 14: Ma Đạo Lục Tông xâm lăng Việt Quốc. Từ năm 20: phiêu bạt Loạn Tinh Hải. Khoảng năm 140: Hư Thiên Điện. Khoảng năm 200: Nguyên Anh. Khoảng năm 870: Hóa Thần. AI không cho đột phá nhanh hơn nhịp thời gian này; kỳ ngộ không thay thế công phu tích lũy.",
+  "powerSystem": "HỆ THỐNG SỨC MẠNH\nLuyện Khí (LK) có 13 tầng, thọ 120 năm; Trúc Cơ (TC) thọ 250; Kim Đan (KD) thọ 600; Nguyên Anh (NA) thọ 1200; Hóa Thần (HT) thọ 3000; Luyện Hư (LH) thọ vô hạn. Sau Luyện Khí, mỗi đại cảnh giới có sơ kỳ, trung kỳ, hậu kỳ.\nLinh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đại đột phá cần đủ EXP, đan dược như Trúc Cơ Đan, Kim Nguyên Đan cùng điều kiện tương ứng; tỷ lệ cơ bản giảm dần, thất bại phải trả giá. Chỉ người chơi chủ động bấm đột phá, AI không tự nâng cảnh giới.",
+  "worldRules": "QUY TẮC THẾ GIỚI\nKẻ mạnh nuốt kẻ yếu. Giấu tu vi bằng Liễm Khí Thuật là cách sống còn, không phải bảo đảm tuyệt đối. Quan hệ dựa trên lợi ích và thiện cảm, không có người bảo hộ vô điều kiện. Tài nguyên khan hiếm, tranh đoạt kéo theo thù oán. Lạm dụng đan sinh kháng dược. Thọ nguyên ép người tu hành chuẩn bị đột phá; đoạt xá là lối thoát cuối với giá nặng, thất bại vẫn tiêu tốn cơ hội sống còn.",
+  "aiRules": "QUY TẮC AI\n1. Luôn có lựa chọn đào tẩu khi nguy hiểm, nhưng đào tẩu có thể phải trả giá.\n2. Không buff vô lý, không ban tài nguyên vô hạn hay kỳ ngộ không có nguyên nhân.\n3. NPC không tử tế vô điều kiện; lợi ích, tính cách và thiện cảm chi phối hành động.\n4. Không tự đột phá hộ người chơi; không sửa tuổi, linh căn, kháng dược hoặc cờ Đan Vân do hệ thống tính.\n5. Hậu quả tuân theo quy tắc thế giới; tôn trọng mốc thời gian và nhịp chậm.\n6. Đan Vân dùng nút hấp thu của hệ thống, EXP và giá bán gấp đôi đan thường cùng phẩm chất; không cộng EXP lần nữa trong Codex.\n7. Giao dịch tặng phải ghi target là tên NPC; giá giao dịch là giá đan thường, hệ thống tự nhân phần Đan Vân.\n8. Tẩy Tủy Đan phải dùng nút riêng, không tự đổi linh căn trong lời kể.",
+  "pacing": "PACING\nNhịp chậm chính tông. Mỗi đại đột phá là một chuỗi chuẩn bị đan dược, vật phẩm, bí pháp và thời gian bế quan. Không rút ngắn hàng trăm năm thành vài lượt. Nguyên Anh khoảng năm 200, Hóa Thần khoảng năm 870; người chơi vẫn phải tự bấm đột phá khi đủ điều kiện.",
+  "startScript": "Năm game 1, làng Ngũ Lý Câu thuộc Việt Quốc. Sương sớm còn phủ mái nhà, người thiếu niên mười sáu tuổi từ biệt gia đình, theo đoàn tuyển đệ tử lên Thái Lĩnh Sơn nhập Thất Huyền Môn. Trước mắt là thử thách leo núi, cuộc gặp thầy thuốc Mặc Đại Phu và tình bằng hữu với Lệ Phi Vũ. Chưa có tu vi hay bảo vật ngoài những gì túi đồ ghi nhận. Hãy mở đầu chậm rãi, cho lựa chọn dự tuyển, tìm hiểu tình hình hoặc rút lui; không tự ban đột phá."
+};
+const WORLD_FRAMEWORK_PHAM_NHAN = `${PHAM_NHAN_DEFAULTS.worldContext}
+
+${PHAM_NHAN_DEFAULTS.powerSystem}
+
+${PHAM_NHAN_DEFAULTS.worldRules}
+
+${PHAM_NHAN_DEFAULTS.aiRules}
+
+${PHAM_NHAN_DEFAULTS.pacing}`;
+const PHAM_NHAN_NPCS = [
+ ['Mặc Đại Phu','Thầy thuốc Thất Huyền Môn','Mưu mô, toan đoạt xá đệ tử',40],
+ ['Lệ Phi Vũ','Bằng hữu thiếu thời','Nóng nảy, trọng tình nghĩa',50],
+ ['Lý Hóa Nguyên','Trưởng lão Kết Đan Hoàng Phong Cốc, sư phụ danh nghĩa','Thực dụng, giữ thể diện',50],
+ ['Trần Xảo Thiến','Đồng môn thầm thương','Kín đáo, tình cảm, tự trọng',50],
+ ['Nam Cung Uyển','Trưởng lão Yểm Nguyệt Tông, duyên phận Huyết Sắc Cấm Địa','Kiêu hãnh, quyết đoán',50],
+ ['Vương Thiền','Thiếu chủ Quỷ Linh Môn, đối thủ truyền kiếp','Tàn nhẫn, thù dai',20],
+ ['Yến Như Yên','Thiên linh căn Yến gia','Thông tuệ, coi trọng gia tộc',50],
+ ['Tử Linh','Môn chủ Diệu Âm Môn, hồng nhan tri kỷ','Khéo léo, kiên cường',50],
+ ['Ngân Nguyệt','Hồn phách hồ ly trong bảo vật, trợ thủ trung thành','Tinh tế, cảnh giác',50],
+ ['Đại Diễn Thần Quân','Tàn hồn cổ tu trong khôi lỗi, truyền đạo','Cao ngạo, uyên bác',50]
+];
+function pnHours() { return Math.max(0, parseTimeString(document.getElementById('mcGameTime')?.value || '0').totalHours || 0); }
+function pnInventory() { try { const a=JSON.parse(document.getElementById('mcInventory')?.value || '[]'); return Array.isArray(a)?a:[]; } catch(e) { return []; } }
+function pnWriteInventory(a) { document.getElementById('mcInventory').value=JSON.stringify(a.filter(i=>i && (i.quantity ?? 1)>0),null,2); renderInventoryVisual(pnInventory()); updatePhamNhanUI(); }
+function pnMode() { return document.getElementById('playMode')?.value || 'song_hanh'; }
+function pnState() { return {mcAge,mcLifespanGrace,mcLifespanDeadline,mcDead,mcPillTolerance:{...mcPillTolerance},mcToleranceDays,mcLastAgeHours,playMode:pnMode()}; }
+function restorePhamNhanState(s={}) {
+ mcAge=Number.isFinite(s.mcAge)?Math.max(0,s.mcAge):16;
+ mcLifespanGrace=s.mcLifespanGrace===true; mcDead=s.mcDead===true;
+ mcLifespanDeadline=Number.isFinite(s.mcLifespanDeadline)?s.mcLifespanDeadline:null;
+ mcToleranceDays=Number.isFinite(s.mcToleranceDays)?Math.max(0,s.mcToleranceDays)%30:0;
+ mcPillTolerance={};
+ if(s.mcPillTolerance && typeof s.mcPillTolerance==='object') for(const [n,c] of Object.entries(s.mcPillTolerance)) if(Number.isFinite(c)&&c>=0) Object.defineProperty(mcPillTolerance,n,{value:Math.floor(c),writable:true,enumerable:true,configurable:true});
+ // Baseline comes from the saved clock, not the previously open game.
+ mcLastAgeHours=Number.isFinite(s.mcLastAgeHours)?s.mcLastAgeHours:parseTimeString(s.mcGameTime || s.inputs?.mcGameTime || '0').totalHours;
+ const mode=s.playMode || s.inputs?.playMode || 'song_hanh';
+ const el=document.getElementById('playMode'); if(el) el.value=['song_hanh','thay_the','the_gioi_rieng'].includes(mode)?mode:'song_hanh';
+}
+function pillToleranceEff(count) { return count<=9?1:Math.max(0.2,1-(count-9)*0.02); }
+function recoverPillTolerance(days) { mcToleranceDays+=Math.max(0,days);const n=Math.floor((mcToleranceDays+1e-9)/30); if(n){mcToleranceDays=Math.max(0,mcToleranceDays-n*30);for(const k of Object.keys(mcPillTolerance)) mcPillTolerance[k]=Math.max(0,mcPillTolerance[k]-n);} }
+function updateLifespanStatus(hours=pnHours()) {
+ const cap=REALM_LIFESPAN[parseRealmLevel(document.getElementById('mcLevel')?.value).realm] || 120;
+ if(!mcDead && !mcLifespanGrace && mcAge>=cap) {
+  mcLifespanGrace=true;mcLifespanDeadline=hours+365*24;
+  log('<span style="color:#f85149">Thọ nguyên cạn kỹ! 1 năm để đoạt xá, quá hạn toạ hoá.</span>');
+ }
+ if(mcLifespanGrace && mcLifespanDeadline===null) mcLifespanDeadline=hours+365*24;
+ if(mcLifespanGrace && hours>mcLifespanDeadline) mcDead=true;
+ updatePhamNhanUI();return !mcDead;
+}
+function advancePhamNhanTime(days,hours) { mcAge+=Math.max(0,days)/365;recoverPillTolerance(days);mcLastAgeHours=hours;updateLifespanStatus(hours); }
+function syncPhamNhanTime() { const h=pnHours(); if(mcLastAgeHours===null) mcLastAgeHours=h; const delta=Math.max(0,h-mcLastAgeHours); mcLastAgeHours=h; if(delta) advancePhamNhanTime(delta/24,h); else updateLifespanStatus(h); }
+function updatePhamNhanUI() {
+ const cap=REALM_LIFESPAN[parseRealmLevel(document.getElementById('mcLevel')?.value).realm] || 120;
+ const el=document.getElementById('lifespanStatus');if(el){el.textContent='🕐 Thọ nguyên: '+mcAge.toFixed(2)+' / '+(Number.isFinite(cap)?cap:'vô hạn')+' năm';el.style.color=mcLifespanGrace || (cap-mcAge)<cap*0.2?'#f85149':'#3fb950';}
+ const grace=document.getElementById('lifespanGraceStatus');if(grace){grace.textContent=mcLifespanGrace?'Thọ nguyên cạn kỹ! 1 năm để đoạt xá, quá hạn toạ hoá. Hạn: '+formatTime(mcLifespanDeadline || 0):'';}
+ const b=document.getElementById('possessionButton');if(b){b.hidden=!mcLifespanGrace;b.disabled=mcDead;}
+ const t=document.getElementById('washRootButton');if(t)t.disabled=mcDead || !pnInventory().some(i=>normalizeVN(i.name)==='tay tuy dan' && (i.quantity ?? 1)>=1);
+ const dead=document.getElementById('lifespanDeath');if(dead)dead.hidden=!mcDead;
+ const input=document.getElementById('userInput');if(input){if(mcDead){input.dataset.lifespanBlocked='1';input.disabled=true;}else if(input.dataset.lifespanBlocked){input.disabled=false;delete input.dataset.lifespanBlocked;}}
+}
+async function loadLastLivingSave() { const s=await getFromIDB('HONDUC_TU_TIEN_SAVE'); if(s) await loadGame();else location.reload(); }
+async function attemptPossession() {
+ if(!mcLifespanGrace || !updateLifespanStatus())return;
+ const chance=Math.max(0.05,Math.min(0.6,0.30+(MAJOR_SUCCESS_BONUS[mcLinhCan]||0)));
+ if(Math.random()<chance){const order=['LK','TC','KD','NA','HT','LH'];const old=parseRealmLevel(document.getElementById('mcLevel').value).realm;const next=order[Math.max(0,order.indexOf(old)-1)];document.getElementById('mcLevel').value=next==='LK'?'Luyện Khí tầng 1':REALM_NAME[next]+' sơ kỳ';mcExp=0;mcAge=16;mcLifespanGrace=false;mcLifespanDeadline=null;mcDead=false;mcLastAgeHours=pnHours();log('🩸 Đoạt xá thành công: mất một đại cảnh giới, tuổi trở về 16.');updateExpUI();updateSystemDashboard();}
+ else log('🩸 Đoạt xá thất bại. Có thể thử lại trước hạn toạ hoá.');
+ updatePhamNhanUI();await saveGame(false);
+}
+async function useWashRootPill() {
+ if(!updateLifespanStatus())return;
+ const roots=['Ngũ','Tứ','Tam','Song','Đơn']; const idx=roots.indexOf(mcLinhCan);
+ if(idx<0 || idx===roots.length-1){log('🌱 Linh căn này không thể tăng thêm bằng Tẩy Tủy Đan.');return;}
+ const inv=pnInventory();const pill=inv.find(i=>normalizeVN(i.name)==='tay tuy dan' && (i.quantity ?? 1)>=1);if(!pill)return;
+ const tier=Math.max(0,ITEM_QUALITIES.findIndex(q=>normalizeVN(q)===normalizeVN(pill.quality || 'Hạ phẩm')));
+ pill.quantity=(pill.quantity ?? 1)-1;pnWriteInventory(inv);
+ if(Math.random()<Math.min(1,0.30+0.10*tier)){mcLinhCan=roots[idx+1];log('🌱 Tẩy tủy thành công: linh căn '+mcLinhCan);updateExpUI();updateSystemDashboard();}
+ else log('Tẩy tủy thất bại - đan lực tan tán');
+ await saveGame(false);
+}
+function danVanChance(bonus=0) { return Math.min(0.15,0.05+Math.max(0,bonus)*0.1); }
+function rollDanVanCount(qty,bonus=0) {let n=0;const p=danVanChance(bonus);for(let i=0;i<qty;i++)if(Math.random()<p)n++;return n;}
+function pnAddStack(inv,name,quality,quantity,danVan=false,tier='LK') {if(quantity<=0)return;let item=inv.find(i=>i.name===name && i.quality===quality && !!i.danVan===danVan);if(item)item.quantity=(item.quantity ?? 1)+quantity;else inv.push({name,quality,quantity,danVan,pillTier:tier,icon:'💊',category:detectItemCategory(name,quality,''),effect:danVan?'Đan Vân: hấp thu EXP và giá bán x2.':''});}
+function markCraftDanVan(craft) {
+ if(craft.profession!=='luyen_dan')return;
+ const inv=pnInventory(),bonus=getProfessionRankInfo('luyen_dan').info.qualityBonus || 0;
+ for(const r of craft.results || []){const q=r.quality || 'Hạ phẩm';let left=Math.max(0,parseInt(r.quantity)||0);const normal=inv.filter(i=>normalizeVN(i.name)===normalizeVN(craft.recipe) && normalizeVN(i.quality || 'Hạ phẩm')===normalizeVN(q) && !i.danVan);let marked=0;for(const item of normal){const qty=Math.min(left,item.quantity ?? 1);left-=qty;const n=rollDanVanCount(qty,bonus);item.quantity=(item.quantity ?? 1)-n;marked+=n;if(!left)break;}if(marked){pnAddStack(inv,craft.recipe,q,marked,true,craft.tier || 'LK');log('✦ Đan Vân '+craft.recipe+': '+marked+' viên.');}}
+ pnWriteInventory(inv);
+}
+async function absorbDanVan(index) {
+ if(!updateLifespanStatus())return; const inv=pnInventory();const p=inv[index];if(!p || !p.danVan || (p.quantity ?? 1)<1)return;
+ if(normalizeVN(p.name)==='tay tuy dan'){log('🌱 Dùng nút Tẩy Tủy Đan để tẩy linh căn.');return;}
+ const recipe=PROFESSION_OUTPUT_RECIPES.luyen_dan[p.name];const tier=p.pillTier || recipe?.tier || 'LK';const gain=2*Math.round((BASE_EXP_PER_QUALITY[tier]||10)*(QUALITY_EXP_MULT[p.quality]||1));p.quantity=(p.quantity ?? 1)-1;mcExp+=gain;pnWriteInventory(inv);updateExpUI();log('✦ Hấp thu '+p.name+': +'+gain+' EXP (x2).');await saveGame(false);
+}
+function npcAffinityRule(aff) {return aff>80?'chủ động trợ giúp lúc nguy hiểm, tiết lộ tin tức và đan phương, giá ưu đãi':aff>=50?'thiện chí, giao dịch công bằng':aff>=0?'dè dặt đề phòng, giá cao':'từ chối giao dịch lớn, có thể phản bội, đâm sau lưng khi có lợi';}
+function applyGiftAffinity(tx,removed) {
+ const target=normalizeVN(String(tx.target || tx.recipient || tx.npc || tx.to || tx.targetNpc || ''));if(!target)return;
+ const matches=npcList.filter(n=>{const name=normalizeVN(n.name || '');return name && (name===target || target.includes(name) || (target.length>=4 && name.includes(target)));});
+ if(matches.length!==1){if(matches.length>1)log('⚠️ Tên người nhận mơ hồ, chưa cộng thiện cảm.');return;}
+ const npc=matches[0];const better=removed.some(i=>ITEM_QUALITIES.slice(1).some(q=>normalizeVN(q)===normalizeVN(i.quality || '')));const bonus=2+(better?3:0),before=Number.isFinite(npc.affinity)?npc.affinity:50;npc.affinity=Math.max(-100,Math.min(100,before+bonus));pnGiftAffinity.set(npc.id,npc.affinity);log('❤ '+npc.name+': thiện cảm +'+(npc.affinity-before));renderNpcs();
+}
+function seedPhamNhanNpcs() {if(pnMode()==='the_gioi_rieng'){log('Thế giới riêng không dùng NPC Phàm Nhân.');return;}for(const [name,identity,personality,affinity] of PHAM_NHAN_NPCS){if(npcList.some(n=>normalizeVN(n.name)===normalizeVN(name)))continue;npcList.push({id:generateNpcId(),name,identity,personality,affinity,npcRules:npcAffinityRule(affinity),pinned:false,lockedRules:false,status:''});}renderNpcs();log('Đã khởi tạo NPC Phàm Nhân, bỏ qua tên đã có.');}
+function ensurePlayModeItem() {if(pnMode()!=='thay_the')return;const inv=pnInventory();if(inv.some(i=>normalizeVN(i.name).includes('chuong thien binh')))return;inv.push({name:'Chưởng Thiên Bình',quality:'Thần khí',quantity:1,icon:'🏺',effect:'Thần khí gắn với kỳ ngộ của người thay thế Hàn Lập.',category:detectItemCategory('Chưởng Thiên Bình','Thần khí','')});pnWriteInventory(inv);}
+function changePlayMode(){ensurePlayModeItem();systemRulesSentThisSession=false;log('Đổi chế độ chơi: '+document.getElementById('playMode').selectedOptions[0].textContent);}
+
+function pnFilterCanon(text) {
+ if(pnMode()!=='the_gioi_rieng')return text;
+ const names=PHAM_NHAN_NPCS.map(p=>p[0]).concat(['Hàn Lập','Thiên Nam','Việt Quốc','Ngũ Lý Câu','Thất Huyền','Thái Lĩnh','Hoàng Phong','Yểm Nguyệt','Thanh Hư Môn','Thiên Khuyết','Hóa Đao','Linh Thú Sơn','Cự Kiếm','Kính Châu','Gia Nguyên','Thái Nam','Huyết Sắc','Quỷ Linh','Hợp Hoan','Ma Diễm','Thiên Ma','Ngự Linh','Khôi Lỗi Môn','Loạn Tinh','Tinh Cung','Nghịch Tinh','Hư Thiên','Âm Minh','Đại Tấn','Côn Ngô']);
+ return String(text).split('\n').filter(line=>!names.some(name=>normalizeVN(line).includes(normalizeVN(name)))).join('\n');
+}
+
+function pnWorldValue(id) {if(pnMode()==='the_gioi_rieng' && (id==='worldContext' || id==='startScript')){const raw=document.getElementById(id)?.value || '';return raw===PHAM_NHAN_DEFAULTS[id]?'Thế giới riêng do người chơi định nghĩa; mở đầu ở một làng vô danh, không dùng địa lý và NPC Phàm Nhân.':pnFilterCanon(raw);}return pnFilterCanon(document.getElementById(id)?.value || '');}
+function phamNhanRules() {
+ const mode=pnMode();const block=mode==='song_hanh'?'Hàn Lập là NPC thực tồn, xuất hiện tại các mốc sự kiện, tranh tài nguyên và kỳ ngộ với người chơi, tu vi tăng theo dòng thời gian.':mode==='thay_the'?'Hàn Lập không tồn tại. Người chơi sở hữu Chưởng Thiên Bình [Thần khí]; mọi kỳ ngộ vốn của y trỏ đến người chơi.':'Không dùng địa lý/NPC Phàm Nhân; chỉ dùng hệ thống cảnh giới, thọ nguyên, linh căn, kháng dược và pacing của truyện.';
+ const framework=mode==='the_gioi_rieng'?[PHAM_NHAN_DEFAULTS.powerSystem,PHAM_NHAN_DEFAULTS.worldRules,PHAM_NHAN_DEFAULTS.pacing].join('\n\n'):WORLD_FRAMEWORK_PHAM_NHAN;
+ const npcs=mode==='the_gioi_rieng'?npcList.filter(n=>!PHAM_NHAN_NPCS.some(p=>normalizeVN(p[0])===normalizeVN(n.name))):npcList;
+ return '\n# CHẾ ĐỘ CHƠI\n'+block+'\n# KHUNG THẾ GIỚI CỐ ĐỊNH (ưu tiên hơn nội dung sinh tự động)\n'+framework+'\n# NHÂN QUẢ\n'+npcs.map(n=>n.name+': '+npcAffinityRule(n.affinity ?? 50)).join('\n');
+}
+
 let mcStats = { theChat: 'Phàm', thanNiem: 'Phàm', thienPhu: 'Thường' };
 
 const THECHAT_QTY = { 'Phàm': 0, 'Linh': 0.3, 'Địa': 0.5, 'Thiên': 0.8, 'Tiên': 1.2, 'Biến Dị': 1.8 };
@@ -1329,6 +1502,7 @@ let professionState = {
 
 const PROFESSION_OUTPUT_RECIPES = {
   luyen_dan: {
+    'Tẩy Tủy Đan': { tier: 'KĐ', minRank: 5, ingredients: [{ name: 'Tẩy Tủy Linh Thảo nghìn năm', qty: 3 }, { name: 'Thiên Niên Linh Nhũ', qty: 1 }, { name: 'Ngũ Sắc Tinh Thạch', qty: 2 }], output: 'Tẩy Tủy Đan', outputQty: 1 },
     'Tụ Khí Đan': { tier: 'LK', ingredients: [{ name: 'Thạch Linh Thảo', qty: 2 }, { name: 'Huyết Cỏ', qty: 1 }], output: 'Tụ Khí Đan', outputQty: 5 },
     'Thanh Tâm Đan': { tier: 'LK', ingredients: [{ name: 'Thanh Tâm Thảo', qty: 2 }, { name: 'Dung Tâm Thảo', qty: 1 }], output: 'Thanh Tâm Đan', outputQty: 5 },
     'Hồi Khí Đan': { tier: 'LK', ingredients: [{ name: 'Huyết Cỏ', qty: 2 }, { name: 'Linh Tuyền Thủy', qty: 1 }], output: 'Hồi Khí Đan', outputQty: 5 },
@@ -1683,6 +1857,7 @@ function normalizeGameTimeField() {
   const raw = el.value.trim();
   if (!raw) return;
   const parsed = parseTimeString(raw);
+  syncPhamNhanTime();
   const hint = document.getElementById('mcGameTimeHint');
   if (!parsed.hasUnit && parsed.totalHours > 0) { if (hint) { hint.textContent = `⚠️ Chưa rõ đơn vị — tạm hiểu ${parsed.totalHours} giờ.`; hint.style.color = '#d29922'; } }
   else if (parsed.hasUnit) { if (hint) { hint.textContent = `≈ ${formatTime(parsed.totalHours)} (tổng ${parsed.totalHours.toFixed(1)} giờ game)`; hint.style.color = '#3fb950'; } }
@@ -2555,7 +2730,7 @@ const RECIPE_LIBRARY_LUYEN_DAN = {
     ],
     "Đột Phá Đỉnh Phong": [
       {n:"Đột Phá Đan", m:"Phá Cảnh Thảo + Linh Chi Bách Năm", e:"Tăng 20% tỷ lệ đột phá LK Trung → Hậu Kỳ"},
-      {n:"Tẩy Tủy Đan", m:"Tẩy Tủy Hoa + Địa Nhũ + Long Huyết Căn", e:"Loại bỏ tạp chất trong kinh mạch trước Trúc Cơ"},
+      {n:"Tẩy Tủy Đan (cần Đan Đạo Đại Sư)", m:"3 Tẩy Tủy Linh Thảo nghìn năm + 1 Thiên Niên Linh Nhũ + 2 Ngũ Sắc Tinh Thạch", e:"Xem công thức chế ngay cấp KĐ; tiêu hao để thử nâng một bậc linh căn, không đạt Dị linh căn"},
       {n:"Tụ Đỉnh Đan", m:"Tụ Đỉnh Thảo + Tam Bách Thảo", e:"Tụ linh khí về đỉnh đầu, chuẩn bị mở rộng khí hải"},
       {n:"Xung Mạch Đan", m:"Phá Mạch Căn + Linh Xương Bột", e:"Mở rộng 12 chính kinh"},
       {n:"Dưỡng Mạch Đan", m:"Bảo Mạch Thảo + Mộc Hương Linh", e:"Bảo vệ kinh mạch không bị đứt khi vận linh lực lớn"},
@@ -2835,7 +3010,7 @@ function copyUnifiedLog() {
   const storyText = document.getElementById('story-box')?.innerText || '';
   const logsText = document.getElementById('sysLogs')?.innerText || '';
   const statsText = document.getElementById('tokenStats')?.innerText || '';
-  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
+  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
   const full = header + `━━━━━━━ 📜 NHẬT KÝ CHƠI GAME ━━━━━━━\n\n${storyText}\n\n` + `━━━━━━━ 🔧 SYSTEM LOGS ━━━━━━━\n\n${logsText}\n\n` + `━━━━━━━ 📊 TOKEN STATS ━━━━━━━\n\n${statsText}`;
   if (!storyText || storyText.includes('Chưa có dữ liệu')) { alert("⚠️ Chưa có nội dung để copy!"); return; }
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3321,9 +3496,11 @@ function renderInventoryVisual(itemsArray) {
       else { refineBadge = `<span class="refine-status-pending">⏳ Chưa luyện hoá</span>`; const cost = getRefineCost(item); refineBtn = `<button onclick="refineInventoryItem('${safeName}','${safeQuality}','${catKey}')" title="Luyện hoá" style="position:absolute;bottom:6px;right:6px;background:rgba(210,153,34,.9);border:none;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:bold">🔥 Luyện hoá (${cost} LS)</button>`; }
     } else if (catInfo.consumable) refineBadge = `<span class="refine-status-consumable">⚡ Tiêu hao</span>`;
     else refineBadge = `<span class="refine-status-passive">📦 Không tiêu hao</span>`;
-    html += `<div class="item-card" style="position:relative"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name || 'Vật phẩm lạ'}</span><span class="item-qty">x${item.quantity || 1}</span></div><div style="margin-bottom:4px">${catBadge}${refineBadge}</div><div class="item-quality">Cấp bậc: ${tierBadge || (q || 'Thường')}</div><div class="${effectClass}">${item.effect || 'Chưa rõ.'}</div></div>${canSplit ? `<button onclick="splitInventoryItem('${safeName}','${safeQuality}')" title="Tách phẩm chất" style="position:absolute;top:6px;right:6px;background:rgba(137,87,229,.85);border:none;color:#fff;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:12px">✂️</button>` : ''}${refineBtn}</div>`;
+    if(item.danVan) refineBtn += '<button onclick="absorbDanVan('+itemsArray.indexOf(item)+')">✦ Hấp thu x2</button>';
+    html += `<div class="item-card" style="position:relative"><div class="item-icon-box">${iconContent}</div><div class="item-details"><div class="item-title-row"><span class="item-name">${item.name || 'Vật phẩm lạ'}${item.danVan?' ✦':''}</span><span class="item-qty">x${item.quantity || 1}</span></div><div style="margin-bottom:4px">${catBadge}${refineBadge}</div><div class="item-quality">Cấp bậc: ${tierBadge || (q || 'Thường')}</div><div class="${effectClass}">${item.effect || 'Chưa rõ.'}</div></div>${canSplit ? `<button onclick="splitInventoryItem('${safeName}','${safeQuality}')" title="Tách phẩm chất" style="position:absolute;top:6px;right:6px;background:rgba(137,87,229,.85);border:none;color:#fff;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:12px">✂️</button>` : ''}${refineBtn}</div>`;
   });
   grid.innerHTML = html;
+  updatePhamNhanUI();
 }
 function splitInventoryItem(name, quality) {
   try {
@@ -3520,6 +3697,7 @@ function calcCraftQualityDistribution(profId, recipeTier) {
 function simulateCraftBatch(profId, recipeTier, quantity) {
   const dist = calcCraftQualityDistribution(profId, recipeTier);
   if (!dist) return null;
+  const danVanByQuality = {};
   const result = { 'Hạ phẩm': 0, 'Trung phẩm': 0, 'Thượng phẩm': 0, 'Cực phẩm': 0, 'Tiên phẩm': 0, 'Thất bại': 0 };
   for (let i = 0; i < quantity; i++) {
     const roll = Math.random();
@@ -3527,8 +3705,9 @@ function simulateCraftBatch(profId, recipeTier, quantity) {
     let acc = 0, chosen = 'Hạ phẩm';
     for (const q of ITEM_QUALITIES) { acc += dist.distribution[q] || 0; if (roll <= acc) { chosen = q; break; } }
     result[chosen]++;
+    if (profId==='luyen_dan' && Math.random()<danVanChance(dist.qualityBonus)) danVanByQuality[chosen]=(danVanByQuality[chosen]||0)+1;
   }
-  return { ...result, distribution: dist.distribution, successRate: dist.successRate, mcBonus: dist.mcBonus, rankBonus: dist.qualityBonus };
+  return { ...result, danVanByQuality, distribution: dist.distribution, successRate: dist.successRate, mcBonus: dist.mcBonus, rankBonus: dist.qualityBonus };
 }
 function renderProfessionUI() {
   const grid = document.getElementById('professionGrid');
@@ -3567,7 +3746,7 @@ function renderProfessionRankTable(profId) {
 function showProfessionStats() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
-  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.7.3</div>`;
+  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.7.4</div>`;
   for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
     const state = professionState[profId];
     const rankInfo = getProfessionRankInfo(profId);
@@ -3586,6 +3765,7 @@ function runCraftSimulation() {
   const recipeName = document.getElementById('simRecipeName').value.trim() || 'Vật phẩm';
   const recipeTier = (document.getElementById('simRecipeTier').value.trim().toUpperCase() || 'LK');
   const qty = parseInt(document.getElementById('simQty').value) || 1;
+  if (PROFESSION_OUTPUT_RECIPES[profId]?.[recipeName]?.minRank>getProfessionRankInfo(profId).rank) {alert('Cần Đan Đạo Đại Sư trở lên.');return;}
   const result = simulateCraftBatch(profId, recipeTier, qty);
   if (!result) { alert('❌ Không thể mô phỏng!'); return; }
   tokenStats.craftSimulations = (tokenStats.craftSimulations || 0) + 1;
@@ -3597,6 +3777,7 @@ function runCraftSimulation() {
   html += `<div style="font-size:11px;color:#8b949e;margin-bottom:8px">Nghề: <b style="color:${PROFESSION_TYPES[profId].color}">${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}</b> · Cấp ${rankInfo.rank} — ${rankInfo.info.name}</div>`;
   html += `<div style="margin:6px 0">`;
   for (const q of ITEM_QUALITIES) { if (result[q] > 0) html += `<div>• <span class="highlight">${q}</span>: ${result[q]} viên (dự kiến ${(result.distribution[q] * 100).toFixed(1)}%)</div>`; }
+  for (const [q,n] of Object.entries(result.danVanByQuality || {})) html += '<div>✦ Đan Vân '+q+': '+n+' viên (nằm trong số thành công, chỉ mô phỏng)</div>';
   if (result['Thất bại'] > 0) html += `<div style="color:#f85149">• Thất bại: ${result['Thất bại']} lần</div>`;
   html += `</div><div style="border-top:1px dashed #1f9eb0;padding-top:6px;margin-top:6px"><div>📈 Tỷ lệ thành công: <b class="highlight">${(result.successRate * 100).toFixed(1)}%</b></div><div>✨ Bonus nghề: <b class="highlight">+${(result.rankBonus * 100).toFixed(0)}%</b></div><div>🌟 Bonus NVC: <b class="highlight">+${(result.mcBonus * 100).toFixed(0)}%</b></div><div>🎯 EXP nghề (×2): <b class="highlight">+${expGained.toLocaleString()} EXP</b></div></div>`;
   const simResult = document.getElementById('simResult');
@@ -3607,6 +3788,7 @@ function runCraftSimulation() {
 function checkCraftIngredients(profId, recipeName) {
   const recipe = PROFESSION_OUTPUT_RECIPES[profId]?.[recipeName];
   if (!recipe) return { ok: false, reason: 'Công thức không tồn tại' };
+  if (recipe.minRank && getProfessionRankInfo(profId).rank<recipe.minRank) return {ok:false,missing:['Cần Đan Đạo Đại Sư trở lên'],reason:'Cần Đan Đạo Đại Sư trở lên',recipe};
   let inv = []; try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { }
   const missing = [];
   for (const ing of recipe.ingredients) {
@@ -3777,6 +3959,7 @@ function checkBreakthroughEligibilityUI() {
   }
 }
 function attemptBreakthrough() {
+  if (!updateLifespanStatus()) return;
   const check = checkBreakthroughEligibility();
   if (!check.eligible) { alert(`❌ KHÔNG THỂ ĐỘT PHÁ!\n\n${check.reason}`); checkBreakthroughEligibilityUI(); return; }
   if (check.type === 'minor') {
@@ -3818,6 +4001,7 @@ function attemptBreakthrough() {
     document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
     renderInventoryVisual(inv);
     mcExp = 0;
+    log('🕐 Đại đột phá: thọ nguyên mới '+(Number.isFinite(REALM_LIFESPAN[nextRealm])?REALM_LIFESPAN[nextRealm]:'vô hạn')+' năm.');
     document.getElementById('mcLevel').value = `${REALM_NAME[nextRealm]} sơ kỳ`;
     updateExpUI(); updateSystemDashboard(); checkBreakthroughEligibilityUI();
     alert(`🎉 ĐỘT PHÁ THÀNH CÔNG!\n\n${oldLevel} → ${REALM_NAME[nextRealm]} sơ kỳ`);
@@ -3850,6 +4034,7 @@ function showRealmProgressionTable() {
   resultsDiv.innerHTML = html;
 }
 function updateExpUI() {
+  updatePhamNhanUI();
   const barEl = document.getElementById('expBarFill');
   if (!barEl) return;
   const levelStr = document.getElementById('mcLevel').value || 'Luyện Khí tầng 1';
@@ -3918,6 +4103,7 @@ function isValidRulesFormat(text) {
   return true;
 }
 async function aiGenField(fieldId, promptMsg) {
+  if (Object.hasOwn(PHAM_NHAN_DEFAULTS,fieldId)) { document.getElementById(fieldId).value=PHAM_NHAN_DEFAULTS[fieldId];log('Đã dùng khung thế giới cố định, không gọi AI.');return; }
   const field = document.getElementById(fieldId);
   log("AI Gen: " + fieldId);
   const originalVal = field.value;
@@ -4331,30 +4517,31 @@ function processTransactions(transactionsList) {
   if (!transactionsList || !Array.isArray(transactionsList) || transactionsList.length === 0) return null;
   let inv = []; try { inv = JSON.parse(document.getElementById('mcInventory').value || '[]'); } catch (e) { inv = []; }
   let processedCount = 0; const logs = [];
-  const addItem = (name, quality, qty, icon, effect) => {
-    const m = findMatchingInventoryItem(name, inv);
+  const addItem = (name, quality, qty, icon, effect, danVan=false) => {
+    const m = findAllMatchingItems(name, inv).find(i=>(normalizeVN(name).includes('linh thach') || normalizeVN(i.quality || 'Thường')===normalizeVN(quality || 'Thường')) && !!i.danVan===danVan);
     if (m && isIngredientForDifferentRecipe(m.name, name)) { log(`🛡️ Ingredient Guard.`); tokenStats.ingredientGuardBlocked = (tokenStats.ingredientGuardBlocked || 0) + 1; updateTokenStatsDisplay(); }
     else if (m) { m.quantity = (m.quantity || 1) + qty; return { isNew: false, newQty: m.quantity }; }
     const catKey = detectItemCategory(name, quality, effect);
     const catInfo = getItemCategoryInfo(catKey);
-    const newItem = { name, icon: icon || catInfo.icon, quantity: qty, quality: quality || 'Thường', effect: effect || '', category: catKey };
+    const newItem = { name, danVan, icon: icon || catInfo.icon, quantity: qty, quality: quality || 'Thường', effect: effect || '', category: catKey };
     if (catInfo.needsRefine) newItem.isRefined = false;
     inv.push(newItem);
     return { isNew: true, newQty: qty };
   };
-  const removeItem = (name, quality, qty) => {
+  const removeItem = (name, quality, qty, danVan) => {
     let candidates = findAllMatchingItems(name, inv).filter(i => !isIngredientForDifferentRecipe(i.name, name));
+    if (typeof danVan==='boolean') candidates=candidates.filter(i=>!!i.danVan===danVan);
     if (candidates.length === 0) return { ok: false, reason: 'Không tìm thấy' };
     if (quality && quality.trim()) { const qLower = quality.toLowerCase().trim(); const qualityMatched = candidates.filter(i => (i.quality || '').toLowerCase().includes(qLower)); const qualityTotal = qualityMatched.reduce((s, i) => s + (i.quantity || 1), 0); if (qualityMatched.length > 0 && qualityTotal >= qty) candidates = qualityMatched; }
     const totalAvail = candidates.reduce((s, i) => s + (i.quantity || 1), 0);
     if (totalAvail < qty) return { ok: false, reason: `Chỉ có ${totalAvail}` };
     const QUALITY_ORDER = ['hạ phẩm', 'trung phẩm', 'thượng phẩm', 'cực phẩm', 'tiên phẩm', ''];
     candidates.sort((a, b) => { const ai = QUALITY_ORDER.findIndex(q => (a.quality || '').toLowerCase().includes(q)); const bi = QUALITY_ORDER.findIndex(q => (b.quality || '').toLowerCase().includes(q)); return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi); });
-    let remaining = qty; let removed = 0; const emptiedItems = [];
-    for (const item of candidates) { if (remaining <= 0) break; const avail = item.quantity || 1; const take = Math.min(avail, remaining); item.quantity = avail - take; removed += take; remaining -= take; if (item.quantity <= 0) emptiedItems.push(item); }
+    let remaining = qty; let removed = 0; const emptiedItems = [], removedItems = [];
+    for (const item of candidates) { if (remaining <= 0) break; const avail = item.quantity || 1; const take = Math.min(avail, remaining); removedItems.push({...item,quantity:take}); item.quantity = avail - take; removed += take; remaining -= take; if (item.quantity <= 0) emptiedItems.push(item); }
     emptiedItems.forEach(e => { const idx = inv.indexOf(e); if (idx !== -1) inv.splice(idx, 1); });
     const remainTotal = findAllMatchingItems(name, inv).reduce((s, i) => s + (i.quantity || 1), 0);
-    return { ok: true, removed, emptied: emptiedItems.length > 0, remain: remainTotal };
+    return { ok: true, removed, removedItems, emptied: emptiedItems.length > 0, remain: remainTotal };
   };
   transactionsList.forEach(tx => {
     if (!tx || !tx.type || !tx.name) return;
@@ -4370,22 +4557,22 @@ function processTransactions(transactionsList) {
     const txName = String(tx._validatedName || rawTxName).trim();
     const unitPrice = parseFloat(tx.unitPrice) || 0;
     const totalPrice = parseFloat(tx.totalPrice) || (unitPrice * qty);
-    if (tx.type === 'sell') { const r = removeItem(txName, txQuality, qty); if (r.ok) { logs.push(`💰 BÁN: ${r.removed}x ${txName}${txQuality ? ` [${txQuality}]` : ''} → +${totalPrice} linh thạch`); addItem('Linh thạch', '', totalPrice, '💎', 'Tiền tệ tu tiên'); processedCount++; } else logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}"!`); }
+    if (tx.type === 'sell') { const r = removeItem(txName, txQuality, qty, tx.danVan); if (r.ok) { const danVanSold=r.removedItems.filter(i=>i.danVan).reduce((n,i)=>n+i.quantity,0);const salePrice=totalPrice*(1+danVanSold/qty); logs.push(`💰 BÁN: ${r.removed}x ${txName}${txQuality ? ` [${txQuality}]` : ''} → +${salePrice} linh thạch`); addItem('Linh thạch', '', salePrice, '💎', 'Tiền tệ tu tiên'); processedCount++; } else logs.push(`⚠️ BÁN THẤT BẠI: Không tìm thấy "${txName}"!`); }
     else if (tx.type === 'buy') {
-      const lsItem = inv.find(i => normalizeVN(i.name).includes('linh thach'));
-      const currentLS = lsItem ? (lsItem.quantity || 0) : 0;
+      const currentLS = inv.filter(i => normalizeVN(i.name).includes('linh thach')).reduce((n,i)=>n+(Number(i.quantity)||0),0);
       if (currentLS < totalPrice) { logs.push(`🚫 MUA THẤT BẠI: Không đủ linh thạch`); return; }
       const pay = removeItem('Linh thạch', '', totalPrice);
       if (!pay.ok) { logs.push(`🚫 MUA THẤT BẠI`); return; }
-      addItem(txName, txQuality, qty, tx.icon, tx.effect);
+      addItem(txName, txQuality, qty, tx.icon, tx.effect, tx.danVan===true);
       logs.push(`🛒 MUA: ${qty}x ${txName} → -${totalPrice} linh thạch`);
       processedCount++;
-    } else if (tx.type === 'give') { const r = removeItem(txName, txQuality, qty); if (r.ok) { logs.push(`🎁 CHO/TẶNG: ${r.removed}x ${txName}`); processedCount++; } else logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}"!`); }
-    else if (tx.type === 'receive') { const catKey = detectItemCategory(txName, txQuality, tx.effect || ''); const catInfo = getItemCategoryInfo(catKey); addItem(txName, txQuality, qty, tx.icon, tx.effect); logs.push(`🎁 NHẬN: ${qty}x ${txName} [${catInfo.label}]`); processedCount++; autoSyncReceivedItem(tx); }
+    } else if (tx.type === 'give') { const r = removeItem(txName, txQuality, qty, tx.danVan); if (r.ok) { logs.push(`🎁 CHO/TẶNG: ${r.removed}x ${txName}`); applyGiftAffinity(tx,r.removedItems); processedCount++; } else logs.push(`⚠️ CHO THẤT BẠI: Không có "${txName}"!`); }
+    else if (tx.type === 'receive') { const catKey = detectItemCategory(txName, txQuality, tx.effect || ''); const catInfo = getItemCategoryInfo(catKey); addItem(txName, txQuality, qty, tx.icon, tx.effect, tx.danVan===true); logs.push(`🎁 NHẬN: ${qty}x ${txName} [${catInfo.label}]`); processedCount++; autoSyncReceivedItem(tx); }
     else logs.push(`⚠️ Loại giao dịch không hợp lệ: "${tx.type}"`);
   });
   logs.forEach(l => log(l));
   if (processedCount > 0) { document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2); renderInventoryVisual(inv); tokenStats.transactionsProcessed = (tokenStats.transactionsProcessed || 0) + processedCount; updateTokenStatsDisplay(); }
+  updatePhamNhanUI();
   return { inventory: inv, count: processedCount, logs };
 }
 function processCraftResults(craftList) {
@@ -4398,6 +4585,8 @@ function processCraftResults(craftList) {
     const recipe = craft.recipe || 'Vật phẩm';
     const tier = (craft.tier || 'LK').toUpperCase();
     const results = craft.results || [];
+    if (PROFESSION_OUTPUT_RECIPES[profId]?.[recipe]?.minRank>getProfessionRankInfo(profId).rank) {logs.push('⚠️ Tẩy Tủy Đan cần Đan Đạo Đại Sư trở lên.');continue;}
+    markCraftDanVan(craft);
     let craftExp = 0; let totalProduced = 0;
     for (const r of results) { const q = r.quality || 'Hạ phẩm'; const qty = parseInt(r.quantity) || 0; if (qty <= 0) continue; craftExp += calcProfessionExp(tier, q, qty); totalProduced += qty; }
     if (craftExp > 0) {
@@ -4432,7 +4621,7 @@ function detectSceneScopes(actionText) {
   return Array.from(detected);
 }
 // END PART 11/14// ══════════════════════════════════════════════════════════════
-// TIME SKIP CORE LOGIC — v2.8.7.3
+// TIME SKIP CORE LOGIC — v2.8.7.4
 // ══════════════════════════════════════════════════════════════
 
 let tsCurrentActivity = 'luyen_dan';
@@ -4540,7 +4729,7 @@ function updateTimeSkipPreview() {
   } catch (e) { previewEl.innerHTML = `<span class="loss">❌ Lỗi: ${e.message}</span>`; }
 }
 function renderPreviewHtml(r) {
-  let html = '';
+  let html = r.activityId==='luyen_dan'?'<div>💊 Kháng dược '+r.recipeName+': '+Math.round(r.toleranceEff*100)+'%<br>✦ Đan Vân: hấp thu '+r.danVanQty+', bán '+r.danVanSoldQty+', giữ '+r.danVanStoredQty+' (mô phỏng, sẽ chốt lại khi xác nhận)</div>':'';
   html += `⏱️ <b>${r.daysElapsed.toLocaleString()}</b> ngày (<b>${(r.daysElapsed / 365).toFixed(2)}</b> năm)<br>`;
   html += `⚒️ <b>${r.activityName}</b><br>`;
   if (r.activityId === 'luyen_dan' || r.activityId === 'luyen_khi' || r.activityId === 've_phu' || r.activityId === 'tran_phap') {
@@ -4589,13 +4778,14 @@ function calcTimeSkipCraft(profId, daysElapsed) {
   const recipe = PROFESSION_OUTPUT_RECIPES[profId]?.[recipeName];
   if (!recipe) return { ok: false, reason: `Không tìm thấy công thức "${recipeName}".` };
   const rankInfo = getProfessionRankInfo(profId);
+  if (recipe.minRank && rankInfo.rank<recipe.minRank) return {ok:false,reason:'Cần Đan Đạo Đại Sư trở lên.'};
   const canTier = rankInfo.info.canCraftTier;
   if (canTier !== 'Tất cả') {
     const allowed = canTier.split('/').map(s => s.trim());
     if (!allowed.includes(recipe.tier)) return { ok: false, reason: `Nghề cấp ${rankInfo.rank} (${rankInfo.info.name}) chỉ chế tối đa ${canTier}. Cần ${recipe.tier}.` };
   }
   const batchesPerDay = parseInt(document.getElementById('tsBatchesPerDay')?.value) || 10;
-  const sellPercent = parseInt(document.getElementById('tsSellPercent')?.value) || 40;
+  const sellPercent = Math.max(0,Math.min(100,Number(document.getElementById('tsSellPercent')?.value ?? 40)));
   const qtyPerBatch = calcCraftOutputQuantity(profId, recipe);
   const totalBatches = daysElapsed * batchesPerDay;
   const totalProduced = totalBatches * qtyPerBatch;
@@ -4612,19 +4802,27 @@ function calcTimeSkipCraft(profId, daysElapsed) {
     for (const k of Object.keys(priceMemory)) { if (k.startsWith(normalizeVN(ing.name))) { ingPrice = priceMemory[k].price; break; } }
     materialCostPerBatch += ingPrice * ing.qty;
   });
-  const revenue = soldQty * sellPrice;
+  let revenue = soldQty * sellPrice;
   const materialCost = totalBatches * materialCostPerBatch;
-  const profit = revenue - materialCost;
+  let profit = revenue - materialCost;
   const skipYears = Math.max(1, daysElapsed / 365);
   const skipYearCount = Math.ceil(skipYears);
   let effSum = 0;
   for (let y = 1; y <= skipYearCount; y++) { effSum += Math.max(0.2, 1.0 - (y - 1) * 0.15); }
   const efficiency = effSum / skipYearCount;
   const effectiveTrainQty = Math.round(trainQty * efficiency);
-  const mcExpPerPill = Math.round((BASE_EXP_PER_QUALITY[recipe.tier] || 10) * (QUALITY_EXP_MULT['Hạ phẩm'] || 1.0));
-  const totalExpGain = effectiveTrainQty * mcExpPerPill;
+  const toleranceEff = profId==='luyen_dan'?pillToleranceEff(mcPillTolerance[recipeName] || 0):1;
+  const mcExpPerPill = Math.round((BASE_EXP_PER_QUALITY[recipe.tier] || 10) * (QUALITY_EXP_MULT['Hạ phẩm'] || 1.0)) * toleranceEff;
+  const danVanSoldQty=profId==='luyen_dan'?rollDanVanCount(soldQty,rankInfo.info.qualityBonus):0;
+  const danVanQty=profId==='luyen_dan'?rollDanVanCount(effectiveTrainQty,rankInfo.info.qualityBonus):0;
+  // Unabsorbed pills remain inventory, separated from sold/absorbed stacks.
+  const storedQty=profId==='luyen_dan'?trainQty-effectiveTrainQty:0;
+  const danVanStoredQty=profId==='luyen_dan'?rollDanVanCount(storedQty,rankInfo.info.qualityBonus):0;
+  const producedStacks=profId==='luyen_dan'?[{name:recipeName,quality:'Hạ phẩm',quantity:totalProduced-danVanSoldQty-danVanQty-danVanStoredQty,danVan:false},{name:recipeName,quality:'Hạ phẩm',quantity:danVanSoldQty+danVanQty+danVanStoredQty,danVan:true}]:[];
+  revenue+=danVanSoldQty*sellPrice;profit=revenue-materialCost;
+  const totalExpGain = Math.round((effectiveTrainQty+danVanQty)*mcExpPerPill);
   const craftExpGain = Math.round(calcProfessionExp(recipe.tier, 'Hạ phẩm', totalProduced) * efficiency);
-  return { ok: true, activityId: profId, activityName: TS_ACTIVITY_CONFIG[profId].name, daysElapsed, recipeName, recipe, qtyPerBatch, totalBatches, totalProduced, soldQty, trainQty, sellPrice, materialCostPerBatch, revenue, materialCost, profit, efficiency, effectiveTrainQty, mcExpPerPill, totalExpGain, craftExpGain, rankBefore: rankInfo.rank, rankNameBefore: rankInfo.info.name };
+  return { ok: true, toleranceEff, danVanSoldQty, danVanQty, storedQty, danVanStoredQty, producedStacks, activityId: profId, activityName: TS_ACTIVITY_CONFIG[profId].name, daysElapsed, recipeName, recipe, qtyPerBatch, totalBatches, totalProduced, soldQty, trainQty, sellPrice, materialCostPerBatch, revenue, materialCost, profit, efficiency, effectiveTrainQty, mcExpPerPill, totalExpGain, craftExpGain, rankBefore: rankInfo.rank, rankNameBefore: rankInfo.info.name };
 }
 function calcTimeSkipCultivation(daysElapsed) {
   const locationId = document.getElementById('tsCultivationLocation')?.value || 'dong_phu';
@@ -4719,10 +4917,18 @@ function buildTimeSkipConfirmMsg(r) {
     if (r.totalInjuries > 0) msg += `⚠️ Bị thương: ${r.totalInjuries} lần\n`;
   }
   msg += `\n⚠️ Áp dụng cập nhật vào game?`;
+  if(r.activityId==='luyen_dan')msg+='\n💊 Kháng dược '+r.recipeName+': '+Math.round(r.toleranceEff*100)+'%\n✦ Đan Vân hấp thu/bán/giữ: '+r.danVanQty+'/'+r.danVanSoldQty+'/'+r.danVanStoredQty;
   return msg;
 }
 function applyTimeSkipResult(r) {
   const report = { applied: [], warnings: [] };
+  if (!updateLifespanStatus()) {report.warnings.push('Đã toạ hoá, hãy tải bản lưu.');return report;}
+  const skipYears=r.daysElapsed/365;
+  if ((r.activityId==='luyen_dan'||r.activityId==='tu_luyen') && skipYears>3 && Math.random()<Math.min(0.35,(skipYears-3)*0.05)) {
+   r.totalExpGain=Math.floor(r.totalExpGain*0.8);r.tauHoa=true;
+   const warning='⚠️ Tẩu hỏa nhập ma! Kinh mạch hỗn loạn, tổn thất 20% EXP của lần bỏ qua.';
+   report.warnings.push(warning);log(warning);
+  }
   let inv = [];
   try { inv = JSON.parse(document.getElementById('mcInventory')?.value || '[]'); } catch (e) { inv = []; }
   if (!Array.isArray(inv)) inv = [];
@@ -4761,12 +4967,23 @@ function applyTimeSkipResult(r) {
     report.applied.push(`⚡ EXP: +${r.totalExpGain.toLocaleString()}`);
     if (r.totalInjuries > 0) report.applied.push(`⚠️ Bị thương: ${r.totalInjuries} lần (-${r.expLossFromInjury.toLocaleString()} EXP)`);
   }
+  if(r.activityId==='luyen_dan'){
+   mcPillTolerance[r.recipeName]=(mcPillTolerance[r.recipeName]||0)+r.effectiveTrainQty;
+   report.applied.push('💊 Kháng dược '+r.recipeName+': '+Math.round(r.toleranceEff*100)+'%');
+   report.applied.push('✦ Đan Vân: hấp thu '+r.danVanQty+', bán '+r.danVanSoldQty+' (giá x2), giữ '+r.danVanStoredQty);
+   pnAddStack(inv,r.recipeName,'Hạ phẩm',r.storedQty-r.danVanStoredQty,false,r.recipe.tier);
+   pnAddStack(inv,r.recipeName,'Hạ phẩm',r.danVanStoredQty,true,r.recipe.tier);
+  }
+  const hoursBefore=pnHours();
   const timeEl = document.getElementById('mcGameTime');
   if (timeEl) {
     const parsed = parseTimeString(timeEl.value || '0');
     timeEl.value = formatTime(parsed.totalHours + r.daysElapsed * 24);
     report.applied.push(`⏱️ Thời gian: +${r.daysElapsed.toLocaleString()} ngày`);
   }
+  advancePhamNhanTime(r.daysElapsed,hoursBefore+r.daysElapsed*24);
+  // Track the displayed clock to prevent a second age increment on normalization.
+  mcLastAgeHours=pnHours();
   inv = inv.filter(i => i && i.name && (i.quantity === undefined || i.quantity > 0));
   document.getElementById('mcInventory').value = JSON.stringify(inv, null, 2);
   renderInventoryVisual(inv);
@@ -4776,6 +4993,7 @@ function applyTimeSkipResult(r) {
 function renderTimeSkipReport(r, applyReport) {
   let html = `<div class="timeskip-report-title">✅ HOÀN TẤT ${r.activityName.toUpperCase()} — ${(r.daysElapsed / 365).toFixed(2)} NĂM</div>`;
   html += `<div class="stat-line"><span>📅 Thời gian:</span><b>${r.daysElapsed.toLocaleString()} ngày</b></div>`;
+  if(r.activityId==='luyen_dan') html += '<div>💊 Kháng dược '+r.recipeName+': '+Math.round(r.toleranceEff*100)+'% · ✦ Đan Vân hấp thu/bán/giữ: '+r.danVanQty+'/'+r.danVanSoldQty+'/'+r.danVanStoredQty+' · Giữ tổng '+r.storedQty+' viên chưa hấp thu.</div>';
   html += `<div class="section-title">📊 KẾT QUẢ CHI TIẾT</div>`;
   if (r.activityId === 'luyen_dan' || r.activityId === 'luyen_khi' || r.activityId === 've_phu' || r.activityId === 'tran_phap') {
     html += `<div class="stat-line"><span>📜 Công thức:</span><b>${r.recipeName} [${r.recipe.tier}]</b></div>`;
@@ -4844,11 +5062,13 @@ async function deleteFromIDB(key) { const db = await openDB(); return new Promis
 // SAVE / LOAD + SNAPSHOT
 // ══════════════════════════════════════════════════════════════
 const fieldsToReset = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle', 'mcName', 'mcLevel', 'mcGameTime', 'mcSkills', 'mcInventory', 'npcArchive', 'locations', 'gameEvents', 'worldItems'];
-const inputIds = ['apiKey', 'openRouterKey', 'openRouterModel', 'openRouterCustomModel', ...fieldsToReset, 'difficultySelect'];
+const inputIds = ['apiKey', 'openRouterKey', 'openRouterModel', 'openRouterCustomModel', ...fieldsToReset, 'difficultySelect', 'playMode'];
 
 async function saveGame(isManual = false) {
+  if (mcDead && !isManual) return; // Keep the last living save after fatal time skips.
   if (isManual && !checkCJKOnSave()) return;
   const gameData = {
+    ...pnState(),
     chatHistory, turnHtmlHistory, scopeRegistry, turnCounter, storySummary,
     storyBoxContent: document.getElementById('story-box')?.innerHTML || '',
     inventoryVisualHTML: document.getElementById('inventoryVisualGrid')?.innerHTML || '',
@@ -4858,7 +5078,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.7.3', inputs: {}
+    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.7.4', inputs: {}
   };
   inputIds.forEach(id => { const el = document.getElementById(id); if (el) gameData.inputs[id] = el.value; });
   try { await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData); log("Game saved."); if (isManual) { alert("💾 Đã lưu game!"); toggleSidebar(); } }
@@ -4877,6 +5097,7 @@ async function loadGame() {
     if (gameData.mcExp !== undefined) mcExp = gameData.mcExp;
     if (gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
     if (gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
+      restorePhamNhanState(gameData);
     if (gameData.mcStats) mcStats = gameData.mcStats;
     if (gameData.currentModel) CACHE_MODEL = gameData.currentModel;
     if (gameData.settings) Object.assign(settings, gameData.settings);
@@ -4896,6 +5117,8 @@ async function loadGame() {
     if (gameData.npcList) { npcList = gameData.npcList; npcList.forEach(n => { if (!n.id) n.id = generateNpcId(); if (n.pinned === undefined) n.pinned = false; if (n.lockedRules === undefined) n.lockedRules = false; if (n.status === undefined) n.status = ''; }); renderNpcs(); }
     if (gameData.eventList) { eventList = gameData.eventList; renderEventsVisual(); }
     if (gameData.inputs) { Object.keys(gameData.inputs).forEach(id => { const el = document.getElementById(id); if (el && id !== 'modelListInput') el.value = gameData.inputs[id]; }); }
+    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replaceAll('2.8.7.3','2.8.7.4');
+    mcLastAgeHours=pnHours();ensurePlayModeItem();updateLifespanStatus();
     stateSnapshots = [captureStateSnapshot()];
     updateTokenStatsDisplay(); updateExpUI(); renderKeyStatus(); syncToggleUI(); updateKeyCountInfo(); normalizeGameTimeField(); renderProfessionUI(); updateSystemDashboard(); loadMcStatsUI();
     alert("📂 Khôi phục thành công!");
@@ -4904,6 +5127,7 @@ async function loadGame() {
 }
 function captureStateSnapshot() {
   return {
+    ...pnState(),
     inventory: document.getElementById('mcInventory')?.value || '',
     inventoryHTML: document.getElementById('inventoryVisualGrid')?.innerHTML || '',
     mcLevel: document.getElementById('mcLevel')?.value || '',
@@ -4931,6 +5155,7 @@ function restoreStateSnapshot(snap) {
   if (document.getElementById('mcGameTime')) document.getElementById('mcGameTime').value = snap.mcGameTime;
   if (document.getElementById('mcSkills')) document.getElementById('mcSkills').value = snap.mcSkills;
   mcExp = snap.mcExp || 0; mcExpMax = snap.mcExpMax || 100; mcLinhCan = snap.mcLinhCan || 'Ngũ';
+  restorePhamNhanState(snap);mcLastAgeHours=pnHours();updateLifespanStatus();
   if (snap.mcStats) mcStats = JSON.parse(JSON.stringify(snap.mcStats));
   npcList = JSON.parse(JSON.stringify(snap.npcList || []));
   eventList = JSON.parse(JSON.stringify(snap.eventList || []));
@@ -4954,7 +5179,7 @@ async function exportSaveFile() {
   const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
   if (!gameData) return;
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.7.3_save.json"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.7.4_save.json"; a.click();
   log("Xuất save thành công.");
 }
 function importSaveFile() { const fi = document.getElementById('fileInput'); if (fi) fi.click(); }
@@ -4966,11 +5191,11 @@ function handleFileSelect(event) {
   reader.readAsText(file);
 }
 function exportWorldConfig() {
-  const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle'];
-  const cfg = { _version: 'v2.8.7.3', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
+  const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle', 'playMode'];
+  const cfg = { _version: 'v2.8.7.4', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if (el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.7.3.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.7.4.json'; a.click();
   log('📤 Xuất World Config thành công.'); alert('📤 Đã xuất!');
 }
 function importWorldConfig() { const fi = document.getElementById('worldConfigFileInput'); if (fi) fi.click(); }
@@ -5010,6 +5235,7 @@ async function resetAllFields() {
   stopTTS();
   chatHistory = []; turnHtmlHistory = []; npcList = []; eventList = []; turnCounter = 0; storySummary = "";
   systemRulesSentThisSession = false;
+  restorePhamNhanState();mcLastAgeHours=0;
   mcExp = 0; mcExpMax = 100; mcLinhCan = 'Ngũ';
   mcStats = { theChat: 'Phàm', thanNiem: 'Phàm', thienPhu: 'Thường' };
   stateSnapshots = []; priceMemory = {}; lastOptions = [];
@@ -5023,6 +5249,7 @@ async function resetAllFields() {
   document.getElementById('degradationWarning').style.display = 'none';
   document.getElementById('cjkWarningBox').style.display = 'none';
   document.getElementById('breakthroughStatus').style.display = 'none';
+  for(const id of ['worldContext','worldRules','powerSystem','aiRules','startScript']) document.getElementById(id).value=PHAM_NHAN_DEFAULTS[id];
   updateExpUI();
   await deleteFromIDB('HONDUC_TU_TIEN_SAVE');
   resetTokenStats(); resetKeyStatus();
@@ -5098,14 +5325,14 @@ function getStyleExemplarBlockMulti(scopeIds) {
 // Giải pháp: Chuẩn hóa scopeInput về array, gọi getStyleExemplarBlockMulti() chèn vào prompt.
 // ══════════════════════════════════════════════════════════════
 function buildSystemRules(scopeInput = 'default') {
-  const v = id => document.getElementById(id)?.value || '';
+  const v = id => pnWorldValue(id);
   let scopeIds = [];
   if (Array.isArray(scopeInput)) scopeIds = scopeInput;
   else if (typeof scopeInput === 'string') scopeIds = [scopeInput];
   else scopeIds = ['default'];
   const scopeExemplarBlock = getStyleExemplarBlockMulti(scopeIds);
   if (scopeExemplarBlock && scopeExemplarBlock.trim()) log(`🎨 Inject scope exemplar: ${scopeIds.filter(s => s !== 'default').join(', ')}`);
-  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3'}".
+  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4'}".
 
 # QUY TẮC TỐI CAO
 ${v('supremeMotifRule') || 'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt.'}
@@ -5122,6 +5349,8 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 6. Không tự đột phá.
 23. 2-3 đoạn nội tâm 《...》 mỗi lượt.
 24. Show don't tell.`}
+
+${phamNhanRules()}
 
 # THẾ GIỚI
 - Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom') || 'mặc định'}
@@ -5144,7 +5373,7 @@ ${scopeExemplarBlock}
 5) Khối \`\`\`json Codex`;
 }
 function buildCompactRules() {
-  return `# ⚡ v2.8.7.3
+  return `# ⚡ v2.8.7.4
 - Ngôi 2. Tiếng Việt có dấu. KHÔNG CJK.
 - ≥${MIN_TURN_WORDS} từ + 《...》.
 - Cuối lượt: [TÓM TẮT] + 2-4 lựa chọn + json Codex.`;
@@ -5172,6 +5401,7 @@ function safeParseJSON(str) {
   catch (e) { try { return JSON.parse(str.replace(/,\s*([}\]])/g, '$1')); } catch (e2) { return null; } }
 }
 function parseAndAutoUpdateCodex(fullResponseText) {
+  pnGiftAffinity.clear();
   try {
     const jsonMatch = fullResponseText.match(/```json\s*([\s\S]*?)\s*```/i);
     if (jsonMatch && jsonMatch[1]) {
@@ -5197,7 +5427,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       }
       if (codexData.priceRecords !== undefined && Array.isArray(codexData.priceRecords)) { codexData.priceRecords.forEach(pr => { if (pr && pr.item && pr.price !== undefined) recordPrice(pr.item, pr.quality, pr.price, pr.unit, pr.source); }); }
       if (codexData.transactionsList !== undefined && Array.isArray(codexData.transactionsList)) autoRecordPricesFromTransactions(codexData.transactionsList);
-      if (codexData.craftResultList !== undefined && Array.isArray(codexData.craftResultList) && codexData.craftResultList.length > 0) { log(`⚒️ Đang xử lý ${codexData.craftResultList.length} kết quả luyện chế...`); const craftResult = processCraftResults(codexData.craftResultList); if (craftResult && craftResult.totalExpGained > 0) log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained} (×2)`); }
+
       const oldLevel = document.getElementById('mcLevel').value;
       if (codexData.mcLevel !== undefined && String(codexData.mcLevel).trim() !== "") document.getElementById('mcLevel').value = codexData.mcLevel;
       if (codexData.mcGameTime !== undefined && String(codexData.mcGameTime).trim() !== "") { document.getElementById('mcGameTime').value = codexData.mcGameTime; normalizeGameTimeField(); }
@@ -5220,7 +5450,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
         codexData.npcActiveList.forEach(aiNpc => {
           if (!aiNpc || !aiNpc.name) return;
           let exist = aiNpc.id ? npcList.find(n => n.id === aiNpc.id) : npcList.find(n => n.name.toLowerCase() === aiNpc.name.toLowerCase());
-          if (exist) { Object.assign(exist, aiNpc); } else { npcList.push({ ...aiNpc, id: aiNpc.id || generateNpcId(), avatar: aiNpc.avatar || generateAutoAvatar(aiNpc.name), affinity: aiNpc.affinity || 50, pinned: false, lockedRules: false, status: aiNpc.status || '' }); }
+          if (exist) { Object.assign(exist, aiNpc); if(pnGiftAffinity.has(exist.id)) exist.affinity=pnGiftAffinity.get(exist.id); } else { npcList.push({ ...aiNpc, id: aiNpc.id || generateNpcId(), avatar: aiNpc.avatar || generateAutoAvatar(aiNpc.name), affinity: aiNpc.affinity ?? 50, pinned: false, lockedRules: false, status: aiNpc.status || '' }); }
         });
         renderNpcs();
       }
@@ -5228,6 +5458,7 @@ function parseAndAutoUpdateCodex(fullResponseText) {
       if (codexData.eventsList && Array.isArray(codexData.eventsList)) { codexData.eventsList.forEach(newEv => { let found = eventList.find(e => e.name.toLowerCase() === newEv.name.toLowerCase()); if (found) Object.assign(found, newEv); else eventList.push(newEv); }); renderEventsVisual(); syncEventsToTextarea(); }
       if (codexData.weaponsList && Array.isArray(codexData.weaponsList)) { renderWeaponsVisual(codexData.weaponsList); document.getElementById('worldItems').value = JSON.stringify(codexData.weaponsList, null, 2); }
       if (codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = typeof codexData.npcArchive === 'object' ? JSON.stringify(codexData.npcArchive, null, 2) : String(codexData.npcArchive);
+      if (codexData.craftResultList !== undefined && Array.isArray(codexData.craftResultList) && codexData.craftResultList.length > 0) { log(`⚒️ Đang xử lý ${codexData.craftResultList.length} kết quả luyện chế...`); const craftResult = processCraftResults(codexData.craftResultList); if (craftResult && craftResult.totalExpGained > 0) log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained} (×2)`); }
       renderNpcs(); updateExpUI(); updateSystemDashboard();
       log("> Codex updated!");
       let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
@@ -5331,16 +5562,16 @@ function getCodexMemoryPrompt() {
   const mcLevel = document.getElementById('mcLevel')?.value || 'Luyện Khí tầng 1';
   const mcTime = document.getElementById('mcGameTime')?.value || '0';
   const mcSkills = document.getElementById('mcSkills')?.value || 'Chưa có';
-  let npcSummary = npcList.length > 0 ? npcList.map(n => { if (!n.id) n.id = generateNpcId(); return `• [${n.id}] ${n.name}[${n.identity || '?'}]❤${n.affinity || 50}`; }).join('\n') : 'Chưa có';
+  let npcSummary = npcList.length > 0 ? npcList.map(n => { if (!n.id) n.id = generateNpcId(); return `• [${n.id}] ${n.name}[${n.identity || '?'}]❤${n.affinity ?? 50}`; }).join('\n') : 'Chưa có';
   let eventSummary = eventList.length > 0 ? eventList.slice(-5).map(ev => `• ${ev.name}@${ev.timeNote || '?'}`).join('\n') : 'Chưa có';
   let locSummary = 'Chưa có';
   try { const locs = JSON.parse(document.getElementById('locations')?.value || '[]'); if (locs.length > 0) locSummary = locs.map(l => `• ${l.name}(${l.danger || '?'})`).join('\n'); } catch (e) { }
   let weaponSummary = 'Chưa có';
   try { const weapons = JSON.parse(document.getElementById('worldItems')?.value || '[]'); if (weapons.length > 0) weaponSummary = weapons.map(w => `• ${w.name}[${w.rank || '?'}]`).join('\n'); } catch (e) { }
   let invSummary = 'Trống';
-  try { const inv = JSON.parse(document.getElementById('mcInventory')?.value || '[]'); if (inv.length > 0) invSummary = inv.map(i => { const catInfo = getItemCategoryInfo(i.category || detectItemCategory(i.name, i.quality, i.effect)); const refineTag = catInfo.needsRefine ? (i.isRefined ? ' (đã LH)' : ' (chưa LH)') : ''; return `• ${i.name}×${i.quantity || 1}(${i.quality || '?'}) [${catInfo.label}${refineTag}]`; }).join('\n'); } catch (e) { invSummary = document.getElementById('mcInventory')?.value || 'Trống'; }
+  try { const inv = JSON.parse(document.getElementById('mcInventory')?.value || '[]'); if (inv.length > 0) invSummary = inv.map(i => { const catInfo = getItemCategoryInfo(i.category || detectItemCategory(i.name, i.quality, i.effect)); const refineTag = catInfo.needsRefine ? (i.isRefined ? ' (đã LH)' : ' (chưa LH)') : ''; return `• ${i.name}${i.danVan?' ✦':''}×${i.quantity || 1}(${i.quality || '?'}) [${catInfo.label}${refineTag}]`; }).join('\n'); } catch (e) { invSummary = document.getElementById('mcInventory')?.value || 'Trống'; }
   const expLine = `${mcExp}/${mcExpMax} (Linh căn: ${mcLinhCan})`;
-  return `【CODEX】
+  return pnFilterCanon(`【CODEX】
 [NVC] ${mcName} | Cảnh giới: ${mcLevel} | EXP: ${expLine} | Time: ${mcTime}
 [Tố chất] Thể chất=${mcStats.theChat} | Thần niệm=${mcStats.thanNiem} | Thiên phú=${mcStats.thienPhu}
 [Kỹ năng] ${mcSkills}
@@ -5370,7 +5601,7 @@ ${getPriceMemoryPrompt()}
 
 🎭 Ngôi 2. 2-3 đoạn 《...》. Show don't tell.
 🚨 Mỗi lượt ≥${MIN_TURN_WORDS} từ.
-🈶 CHỈ TIẾNG VIỆT CÓ DẤU.`;
+🈶 CHỈ TIẾNG VIỆT CÓ DẤU.`);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -5595,12 +5826,17 @@ async function generateNpcRules(index, isSilent = false) {
 - Tên: ${npc.name || '(chưa có)'}
 - Thân phận: ${npc.identity || '(chưa có)'}
 - Tính cách: ${npc.personality || '(chưa có)'}
-- Hảo cảm: ${npc.affinity || 50}/100
+- Hảo cảm: ${npc.affinity ?? 50}/100
+- Hành vi hiện tại: ${npcAffinityRule(npc.affinity ?? 50)}
 
 📋 ARCHETYPES:
 ${archetypeKeys}
 
-⚠️ YÊU CẦU: CHỈ TIẾNG VIỆT. PHẢI có 4 mức hảo cảm: <0, 0-50, 50-80, >80.
+⚠️ YÊU CẦU: CHỈ TIẾNG VIỆT. PHẢI có 4 mức hảo cảm: <0, 0-50, 50-80, >80. Mốc 50 thuộc thiện chí.
+>80: chủ động trợ giúp lúc nguy hiểm, tiết lộ tin tức và đan phương, giá ưu đãi.
+50-80: thiện chí, giao dịch công bằng.
+0 đến dưới 50: dè dặt đề phòng, giá cao.
+<0: từ chối giao dịch lớn, có thể phản bội, đâm sau lưng khi có lợi.
 
 📖 FORMAT:
 """
@@ -5662,6 +5898,7 @@ const confirmAndStartGame = () => {
   }
 };
 const startGame = async () => {
+  restorePhamNhanState({playMode:pnMode(),mcGameTime:document.getElementById('mcGameTime').value});ensurePlayModeItem();updatePhamNhanUI();
   stopTTS();
   const storyBox = document.getElementById('story-box');
   chatHistory = []; turnHtmlHistory = []; turnCounter = 0; storySummary = "";
@@ -5671,7 +5908,7 @@ const startGame = async () => {
   document.getElementById('cjkWarningBox').style.display = 'none';
   storyBox.innerHTML = '<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   updateExpUI();
-  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.3'}".
+  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.7.4'}".
 
 [THÔNG TIN NVC]:
 - Tên & Thân phận: ${document.getElementById('mcName').value}
@@ -5682,7 +5919,8 @@ const startGame = async () => {
 - Túi đồ ban đầu: ${document.getElementById('mcInventory').value}
 
 [KỊCH BẢN MỞ ĐẦU]:
-${document.getElementById('startScript').value}
+${pnWorldValue('startScript')}
+${phamNhanRules()}
 
 ${getCodexMemoryPrompt()}
 
@@ -5710,6 +5948,7 @@ Hãy bắt đầu dẫn chuyện mở đầu cực kỳ cuốn hút (tối thi�
 // SEND ACTION — 🔧 FIX: DETECT SCOPE TỪ ACTION TEXT
 // ══════════════════════════════════════════════════════════════
 const sendAction = async () => {
+  if (!updateLifespanStatus()) return;
   const inputEl = document.getElementById('userInput');
   let actionText = inputEl.value.trim();
   if (!actionText) return;
@@ -5788,6 +6027,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (gameData.mcExp !== undefined) mcExp = gameData.mcExp;
       if (gameData.mcExpMax !== undefined) mcExpMax = gameData.mcExpMax;
       if (gameData.mcLinhCan) mcLinhCan = gameData.mcLinhCan;
+      restorePhamNhanState(gameData);
       if (gameData.mcStats) mcStats = gameData.mcStats;
       if (gameData.keyStatus) keyStatus = gameData.keyStatus;
       if (gameData.currentKeyIndex !== undefined) currentKeyIndex = gameData.currentKeyIndex;
@@ -5813,6 +6053,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateExpUI();
   normalizeGameTimeField();
   updateSystemDashboard();
+
+  if(v('gameTitle').includes('2.8.7.3')) document.getElementById('gameTitle').value=v('gameTitle').replaceAll('2.8.7.3','2.8.7.4');
+  mcLastAgeHours=pnHours();ensurePlayModeItem();updateLifespanStatus();
 
   // Migration item system
   try {
@@ -5875,13 +6118,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     log(`📚 Recipe Library: Trận Pháp ${c.tran_phap || 0} | Phù Lục ${c.ve_phu || 0} | Luyện Khí ${c.luyen_khi || 0} | Luyện Đan ${c.luyen_dan || 0} | TỔNG ${c._total || 0}`);
   }
 
-  log("✅ v2.8.7.3 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
+  log("✅ v2.8.7.4 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
   log("🎯 7 loại cày level: Luyện Đan / Khí / Phù / Trận / Tu Luyện / Trồng Trọt / Săn Thú.");
   log("⏩ Nhấn '⏩ Cày Level' trên header hoặc chọn option 5 trong lượt để dùng.");
   log("💡 Lần đầu: nhập API Key Gemini ở sidebar, bấm ⚡ KHỞI TẠO để bắt đầu.");
 });
 
 </script>
+<div id="lifespanDeath" hidden role="alertdialog" aria-modal="true" aria-label="Toạ hoá" style="position:fixed;inset:0;z-index:99999;background:#080808f5;color:#f85149;text-align:center;padding:25vh 20px"><h1>☠️ TOẠ HOÁ - thọ nguyên tận</h1><button onclick="loadLastLivingSave()">Tải bản lưu gần nhất</button></div>
 </body>
 </html>
 <!-- END PART 14/14 — HOÀN CHỈNH v2.8.7.2 -->

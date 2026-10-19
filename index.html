@@ -7,7 +7,7 @@
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e;--shadow-sm:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--transition-fast:150ms cubic-bezier(0.4,0,0.2,1);--transition-base:250ms cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-html{scroll-behavior:smooth}const EXP_MULTIPLIER = 1.0;
+html{scroll-behavior:smooth}
 body{background:linear-gradient(135deg,#0b0e14 0%,#0d1117 100%);color:var(--text-color);font-size:14px;line-height:1.5;padding:10px;min-height:100vh}
 .header{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color);box-shadow:var(--shadow-md);backdrop-filter:blur(10px)}
 .header-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -775,7 +775,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
         <option value="Địa">Địa (×1.25)</option>
         <option value="Thiên">Thiên (×1.4)</option>
         <option value="Tiên">Tiên (×1.6)</option>
-        <option value="Biến Dị">Biến Dị (×1.0)</option>
+        <option value="Biến Dị">Biến Dị (×2.0)</option>
       </select>
     </div>
     <div class="mc-stat-item">
@@ -785,7 +785,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
         <option value="Linh">Linh (×1.15)</option>
         <option value="Địa">Địa (×1.35)</option>
         <option value="Thiên">Thiên (×1.6)</option>
-        <option value="Tiên">Tiên</option>
+        <option value="Tiên">Tiên (×2.0)</option>
         <option value="Biến Dị">Biến Dị (×100)</option>
       </select>
     </div>
@@ -806,7 +806,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 </div>
 
 <div class="exp-container">
-  <div class="label-title" style="color:#3fb950">📊 KINH NGHIỆM TU LUYỆN <span style="color:#d29922;font-size:10px">(×2 SPEED)</span></div>
+  <div class="label-title" style="color:#3fb950">📊 KINH NGHIỆM TU LUYỆN <span style="color:#d29922;font-size:10px">(×1 SPEED)</span></div>
   <div class="exp-row">
     <span id="expLabel">0 / 100 EXP</span>
     <span id="expLevelLabel" style="color:var(--accent-gold)">Luyện Khí tầng 1</span>
@@ -834,8 +834,8 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e"></textarea></div>
 </div>
 <!-- END PART 3/14 --><div id="prof" class="tab-content">
-<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.7.6 — EXP×2)</div>
-<div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. <b style="color:#d29922">⚡ EXP ×2</b>.</div>
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.7.6 — EXP×1)</div>
+<div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. <b style="color:#d29922">⚡ EXP ×1</b>.</div>
 
 <div class="prof-container">
   <div class="label-title" style="color:#4dd0e1">📊 TỔNG QUAN NGHỀ NGHIỆP</div>
@@ -4695,7 +4695,7 @@ function processCraftResults(craftList) {
       establishActivity(profId,recipe);
       const result = addProfessionExp(profId, craftExp, recipe);
       totalExpGained += result?result.expGained:0;
-      logs.push(`⚒️ ${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}: +${result?result.expGained:0} EXP (đã gồm ×2; bỏ ${result?result.discardedExp:0} EXP vượt giới hạn) (${recipe} [${tier}] x${totalProduced})`);
+      logs.push(`⚒️ ${PROFESSION_TYPES[profId].icon} ${PROFESSION_TYPES[profId].name}: +${result?result.expGained:0} EXP (bỏ ${result?result.discardedExp:0} EXP vượt giới hạn) (${recipe} [${tier}] x${totalProduced})`);
       if (result && result.leveledUp) { const ranks = PROFESSION_RANKS_BY_TYPE[profId] || PROFESSION_RANKS_BY_TYPE.luyen_dan; logs.push(`🎉 LÊN CẤP NGHỀ: ${PROFESSION_TYPES[profId].name} Cấp ${result.oldRank} → ${result.newRank} (${ranks[result.newRank].name})`); }
     }
   }
@@ -5237,7 +5237,7 @@ async function loadGame() {
     if (gameData.npcList) { npcList = gameData.npcList; npcList.forEach(n => { if (!n.id) n.id = generateNpcId(); if (n.pinned === undefined) n.pinned = false; if (n.lockedRules === undefined) n.lockedRules = false; if (n.status === undefined) n.status = ''; }); renderNpcs(); }
     if (gameData.eventList) { eventList = gameData.eventList; renderEventsVisual(); }
     if (gameData.inputs) { Object.keys(gameData.inputs).forEach(id => { const el = document.getElementById(id); if (el && id !== 'modelListInput') el.value = gameData.inputs[id]; }); }
-    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.7.5');
+    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.7.6');
     mcLastAgeHours=pnHours();ensurePlayModeItem();renderInventoryVisual(pnInventory());updateLifespanStatus();
     stateSnapshots = [captureStateSnapshot()];
     updateTokenStatsDisplay(); updateExpUI(); renderKeyStatus(); syncToggleUI(); updateKeyCountInfo(); normalizeGameTimeField(); renderProfessionUI(); updateSystemDashboard(); loadMcStatsUI();
@@ -5579,7 +5579,7 @@ function parseAndAutoUpdateCodex(fullResponseText, playerAction='') {
       if (codexData.eventsList && Array.isArray(codexData.eventsList)) { codexData.eventsList.forEach(newEv => { let found = eventList.find(e => e.name.toLowerCase() === newEv.name.toLowerCase()); if (found) Object.assign(found, newEv); else eventList.push(newEv); }); renderEventsVisual(); syncEventsToTextarea(); }
       if (codexData.weaponsList && Array.isArray(codexData.weaponsList)) { renderWeaponsVisual(codexData.weaponsList); document.getElementById('worldItems').value = JSON.stringify(codexData.weaponsList, null, 2); }
       if (codexData.npcArchive !== undefined) document.getElementById('npcArchive').value = typeof codexData.npcArchive === 'object' ? JSON.stringify(codexData.npcArchive, null, 2) : String(codexData.npcArchive);
-      if (codexData.craftResultList !== undefined && Array.isArray(codexData.craftResultList) && codexData.craftResultList.length > 0) { log(`⚒️ Đang xử lý ${codexData.craftResultList.length} kết quả luyện chế...`); const craftResult = processCraftResults(codexData.craftResultList); if (craftResult && craftResult.totalExpGained > 0) log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained} (×2)`); }
+      if (codexData.craftResultList !== undefined && Array.isArray(codexData.craftResultList) && codexData.craftResultList.length > 0) { log(`⚒️ Đang xử lý ${codexData.craftResultList.length} kết quả luyện chế...`); const craftResult = processCraftResults(codexData.craftResultList); if (craftResult && craftResult.totalExpGained > 0) log(`✨ Tổng EXP nghề nhận được: +${craftResult.totalExpGained}`); }
       renderNpcs(); updateExpUI(); updateSystemDashboard();
       log("> Codex updated!");
       let cleanText = fullResponseText.replace(/```json\s*([\s\S]*?)\s*```/i, '').trim();
@@ -5668,7 +5668,7 @@ function getPriceReferenceString() {
 }
 function getProfessionAIContext() {
   if (!settings.professionSystem) return '';
-  let txt = '\n[⚒️ NGHỀ NGHIỆP NVC (EXP×2)]\n';
+  let txt = '\n[⚒️ NGHỀ NGHIỆP NVC]\n';
   for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
     const rankInfo = getProfessionRankInfo(profId);
     const state = professionState[profId];
@@ -6176,7 +6176,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   normalizeGameTimeField();
   updateSystemDashboard();
 
-  if(/2\.8\.7\.[34]/.test(v('gameTitle'))) document.getElementById('gameTitle').value=v('gameTitle').replace(/2\.8\.7\.[34]/g,'2.8.7.5');
+  if(/2\.8\.7\.[34]/.test(v('gameTitle'))) document.getElementById('gameTitle').value=v('gameTitle').replace(/2\.8\.7\.[34]/g,'2.8.7.6');
   mcLastAgeHours=pnHours();ensurePlayModeItem();updateLifespanStatus();
 
   // Migration item system

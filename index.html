@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.8 — TIME SKIP ĐA HOẠT ĐỘNG</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1 — TIME SKIP ĐA HOẠT ĐỘNG</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e;--shadow-sm:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--transition-fast:150ms cubic-bezier(0.4,0,0.2,1);--transition-base:250ms cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -326,7 +326,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .prof-table-wrapper tr.current-row{background:rgba(77,208,225,.1)}
 .prof-table-wrapper tr.current-row td{color:#4dd0e1;font-weight:bold}
 .prof-table-title{background:linear-gradient(90deg,rgba(31,107,235,.15),transparent);border-left:3px solid #1f6beb;padding:8px 12px;font-size:12px;font-weight:bold;color:#79c0ff}
-/* ═══ v2.8.8 TIME SKIP MODAL ═══ */
+/* ═══ v2.8.8.1 TIME SKIP MODAL ═══ */
 .timeskip-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:250;justify-content:center;align-items:center;padding:15px;backdrop-filter:blur(8px)}
 .timeskip-modal.active{display:flex}
 .timeskip-content{background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border:2px solid var(--accent-gold);border-radius:12px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;padding:20px;box-shadow:0 0 40px rgba(210,153,34,.5)}
@@ -375,7 +375,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="header">
   <div class="header-row header-row-main">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.8</span>
+    <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1</span>
     <div class="header-actions">
       <button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
       <button class="header-game-tab btn-timeskip-option" onclick="openTimeSkipModal()" title="Mô phỏng cày level đa hoạt động">⏩ Cày Level</button>
@@ -396,7 +396,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 
-<div class="section-header">🔄 v2.8.8 CẬP NHẬT</div>
+<div class="section-header">🔄 v2.8.8.1 CẬP NHẬT</div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#d29922,#e3702d);font-size:12px" onclick="openTimeSkipModal()">⏩ CÀY LEVEL — TIME SKIP ĐA HOẠT ĐỘNG</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#db61a2);font-size:12px" onclick="refreshGameStateFromHistory()">🔄 Cập Nhật Trạng Thái (5 lượt)</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#e3702d,#d29922);font-size:12px" onclick="showItemSystemInfo()">📦 Hệ Thống Phân Loại Vật Phẩm</button>
@@ -464,21 +464,21 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
 
-<div class="section-header">⚒️ Nghề Nghiệp (v2.8.8)</div>
+<div class="section-header">⚒️ Nghề Nghiệp (v2.8.8.1)</div>
 <div class="toggle-row"><span>Bật Profession System</span><div class="toggle-switch active" id="toggleProfessionSystem" onclick="toggleSetting('professionSystem')"></div></div>
 <div class="toggle-row"><span>Auto-tính EXP nghề</span><div class="toggle-switch active" id="toggleProfessionAutoExp" onclick="toggleSetting('professionAutoExp')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-cyan);font-size:12px" onclick="showProfessionStats()">📊 Thống Kê Nghề</button>
 <button class="sidebar-item" style="background:var(--accent-pink);font-size:11px" onclick="simulateCraft('luyen_dan')">🧪 Mô Phỏng Luyện Đan</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="resetProfessions()">🔄 Reset Nghề</button>
 
-<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.8)</div>
+<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.8.1)</div>
 <div class="toggle-row"><span>Bật Breakthrough Requirements</span><div class="toggle-switch active" id="toggleBreakthroughReq" onclick="toggleSetting('breakthroughReq')"></div></div>
 <div class="toggle-row"><span>Cảnh báo thiếu điều kiện</span><div class="toggle-switch active" id="toggleBreakthroughWarn" onclick="toggleSetting('breakthroughWarn')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-gold);color:#000;font-size:12px" onclick="openBreakthroughPanel()">⚡ Kiểm Tra Đột Phá</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showBreakthroughTable()">📖 Bảng Yêu Cầu Đột Phá</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#388bfd,#1f6beb);font-size:11px" onclick="showRealmProgressionTable()">📈 Bảng Lộ Trình Cảnh Giới</button>
 
-<div class="section-header">🎯 Quest Delegation (v2.8.8)</div>
+<div class="section-header">🎯 Quest Delegation (v2.8.8.1)</div>
 <div class="toggle-row"><span>Bật Quest Delegation Detection</span><div class="toggle-switch active" id="toggleQuestDelegation" onclick="toggleSetting('questDelegation')"></div></div>
 <div class="toggle-row"><span>Bật Transaction Chain Detection</span><div class="toggle-switch active" id="toggleTransactionChain" onclick="toggleSetting('transactionChain')"></div></div>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showQuestDelegationStats()">📊 Thống Kê Quest Delegation</button>
@@ -489,7 +489,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="sidebar-item" style="background:#7d2828;font-size:12px;margin-top:8px" onclick="scanChineseChars()">🔍 Quét CJK</button>
 <button class="sidebar-item" style="background:#8b2020;font-size:12px" onclick="autoCleanCJK()">🧹 Xóa CJK</button>
 
-<div class="section-header">🎨 Scope Registry v2.8.8</div>
+<div class="section-header">🎨 Scope Registry v2.8.8.1</div>
 <button class="sidebar-item" style="background:var(--accent-purple);font-size:12px" onclick="restoreDefaultScopes()">🔄 Khôi Phục 16 Scope</button>
 <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px" onclick="showScopeStats()">📊 Thống Kê Scope</button>
 <button class="sidebar-item" style="background:#444;font-size:11px" onclick="openTagLegend()">🏷️ Xem Chú Thích Tag</button>
@@ -632,14 +632,14 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.8</div>
+  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.8.1</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
   <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
     <div class="input-header">
       <div>
-        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.8</div>
+        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.8.1</div>
         <div class="label-desc">16 scope được phân nhóm theo <b>handledBy</b>: <span style="color:#3fb950">🤖 CODE</span> · <span style="color:#d29922">⚖️ HYBRID</span> · <span style="color:#8b949e">🎨 STYLE</span>.</div>
       </div>
       <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM</button>
@@ -685,7 +685,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.8</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px">BỐI CẢNH
 Thiên Nam Vực, khởi đầu tại Việt Quốc. Người chơi rời làng Ngũ Lý Câu, lên Thất Huyền Môn ở Thái Lĩnh Sơn rồi tìm đường gia nhập Hoàng Phong Cốc.
@@ -834,7 +834,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 <div class="form-group" style="margin-top:15px"><div class="label-title" style="font-size:11px;color:var(--subtext-color)">RAW DATA:</div><textarea id="mcInventory" style="min-height:80px;font-size:12px;color:#8b949e"></textarea></div>
 </div>
 <!-- END PART 3/14 --><div id="prof" class="tab-content">
-<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.8 — EXP×1)</div>
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.8.1 — EXP×1)</div>
 <div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. <b style="color:#d29922">⚡ EXP ×1</b>.</div>
 
 <div class="prof-container">
@@ -860,7 +860,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.8 — 665 công thức)</div>
+  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.8.1 — 665 công thức)</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
@@ -959,7 +959,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.8.8 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div>
+<div id="sysLogs" class="log-box">> System v2.8.8.1 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div>
 </div>
 
 <div id="thienDaoModal" class="thiendao-modal">
@@ -977,7 +977,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- v2.8.8 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
+<!-- v2.8.8.1 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <div id="timeskipModal" class="timeskip-modal">
 <div class="timeskip-content">
@@ -1060,7 +1060,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 </div>
 <!-- END PART 5/14 --><script>
 // ══════════════════════════════════════════════════════════════
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.8 — TIME SKIP ĐA HOẠT ĐỘNG
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1 — TIME SKIP ĐA HOẠT ĐỘNG
 // PHẦN 6/14: SCRIPT MỞ ĐẦU — CONSTANTS + HELPERS + STATE
 // ══════════════════════════════════════════════════════════════
 const DB_NAME = 'HongDucTuTienDB';
@@ -1215,7 +1215,7 @@ let mcExp = 0;
 let mcExpMax = 100;
 let mcLinhCan = 'Ngũ';
 
-// v2.8.8 — state is migrated independently of the IndexedDB schema.
+// current release state is migrated independently of the IndexedDB schema.
 const REALM_LIFESPAN = { LK:120, TC:250, KD:600, NA:1200, HT:3000, LH:Infinity };
 let mcAge = 16, mcLifespanGrace = false, mcLifespanDeadline = null, mcDead = false;
 let mcPillTolerance = {}, mcToleranceDays = 0, mcLastAgeHours = null;
@@ -1318,7 +1318,7 @@ function qualityForVan(v){return ITEM_QUALITIES[Math.max(0,Math.min(4,Number(v)-
 function vanForQuality(q){const n=normalizeVN(q||'');return ITEM_QUALITIES.findIndex(x=>normalizeVN(x)===n)+1;}
 function vanSuffix(q){const n=vanForQuality(q);return n>0?' ✧'+n+' vân':'';}
 function pnAddStack(inv,name,quality,quantity,tier='LK'){if(quantity<=0)return;const q=inventoryQuality({name,quality}),item=inv.find(i=>itemBare(i.name)===itemBare(name)&&inventoryQuality(i)===q);if(item)item.quantity=(item.quantity??1)+quantity;else inv.push({name,quality,quantity,pillTier:tier,icon:'💊',category:detectItemCategory(name,quality,''),effect:''});}
-async function absorbDanVan(index){if(!updateLifespanStatus())return;const inv=pnInventory(),p=inv[index];if(!p||(p.quantity??1)<1)return;if(normalizeVN(p.name)==='tay tuy dan'){log('🌱 Dùng nút Tẩy Tủy Đan để tẩy linh căn.');return;}const recipe=PROFESSION_OUTPUT_RECIPES.luyen_dan[p.name],tier=p.pillTier||recipe?.tier||'LK',count=mcPillTolerance[p.name]||0,eff=pillToleranceEff(count),gain=Math.round(Math.round((BASE_EXP_PER_QUALITY[tier]||10)*(QUALITY_EXP_MULT[p.quality]||1))*eff);mcPillTolerance[p.name]=count+1;p.quantity=(p.quantity??1)-1;mcExp+=gain;pnWriteInventory(inv);updateExpUI();log('✦ Hấp thu '+p.name+': +'+gain+' EXP.');await saveGame(false);}
+async function absorbDanVan(index){if(!updateLifespanStatus())return;const inv=pnInventory(),p=inv[index];if(!p||(p.quantity??1)<1)return;if(normalizeVN(p.name)==='tay tuy dan'){log('🌱 Dùng nút Tẩy Tủy Đan để tẩy linh căn.');return;}const recipe=PROFESSION_OUTPUT_RECIPES.luyen_dan[p.name],tier=p.pillTier||recipe?.tier||'LK',preTolerance=mcPillTolerance[p.name]||0,eff=pillToleranceEff(preTolerance),gain=Math.round(Math.round((BASE_EXP_PER_QUALITY[tier]||10)*(QUALITY_EXP_MULT[p.quality]||1))*eff);mcPillTolerance[p.name]=preTolerance+1;p.quantity=(p.quantity??1)-1;mcExp+=gain;pnWriteInventory(inv);updateExpUI();log('✦ Hấp thu '+p.name+': +'+gain+' EXP.');await saveGame(false);}
 function npcAffinityRule(aff) {return aff>80?'chủ động trợ giúp lúc nguy hiểm, tiết lộ tin tức và đan phương, giá ưu đãi':aff>=50?'thiện chí, giao dịch công bằng':aff>=0?'dè dặt đề phòng, giá cao':'từ chối giao dịch lớn, có thể phản bội, đâm sau lưng khi có lợi';}
 function applyGiftAffinity(tx,removed) {
  const target=normalizeVN(String(tx.target || tx.recipient || tx.npc || tx.to || tx.targetNpc || ''));if(!target)return;
@@ -1969,7 +1969,7 @@ function stripNpcPhrase(rawText) {
   }
   return after;
 }
-// v2.8.8: canonical names retain every name word; quality is a separate key.
+// Canonical names retain every name word; quality is a separate key.
 function itemWords(value) { return normalizeVN(String(value || '')).replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' '); }
 function itemQuality(value) { return (itemWords(value).match(/\b(ha|trung|thuong|cuc|tuyet|tien|linh|than) pham\b/) || [''])[0]; }
 function itemBare(value) { return itemWords(value).replace(/\b(ha|trung|thuong|cuc|tuyet|tien|linh|than) pham\b/g,'').trim().replace(/\s+/g,' '); }
@@ -3073,7 +3073,7 @@ function copyUnifiedLog() {
   const storyText = document.getElementById('story-box')?.innerText || '';
   const logsText = document.getElementById('sysLogs')?.innerText || '';
   const statsText = document.getElementById('tokenStats')?.innerText || '';
-  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.8\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
+  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
   const full = header + `━━━━━━━ 📜 NHẬT KÝ CHƠI GAME ━━━━━━━\n\n${storyText}\n\n` + `━━━━━━━ 🔧 SYSTEM LOGS ━━━━━━━\n\n${logsText}\n\n` + `━━━━━━━ 📊 TOKEN STATS ━━━━━━━\n\n${statsText}`;
   if (!storyText || storyText.includes('Chưa có dữ liệu')) { alert("⚠️ Chưa có nội dung để copy!"); return; }
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3650,6 +3650,7 @@ function showVersionLog() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
   let html = `<div style="color:var(--accent-gold);font-size:13px;margin-bottom:10px">📋 NHẬT KÝ PHIÊN BẢN</div>`;
+  html += `<div class="thiendao-result" style="border-left:3px solid #58a6ff"><div class="thiendao-result-title" style="color:#58a6ff">v2.8.8.1 (2026-10-20) — BA SỬA LỖI</div><div class="thiendao-result-body">Đồng bộ kháng dược hấp thu trực tiếp theo nhịp tiền tăng, sửa nhãn EXP cảnh giới cuối, sửa câu báo thiếu vật phẩm.</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #d29922"><div class="thiendao-result-title" style="color:#d29922">v2.8.7.1 (2026-10-18) — TIME SKIP ĐA HOẠT ĐỘNG</div><div class="thiendao-result-body">⏩ <b>7 HOẠT ĐỘNG CÀY LEVEL</b>: Luyện Đan, Luyện Khí, Vẽ Phù, Trận Pháp, Tu Luyện, Trồng Trọt, Săn Thú<br>🎯 Nút "Cày Level" trên header + option thứ 5 tự động<br>💾 Snapshot + Save tự động sau mỗi lần<br>📊 Báo cáo chi tiết: Profit/Exp/Injury</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.6 — FULL RECIPE LIBRARY</div><div class="thiendao-result-body">650+ công thức 4 nghề</div></div>`;
   resultsDiv.innerHTML = html;
@@ -3783,7 +3784,7 @@ function renderProfessionRankTable(profId) {
 function showProfessionStats() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
-  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.8</div>`;
+  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.8.1</div>`;
   for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
     const state = professionState[profId];
     const rankInfo = getProfessionRankInfo(profId);
@@ -4101,7 +4102,7 @@ function updateExpUI() {
   const atMinorCap = minorDef && minorDef.getNext(parsed.sub) === null && mcExp >= minorThreshold;
   const nextRealm = { LK: 'TC', TC: 'KD', KD: 'NA', NA: 'HT', HT: 'LH' }[parsed.realm];
   const capLabel = atMinorCap ? (nextRealm ? `Cực hạn - Sắp ${REALM_NAME[nextRealm]}` : 'Cực hạn') : '';
-  if (expDetail) expDetail.textContent = `Linh căn: ${mcLinhCan} (×${lcCoef}) | Cảnh giới: ×${realmMult} | Cần: ${mcExpMax.toLocaleString()} EXP${capLabel ? ' | ' + capLabel : ''}`;
+  if (expDetail) { const requirementLabel = nextRealm ? `Cần: ${mcExpMax.toLocaleString()} EXP` : 'Đã đạt cảnh giới tối thượng'; expDetail.textContent = `Linh căn: ${mcLinhCan} (×${lcCoef}) | Cảnh giới: ×${realmMult} | ${requirementLabel}${capLabel ? ' | ' + capLabel : ''}`; }
   if (pct >= 100) barEl.style.background = 'linear-gradient(90deg,#d29922,#f0c040)';
   else if (pct >= 75) barEl.style.background = 'linear-gradient(90deg,#238636,#3fb950)';
   else barEl.style.background = 'linear-gradient(90deg,#1f6beb,#388bfd)';
@@ -4477,7 +4478,7 @@ function prevalidateTransaction(actionText) {
         }
         const itemShown = itemNameRaw || uniqCandidates[uniqCandidates.length - 1] || '(không rõ)';
         const invList = inv.length > 0 ? inv.map(i => `  • ${i.name}${i.quality ? ` [${i.quality}]` : ''} x${i.quantity || 1}`).join('\n') : '  (túi đồ trống)';
-        return { ok: false, type: 'give', message: `❌ KHÔNG CÓ VẬT PHẨM TRONG TÚI!\n\n🎁 Muốn cho: "${itemShown}"\n📦 Túi đồ:\n${invList}\n\n🚫 Không thể cho vật phẩm KHÔNG sở hữu.` };
+        return { ok: false, type: 'give', message: `❌ Không có "${itemShown}" trong túi đồ.` };
       }
     }
     intent.itemName=qualifiedItemName(matchedItem);
@@ -4667,7 +4668,7 @@ function detectSceneScopes(actionText) {
   return Array.from(detected);
 }
 // END PART 11/14// ══════════════════════════════════════════════════════════════
-// TIME SKIP CORE LOGIC — v2.8.8
+// TIME SKIP CORE LOGIC — v2.8.8.1
 // ══════════════════════════════════════════════════════════════
 
 let tsCurrentActivity = 'tu_luyen';
@@ -5091,7 +5092,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.8', inputs: {}
+    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.8.1', inputs: {}
   };
   inputIds.forEach(id => { const el = document.getElementById(id); if (el) gameData.inputs[id] = el.value; });
   try { await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData); log("Game saved."); if (isManual) { alert("💾 Đã lưu game!"); toggleSidebar(); } }
@@ -5130,7 +5131,7 @@ async function loadGame() {
     if (gameData.npcList) { npcList = gameData.npcList; npcList.forEach(n => { if (!n.id) n.id = generateNpcId(); if (n.pinned === undefined) n.pinned = false; if (n.lockedRules === undefined) n.lockedRules = false; if (n.status === undefined) n.status = ''; }); renderNpcs(); }
     if (gameData.eventList) { eventList = gameData.eventList; renderEventsVisual(); }
     if (gameData.inputs) { Object.keys(gameData.inputs).forEach(id => { const el = document.getElementById(id); if (el && id !== 'modelListInput') el.value = gameData.inputs[id]; }); }
-    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.8');
+    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.8.1');
     mcLastAgeHours=pnHours();ensurePlayModeItem();renderInventoryVisual(pnInventory());updateLifespanStatus();
     stateSnapshots = [captureStateSnapshot()];
     updateTokenStatsDisplay(); updateExpUI(); renderKeyStatus(); syncToggleUI(); updateKeyCountInfo(); normalizeGameTimeField(); renderProfessionUI(); updateSystemDashboard(); loadMcStatsUI();
@@ -5192,7 +5193,7 @@ async function exportSaveFile() {
   const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
   if (!gameData) return;
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.8_save.json"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.8.1_save.json"; a.click();
   log("Xuất save thành công.");
 }
 function importSaveFile() { const fi = document.getElementById('fileInput'); if (fi) fi.click(); }
@@ -5205,10 +5206,10 @@ function handleFileSelect(event) {
 }
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle', 'playMode'];
-  const cfg = { _version: 'v2.8.8', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
+  const cfg = { _version: 'v2.8.8.1', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if (el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.8.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.8.1.json'; a.click();
   log('📤 Xuất World Config thành công.'); alert('📤 Đã xuất!');
 }
 function importWorldConfig() { const fi = document.getElementById('worldConfigFileInput'); if (fi) fi.click(); }
@@ -5345,7 +5346,7 @@ function buildSystemRules(scopeInput = 'default') {
   else scopeIds = ['default'];
   const scopeExemplarBlock = getStyleExemplarBlockMulti(scopeIds);
   if (scopeExemplarBlock && scopeExemplarBlock.trim()) log(`🎨 Inject scope exemplar: ${scopeIds.filter(s => s !== 'default').join(', ')}`);
-  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8'}".
+  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1'}".
 
 # QUY TẮC TỐI CAO
 ${v('supremeMotifRule') || 'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt.'}
@@ -5386,7 +5387,7 @@ ${scopeExemplarBlock}
 5) Khối \`\`\`json Codex`;
 }
 function buildCompactRules() {
-  return `# ⚡ v2.8.8
+  return `# ⚡ v2.8.8.1
 - Ngôi 2. Tiếng Việt có dấu. KHÔNG CJK.
 - ≥${MIN_TURN_WORDS} từ + 《...》.
 - Cuối lượt: [TÓM TẮT] + 2-4 lựa chọn + json Codex.`;
@@ -5923,7 +5924,7 @@ const startGame = async () => {
   document.getElementById('cjkWarningBox').style.display = 'none';
   storyBox.innerHTML = '<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   updateExpUI();
-  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8'}".
+  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8.1'}".
 
 [THÔNG TIN NVC]:
 - Tên & Thân phận: ${document.getElementById('mcName').value}
@@ -6069,7 +6070,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   normalizeGameTimeField();
   updateSystemDashboard();
 
-  if(/2\.8\.7\.[34]/.test(v('gameTitle'))) document.getElementById('gameTitle').value=v('gameTitle').replace(/2\.8\.7\.[34]/g,'2.8.8');
+  if(/2\.8\.7\.[34]/.test(v('gameTitle'))) document.getElementById('gameTitle').value=v('gameTitle').replace(/2\.8\.7\.[34]/g,'2.8.8.1');
   mcLastAgeHours=pnHours();ensurePlayModeItem();updateLifespanStatus();
 
   // Migration item system
@@ -6133,7 +6134,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     log(`📚 Recipe Library: Trận Pháp ${c.tran_phap || 0} | Phù Lục ${c.ve_phu || 0} | Luyện Khí ${c.luyen_khi || 0} | Luyện Đan ${c.luyen_dan || 0} | TỔNG ${c._total || 0}`);
   }
 
-  log("✅ v2.8.8 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
+  log("✅ v2.8.8.1 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
   log("🎯 7 loại cày level: Luyện Đan / Khí / Phù / Trận / Tu Luyện / Trồng Trọt / Săn Thú.");
   log("⏩ Nhấn '⏩ Cày Level' trên header hoặc chọn option 5 trong lượt để dùng.");
   log("💡 Lần đầu: nhập API Key Gemini ở sidebar, bấm ⚡ KHỞI TẠO để bắt đầu.");

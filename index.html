@@ -1877,14 +1877,14 @@ const TIME_UNITS = {
   'thang': 30 * 24, 'tháng': 30 * 24,
   'tuan': 7 * 24, 'tuần': 7 * 24, 'chu': 7 * 24,
   'ngay': 24, 'ngày': 24, 'nhat': 24,
-  'gio': 1, 'giờ': 1, 'canh': 2,
+  'gio': 1, 'giờ': 1, 'h': 1, 'canh': 2,
   'khac': 1 / 4, 'khắc': 1 / 4,
   'phut': 1 / 60, 'phút': 1 / 60,
   'giay': 1 / 3600, 'giây': 1 / 3600
 };
 function parseTimeString(str) {
   if (!str) return { totalHours: 0, hasUnit: false, display: '0 giờ' };
-  const s = String(str).trim();
+  const s = String(str).trim().replace(/^(ngày|ngay)\s*(\d+)\b/iu, '$2 ngày');
   const regex = /(\d[\d.,]*)\s*([a-zA-Zà-ỹ]+)/gi;
   let total = 0; let matched = false; let m;
   while ((m = regex.exec(s)) !== null) {
@@ -5699,7 +5699,7 @@ ${npcSummary}
 [Sự kiện] ${eventSummary}
 [Pháp bảo — THẾ GIỚI] ${weaponSummary}
 [TÓM TẮT] ${storySummary || 'Game mới bắt đầu.'}
-${liveNpcRule}\n${skillTeachRule}\n${getProfessionAIContext()}
+${liveNpcRule}\n${skillTeachRule}\nmcGameTime là tổng thời gian đã trôi qua trong game, không phải tuổi NVC: cộng thời lượng hành động vào tổng trước đó, không thay bằng thời lượng riêng của lượt. Ví dụ bế quan 3 ngày rồi nhiệm vụ 10 phút phải ghi mcGameTime: 3 ngày 10 phút.\n${getProfessionAIContext()}
 【END CODEX】
 
 ${getPriceReferenceString()}

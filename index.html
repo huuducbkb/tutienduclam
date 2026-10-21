@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.8.2 — TIME SKIP ĐA HOẠT ĐỘNG</title>
+<title>HỒNG ĐỨC TU TIÊN LỘ v2.8.8.3 — TIME SKIP ĐA HOẠT ĐỘNG</title>
 <style>
 :root{--bg-color:#0b0e14;--panel-bg:#151921;--input-bg:#0d1117;--accent-purple:#8957e5;--accent-blue:#388bfd;--accent-green:#238636;--accent-gold:#d29922;--accent-red:#da3633;--accent-orange:#e3702d;--accent-cyan:#1f9eb0;--accent-pink:#db61a2;--text-color:#c9d1d9;--border-color:#30363d;--subtext-color:#8b949e;--shadow-sm:0 1px 3px rgba(0,0,0,.35);--shadow-md:0 4px 12px rgba(0,0,0,.4);--shadow-lg:0 8px 24px rgba(0,0,0,.5);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;--transition-fast:150ms cubic-bezier(0.4,0,0.2,1);--transition-base:250ms cubic-bezier(0.4,0,0.2,1)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -326,7 +326,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 .prof-table-wrapper tr.current-row{background:rgba(77,208,225,.1)}
 .prof-table-wrapper tr.current-row td{color:#4dd0e1;font-weight:bold}
 .prof-table-title{background:linear-gradient(90deg,rgba(31,107,235,.15),transparent);border-left:3px solid #1f6beb;padding:8px 12px;font-size:12px;font-weight:bold;color:#79c0ff}
-/* ═══ v2.8.8.2 TIME SKIP MODAL ═══ */
+/* ═══ v2.8.8.3 TIME SKIP MODAL ═══ */
 .timeskip-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:250;justify-content:center;align-items:center;padding:15px;backdrop-filter:blur(8px)}
 .timeskip-modal.active{display:flex}
 .timeskip-content{background:linear-gradient(135deg,#151921 0%,#0d1117 100%);border:2px solid var(--accent-gold);border-radius:12px;max-width:720px;width:100%;max-height:92vh;overflow-y:auto;padding:20px;box-shadow:0 0 40px rgba(210,153,34,.5)}
@@ -384,7 +384,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <div class="header-row header-row-main">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     <span class="game-tag">HỒNG ĐỨC TU TIÊN LỘ</span>
-    <div class="header-actions"><button class="version-badge" onclick="showVersionLog()" aria-label="Lịch sử phiên bản">v2.8.8.2</button>
+    <div class="header-actions"><button class="version-badge" onclick="showVersionLog()" aria-label="Lịch sử phiên bản">v2.8.8.3</button>
       <button class="header-game-tab" id="headerGameTab" onclick="openTab('play')">🎮 Game</button>
       <button class="header-game-tab btn-timeskip-option" onclick="openTimeSkipModal()" title="Mô phỏng cày level đa hoạt động">⏩ Cày Level</button>
       <button class="restart-btn" onclick="confirmAndStartGame()">⚡ KHỞI TẠO GAME</button>
@@ -404,7 +404,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <details class="cfg-detail"><summary>⚙ Cấu hình &amp; quy tắc</summary><div id="sidebar" class="sidebar">
 <div class="sidebar-header"><span>⚙ CẤU HÌNH</span><button class="menu-btn" onclick="toggleSidebar()">✕</button></div>
 
-<div class="section-header">🔄 v2.8.8.2 CẬP NHẬT</div>
+<div class="section-header">🔄 v2.8.8.3 CẬP NHẬT</div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#d29922,#e3702d);font-size:12px" onclick="openTimeSkipModal()">⏩ CÀY LEVEL — TIME SKIP ĐA HOẠT ĐỘNG</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#db61a2);font-size:12px" onclick="refreshGameStateFromHistory()">🔄 Cập Nhật Trạng Thái (5 lượt)</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#e3702d,#d29922);font-size:12px" onclick="showItemSystemInfo()">📦 Hệ Thống Phân Loại Vật Phẩm</button>
@@ -472,21 +472,21 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <div class="toggle-row"><span>Hiện archetype badge</span><div class="toggle-switch active" id="toggleShowArchetype" onclick="toggleSetting('showArchetype')"></div></div>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#8957e5,#388bfd);font-size:12px" onclick="generateAllNpcRules()">🎭 Sinh Rules Cho NPC Thiếu</button>
 
-<div class="section-header">⚒️ Nghề Nghiệp (v2.8.8.2)</div>
+<div class="section-header">⚒️ Nghề Nghiệp (v2.8.8.3)</div>
 <div class="toggle-row"><span>Bật Profession System</span><div class="toggle-switch active" id="toggleProfessionSystem" onclick="toggleSetting('professionSystem')"></div></div>
 <div class="toggle-row"><span>Auto-tính EXP nghề</span><div class="toggle-switch active" id="toggleProfessionAutoExp" onclick="toggleSetting('professionAutoExp')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-cyan);font-size:12px" onclick="showProfessionStats()">📊 Thống Kê Nghề</button>
 <button class="sidebar-item" style="background:var(--accent-pink);font-size:11px" onclick="simulateCraft('luyen_dan')">🧪 Mô Phỏng Luyện Đan</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="resetProfessions()">🔄 Reset Nghề</button>
 
-<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.8.2)</div>
+<div class="section-header">⚡ Tu Luyện & Đột Phá (v2.8.8.3)</div>
 <div class="toggle-row"><span>Bật Breakthrough Requirements</span><div class="toggle-switch active" id="toggleBreakthroughReq" onclick="toggleSetting('breakthroughReq')"></div></div>
 <div class="toggle-row"><span>Cảnh báo thiếu điều kiện</span><div class="toggle-switch active" id="toggleBreakthroughWarn" onclick="toggleSetting('breakthroughWarn')"></div></div>
 <button class="sidebar-item" style="background:var(--accent-gold);color:#000;font-size:12px" onclick="openBreakthroughPanel()">⚡ Kiểm Tra Đột Phá</button>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showBreakthroughTable()">📖 Bảng Yêu Cầu Đột Phá</button>
 <button class="sidebar-item" style="background:linear-gradient(135deg,#388bfd,#1f6beb);font-size:11px" onclick="showRealmProgressionTable()">📈 Bảng Lộ Trình Cảnh Giới</button>
 
-<div class="section-header">🎯 Quest Delegation (v2.8.8.2)</div>
+<div class="section-header">🎯 Quest Delegation (v2.8.8.3)</div>
 <div class="toggle-row"><span>Bật Quest Delegation Detection</span><div class="toggle-switch active" id="toggleQuestDelegation" onclick="toggleSetting('questDelegation')"></div></div>
 <div class="toggle-row"><span>Bật Transaction Chain Detection</span><div class="toggle-switch active" id="toggleTransactionChain" onclick="toggleSetting('transactionChain')"></div></div>
 <button class="sidebar-item" style="background:#5a3a1a;font-size:11px" onclick="showQuestDelegationStats()">📊 Thống Kê Quest Delegation</button>
@@ -497,7 +497,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 <button class="sidebar-item" style="background:#7d2828;font-size:12px;margin-top:8px" onclick="scanChineseChars()">🔍 Quét CJK</button>
 <button class="sidebar-item" style="background:#8b2020;font-size:12px" onclick="autoCleanCJK()">🧹 Xóa CJK</button>
 
-<div class="section-header">🎨 Scope Registry v2.8.8.2</div>
+<div class="section-header">🎨 Scope Registry v2.8.8.3</div>
 <button class="sidebar-item" style="background:var(--accent-purple);font-size:12px" onclick="restoreDefaultScopes()">🔄 Khôi Phục 16 Scope</button>
 <button class="sidebar-item" style="background:var(--accent-blue);font-size:11px" onclick="showScopeStats()">📊 Thống Kê Scope</button>
 <button class="sidebar-item" style="background:#444;font-size:11px" onclick="openTagLegend()">🏷️ Xem Chú Thích Tag</button>
@@ -603,17 +603,7 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   </div>
 </div>
 
-<div class="config-box">
-  <div class="config-info">
-    <div class="label-title" style="color:#3fb950">📦 QUẢN LÝ CẤU HÌNH</div>
-    <div class="label-desc">Xuất/nhập toàn bộ cấu hình World + Scope + Profession + Breakthrough + Stats.</div>
-  </div>
-  <div class="config-actions">
-    <button class="btn-config" onclick="exportWorldConfig()">📤 Xuất</button>
-    <button class="btn-config import" onclick="importWorldConfig()">📥 Nhập</button>
-    <input type="file" id="worldConfigFileInput" style="display:none" accept=".json" onchange="handleWorldConfigImport(event)">
-  </div>
-</div>
+<input type="file" id="worldConfigFileInput" hidden accept=".json" onchange="handleWorldConfigImport(event)">
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
@@ -634,14 +624,14 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.8.2</div>
+  <div class="collapsible-title"><span class="icon">🎨</span>SCOPE REGISTRY v2.8.8.3</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
   <div class="form-group" style="background:#1a1024;padding:12px;border-radius:6px;border:1px dashed #8957e5">
     <div class="input-header">
       <div>
-        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.8.2</div>
+        <div class="label-title" style="color:#b392f0">🎨 SCOPE REGISTRY v2.8.8.3</div>
         <div class="label-desc">16 scope được phân nhóm theo <b>handledBy</b>: <span style="color:#3fb950">🤖 CODE</span> · <span style="color:#d29922">⚖️ HYBRID</span> · <span style="color:#8b949e">🎨 STYLE</span>.</div>
       </div>
       <button class="btn-aigen" style="background:#8957e5" onclick="addScopeEntry()">➕ THÊM</button>
@@ -687,8 +677,8 @@ textarea{width:100%;background:var(--input-bg);border:1px solid var(--border-col
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.8.2</textarea></div>
-  <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="SFW (AN TOÀN)">SFW</option><option value="NSFW (NGƯỜI LỚN)" selected>NSFW</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">TÊN TRÒ CHƠI</div><button class="btn-aigen" onclick="aiGenField('gameTitle','Tên game tu tiên.')">✨ AI GEN</button></div><textarea id="gameTitle" style="min-height:50px">HỒNG ĐỨC TU TIÊN LỘ v2.8.8.3</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">ĐỘ KHÓ</div></div><select id="difficultySelect"><option value="Dễ">Dễ</option><option value="Vừa" selected>Vừa</option><option value="Khó">Khó</option><option value="Địa ngục">Địa ngục</option></select><textarea id="difficultyCustom" style="margin-top:8px;min-height:50px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">BỐI CẢNH</div><button class="btn-aigen" onclick="aiGenField('worldContext','3-5 câu mô tả bối cảnh.')">✨ AI GEN</button></div><textarea id="worldContext" style="min-height:150px">BỐI CẢNH
 Thiên Nam Vực, khởi đầu tại Việt Quốc. Người chơi rời làng Ngũ Lý Câu, lên Thất Huyền Môn ở Thái Lĩnh Sơn rồi tìm đường gia nhập Hoàng Phong Cốc.
 
@@ -723,12 +713,27 @@ Năm game 1: nhập Thất Huyền Môn. Năm 8–11: Huyết Sắc Thí Luyện
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
-  <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','10-12 quy tắc đánh số.')">✨ AI GEN</button></div><textarea id="worldRules" style="min-height:300px">QUY TẮC THẾ GIỚI
-Kẻ mạnh nuốt kẻ yếu. Giấu tu vi bằng Liễm Khí Thuật là cách sống còn, không phải bảo đảm tuyệt đối. Quan hệ dựa trên lợi ích và thiện cảm, không có người bảo hộ vô điều kiện. Tài nguyên khan hiếm, tranh đoạt kéo theo thù oán. Lạm dụng đan sinh kháng dược. Thọ nguyên ép người tu hành chuẩn bị đột phá; đoạt xá là lối thoát cuối với giá nặng, thất bại vẫn tiêu tốn cơ hội sống còn.
+  <div class="form-group"><div class="input-header"><div class="label-title">THẾ GIỚI QUAN & QUY TẮC THẾ GIỚI</div><button class="btn-aigen" onclick="aiGenField('worldRules','10-12 quy tắc đánh số.')">✨ AI GEN</button></div><textarea id="worldRules" style="min-height:300px">THIÊN NAM ĐẠI LỤC — PHÀM NHÂN TU TIÊN (VONG NGỮ)
+Các quốc gia phàm nhân do triều đình cai trị nhưng thực quyền nằm dưới bóng giới tu tiên. Tiên phàm cách biệt: trong mắt người dân, tu sĩ ngự khí qua trời là thần tiên, còn sinh tử một thôn xóm có khi chỉ là việc nhỏ với kẻ trên cao.
 
-PACING
-Nhịp chậm chính tông. Mỗi đại đột phá là một chuỗi chuẩn bị đan dược, vật phẩm, bí pháp và thời gian bế quan. Không rút ngắn hàng trăm năm thành vài lượt. Nguyên Anh khoảng năm 200, Hóa Thần khoảng năm 870; người chơi vẫn phải tự bấm đột phá khi đủ điều kiện.</textarea></div>
-  <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC ĐẶT TÊN</div><button class="btn-aigen" onclick="aiGenField('namingRules','8-10 quy tắc đặt tên.')">✨ AI GEN</button></div><textarea id="namingRules" style="min-height:150px"></textarea></div>
+VIỆT QUỐC
+Thất đại tông môn gồm Hoàng Phong Cốc, Yểm Nguyệt Tông mạnh nhất, Thanh Hư Môn chuyên phù lục, Thiên Khuyết Bảo giỏi trận pháp, Hóa Đao Ổ tu đao, Cự Kiếm Môn tu kiếm, Linh Thú Sơn nuôi linh thú. Hoàng Phong Cốc ở Thái Hàng Sơn. Giang hồ phàm nhân có Thất Huyền Môn trên núi Thái Huyền, Kính Châu, cùng Dã Lang Bang. Huyết Sắc Cấm Địa cứ năm năm mở một lần, cho đệ tử bảy phái tranh linh dược luyện Trúc Cơ Đan; bước vào tìm cơ duyên cũng là đặt mạng trước lưỡi đao đồng đạo.
+
+LÂN BANG VÀ THẾ LỰC
+Thiên Khương Quốc có Ma Đạo Lục Tông: Quỷ Linh Môn dùng âm hồn, Hợp Hoan Tông song tu, Ngự Linh Tông thuần linh thú và trùng, Ma Diệm Môn luyện hắc hỏa, Thiên Sát Tông trọng sát phạt, Cổ Độc Môn dùng độc cổ. Chính Đạo Minh có Thiên Thai Cốc, Hạo Nhiên Các, Thiên Cực Môn. Khê Quốc có Lạc Vân Tông, Cổ Kiếm Môn, Bách Xảo Viện. Mộ Lan Pháp Sĩ tung hoành Mộ Lan Thảo Nguyên; ngoài ra còn Nhạn Quốc, Cửu Quốc Minh, Thiên La Quốc, Nguyên Vũ Quốc. Chính ma đối lập nhưng lợi ích khiến ranh giới luôn mờ nhạt.
+
+LINH CĂN, CẢNH GIỚI
+Phải có linh căn mới tu luyện được. Thiên linh căn đơn thuộc tính rất hiếm; dị linh căn là Lôi, Phong, Băng biến dị; chân linh căn có hai đến ba thuộc tính; ngụy/tạp linh căn bốn đến năm thuộc tính tu chậm, mỗi cảnh giới đều gặp bình cảnh. Tư chất thường phải bù bằng đan dược, cơ duyên, mưu mô và cẩn trọng. Luyện Khí có 13 tầng, rồi Trúc Cơ, Kim Đan (Kết Đan), Nguyên Anh, Hóa Thần — đỉnh cao Nhân Giới. Lên Linh Giới còn Luyện Hư, Hợp Thể, Đại Thừa, Độ Kiếp, rồi Tiên giới. Mỗi đại cảnh giới tăng vọt thọ nguyên và địa vị; cao thấp cách tuyệt. Đây là bối cảnh lời kể, không tự thêm cảnh giới hay đổi công thức sẵn có của game.
+
+TÀI NGUYÊN VÀ PHÁP BẢO
+Linh thạch hạ, trung, thượng, cực phẩm là tiền tệ; một trung phẩm bằng một trăm hạ phẩm. Đan dược, linh thảo, phù lục, trận pháp đều khan hiếm. Pháp khí dùng ở Luyện Khí; phù bảo là bản sao uy lực pháp bảo, số lần dùng hữu hạn; pháp bảo của tu sĩ Kết Đan trở lên được uẩn dưỡng thành bản mệnh; cổ bảo thượng cổ hao linh lực lớn; trên nữa là thông thiên linh bảo. Trúc Cơ Đan trợ đột phá, Bổ Thiên Đan cải tư chất; Hàng Trần Đan, Định Dung Đan cũng quý hiếm. Phường thị, đấu giá hội, Vạn Bảo Lâu và Lục Đại Thương Minh ở Loạn Tinh Hải nối các đường buôn bán, đồng thời nuôi tai mắt kẻ đoạt bảo.
+
+TÔNG MÔN, YÊU THÚ
+Đệ tử ký danh/ngoại môn, nội môn, thân truyền, chấp sự, trưởng lão, thái thượng trưởng lão là các tầng địa vị; lão tổ Nguyên Anh quyết định hưng suy. Gia tộc tu tiên cống nạp đệ tử để được bảo hộ. Yêu thú mười cấp: 1–4 gần Luyện Khí/Trúc Cơ, 5–7 gần Kết Đan, 8–10 hóa hình gần Nguyên Anh trở lên. Linh trùng như Phệ Kim Trùng có thể thành trợ lực; cổ tộc, dị tộc ẩn dật không dễ dò xét.
+
+HIỂM ĐỊA VÀ ĐẠO SINH TỒN
+Loạn Tinh Hải có Thiên Tinh Thành, Nghịch Tinh Minh, Hư Thiên Điện với Hư Thiên Đỉnh. Trụy Ma Cốc phong ấn Cổ Ma. Những lần chính ma đại chiến để lại phế tích, cổ bảo và truyền thừa thất lạc. Tu sĩ phần nhiều lạnh lùng thực dụng; tông môn ngoài nghiêm trang, trong đầy phe phái. Bí cảnh, di tích, đấu giá hội vừa là cơ duyên vừa là tử địa. Giấu tài, không lộ của, chuẩn bị đường lui; tài nguyên hữu hạn buộc tranh đoạt, sống sót mới có ngày tiến xa.</textarea></div>
+  <div class="form-group"><div class="input-header"><div class="label-title">QUY TẮC ĐẶT TÊN</div><button class="btn-aigen" onclick="aiGenField('namingRules','8-10 quy tắc đặt tên.')">✨ AI GEN</button></div><textarea id="namingRules" style="min-height:150px">Đặt tên theo lối Hán-Việt: nhân vật = họ 1 chữ + tên 1–2 chữ (Lý Hàn, Vân Thanh Hà); tông môn/phái = 2–4 chữ ý cảnh (Thanh Vân Tông, Huyết Ma Cốc); đan dược/pháp bảo/công pháp = tên gợi công dụng (Tụ Khí Đan, Phi Kiếm, Ngũ Hành Quyết); nhất quán tên đã dùng.</textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">THỂ LOẠI</div><button class="btn-aigen" onclick="aiGenField('genre','5-6 câu thể loại.')">✨ AI GEN</button></div><textarea id="genre" style="min-height:120px"></textarea></div>
   <div class="form-group"><div class="input-header"><div class="label-title">HỆ THỐNG SỨC MẠNH</div><button class="btn-aigen" onclick="aiGenField('powerSystem','7 cảnh giới chính tu tiên.')">✨ AI GEN</button></div><textarea id="powerSystem" style="min-height:300px">HỆ THỐNG SỨC MẠNH
 Luyện Khí (LK) có 13 tầng, thọ 120 năm; Trúc Cơ (TC) thọ 250; Kim Đan (KD) thọ 600; Nguyên Anh (NA) thọ 1200; Hóa Thần (HT) thọ 3000; Luyện Hư (LH) thọ vô hạn. Sau Luyện Khí, mỗi đại cảnh giới có sơ kỳ, trung kỳ, hậu kỳ.
@@ -744,7 +749,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 <div class="collapsible-body">
   <div class="form-group" style="background:#0d1a24;padding:12px;border-radius:6px;border:1px solid #388bfd">
     <div class="input-header"><div><div class="label-title" style="color:#388bfd">🎭 VĂN PHONG & NGÔI KỂ</div></div><button class="btn-aigen" style="background:#1f6beb" onclick="aiGenField('writingStyle','8-10 đặc điểm văn phong.')">✨ AI GEN</button></div>
-    <textarea id="writingStyle" style="border-color:#388bfd;min-height:400px"></textarea>
+    <textarea id="writingStyle" style="border-color:#388bfd;min-height:400px">Dùng ngôi thứ hai “ngươi”, nhập vai sâu như chính người chơi sống trong thế giới đó. Mỗi NPC có tính cách, suy nghĩ, mục đích và cách nói chuyện riêng; phân biệt xưng hô, khẩu khí theo thân phận và tâm tính. Tả cảnh sinh động, kịch tính, hồi hộp; không liệt kê khô khan, không dùng ngôn ngữ hiện đại.</textarea>
   </div>
 </div>
 </div>
@@ -760,7 +765,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 <button class="btn-remove-avatar" id="btnRemoveAvatar" style="display:none" onclick="removeMcAvatar()">❌ Xóa ảnh</button>
 </div>
 </div>
-<div class="form-group"><div class="input-header"><div class="label-title">TÊN & THÂN PHẬN NVC</div><button class="btn-aigen" onclick="aiGenField('mcName','Tên và thân phận NVC.')">✨ AI GEN</button></div><textarea id="mcName" style="min-height:50px"></textarea></div>
+<div class="form-group"><div class="input-header"><div class="label-title">TÊN & THÂN PHẬN NVC</div><button type="button" id="randomScenarioBtn" class="btn-aigen" onclick="pickRandomScenario()">Ngẫu nhiên</button><button class="btn-aigen" onclick="aiGenField('mcName','Tên và thân phận NVC.')">✨ AI GEN</button></div><textarea id="mcName" style="min-height:50px"></textarea></div>
 <div class="form-group"><div class="input-header"><div class="label-title" style="color:var(--accent-gold)">⭐ CẢNH GIỚI HIỆN TẠI</div><button class="btn-aigen" onclick="aiGenField('mcLevel','Cảnh giới. VD: Luyện Khí tầng 3.')">✨ AI GEN</button></div><input type="text" id="mcLevel" style="border-color:var(--accent-gold)" onchange="updateExpUI()"></div>
 
 <details class="nvc-details"><summary>Chi tiết NVC · AI GEN · dữ liệu</summary><div class="mc-stats-panel">
@@ -837,7 +842,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 </div>
 </details>
 <!-- END PART 3/14 --><div id="prof" class="tab-content">
-<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.8.2 — EXP×1)</div>
+<div class="section-tag">⚒️ HỆ THỐNG NGHỀ NGHIỆP (v2.8.8.3 — EXP×1)</div>
 <div class="label-desc" style="margin-bottom:10px">📌 Mỗi nghề có cấp bậc riêng (1-9), EXP riêng, bonus riêng. <b style="color:#d29922">⚡ EXP ×1</b>.</div>
 
 <div class="prof-container">
@@ -871,7 +876,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 
 <div class="collapsible-group">
 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.8.2 — 665 công thức)</div>
+  <div class="collapsible-title"><span class="icon">📋</span>CÔNG THỨC LUYỆN CHẾ (v2.8.8.3 — 665 công thức)</div>
   <span class="collapsible-arrow">▶</span>
 </div>
 <div class="collapsible-body">
@@ -958,7 +963,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
     <button class="btn-log btn-log-clear" onclick="clearSystemLogs()">🗑️ Clear</button>
   </div>
 </div>
-<div id="sysLogs" class="log-box">> System v2.8.8.2 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div></details>
+<div id="sysLogs" class="log-box">> System v2.8.8.3 (TIME SKIP ĐA HOẠT ĐỘNG) initialized... Ready.</div></details>
 </div>
 
 </div>
@@ -980,7 +985,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- v2.8.8.2 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
+<!-- v2.8.8.3 TIME SKIP MODAL — ĐA HOẠT ĐỘNG                      -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <div id="timeskipModal" class="timeskip-modal">
 <div class="timeskip-content">
@@ -1063,7 +1068,7 @@ Linh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đ�
 </div>
 <!-- END PART 5/14 --><script>
 // ══════════════════════════════════════════════════════════════
-// HỒNG ĐỨC TU TIÊN LỘ v2.8.8.2 — TIME SKIP ĐA HOẠT ĐỘNG
+// HỒNG ĐỨC TU TIÊN LỘ v2.8.8.3 — TIME SKIP ĐA HOẠT ĐỘNG
 // PHẦN 6/14: SCRIPT MỞ ĐẦU — CONSTANTS + HELPERS + STATE
 // ══════════════════════════════════════════════════════════════
 const DB_NAME = 'HongDucTuTienDB';
@@ -1224,10 +1229,63 @@ let mcAge = 16, mcLifespanGrace = false, mcLifespanDeadline = null, mcDead = fal
 let mcPillTolerance = {}, mcToleranceDays = 0, mcLastAgeHours = null;
 let establishedActivities=['tu_luyen'];
 const pnGiftAffinity = new Map();
+const PHAM_NHAN_START_SCENARIOS = [
+  [
+    "Lý Hàn",
+    "Ngươi là một ngoại môn tạp dịch đệ tử của Thanh Vân Tông, tư chất tầm thường, linh căn ngũ hành. Hôm nay là hạn nộp cống phẩm linh thạch hằng tháng, nhưng ngươi vừa bị quản sự Lý Hổ ép buộc giao nộp toàn bộ tài nguyên, thậm chí còn bị đe dọa tống cổ vào hắc quáng động - nơi cửu tử nhất sinh nếu không có linh thạch vào trưa mai. Trong lúc tuyệt vọng cắm cúi quét dọn ở linh dược viên, ngươi vô tình vấp phải một ngọc cốt (pháp bảo không gian) bên trong chứa phân thân trần trụi một nữ tu sĩ 500 năm trước tên Tuyết Cơ, song bản thể đã chết nên phân thân chỉ có cảnh giới luyện khí kỳ tầng 2, tính cách dâm dục, lẳng lơ, thích khẩu dâm và hay tự thủ dâm, phân thân đang bên bờ tiêu tan cần ký khế ước với ngươi để sống."
+  ],
+  [
+    "Trần Thanh",
+    "Ngươi là con nhà nông nghèo ở Kính Châu, mang tạp linh căn nên chỉ được nhận làm tạp dịch tại Hoàng Phong Cốc. Trong lần dọn một kho dược cũ dưới chân Thái Hàng Sơn, ngươi nhặt được tiểu bình cổ quái, mỗi đêm ngưng sương thành linh dịch thúc lớn linh thảo. Một gốc dược non bỗng trưởng thành khiến quản sự bắt đầu để mắt, còn khẩu phần linh thạch của ngươi vẫn chẳng đủ tu luyện. Ngươi phải giấu kín chiếc bình, dò công dụng từng chút và tìm cách đổi dược lấy đan mà không rước họa sát thân."
+  ],
+  [
+    "Vân Thanh Hà",
+    "Ngươi là đệ tử ghi danh của Thất Huyền Môn trên núi Thái Huyền, theo một danh y học nhận dược liệu để kiếm miếng ăn. Sau một đêm nghe tiếng niệm chú sau cửa đá, ngươi phát hiện sư phụ là tu sĩ tàn phế đang mưu đoạt thân thể mình. Lão mới truyền nửa bộ công pháp thì tẩu hỏa nhập ma, để lại căn phòng khóa kín và một lời dặn chẳng rõ thật giả. Ngươi phải giữ vẻ bình thản trước đồng môn, tìm nửa bộ còn lại và chuẩn bị đường thoát trước khi lão hồi tỉnh."
+  ],
+  [
+    "Tần Mặc",
+    "Ngươi là tiểu nhị thương hội, theo đoàn hàng vượt Thái Hàng Sơn để trả món nợ của cha. Yêu thú bất ngờ tập kích giữa đêm, giết sạch đoàn người trong lúc ngươi bị hất xuống khe đá. Khi tỉnh lại, ngươi nhặt được túi càn khôn rách, vài viên linh thạch cùng một pháp khí hỏng trong đống hàng nát. Dấu chân lạ quanh xác thú cho thấy có kẻ đã theo dõi đoàn hàng, nên ngươi phải chọn thứ đáng mang và rời đi trước bình minh."
+  ],
+  [
+    "Lý Thiết",
+    "Ngươi là con nhà thợ săn ở biên giới Việt Quốc, từng cứu một lão già trọng thương khỏi dòng suối dưới Thái Hàng Sơn. Lão tự nhận là tán tu Kim Đan bị truy sát, trao ngươi ngọc giản công pháp rồi ép ngươi rời khỏi lán ngay trong đêm. Một toán tu sĩ đang hỏi khắp thôn về người lạ, còn trên ngọc giản có vết phong ấn chưa thể mở. Ngươi phải cân nhắc cứu gia đình bằng lời nói dối nào, giấu cơ duyên ở đâu và liệu lời lão có đáng tin."
+  ],
+  [
+    "Tần Nguyệt",
+    "Ngươi là trẻ mồ côi ăn mày quanh phường thị Việt Quốc, sống bằng nhặt dược thải sau các quầy của Vạn Bảo Lâu. Trong một phiên đấu giá, ngươi vô tình nhìn ra dấu sáng trên cổ bảo bị che kín và lập tức bị người giữ hàng đuổi giết. Ngươi trốn vào mộ cổ ngoài thành, nhặt được truyền thừa phù đạo tàn khuyết cùng ít chu sa khô. Cửa mộ đã có tiếng bước chân, ngươi chỉ còn thời gian thử một lá phù hoặc tìm đường thông khí dẫn ra ngoài."
+  ],
+  [
+    "Hàn Phong",
+    "Ngươi là con trai chủ tiệm dược liệu ở Nguyên Vũ Quốc, mang tạp linh căn nên từ lâu đã thôi mộng vào tông môn. Nếm thử huyết liên trong lô hàng cũ, ngươi chịu một đêm sốt lửa rồi phát hiện linh căn chỉ còn hỏa thuộc tính thuần nhất. Thương hội sở hữu lô hàng nghe tin liền sách án gia đình, đòi giao cả ngươi lẫn phần dược còn lại. Ngươi phải che giấu biến hóa, tìm người thẩm định đáng tin và lo đường lui trước khi khế nợ biến thành lệnh bắt."
+  ],
+  [
+    "Vân Hải",
+    "Ngươi là ngư dân nghèo ở Loạn Tinh Hải, quanh năm bán cá cho thuyền buôn hướng về Thiên Tinh Thành. Một mẻ lưới kéo lên cá chép bạc có linh trí đang cầu cứu, đổi lời chỉ dẫn tới long tộc ẩn dưới biển để xin ngươi thả về. Tu sĩ hải tặc đã thấy ánh bạc từ xa và bắt đầu xét từng thuyền neo ở bến. Ngươi phải chọn có tin linh vật hay không, đồng thời giấu dấu vết trước khi món cơ duyên nhỏ làm cả nhà gặp nạn."
+  ],
+  [
+    "Tần Huyền",
+    "Ngươi là tử tù trong một huyện nhỏ thuộc Việt Quốc, ra pháp trường nhưng lưỡi đao liên tiếp gãy mà ngươi vẫn không chết. Trong thần thức, tàn hồn ma tu cổ đại đang tranh đoạt thân thể, mỗi lần hắn cất tiếng lại khiến ngươi quên một mảnh ký ức. Quan phủ hoảng sợ giao ngươi cho Yểm Nguyệt Tông để nghiên cứu dưới trận pháp giam cầm. Ngươi phải giữ kín điều mình nghe được, dò sơ hở người canh và tìm cách giữ bản ngã trước cả ma hồn lẫn tu sĩ."
+  ],
+  [
+    "Diệp Viêm",
+    "Ngươi là thiếu gia một gia tộc tu tiên nhỏ ở Khê Quốc, thoát chết khi cả nhà bị tru di vì mỏ linh mạch dưới tổ địa. Mang ngọc tổ truyền chạy qua vùng núi gần Lạc Vân Tông, ngươi bỗng thức tỉnh Hỏa Linh thể lúc bị truy binh dồn vào hang đá. Luồng hỏa khí cứu mạng nhưng cũng để lộ tung tích, còn ngọc tổ chỉ hiện một nét trận văn khó hiểu. Ngươi phải ẩn danh, đổi hành trang và tìm chỗ nương thân mà không để thế gia truy sát lần ra người cuối cùng của dòng họ."
+  ]
+];
+let lastRandomScenarioIndex = -1;
+function pickRandomScenario() {
+  let index = Math.floor(Math.random() * PHAM_NHAN_START_SCENARIOS.length);
+  if (index === lastRandomScenarioIndex) index = (index + 1 + Math.floor(Math.random() * (PHAM_NHAN_START_SCENARIOS.length - 1))) % PHAM_NHAN_START_SCENARIOS.length;
+  lastRandomScenarioIndex = index;
+  const [name, identity] = PHAM_NHAN_START_SCENARIOS[index];
+  const field = document.getElementById("mcName");
+  if (field) { field.value = name + " — " + identity; field.dispatchEvent(new Event("input", {bubbles:true})); }
+  log("🎲 Kịch bản xuất thân " + (index + 1) + "/10");
+}
+
 const PHAM_NHAN_DEFAULTS = {
   "worldContext": "BỐI CẢNH\nThiên Nam Vực, khởi đầu tại Việt Quốc. Người chơi rời làng Ngũ Lý Câu, lên Thất Huyền Môn ở Thái Lĩnh Sơn rồi tìm đường gia nhập Hoàng Phong Cốc.\n\nĐỊA LÝ\nViệt Quốc thất đại tông: Hoàng Phong Cốc, Yểm Nguyệt Tông, Thanh Hư Môn, Thiên Khuyết Bảo, Hóa Đao Ổ, Linh Thú Sơn, Cự Kiếm Môn.\nKính Châu và Gia Nguyên Thành là đầu mối phàm tục; Thái Nam Sơn có Thái Nam Tiểu Hội. Huyết Sắc Cấm Địa là nơi tranh linh thảo luyện Trúc Cơ Đan, mỗi bước đều có thể mất mạng.\nĐịch thủ là Ma Đạo Lục Tông: Quỷ Linh Môn, Hợp Hoan Tông, Ma Diễm Môn, Thiên Ma Tông, Ngự Linh Tông, Khôi Lỗi Môn.\nVùng xa: Loạn Tinh Hải với Tinh Cung, Nghịch Tinh Minh, Hư Thiên Điện, Âm Minh Chi Địa; Đại Tấn Hoàng Triều với Côn Ngô Sơn.\n\nNPC PHỤ\nMặc Đại Phu: thầy thuốc Thất Huyền Môn, mưu mô, toan đoạt xá đệ tử.\nLệ Phi Vũ: bằng hữu thiếu thời, nóng nảy nhưng trọng tình nghĩa.\nLý Hóa Nguyên: trưởng lão Kết Đan Hoàng Phong Cốc, sư phụ danh nghĩa, thực dụng và giữ thể diện.\nTrần Xảo Thiến: đồng môn thầm thương, kín đáo, tình cảm nhưng biết tự trọng.\nNam Cung Uyển: trưởng lão Yểm Nguyệt Tông, duyên phận Huyết Sắc Cấm Địa, kiêu hãnh và quyết đoán.\nVương Thiền: thiếu chủ Quỷ Linh Môn, đối thủ truyền kiếp, tàn nhẫn và thù dai.\nYến Như Yên: thiên linh căn Yến gia, thông tuệ, đặt trọng trách gia tộc lên trước.\nTử Linh: môn chủ Diệu Âm Môn, hồng nhan tri kỷ, khéo léo và kiên cường.\nNgân Nguyệt: hồn phách hồ ly trong bảo vật, trợ thủ trung thành, tinh tế và cảnh giác.\nĐại Diễn Thần Quân: tàn hồn cổ tu trong khôi lỗi, truyền đạo, cao ngạo nhưng uyên bác.\n\nMỐC THỜI GIAN\nNăm game 1: nhập Thất Huyền Môn. Năm 8–11: Huyết Sắc Thí Luyện tranh Trúc Cơ Đan. Khoảng năm 14: Ma Đạo Lục Tông xâm lăng Việt Quốc. Từ năm 20: phiêu bạt Loạn Tinh Hải. Khoảng năm 140: Hư Thiên Điện. Khoảng năm 200: Nguyên Anh. Khoảng năm 870: Hóa Thần. AI không cho đột phá nhanh hơn nhịp thời gian này; kỳ ngộ không thay thế công phu tích lũy.",
   "powerSystem": "HỆ THỐNG SỨC MẠNH\nLuyện Khí (LK) có 13 tầng, thọ 120 năm; Trúc Cơ (TC) thọ 250; Kim Đan (KD) thọ 600; Nguyên Anh (NA) thọ 1200; Hóa Thần (HT) thọ 3000; Luyện Hư (LH) thọ vô hạn. Sau Luyện Khí, mỗi đại cảnh giới có sơ kỳ, trung kỳ, hậu kỳ.\nLinh căn quyết định tốc độ tu luyện và tỷ lệ đột phá. Đại đột phá cần đủ EXP, đan dược như Trúc Cơ Đan, Kim Nguyên Đan cùng điều kiện tương ứng; tỷ lệ cơ bản giảm dần, thất bại phải trả giá. Chỉ người chơi chủ động bấm đột phá, AI không tự nâng cảnh giới.",
-  "worldRules": "QUY TẮC THẾ GIỚI\nKẻ mạnh nuốt kẻ yếu. Giấu tu vi bằng Liễm Khí Thuật là cách sống còn, không phải bảo đảm tuyệt đối. Quan hệ dựa trên lợi ích và thiện cảm, không có người bảo hộ vô điều kiện. Tài nguyên khan hiếm, tranh đoạt kéo theo thù oán. Lạm dụng đan sinh kháng dược. Thọ nguyên ép người tu hành chuẩn bị đột phá; đoạt xá là lối thoát cuối với giá nặng, thất bại vẫn tiêu tốn cơ hội sống còn.",
+  "worldRules": "THIÊN NAM ĐẠI LỤC — PHÀM NHÂN TU TIÊN (VONG NGỮ)\nCác quốc gia phàm nhân do triều đình cai trị nhưng thực quyền nằm dưới bóng giới tu tiên. Tiên phàm cách biệt: trong mắt người dân, tu sĩ ngự khí qua trời là thần tiên, còn sinh tử một thôn xóm có khi chỉ là việc nhỏ với kẻ trên cao.\n\nVIỆT QUỐC\nThất đại tông môn gồm Hoàng Phong Cốc, Yểm Nguyệt Tông mạnh nhất, Thanh Hư Môn chuyên phù lục, Thiên Khuyết Bảo giỏi trận pháp, Hóa Đao Ổ tu đao, Cự Kiếm Môn tu kiếm, Linh Thú Sơn nuôi linh thú. Hoàng Phong Cốc ở Thái Hàng Sơn. Giang hồ phàm nhân có Thất Huyền Môn trên núi Thái Huyền, Kính Châu, cùng Dã Lang Bang. Huyết Sắc Cấm Địa cứ năm năm mở một lần, cho đệ tử bảy phái tranh linh dược luyện Trúc Cơ Đan; bước vào tìm cơ duyên cũng là đặt mạng trước lưỡi đao đồng đạo.\n\nLÂN BANG VÀ THẾ LỰC\nThiên Khương Quốc có Ma Đạo Lục Tông: Quỷ Linh Môn dùng âm hồn, Hợp Hoan Tông song tu, Ngự Linh Tông thuần linh thú và trùng, Ma Diệm Môn luyện hắc hỏa, Thiên Sát Tông trọng sát phạt, Cổ Độc Môn dùng độc cổ. Chính Đạo Minh có Thiên Thai Cốc, Hạo Nhiên Các, Thiên Cực Môn. Khê Quốc có Lạc Vân Tông, Cổ Kiếm Môn, Bách Xảo Viện. Mộ Lan Pháp Sĩ tung hoành Mộ Lan Thảo Nguyên; ngoài ra còn Nhạn Quốc, Cửu Quốc Minh, Thiên La Quốc, Nguyên Vũ Quốc. Chính ma đối lập nhưng lợi ích khiến ranh giới luôn mờ nhạt.\n\nLINH CĂN, CẢNH GIỚI\nPhải có linh căn mới tu luyện được. Thiên linh căn đơn thuộc tính rất hiếm; dị linh căn là Lôi, Phong, Băng biến dị; chân linh căn có hai đến ba thuộc tính; ngụy/tạp linh căn bốn đến năm thuộc tính tu chậm, mỗi cảnh giới đều gặp bình cảnh. Tư chất thường phải bù bằng đan dược, cơ duyên, mưu mô và cẩn trọng. Luyện Khí có 13 tầng, rồi Trúc Cơ, Kim Đan (Kết Đan), Nguyên Anh, Hóa Thần — đỉnh cao Nhân Giới. Lên Linh Giới còn Luyện Hư, Hợp Thể, Đại Thừa, Độ Kiếp, rồi Tiên giới. Mỗi đại cảnh giới tăng vọt thọ nguyên và địa vị; cao thấp cách tuyệt. Đây là bối cảnh lời kể, không tự thêm cảnh giới hay đổi công thức sẵn có của game.\n\nTÀI NGUYÊN VÀ PHÁP BẢO\nLinh thạch hạ, trung, thượng, cực phẩm là tiền tệ; một trung phẩm bằng một trăm hạ phẩm. Đan dược, linh thảo, phù lục, trận pháp đều khan hiếm. Pháp khí dùng ở Luyện Khí; phù bảo là bản sao uy lực pháp bảo, số lần dùng hữu hạn; pháp bảo của tu sĩ Kết Đan trở lên được uẩn dưỡng thành bản mệnh; cổ bảo thượng cổ hao linh lực lớn; trên nữa là thông thiên linh bảo. Trúc Cơ Đan trợ đột phá, Bổ Thiên Đan cải tư chất; Hàng Trần Đan, Định Dung Đan cũng quý hiếm. Phường thị, đấu giá hội, Vạn Bảo Lâu và Lục Đại Thương Minh ở Loạn Tinh Hải nối các đường buôn bán, đồng thời nuôi tai mắt kẻ đoạt bảo.\n\nTÔNG MÔN, YÊU THÚ\nĐệ tử ký danh/ngoại môn, nội môn, thân truyền, chấp sự, trưởng lão, thái thượng trưởng lão là các tầng địa vị; lão tổ Nguyên Anh quyết định hưng suy. Gia tộc tu tiên cống nạp đệ tử để được bảo hộ. Yêu thú mười cấp: 1–4 gần Luyện Khí/Trúc Cơ, 5–7 gần Kết Đan, 8–10 hóa hình gần Nguyên Anh trở lên. Linh trùng như Phệ Kim Trùng có thể thành trợ lực; cổ tộc, dị tộc ẩn dật không dễ dò xét.\n\nHIỂM ĐỊA VÀ ĐẠO SINH TỒN\nLoạn Tinh Hải có Thiên Tinh Thành, Nghịch Tinh Minh, Hư Thiên Điện với Hư Thiên Đỉnh. Trụy Ma Cốc phong ấn Cổ Ma. Những lần chính ma đại chiến để lại phế tích, cổ bảo và truyền thừa thất lạc. Tu sĩ phần nhiều lạnh lùng thực dụng; tông môn ngoài nghiêm trang, trong đầy phe phái. Bí cảnh, di tích, đấu giá hội vừa là cơ duyên vừa là tử địa. Giấu tài, không lộ của, chuẩn bị đường lui; tài nguyên hữu hạn buộc tranh đoạt, sống sót mới có ngày tiến xa.",
   "aiRules": "QUY TẮC AI\n1. Luôn có lựa chọn đào tẩu khi nguy hiểm, nhưng đào tẩu có thể phải trả giá.\n2. Không buff vô lý, không ban tài nguyên vô hạn hay kỳ ngộ không có nguyên nhân.\n3. NPC không tử tế vô điều kiện; lợi ích, tính cách và thiện cảm chi phối hành động.\n4. Không tự đột phá hộ người chơi; không sửa tuổi, linh căn, kháng dược hoặc cờ Đan Vân do hệ thống tính.\n5. Hậu quả tuân theo quy tắc thế giới; tôn trọng mốc thời gian và nhịp chậm.\n6. Đan Vân dùng nút hấp thu của hệ thống, EXP và giá bán gấp đôi đan thường cùng phẩm chất; không cộng EXP lần nữa trong Codex.\n7. Giao dịch tặng phải ghi target là tên NPC; giá giao dịch là giá đan thường, hệ thống tự nhân phần Đan Vân.\n8. Tẩy Tủy Đan phải dùng nút riêng, không tự đổi linh căn trong lời kể.",
   "pacing": "PACING\nNhịp chậm chính tông. Mỗi đại đột phá là một chuỗi chuẩn bị đan dược, vật phẩm, bí pháp và thời gian bế quan. Không rút ngắn hàng trăm năm thành vài lượt. Nguyên Anh khoảng năm 200, Hóa Thần khoảng năm 870; người chơi vẫn phải tự bấm đột phá khi đủ điều kiện.",
   "startScript": "Năm game 1, làng Ngũ Lý Câu thuộc Việt Quốc. Sương sớm còn phủ mái nhà, người thiếu niên mười sáu tuổi từ biệt gia đình, theo đoàn tuyển đệ tử lên Thái Lĩnh Sơn nhập Thất Huyền Môn. Trước mắt là thử thách leo núi, cuộc gặp thầy thuốc Mặc Đại Phu và tình bằng hữu với Lệ Phi Vũ. Chưa có tu vi hay bảo vật ngoài những gì túi đồ ghi nhận. Hãy mở đầu chậm rãi, cho lựa chọn dự tuyển, tìm hiểu tình hình hoặc rút lui; không tự ban đột phá."
@@ -1342,7 +1400,7 @@ function pnFilterCanon(text) {
 function pnWorldValue(id) {if(pnMode()==='the_gioi_rieng' && (id==='worldContext' || id==='startScript')){const raw=document.getElementById(id)?.value || '';return raw===PHAM_NHAN_DEFAULTS[id]?'Thế giới riêng do người chơi định nghĩa; mở đầu ở một làng vô danh, không dùng địa lý và NPC Phàm Nhân.':pnFilterCanon(raw);}return pnFilterCanon(document.getElementById(id)?.value || '');}
 function phamNhanRules() {
  const mode=pnMode();const block=mode==='song_hanh'?'Hàn Lập là NPC thực tồn, xuất hiện tại các mốc sự kiện, tranh tài nguyên và kỳ ngộ với người chơi, tu vi tăng theo dòng thời gian.':mode==='thay_the'?'Hàn Lập không tồn tại. Người chơi sở hữu Chưởng Thiên Bình [Thần khí]; mọi kỳ ngộ vốn của y trỏ đến người chơi.':'Không dùng địa lý/NPC Phàm Nhân; chỉ dùng hệ thống cảnh giới, thọ nguyên, linh căn, kháng dược và pacing của truyện.';
- const framework=mode==='the_gioi_rieng'?[PHAM_NHAN_DEFAULTS.powerSystem,PHAM_NHAN_DEFAULTS.worldRules,PHAM_NHAN_DEFAULTS.pacing].join('\n\n'):WORLD_FRAMEWORK_PHAM_NHAN;
+ const framework=mode==='the_gioi_rieng'?[PHAM_NHAN_DEFAULTS.powerSystem,PHAM_NHAN_DEFAULTS.worldRules,PHAM_NHAN_DEFAULTS.pacing].join('\n\n'):WORLD_FRAMEWORK_PHAM_NHAN.replace(PHAM_NHAN_DEFAULTS.worldRules,document.getElementById('worldRules')?.value || PHAM_NHAN_DEFAULTS.worldRules);
  const npcs=mode==='the_gioi_rieng'?npcList.filter(n=>!PHAM_NHAN_NPCS.some(p=>normalizeVN(p[0])===normalizeVN(n.name))):npcList;
  return '\n# CHẾ ĐỘ CHƠI\n'+block+'\n# KHUNG THẾ GIỚI CỐ ĐỊNH (ưu tiên hơn nội dung sinh tự động)\n'+framework+'\n# NHÂN QUẢ\n'+npcs.map(n=>n.name+': '+npcAffinityRule(n.affinity ?? 50)).join('\n');
 }
@@ -2139,7 +2197,7 @@ function parseQty(raw) {
 }
 function generateAutoAvatar(name) { return "https://api.dicebear.com/7.x/adventurer/svg?seed=" + encodeURIComponent(name || 'NPC'); }
 function generateNpcId() { return 'npc_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
-function toggleSidebar() { const s=document.getElementById('sidebar');s.classList.toggle('active');const d=s.closest('details');if(d)d.open=s.classList.contains('active'); }
+function toggleSidebar() { const s=document.getElementById('sidebar');if(!s)return;const d=s.closest('details');const open=!(d?d.open:s.classList.contains('active'));s.classList.toggle('active',open);if(d)d.open=open; }
 // END PART 7/14// ══════════════════════════════════════════════════════════════
 // RECIPE_LIBRARY_FULL — TRẬN PHÁP
 // LK: 25 | TC: 25 | KD: 25 | NA: 25 | HT: 10
@@ -3078,7 +3136,7 @@ function copyUnifiedLog() {
   const storyText = document.getElementById('story-box')?.innerText || '';
   const logsText = document.getElementById('sysLogs')?.innerText || '';
   const statsText = document.getElementById('tokenStats')?.innerText || '';
-  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.8.2\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
+  const header = `═══════════════════════════════════════════════════════\n📖 HỒNG ĐỨC TU TIÊN LỘ v2.8.8.3\n⏰ Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n🎮 Lượt: ${turnCounter} | Cảnh giới: ${document.getElementById('mcLevel')?.value || '?'} | EXP: ${mcExp}/${mcExpMax}\n═══════════════════════════════════════════════════════\n\n`;
   const full = header + `━━━━━━━ 📜 NHẬT KÝ CHƠI GAME ━━━━━━━\n\n${storyText}\n\n` + `━━━━━━━ 🔧 SYSTEM LOGS ━━━━━━━\n\n${logsText}\n\n` + `━━━━━━━ 📊 TOKEN STATS ━━━━━━━\n\n${statsText}`;
   if (!storyText || storyText.includes('Chưa có dữ liệu')) { alert("⚠️ Chưa có nội dung để copy!"); return; }
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3659,6 +3717,7 @@ function showVersionLog() {
   html += `<div class="thiendao-result" style="border-left:3px solid #d29922"><div class="thiendao-result-title" style="color:#d29922">v2.8.7.1 (2026-10-18) — TIME SKIP ĐA HOẠT ĐỘNG</div><div class="thiendao-result-body">⏩ <b>7 HOẠT ĐỘNG CÀY LEVEL</b>: Luyện Đan, Luyện Khí, Vẽ Phù, Trận Pháp, Tu Luyện, Trồng Trọt, Săn Thú<br>🎯 Nút "Cày Level" trên header + option thứ 5 tự động<br>💾 Snapshot + Save tự động sau mỗi lần<br>📊 Báo cáo chi tiết: Profit/Exp/Injury</div></div>`;
   html += `<div class="thiendao-result" style="border-left:3px solid #3fb950"><div class="thiendao-result-title" style="color:#3fb950">v2.8.6 — FULL RECIPE LIBRARY</div><div class="thiendao-result-body">650+ công thức 4 nghề</div></div>`;
   html = `<div class="thiendao-result"><div class="thiendao-result-title">v2.8.8.2 — Giao diện cổ phong</div><div class="thiendao-result-body">Thiết kế mobile-first: mực huyền, vàng kim, ngọc bích; thanh điều hướng đáy, thư viện thu gọn và bảng cấu hình theo yêu cầu. Không đổi cơ chế trò chơi.</div></div>` + html;
+  html = "<div class=\"thiendao-result\"><div class=\"thiendao-result-title\">v2.8.8.3 — Kịch bản xuất thân & thế giới quan</div><div class=\"thiendao-result-body\">Thêm quy tắc đặt tên/văn phong/độ khó mặc định; 10 kịch bản xuất thân NVC ngẫu nhiên; thế giới quan mặc định theo Phàm Nhân Tu Tiên (Vong Ngữ); bỏ tag quản lý cấu hình; sửa 2 lỗi hiển thị.</div></div>" + html;
   resultsDiv.innerHTML = html;
 }
 function closeVersionLog(){const m=document.getElementById("versionModal");if(m)m.classList.remove("active");}
@@ -3795,7 +3854,7 @@ function renderProfessionRankTable(profId) {
 function showProfessionStats() {
   openThienDao();
   const resultsDiv = document.getElementById('thienDaoResults');
-  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.8.2</div>`;
+  let html = `<div style="color:var(--accent-cyan);font-size:14px;margin-bottom:10px;font-weight:bold">⚒️ THỐNG KÊ NGHỀ NGHIỆP v2.8.8.3</div>`;
   for (const [profId, profDef] of Object.entries(PROFESSION_TYPES)) {
     const state = professionState[profId];
     const rankInfo = getProfessionRankInfo(profId);
@@ -4686,7 +4745,7 @@ function detectSceneScopes(actionText) {
   return Array.from(detected);
 }
 // END PART 11/14// ══════════════════════════════════════════════════════════════
-// TIME SKIP CORE LOGIC — v2.8.8.2
+// TIME SKIP CORE LOGIC — v2.8.8.3
 // ══════════════════════════════════════════════════════════════
 
 let tsCurrentActivity = 'tu_luyen';
@@ -4804,7 +4863,7 @@ function renderPreviewHtml(r) {
   html += `⚒️ <b>${r.activityName}</b><br>`;
   if (r.activityId === 'luyen_dan' || r.activityId === 'luyen_khi' || r.activityId === 've_phu' || r.activityId === 'tran_phap') {
     html += `📦 Sản xuất: <b>${r.totalProduced.toLocaleString()}</b><br>`;
-    html += `💰 Bán: <b>${r.soldQty.toLocaleString()}</b> × ${r.sellPrice} LS = <b>${r.revenue.toLocaleString()} LS</b><br>`;
+    html += `💰 Bán: <b>${r.soldQty.toLocaleString()}</b> sản phẩm · tổng thu <b>${r.revenue.toLocaleString()} LS</b> (theo phẩm chất)<br>`;
     html += `🌿 Chi phí NL: <b>-${r.materialCost.toLocaleString()} LS</b><br>`;
     html += `<span class="profit">💎 LỢI NHUẬN: ${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS</span><br>`;
     html += `⚡ Tu luyện: <b>${r.trainQty.toLocaleString()}</b> sp → <b>+${r.totalExpGain.toLocaleString()} EXP</b><br>`;
@@ -4927,7 +4986,7 @@ async function runTimeSkipSimulation() {
 function buildTimeSkipConfirmMsg(r) {
   let msg = `⏩ XÁC NHẬN TIME SKIP?\n\n⚒️ Hoạt động: ${r.activityName}\n📅 Thời gian: ${r.daysElapsed.toLocaleString()} ngày (${(r.daysElapsed / 365).toFixed(2)} năm)\n\n`;
   if (r.activityId === 'luyen_dan' || r.activityId === 'luyen_khi' || r.activityId === 've_phu' || r.activityId === 'tran_phap') {
-    msg += `📦 Sản xuất: ${r.totalProduced.toLocaleString()}\n💰 Bán: ${r.soldQty.toLocaleString()} × ${r.sellPrice} LS = ${r.revenue.toLocaleString()} LS\n🌿 Trừ nguyên liệu trong túi: ${r.totalBatches} mẻ (không tự mua)\n💎 Lợi nhuận: ${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS\n⚡ Tu luyện: ${r.trainQty.toLocaleString()} → +${r.totalExpGain.toLocaleString()} EXP\n⚒️ EXP nghề: +${r.craftExpGain.toLocaleString()}\n`;
+    msg += `📦 Sản xuất: ${r.totalProduced.toLocaleString()}\n💰 Bán: ${r.soldQty.toLocaleString()} sản phẩm · tổng thu ${r.revenue.toLocaleString()} LS (theo phẩm chất)\n🌿 Trừ nguyên liệu trong túi: ${r.totalBatches} mẻ (không tự mua)\n💎 Lợi nhuận: ${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS\n⚡ Tu luyện: ${r.trainQty.toLocaleString()} → +${r.totalExpGain.toLocaleString()} EXP\n⚒️ EXP nghề: +${r.craftExpGain.toLocaleString()}\n`;
   } else if (r.activityId === 'tu_luyen') {
     msg += `🧘 EXP/ngày (trước giảm hiệu suất): ${r.expPerDay.toLocaleString()}\n⚡ TỔNG EXP: +${r.totalExpGain.toLocaleString()}\n💸 Chi phí: -${r.materialCost.toLocaleString()} LS\n`;
   } else if (r.activityId === 'trong_trot') {
@@ -5030,7 +5089,7 @@ function renderTimeSkipReport(r, applyReport) {
   if (r.activityId === 'luyen_dan' || r.activityId === 'luyen_khi' || r.activityId === 've_phu' || r.activityId === 'tran_phap') {
     html += `<div class="stat-line"><span>📜 Công thức:</span><b>${r.recipeName} [${r.recipe.tier}]</b></div>`;
     html += `<div class="stat-line"><span>📦 Tổng sản xuất:</span><b>${r.totalProduced.toLocaleString()}</b></div>`;
-    html += `<div class="stat-line"><span>💰 Bán:</span><b>${r.soldQty.toLocaleString()} × ${r.sellPrice} LS = ${r.revenue.toLocaleString()} LS</b></div>`;
+    html += `<div class="stat-line"><span>💰 Bán:</span><b>${r.soldQty.toLocaleString()} sản phẩm · tổng thu ${r.revenue.toLocaleString()} LS (theo phẩm chất)</b></div>`;
     html += `<div class="stat-line"><span>🌿 Nguyên liệu trong túi:</span><b>${r.totalBatches} mẻ (không tự mua)</b></div>`;
     html += `<div class="stat-line"><span>💎 LỢI NHUẬN RÒNG:</span><b style="color:${r.profit >= 0 ? '#3fb950' : '#f85149'};font-size:14px">${r.profit >= 0 ? '+' : ''}${r.profit.toLocaleString()} LS</b></div>`;
     html += `<div class="stat-line"><span>⚡ Tu luyện:</span><b>${r.effectiveTrainQty.toLocaleString()} (quy đổi hiệu suất) × ${r.mcExpPerPill} = +${r.totalExpGain.toLocaleString()} EXP</b></div>`;
@@ -5110,7 +5169,7 @@ async function saveGame(isManual = false) {
     mcAvatarBase64, npcList, eventList, tokenStats, mcExp, mcExpMax, mcLinhCan, mcStats,
     currentModel: CACHE_MODEL, settings, keyStatus, currentKeyIndex,
     priceMemory, professionState, musicPlaylist, currentMusicIndex,
-    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.8.2', inputs: {}
+    lastOptions, tsCurrentActivity, _saveVersion: 'v2.8.8.3', inputs: {}
   };
   inputIds.forEach(id => { const el = document.getElementById(id); if (el) gameData.inputs[id] = el.value; });
   try { await saveToIDB('HONDUC_TU_TIEN_SAVE', gameData); log("Game saved."); if (isManual) { alert("💾 Đã lưu game!"); toggleSidebar(); } }
@@ -5149,7 +5208,7 @@ async function loadGame() {
     if (gameData.npcList) { npcList = gameData.npcList; npcList.forEach(n => { if (!n.id) n.id = generateNpcId(); if (n.pinned === undefined) n.pinned = false; if (n.lockedRules === undefined) n.lockedRules = false; if (n.status === undefined) n.status = ''; }); renderNpcs(); }
     if (gameData.eventList) { eventList = gameData.eventList; renderEventsVisual(); }
     if (gameData.inputs) { Object.keys(gameData.inputs).forEach(id => { const el = document.getElementById(id); if (el && id !== 'modelListInput') el.value = gameData.inputs[id]; }); }
-    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.8.2');
+    document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.8.3');
     mcLastAgeHours=pnHours();ensurePlayModeItem();renderInventoryVisual(pnInventory());updateLifespanStatus();
     stateSnapshots = [captureStateSnapshot()];
     updateTokenStatsDisplay(); updateExpUI(); renderKeyStatus(); syncToggleUI(); updateKeyCountInfo(); normalizeGameTimeField(); renderProfessionUI(); updateSystemDashboard(); loadMcStatsUI();
@@ -5211,7 +5270,7 @@ async function exportSaveFile() {
   const gameData = await getFromIDB('HONDUC_TU_TIEN_SAVE');
   if (!gameData) return;
   const blob = new Blob([JSON.stringify(gameData)], { type: "application/json" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.8.2_save.json"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hongduc_tutien_v2.8.8.3_save.json"; a.click();
   log("Xuất save thành công.");
 }
 function importSaveFile() { const fi = document.getElementById('fileInput'); if (fi) fi.click(); }
@@ -5224,10 +5283,10 @@ function handleFileSelect(event) {
 }
 function exportWorldConfig() {
   const worldIds = ['supremeMotifRule', 'rule18Plus', 'aiRules', 'gameTitle', 'difficultySelect', 'difficultyCustom', 'worldContext', 'startTime', 'startScript', 'worldRules', 'namingRules', 'genre', 'powerSystem', 'writingStyle', 'playMode'];
-  const cfg = { _version: 'v2.8.8.2', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
+  const cfg = { _version: 'v2.8.8.3', _type: 'worldConfig', scopes: scopeRegistry, professions: professionState, mcStats: mcStats, fields: {} };
   worldIds.forEach(id => { const el = document.getElementById(id); if (el) cfg.fields[id] = el.value; });
   const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.8.2.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hongduc_world_config_v2.8.8.3.json'; a.click();
   log('📤 Xuất World Config thành công.'); alert('📤 Đã xuất!');
 }
 function importWorldConfig() { const fi = document.getElementById('worldConfigFileInput'); if (fi) fi.click(); }
@@ -5282,6 +5341,10 @@ async function resetAllFields() {
   document.getElementById('cjkWarningBox').style.display = 'none';
   document.getElementById('breakthroughStatus').style.display = 'none';
   for(const id of ['worldContext','worldRules','powerSystem','aiRules','startScript']) document.getElementById(id).value=PHAM_NHAN_DEFAULTS[id];
+  document.getElementById("namingRules").value="Đặt tên theo lối Hán-Việt: nhân vật = họ 1 chữ + tên 1–2 chữ (Lý Hàn, Vân Thanh Hà); tông môn/phái = 2–4 chữ ý cảnh (Thanh Vân Tông, Huyết Ma Cốc); đan dược/pháp bảo/công pháp = tên gợi công dụng (Tụ Khí Đan, Phi Kiếm, Ngũ Hành Quyết); nhất quán tên đã dùng.";
+  document.getElementById("writingStyle").value="Dùng ngôi thứ hai “ngươi”, nhập vai sâu như chính người chơi sống trong thế giới đó. Mỗi NPC có tính cách, suy nghĩ, mục đích và cách nói chuyện riêng; phân biệt xưng hô, khẩu khí theo thân phận và tâm tính. Tả cảnh sinh động, kịch tính, hồi hộp; không liệt kê khô khan, không dùng ngôn ngữ hiện đại.";
+  document.getElementById("difficultySelect").value="Vừa";
+  lastRandomScenarioIndex=-1;
   updateExpUI();
   await deleteFromIDB('HONDUC_TU_TIEN_SAVE');
   resetTokenStats(); resetKeyStatus();
@@ -5364,7 +5427,7 @@ function buildSystemRules(scopeInput = 'default') {
   else scopeIds = ['default'];
   const scopeExemplarBlock = getStyleExemplarBlockMulti(scopeIds);
   if (scopeExemplarBlock && scopeExemplarBlock.trim()) log(`🎨 Inject scope exemplar: ${scopeIds.filter(s => s !== 'default').join(', ')}`);
-  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8.2'}".
+  return `# VAI TRÒ: Game Master Text RPG Tu Tiên "${v('gameTitle') || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8.3'}".
 
 # QUY TẮC TỐI CAO
 ${v('supremeMotifRule') || 'Phàm Nhân Tu Tiên chính tông. Nhịp chậm, logic chặt.'}
@@ -5385,10 +5448,11 @@ ${v('aiRules') || `1. Nhịp chậm cẩn trọng, không buff vô lý.
 ${phamNhanRules()}
 
 # THẾ GIỚI
-- Độ khó: ${v('difficultySelect')} — ${v('difficultyCustom') || 'mặc định'}
+- Độ khó lời kể: ${v('difficultySelect') || 'Vừa'} — ${v('difficultyCustom') || 'mặc định'}. Dễ: hạn chót rộng, tài nguyên dễ kiếm, hậu quả nhẹ; Vừa: cân bằng; Khó: hạn chót gấp, tài nguyên hiếm, hậu quả nặng; Địa ngục: sinh tồn khắc nghiệt, hiểm nguy nối tiếp. Chỉ điều chỉnh lời kể AI về hạn chót, khan hiếm tài nguyên và nguy hiểm/hậu quả; không đổi công thức, EXP, dung sai hay dữ liệu lưu.
 - Bối cảnh: ${v('worldContext') || 'Tu tiên giới'}
 - Quy tắc: ${v('worldRules') || 'Logic tu tiên'}
 - Cảnh giới: ${v('powerSystem') || 'LK → TC → KĐ → NA → HT → LH'}
+- Quy tắc đặt tên: ${v('namingRules')}
 - Văn phong: ${v('writingStyle') || 'Ngôi thứ 2'}
 
 ${getProfessionAIContext()}
@@ -5405,7 +5469,7 @@ ${scopeExemplarBlock}
 5) Khối \`\`\`json Codex`;
 }
 function buildCompactRules() {
-  return `# ⚡ v2.8.8.2
+  return `# ⚡ v2.8.8.3
 - Ngôi 2. Tiếng Việt có dấu. KHÔNG CJK.
 - ≥${MIN_TURN_WORDS} từ + 《...》.
 - Cuối lượt: [TÓM TẮT] + 2-4 lựa chọn + json Codex.`;
@@ -5942,7 +6006,13 @@ const startGame = async () => {
   document.getElementById('cjkWarningBox').style.display = 'none';
   storyBox.innerHTML = '<div style="color:var(--accent-gold)">⚡ Đang khởi tạo thế giới...</div>';
   updateExpUI();
-  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8.2'}".
+  const systemPrompt = `Hãy đóng vai Game Master chuyên nghiệp điều hành Text RPG Tu Tiên: "${document.getElementById('gameTitle').value || 'HỒNG ĐỨC TU TIÊN LỘ v2.8.8.3'}".
+
+[QUY TẮC KỂ CHUYỆN]:
+Đặt tên: ${document.getElementById('namingRules').value}
+Văn phong: ${document.getElementById('writingStyle').value}
+Độ khó: ${document.getElementById('difficultySelect').value}; chỉ thay mức khắc nghiệt của hạn chót, khan hiếm tài nguyên, nguy hiểm và hậu quả trong lời kể, không đổi bất kỳ công thức, EXP, dung sai hay dữ liệu lưu nào.
+Ưu tiên xuất thân NVC đã chọn nếu khác kịch bản mở đầu mặc định; không ép ngươi vào xuất thân của Hàn Lập.
 
 [THÔNG TIN NVC]:
 - Tên & Thân phận: ${document.getElementById('mcName').value}
@@ -6088,7 +6158,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   normalizeGameTimeField();
   updateSystemDashboard();
 
-  if(/2\.8\.7\.[34]/.test(document.getElementById('gameTitle').value)) document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.8.2');
+  if(/2\.8\.7\.[34]/.test(document.getElementById('gameTitle').value)) document.getElementById('gameTitle').value=document.getElementById('gameTitle').value.replace(/2\.8\.7\.[34]/g,'2.8.8.3');
   mcLastAgeHours=pnHours();ensurePlayModeItem();updateLifespanStatus();
 
   // Migration item system
@@ -6152,7 +6222,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     log(`📚 Recipe Library: Trận Pháp ${c.tran_phap || 0} | Phù Lục ${c.ve_phu || 0} | Luyện Khí ${c.luyen_khi || 0} | Luyện Đan ${c.luyen_dan || 0} | TỔNG ${c._total || 0}`);
   }
 
-  log("✅ v2.8.8.2 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
+  log("✅ v2.8.8.3 TIME SKIP ĐA HOẠT ĐỘNG loaded.");
   log("🎯 7 loại cày level: Luyện Đan / Khí / Phù / Trận / Tu Luyện / Trồng Trọt / Săn Thú.");
   log("⏩ Nhấn '⏩ Cày Level' trên header hoặc chọn option 5 trong lượt để dùng.");
   log("💡 Lần đầu: nhập API Key Gemini ở sidebar, bấm ⚡ KHỞI TẠO để bắt đầu.");

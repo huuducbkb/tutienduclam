@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hồng Đức Tu Tiên Lộ V1</title>
+    
+    <!-- Gọi các font chữ chuẩn Thư Pháp và Sách Cổ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Charm:ital,wght@0,700;1,700&family=Mali:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Pattaya&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Charm:ital,wght@0,700;1,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Playfair+Display:ital,wght@0,600;1,600&family=Pattaya&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -20,6 +23,11 @@
             --ink-mid: #4a3b2c;
             --seal-red: #8b2019;
             --seal-cream: #f4e8d1;
+            
+            /* Định nghĩa Font chữ */
+            --font-title: 'Charm', cursive; /* Font thư pháp cho tiêu đề */
+            --font-body: 'Cormorant Garamond', serif; /* Font sách cổ cho nội dung */
+            --font-ink: 'Pattaya', cursive; /* Font nét cọ cho Header */
         }
 
         * {
@@ -33,7 +41,7 @@
             padding: 0;
             background-color: var(--bg-outer);
             background-image: radial-gradient(circle at 50% 45%, #241e18 0%, #13100d 78%, #0a0806 100%);
-            font-family: 'Mali', cursive, sans-serif;
+            font-family: var(--font-body);
             color: var(--ink-black);
             display: flex;
             justify-content: center;
@@ -56,7 +64,6 @@
             flex-direction: column;
         }
 
-        /* Lớp Canvas vẽ chất liệu giấy sần sùi */
         #parchment-canvas {
             position: absolute;
             inset: 0;
@@ -64,30 +71,28 @@
             height: 100%;
             z-index: 1;
             pointer-events: none;
-            mix-blend-mode: multiply; /* Quan trọng: Hòa trộn vết ố vào nền */
+            mix-blend-mode: multiply; 
         }
 
-        /* Viền mực bị lem và không đều */
         .outer-double-border {
             position: relative;
             z-index: 10;
             flex: 1;
-            margin: 6px; /* Tăng lề để lộ viền giấy rách */
+            margin: 6px;
             border: 1.5px solid rgba(24, 19, 14, 0.85);
             box-shadow: inset 0 0 0 1.5px rgba(229, 214, 184, 0.4), inset 0 0 0 3px rgba(24, 19, 14, 0.6);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border-radius: 2px; /* Bo góc nhẹ cho giống giấy thật */
+            border-radius: 2px;
         }
 
-        /* Hiệu ứng vết ố mép (Vignette) đè lên toàn bộ khung */
         .outer-double-border::after {
             content: "";
             position: absolute;
             inset: 0;
             pointer-events: none;
-            box-shadow: inset 0 0 40px rgba(90, 60, 20, 0.25); /* Vết ố nâu đậm ở 4 góc */
+            box-shadow: inset 0 0 40px rgba(90, 60, 20, 0.25);
             z-index: 20;
         }
 
@@ -110,7 +115,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.9; /* Làm mờ tranh nền đi một chút */
+            opacity: 0.9;
         }
 
         .seal-hong-duc {
@@ -129,10 +134,10 @@
             align-items: center;
             justify-content: center;
             color: var(--seal-cream);
-            font-family: 'Mali', cursive;
+            font-family: var(--font-ink);
             font-weight: 700;
-            font-size: 9px;
-            transform: rotate(-4deg); /* Nghiêng tự nhiên hơn */
+            font-size: 10px;
+            transform: rotate(-4deg);
             filter: url(#stoneSealFilter);
         }
 
@@ -147,13 +152,12 @@
         }
 
         .brush-title-line1 {
-            font-family: 'Pattaya', 'Charm', cursive;
+            font-family: var(--font-ink);
             font-weight: 700;
-            font-size: clamp(32px, 8.5vw, 38px);
+            font-size: clamp(36px, 9.5vw, 42px);
             color: var(--ink-black);
             letter-spacing: 1.5px;
-            transform: rotate(-2deg) skewX(-5deg);
-            /* Đổ bóng lem màu mực */
+            transform: rotate(-3deg) skewX(-6deg);
             text-shadow: 1px 1px 1px rgba(24, 19, 14, 0.5), -1px -1px 0px rgba(255,255,255,0.2);
             filter: url(#dryBrushCalligraphy);
             white-space: nowrap;
@@ -163,14 +167,14 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-top: -2px;
-            transform: rotate(-0.5deg) skewX(-3deg);
+            margin-top: -4px;
+            transform: rotate(-1deg) skewX(-4deg);
         }
 
         .brush-title-line2 {
-            font-family: 'Pattaya', 'Charm', cursive;
+            font-family: var(--font-ink);
             font-weight: 700;
-            font-size: clamp(28px, 7.5vw, 34px);
+            font-size: clamp(30px, 8vw, 36px);
             color: var(--ink-black);
             text-shadow: 1px 1px 1px rgba(24, 19, 14, 0.5);
             filter: url(#dryBrushCalligraphy);
@@ -180,7 +184,7 @@
         .seal-square-mini {
             width: 18px; height: 18px;
             background-color: var(--seal-red); border: 1px solid #59110d; border-radius: 2px;
-            color: var(--seal-cream); font-size: 6px; font-weight: 700;
+            color: var(--seal-cream); font-size: 7px; font-weight: 700; font-family: sans-serif;
             display: grid; grid-template-columns: 1fr 1fr; place-items: center;
             padding: 1px; margin-top: 4px; filter: url(#stoneSealFilter);
             transform: rotate(5deg);
@@ -193,7 +197,7 @@
             display: grid;
             grid-template-columns: 1fr 1.3fr 0.9fr 1fr 0.7fr;
             border-bottom: 1.5px solid rgba(24, 19, 14, 0.8);
-            background: rgba(212, 193, 157, 0.3); /* Trong suốt để lộ vết ố */
+            background: rgba(212, 193, 157, 0.3);
             padding: 6px 2px;
             flex-shrink: 0;
         }
@@ -202,8 +206,8 @@
         .stat-col:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1px; background-color: rgba(58, 46, 34, 0.5); }
         .stat-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--ink-black); opacity: 0.85; }
         .stat-text-group { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
-        .stat-title { font-size: 7.5px; font-style: italic; font-weight: 600; color: #463728; white-space: nowrap; }
-        .stat-value { font-size: 9px; font-weight: 700; color: var(--ink-black); white-space: nowrap; }
+        .stat-title { font-family: var(--font-body); font-size: 8.5px; font-style: italic; font-weight: 600; color: #463728; white-space: nowrap; }
+        .stat-value { font-family: var(--font-body); font-size: 10.5px; font-weight: 700; color: var(--ink-black); white-space: nowrap; }
 
         /* KHU VỰC NỘI DUNG CHÍNH */
         .main-scroll-area {
@@ -217,35 +221,41 @@
         }
         .main-scroll-area::-webkit-scrollbar { display: none; }
 
-        /* Khung nội dung (sần sùi hơn) */
         .section-frame {
             position: relative;
             border: 1.5px solid rgba(24, 19, 14, 0.8);
-            /* Tạo hiệu ứng viền kép mờ ảo */
             box-shadow: inset 0 0 0 1.5px rgba(229, 214, 184, 0.5), inset 0 0 0 3px rgba(24, 19, 14, 0.4);
             padding: 16px 14px;
-            background: rgba(229, 214, 184, 0.1); /* Rất nhẹ để không lấn át nền */
+            background: rgba(229, 214, 184, 0.1);
         }
 
-        .cloud-scroll-corner { position: absolute; width: 22px; height: 22px; color: var(--ink-dark); opacity: 0.6;}
-        .csc-tl { top: 5px; left: 5px; }
-        .csc-tr { top: 5px; right: 5px; transform: scaleX(-1); }
-        .csc-bl { bottom: 5px; left: 5px; transform: scaleY(-1); }
-        .csc-br { bottom: 5px; right: 5px; transform: scale(-1, -1); }
-
         .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; margin-left: 5px; }
-        .section-title { font-family: 'Charm', 'Mali', cursive; font-size: 26px; font-weight: 700; font-style: italic; color: var(--ink-black); }
+        
+        .section-title { 
+            font-family: var(--font-title); 
+            font-size: 28px; 
+            font-weight: 700; 
+            font-style: italic; 
+            color: var(--ink-black); 
+            line-height: 1;
+        }
+        
         .seal-mini-red {
             width: 16px; height: 16px; background-color: var(--seal-red);
             border: 1px solid #59110d; border-radius: 2px; color: var(--seal-cream);
-            font-size: 6px; font-weight: 700; display: grid; grid-template-columns: 1fr 1fr;
+            font-size: 6px; font-weight: 700; font-family: sans-serif; display: grid; grid-template-columns: 1fr 1fr;
             place-items: center; filter: url(#stoneSealFilter); transform: rotate(-3deg);
         }
 
-        /* Nội dung chữ */
+        /* Nội dung chữ: Dùng font sách cổ, in nghiêng */
         .story-paragraphs, .tuluyen-info, .mission-list {
             padding-left: 25px; padding-right: 5px;
-            font-size: 13px; font-weight: 600; font-style: italic; line-height: 1.65; color: #1c1610;
+            font-family: var(--font-body);
+            font-size: 15.5px; 
+            font-weight: 600; 
+            font-style: italic; 
+            line-height: 1.6; 
+            color: #1c1610;
         }
 
         /* Thanh tiến trình */
@@ -253,7 +263,7 @@
             width: 100%; height: 8px; background: #cbb68f; border: 1px solid var(--ink-black); border-radius: 4px; margin: 6px 0; position: relative;
         }
         .progress-bar-fill { height: 100%; background: var(--ink-mid); width: 35.68%; border-radius: 3px; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: -2px; font-size: 8px; color: var(--ink-black); font-weight: bold; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: -3px; font-family: sans-serif; font-size: 9px; color: var(--ink-black); font-weight: bold; }
 
         /* THANH ĐIỀU HƯỚNG ĐÁY */
         .bottom-nav-bar {
@@ -272,18 +282,17 @@
         }
         .nav-item-btn.active .ink-medallion { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(24, 19, 14, 0.3), inset 0 0 0 2px #f2e7d2, inset 0 0 0 3.5px var(--ink-black); }
         .medallion-svg { width: 80%; height: 80%; }
-        .medallion-label { font-size: 11px; font-weight: 700; font-style: italic; color: var(--ink-black); white-space: nowrap; }
+        
+        /* Font cho thanh điều hướng dưới */
+        .medallion-label { font-family: var(--font-title); font-size: 14px; font-weight: 700; font-style: italic; color: var(--ink-black); white-space: nowrap; }
         .nav-item-btn.active .medallion-label { color: #6b1812; text-decoration: underline; text-underline-offset: 2px; }
 
-        .home-indicator-line { width: 120px; height: 4px; background-color: #16110c; border-radius: 999px; margin: 8px auto 0 auto; opacity: 0.8; }
     </style>
 </head>
 <body>
 
-    <!-- Các bộ lọc SVG (Tăng độ xước mực) -->
     <svg width="0" height="0" style="position:absolute; pointer-events:none;">
         <defs>
-            <!-- Làm nét chữ bị gai góc, xước hơn -->
             <filter id="dryBrushCalligraphy" x="-10%" y="-10%" width="120%" height="120%">
                 <feTurbulence type="fractalNoise" baseFrequency="0.12" numOctaves="4" seed="8" result="dryNoise"/>
                 <feDisplacementMap in="SourceGraphic" in2="dryNoise" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
@@ -292,7 +301,6 @@
                 <feTurbulence type="fractalNoise" baseFrequency="0.25" numOctaves="2" seed="5" result="chipNoise"/>
                 <feDisplacementMap in="SourceGraphic" in2="chipNoise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
             </filter>
-            <!-- Tranh núi lem luốc -->
             <filter id="mountainInkWash" x="-15%" y="-15%" width="130%" height="130%">
                 <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" seed="22" result="washNoise"/>
                 <feDisplacementMap in="SourceGraphic" in2="washNoise" scale="8" xChannelSelector="R" yChannelSelector="G" result="warpedInk"/>
@@ -302,7 +310,6 @@
     </svg>
 
     <div class="mobile-shell" id="app-shell">
-        <!-- Lớp Canvas giấy sần -->
         <canvas id="parchment-canvas"></canvas>
 
         <div class="outer-double-border">
@@ -317,12 +324,9 @@
                         </linearGradient>
                     </defs>
                     <g filter="url(#mountainInkWash)">
-                        <!-- Núi xa lem luốc -->
                         <path d="M-20,160 Q50,100 120,135 T250,110 T426,130 L426,200 L-20,200 Z" fill="#5e4e3b" opacity="0.3"/>
-                        <!-- Núi gần đậm hơn -->
                         <path d="M250,190 L314,132 L328,114 L344,86 L374,86 L392,110 L426,124 L426,190 Z" fill="url(#cliffPeakGrad)"/>
                     </g>
-                    <!-- Tháp -->
                     <g transform="translate(338, 22)" fill="#1a130d" opacity="0.9">
                         <path d="M21,0 L22.6,7 L19.4,7 Z"/>
                         <path d="M12.5,11.5 Q21,8.5 29.5,11.5 Q24.5,8 21,6 Q17.5,8 12.5,11.5 Z"/>
@@ -336,7 +340,6 @@
                         <path d="M-1,49.5 Q21,43 43,49.5 Q31.5,42.5 21,40.8 Q10.5,42.5 -1,49.5 Z"/>
                         <rect x="8.5" y="49.5" width="25" height="8.5" fill="#1b140e"/>
                     </g>
-                    <!-- Chim mờ -->
                     <path d="M316,17 Q322,11 327,16 Q332,10 338,14 Q331,13 327,18 Q322,14 316,17 Z" fill="#18130e" opacity="0.6"/>
                 </svg>
 
@@ -384,6 +387,8 @@
                 <!-- CỐT TRUYỆN -->
                 <article class="section-frame">
                     <div class="section-header">
+                        <!-- Icon đám mây -->
+                        <svg width="28" height="20" viewBox="0 0 38 25" fill="#18130e"><path d="M5 18.5C2.8 18.5 1.2 17 1.2 15.1C1.2 13.4 2.6 12 4.4 11.8C5 8.6 7.9 6.2 11.5 6.2C12.7 6.2 13.8 6.5 14.7 7C16.3 4 19.6 2 23.5 2C28.8 2 33.1 5.9 33.5 10.8C36.6 11.1 39 13.4 39 16.3C39 19.3 36.3 21.8 32.9 21.8H13.5C11.2 21.8 9.4 20.3 9.4 18.4C9.4 16.8 10.7 15.5 12.3 15.5C13.6 15.5 14.7 16.3 14.9 17.4" /></svg>
                         <h1 class="section-title">Cốt Truyện</h1>
                         <div class="seal-mini-red"><span>仙</span><span>缘</span></div>
                     </div>
@@ -397,6 +402,8 @@
                 <!-- TU LUYỆN -->
                 <article class="section-frame">
                     <div class="section-header">
+                        <!-- Icon người ngồi thiền -->
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#18130e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
                         <h1 class="section-title">Tu Luyện</h1>
                         <div class="seal-mini-red"><span>修</span><span>炼</span></div>
                     </div>
@@ -407,7 +414,7 @@
                             <div class="progress-bar-fill"></div>
                             <div class="progress-text">35.68%</div>
                         </div>
-                        <div style="text-align: right; font-size: 9px; margin-top: -2px;">5.680 / 15.880</div>
+                        <div style="text-align: right; font-size: 11px; margin-top: -2px;">5.680 / 15.880</div>
                         Đang tu luyện: Huyền Linh Quyết (Cấp 3)<br>
                         Tốc độ tu luyện: 1.250 điểm / ngày
                     </div>
@@ -416,6 +423,8 @@
                 <!-- NHIỆM VỤ -->
                 <article class="section-frame">
                     <div class="section-header">
+                        <!-- Icon cuộn giấy -->
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#18130e"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         <h1 class="section-title">Nhiệm Vụ</h1>
                         <div class="seal-mini-red"><span>任</span><span>务</span></div>
                     </div>
@@ -472,7 +481,6 @@
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
 
-            // 1. Nền giấy cơ bản
             const baseGrad = ctx.createLinearGradient(0, 0, 0, height);
             baseGrad.addColorStop(0, '#e3d4b5');
             baseGrad.addColorStop(0.5, '#dcc9a5');
@@ -483,19 +491,17 @@
             let seed = 1337;
             function rand() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
 
-            // 2. Các mảng ố vàng, mốc (Loang lổ)
             for (let i = 0; i < 50; i++) {
                 const bx = rand() * width;
                 const by = rand() * height;
                 const radius = 30 + rand() * 150;
                 const blotch = ctx.createRadialGradient(bx, by, radius * 0.1, bx, by, radius);
                 
-                // Tạo các vết ố nâu đậm và vết ẩm mốc nhạt
                 if (rand() > 0.5) {
-                    blotch.addColorStop(0, 'rgba(110, 80, 40, 0.15)'); // Ố nâu
+                    blotch.addColorStop(0, 'rgba(110, 80, 40, 0.15)');
                     blotch.addColorStop(1, 'rgba(110, 80, 40, 0)');
                 } else {
-                    blotch.addColorStop(0, 'rgba(250, 240, 220, 0.2)'); // Vết mờ
+                    blotch.addColorStop(0, 'rgba(250, 240, 220, 0.2)');
                     blotch.addColorStop(1, 'rgba(250, 240, 220, 0)');
                 }
                 ctx.fillStyle = blotch;
@@ -504,18 +510,17 @@
                 ctx.fill();
             }
 
-            // 3. Vết xước mực (Tạo cảm giác cũ kỹ)
             ctx.lineCap = 'round';
             for (let i = 0; i < 2500; i++) {
                 const fx = rand() * width;
                 const fy = rand() * height;
                 const angle = rand() * Math.PI * 2;
-                const len = 1 + rand() * 12; // Sợi dài ngắn khác nhau
+                const len = 1 + rand() * 12;
                 const curve = (rand() - 0.5) * 5;
 
                 ctx.strokeStyle = rand() > 0.4
-                    ? `rgba(90, 65, 35, ${0.03 + rand() * 0.08})` // Xước tối
-                    : `rgba(255, 250, 240, ${0.05 + rand() * 0.1})`; // Xước sáng
+                    ? `rgba(90, 65, 35, ${0.03 + rand() * 0.08})`
+                    : `rgba(255, 250, 240, ${0.05 + rand() * 0.1})`;
                 ctx.lineWidth = 0.3 + rand() * 0.8;
 
                 ctx.beginPath();
@@ -529,7 +534,6 @@
                 ctx.stroke();
             }
 
-            // 4. Đốm li ti (Bụi giấy)
             for (let i = 0; i < 3000; i++) {
                 const dx = rand() * width;
                 const dy = rand() * height;
@@ -540,14 +544,13 @@
                 ctx.fillRect(dx, dy, size, size);
             }
 
-            // 5. Vết ố tối sầm ở 4 góc màn hình (Vignette)
             const vignette = ctx.createRadialGradient(
-                width * 0.5, height * 0.5, width * 0.25, // Bán kính trong
-                width * 0.5, height * 0.5, Math.max(width, height) * 0.65 // Bán kính ngoài
+                width * 0.5, height * 0.5, width * 0.25,
+                width * 0.5, height * 0.5, Math.max(width, height) * 0.65
             );
             vignette.addColorStop(0, 'rgba(50, 30, 10, 0)');
             vignette.addColorStop(0.8, 'rgba(60, 40, 15, 0.15)');
-            vignette.addColorStop(1, 'rgba(40, 20, 5, 0.45)'); // Góc tối hẳn
+            vignette.addColorStop(1, 'rgba(40, 20, 5, 0.45)');
             ctx.fillStyle = vignette;
             ctx.fillRect(0, 0, width, height);
         }

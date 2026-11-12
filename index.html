@@ -5,29 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hồng Đức Tu Tiên Lộ V1</title>
     
-    <!-- Gọi các font chữ chuẩn Thư Pháp và Sách Cổ -->
+    <!-- Nhúng Font: Tangerine (Thư pháp), Lora (Sách cổ) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Charm:ital,wght@0,700;1,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Playfair+Display:ital,wght@0,600;1,600&family=Pattaya&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Pattaya&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         :root {
             --bg-outer: #13100d;
-            --paper-light: #e5d6b8;
             --paper-mid: #dcc9a5;
-            --paper-dark: #d4be96;
             --ink-black: #18130e;
-            --ink-dark: #251d16;
             --ink-mid: #4a3b2c;
             --seal-red: #8b2019;
             --seal-cream: #f4e8d1;
             
-            /* Định nghĩa Font chữ */
-            --font-title: 'Charm', cursive; /* Font thư pháp cho tiêu đề */
-            --font-body: 'Cormorant Garamond', serif; /* Font sách cổ cho nội dung */
-            --font-ink: 'Pattaya', cursive; /* Font nét cọ cho Header */
+            /* SỬ DỤNG FONT MỚI */
+            --font-calligraphy: 'Tangerine', cursive; /* Tiêu đề chính */
+            --font-body: 'Lora', serif; /* Nội dung chữ in cổ */
+            --font-header-ink: 'Pattaya', cursive; /* Chữ Hồng Đức trên cùng */
         }
 
         * {
@@ -134,9 +131,9 @@
             align-items: center;
             justify-content: center;
             color: var(--seal-cream);
-            font-family: var(--font-ink);
+            font-family: var(--font-body);
             font-weight: 700;
-            font-size: 10px;
+            font-size: 9px;
             transform: rotate(-4deg);
             filter: url(#stoneSealFilter);
         }
@@ -152,13 +149,13 @@
         }
 
         .brush-title-line1 {
-            font-family: var(--font-ink);
+            font-family: var(--font-header-ink);
             font-weight: 700;
-            font-size: clamp(36px, 9.5vw, 42px);
+            font-size: clamp(38px, 10vw, 45px);
             color: var(--ink-black);
             letter-spacing: 1.5px;
             transform: rotate(-3deg) skewX(-6deg);
-            text-shadow: 1px 1px 1px rgba(24, 19, 14, 0.5), -1px -1px 0px rgba(255,255,255,0.2);
+            text-shadow: 1px 1px 1px rgba(24, 19, 14, 0.6), -1px -1px 0px rgba(255,255,255,0.2);
             filter: url(#dryBrushCalligraphy);
             white-space: nowrap;
         }
@@ -172,11 +169,11 @@
         }
 
         .brush-title-line2 {
-            font-family: var(--font-ink);
+            font-family: var(--font-header-ink);
             font-weight: 700;
-            font-size: clamp(30px, 8vw, 36px);
+            font-size: clamp(32px, 8.5vw, 38px);
             color: var(--ink-black);
-            text-shadow: 1px 1px 1px rgba(24, 19, 14, 0.5);
+            text-shadow: 1px 1px 1px rgba(24, 19, 14, 0.6);
             filter: url(#dryBrushCalligraphy);
             white-space: nowrap;
         }
@@ -184,7 +181,7 @@
         .seal-square-mini {
             width: 18px; height: 18px;
             background-color: var(--seal-red); border: 1px solid #59110d; border-radius: 2px;
-            color: var(--seal-cream); font-size: 7px; font-weight: 700; font-family: sans-serif;
+            color: var(--seal-cream); font-size: 6px; font-weight: 700; font-family: sans-serif;
             display: grid; grid-template-columns: 1fr 1fr; place-items: center;
             padding: 1px; margin-top: 4px; filter: url(#stoneSealFilter);
             transform: rotate(5deg);
@@ -206,8 +203,8 @@
         .stat-col:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 15%; height: 70%; width: 1px; background-color: rgba(58, 46, 34, 0.5); }
         .stat-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--ink-black); opacity: 0.85; }
         .stat-text-group { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
-        .stat-title { font-family: var(--font-body); font-size: 8.5px; font-style: italic; font-weight: 600; color: #463728; white-space: nowrap; }
-        .stat-value { font-family: var(--font-body); font-size: 10.5px; font-weight: 700; color: var(--ink-black); white-space: nowrap; }
+        .stat-title { font-family: var(--font-body); font-size: 8px; font-style: italic; font-weight: 500; color: #463728; white-space: nowrap; }
+        .stat-value { font-family: var(--font-body); font-size: 10px; font-weight: 700; color: var(--ink-black); white-space: nowrap; }
 
         /* KHU VỰC NỘI DUNG CHÍNH */
         .main-scroll-area {
@@ -231,13 +228,16 @@
 
         .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; margin-left: 5px; }
         
+        /* Tiêu đề dùng Font Thư Pháp Tangerine, tăng kích thước và dùng text-stroke */
         .section-title { 
-            font-family: var(--font-title); 
-            font-size: 28px; 
+            font-family: var(--font-calligraphy); 
+            font-size: 38px; 
             font-weight: 700; 
-            font-style: italic; 
             color: var(--ink-black); 
-            line-height: 1;
+            line-height: 0.8;
+            /* Tạo viền chữ dày như mực tàu */
+            -webkit-text-stroke: 0.5px var(--ink-black);
+            text-shadow: 1px 1px 0px rgba(24,19,14,0.3);
         }
         
         .seal-mini-red {
@@ -245,25 +245,28 @@
             border: 1px solid #59110d; border-radius: 2px; color: var(--seal-cream);
             font-size: 6px; font-weight: 700; font-family: sans-serif; display: grid; grid-template-columns: 1fr 1fr;
             place-items: center; filter: url(#stoneSealFilter); transform: rotate(-3deg);
+            margin-left: 5px;
         }
 
-        /* Nội dung chữ: Dùng font sách cổ, in nghiêng */
+        /* Nội dung chữ: Dùng font Lora (Serif), in nghiêng, nét đậm rõ ràng */
         .story-paragraphs, .tuluyen-info, .mission-list {
             padding-left: 25px; padding-right: 5px;
             font-family: var(--font-body);
-            font-size: 15.5px; 
-            font-weight: 600; 
+            font-size: 15px; 
+            font-weight: 500; 
             font-style: italic; 
-            line-height: 1.6; 
+            line-height: 1.65; 
             color: #1c1610;
         }
 
+        .mission-list { font-size: 14px; font-style: normal; }
+
         /* Thanh tiến trình */
         .progress-bar-bg {
-            width: 100%; height: 8px; background: #cbb68f; border: 1px solid var(--ink-black); border-radius: 4px; margin: 6px 0; position: relative;
+            width: 100%; height: 8px; background: #cbb68f; border: 1px solid var(--ink-black); border-radius: 4px; margin: 8px 0; position: relative;
         }
         .progress-bar-fill { height: 100%; background: var(--ink-mid); width: 35.68%; border-radius: 3px; }
-        .progress-text { position: absolute; width: 100%; text-align: center; top: -3px; font-family: sans-serif; font-size: 9px; color: var(--ink-black); font-weight: bold; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: -4px; font-family: var(--font-body); font-size: 9px; color: var(--ink-black); font-weight: bold; }
 
         /* THANH ĐIỀU HƯỚNG ĐÁY */
         .bottom-nav-bar {
@@ -283,8 +286,16 @@
         .nav-item-btn.active .ink-medallion { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(24, 19, 14, 0.3), inset 0 0 0 2px #f2e7d2, inset 0 0 0 3.5px var(--ink-black); }
         .medallion-svg { width: 80%; height: 80%; }
         
-        /* Font cho thanh điều hướng dưới */
-        .medallion-label { font-family: var(--font-title); font-size: 14px; font-weight: 700; font-style: italic; color: var(--ink-black); white-space: nowrap; }
+        /* Font cho thanh điều hướng dưới: Dùng lại font thư pháp cho đồng bộ */
+        .medallion-label { 
+            font-family: var(--font-calligraphy); 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: var(--ink-black); 
+            white-space: nowrap; 
+            -webkit-text-stroke: 0.3px var(--ink-black);
+            margin-top: -2px;
+        }
         .nav-item-btn.active .medallion-label { color: #6b1812; text-decoration: underline; text-underline-offset: 2px; }
 
     </style>
@@ -340,7 +351,6 @@
                         <path d="M-1,49.5 Q21,43 43,49.5 Q31.5,42.5 21,40.8 Q10.5,42.5 -1,49.5 Z"/>
                         <rect x="8.5" y="49.5" width="25" height="8.5" fill="#1b140e"/>
                     </g>
-                    <path d="M316,17 Q322,11 327,16 Q332,10 338,14 Q331,13 327,18 Q322,14 316,17 Z" fill="#18130e" opacity="0.6"/>
                 </svg>
 
                 <div class="seal-hong-duc">
@@ -387,7 +397,6 @@
                 <!-- CỐT TRUYỆN -->
                 <article class="section-frame">
                     <div class="section-header">
-                        <!-- Icon đám mây -->
                         <svg width="28" height="20" viewBox="0 0 38 25" fill="#18130e"><path d="M5 18.5C2.8 18.5 1.2 17 1.2 15.1C1.2 13.4 2.6 12 4.4 11.8C5 8.6 7.9 6.2 11.5 6.2C12.7 6.2 13.8 6.5 14.7 7C16.3 4 19.6 2 23.5 2C28.8 2 33.1 5.9 33.5 10.8C36.6 11.1 39 13.4 39 16.3C39 19.3 36.3 21.8 32.9 21.8H13.5C11.2 21.8 9.4 20.3 9.4 18.4C9.4 16.8 10.7 15.5 12.3 15.5C13.6 15.5 14.7 16.3 14.9 17.4" /></svg>
                         <h1 class="section-title">Cốt Truyện</h1>
                         <div class="seal-mini-red"><span>仙</span><span>缘</span></div>
@@ -402,7 +411,6 @@
                 <!-- TU LUYỆN -->
                 <article class="section-frame">
                     <div class="section-header">
-                        <!-- Icon người ngồi thiền -->
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="#18130e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
                         <h1 class="section-title">Tu Luyện</h1>
                         <div class="seal-mini-red"><span>修</span><span>炼</span></div>
@@ -423,7 +431,6 @@
                 <!-- NHIỆM VỤ -->
                 <article class="section-frame">
                     <div class="section-header">
-                        <!-- Icon cuộn giấy -->
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="#18130e"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         <h1 class="section-title">Nhiệm Vụ</h1>
                         <div class="seal-mini-red"><span>任</span><span>务</span></div>

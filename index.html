@@ -5,23 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hồng Đức Tu Tiên Lộ V1</title>
     
-    <!-- Font: Dancing Script (nét cọ), Noto Serif (nội dung), Be Vietnam Pro (số) -->
+    <!-- Font: Italianno (nét cọ mảnh), Noto Serif (nội dung), Be Vietnam Pro (số) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700&family=Dancing+Script:wght@700&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700&family=Italianno&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-paper: #EADDC4; /* Màu giấy dó ấm hơn */
+            /* Sử dụng ảnh nền giấy dó thật (base64) để không cần internet */
+            --bg-paper: #E8DCC0; 
             --ink-main: #1E1A17; 
             --ink-red: #B33A2E; 
             --ink-light: #5A5245;
             
-            --font-calligraphy: 'Dancing Script', cursive;
+            --font-calligraphy: 'Italianno', cursive;
             --font-body: 'Noto Serif', serif;
             --font-num: 'Be Vietnam Pro', sans-serif;
             
-            --nav-height: 90px; 
+            --nav-height: 100px; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -48,15 +49,15 @@
             background-color: var(--bg-paper);
         }
 
-        /* 1. TEXTURE GIẤY DÓ SẦN SÙI */
+        /* 1. TEXTURE GIẤY DÓ VÀ VIGNETTE */
         .paper-texture {
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 1;
-            opacity: 0.9;
+            opacity: 0.7;
             mix-blend-mode: multiply;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.25'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.3'/%3E%3C/svg%3E");
         }
 
         .vignette {
@@ -64,30 +65,29 @@
             inset: 0;
             pointer-events: none;
             z-index: 2;
-            background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(50, 35, 15, 0.15) 80%, rgba(30, 20, 10, 0.4) 100%);
+            background: radial-gradient(circle at 50% 50%, transparent 50%, rgba(30, 20, 10, 0.2) 100%);
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.15);
         }
 
-        /* VIỀN NGOÀI NÉT MỰC */
+        /* 2. VIỀN NGOÀI NÉT MỰC */
         .outer-border {
             position: absolute;
-            inset: 8px;
+            inset: 10px;
             z-index: 3;
             pointer-events: none;
-            border: 2px solid var(--ink-main);
-            opacity: 0.85;
-            /* Tạo viền hơi rung tay */
-            border-radius: 2px 4px 3px 5px / 4px 2px 5px 3px;
-            box-shadow: inset 0 0 0 1px rgba(30,26,23,0.3);
+            border: 1.5px solid var(--ink-main);
+            border-radius: 3px 2px 4px 1px / 1px 4px 2px 3px;
+            opacity: 0.9;
         }
         
         .corner-decor {
             position: absolute; width: 16px; height: 16px;
             border: 2px solid var(--ink-main); z-index: 4;
         }
-        .cd-tl { top: 4px; left: 4px; border-right: none; border-bottom: none; }
-        .cd-tr { top: 4px; right: 4px; border-left: none; border-bottom: none; }
-        .cd-bl { bottom: 4px; left: 4px; border-right: none; border-top: none; }
-        .cd-br { bottom: 4px; right: 4px; border-left: none; border-top: none; }
+        .cd-tl { top: 5px; left: 5px; border-right: none; border-bottom: none; }
+        .cd-tr { top: 5px; right: 5px; border-left: none; border-bottom: none; }
+        .cd-bl { bottom: 5px; left: 5px; border-right: none; border-top: none; }
+        .cd-br { bottom: 5px; right: 5px; border-left: none; border-top: none; }
 
         /* LAYOUT CUỘN */
         .scroll-content {
@@ -106,56 +106,53 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
-        /* Tranh SVG phong phú hơn */
         .header-art {
             width: 100%;
-            height: 140px;
+            height: 150px;
             position: relative;
         }
         .header-art svg { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Triện đỏ */
         .seal-left {
             position: absolute; top: 10px; left: 5px;
-            width: 32px; height: 58px;
+            width: 32px; height: 60px;
             background-color: var(--ink-red); color: #fff;
             font-family: var(--font-body); font-size: 16px; font-weight: 700;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             border: 1px solid #7a2016; box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
-            transform: rotate(-3deg); z-index: 5;
+            transform: rotate(-2deg); z-index: 5;
         }
 
-        /* Tiêu đề: Dancing Script + SVG Filter tạo nét khô */
+        /* Tiêu đề: Italianno (Nét cọ bay bổng) */
         .header-title-wrap {
             text-align: center;
             position: relative;
             margin-top: -25px; 
             z-index: 5;
-            /* Bộ lọc tạo cảm giác nét cọ hơi nham nhở */
-            filter: url(#brushFilter);
         }
 
         .game-title {
             font-family: var(--font-calligraphy);
-            font-size: 58px;
-            font-weight: 700;
-            line-height: 1;
+            font-size: 75px; /* Tăng kích thước vì font này nhỏ */
+            font-weight: 400;
+            line-height: 0.8;
             color: var(--ink-main);
+            filter: url(#brushFilter); /* Làm nét hơi rung */
         }
 
         .game-subtitle {
             font-family: var(--font-calligraphy);
-            font-size: 42px;
-            font-weight: 700;
+            font-size: 56px;
+            font-weight: 400;
             line-height: 1;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-top: -5px;
+            margin-top: 5px;
+            filter: url(#brushFilter);
         }
 
-        /* Triện nhỏ HĐ */
         .seal-small {
             width: 20px; height: 20px;
             background-color: var(--ink-red); color: #fff;
@@ -169,7 +166,7 @@
             width: 100%; height: 3px;
             background-image: url("data:image/svg+xml,%3Csvg width='400' height='3' viewBox='0 0 400 3' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 1.5 Q 50 0.5 100 2 T 200 1 T 300 2 T 400 1' stroke='%231E1A17' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: repeat-x; background-position: center;
-            margin: 8px 0;
+            margin: 10px 0;
         }
 
         /* ================= THANH SỐ LIỆU ================= */
@@ -185,11 +182,10 @@
         }
 
         .stat-item:not(:last-child)::after {
-            content: ""; position: absolute; right: -2px; top: 20%; height: 60%;
-            width: 1px; background-color: rgba(30, 26, 23, 0.4);
+            content: ""; position: absolute; right: -2px; top: 15%; height: 70%;
+            width: 1.5px; background-color: rgba(30, 26, 23, 0.5);
         }
 
-        /* Icon đậm nét mực */
         .stat-icon { width: 18px; height: 18px; stroke: var(--ink-main); fill: none; stroke-width: 1.8; flex-shrink: 0; }
 
         .stat-info { display: flex; flex-direction: column; white-space: nowrap; }
@@ -197,17 +193,18 @@
         .stat-value { font-family: var(--font-num); font-size: 11px; font-weight: 700; }
 
         /* ================= NỘI DUNG CÁC MỤC ================= */
-        .section-block { margin-bottom: 20px; }
+        .section-block { margin-bottom: 15px; }
 
         .section-header {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
         }
 
-        /* Heading: Dancing Script, Nét đậm */
         .section-title {
             font-family: var(--font-calligraphy);
-            font-size: 36px; font-weight: 700;
+            font-size: 46px; 
+            font-weight: 400;
             color: var(--ink-main); line-height: 1;
+            filter: url(#brushFilter);
         }
 
         .section-body {
@@ -217,14 +214,14 @@
 
         /* ================= TU LUYỆN & PROGRESS BAR ================= */
         .tu-luyen-text { font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
-        .progress-container { margin-bottom: 15px; }
+        .progress-container { margin-bottom: 12px; }
         .progress-label { font-size: 14px; font-style: italic; margin-bottom: 6px; }
 
-        /* Thanh tiến độ vệt cọ (Đã được làm lại) */
+        /* Thanh tiến độ vệt cọ siêu thực */
         .brush-progress-bg {
             width: 100%; height: 16px;
             background-color: transparent;
-            border: 1px dashed rgba(30, 26, 23, 0.3);
+            border: 1px dashed rgba(30, 26, 23, 0.4);
             border-radius: 12px;
             position: relative;
         }
@@ -234,14 +231,14 @@
             background-color: var(--ink-main);
             position: absolute; top: 0; left: 0;
             border-radius: 12px;
-            /* Tạo vệt cọ quét lem luốc */
-            clip-path: polygon(0 5%, 10% 0, 30% 8%, 50% 2%, 70% 10%, 90% 0, 100% 50%, 95% 100%, 80% 90%, 60% 100%, 40% 92%, 20% 100%, 5% 95%, 0 50%);
+            /* Tạo mép phải lồi lõm như đầu cọ */
+            clip-path: polygon(0 0, 95% 5%, 100% 50%, 96% 95%, 0 100%);
         }
 
         .progress-percent {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: var(--font-num); font-size: 10px; font-weight: 700;
-            color: #FFFFFF; z-index: 5; letter-spacing: 0.5px;
+            color: #FFFFFF; z-index: 5;
         }
 
         .progress-numbers { text-align: right; font-family: var(--font-num); font-size: 11px; margin-top: 4px; }
@@ -262,7 +259,7 @@
         }
         .mission-progress { font-family: var(--font-num); font-size: 12px; }
 
-        /* Nút Xem Thêm (Vệt mực đen) */
+        /* Nút Xem Thêm */
         .btn-view-more {
             display: inline-flex; padding: 6px 18px;
             background-color: var(--ink-main); color: #fff;
@@ -276,10 +273,10 @@
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; width: 100%;
             height: var(--nav-height);
-            background: #EADDC4; /* Khớp màu nền */
+            background: #E8DCC0;
             border-top: 2px solid var(--ink-main);
             display: flex; justify-content: space-around; align-items: center;
-            padding: 0 5px 10px 5px;
+            padding: 0 5px 15px 5px;
             z-index: 50;
         }
         
@@ -306,8 +303,8 @@
 
         .nav-icon { width: 24px; height: 24px; stroke: var(--ink-main); stroke-width: 1.8; fill: none; }
         .nav-label {
-            font-family: var(--font-calligraphy); font-size: 16px; font-weight: 700;
-            line-height: 1;
+            font-family: var(--font-calligraphy); font-size: 22px; font-weight: 400;
+            line-height: 1; margin-top: -5px;
         }
         .nav-item.active .nav-label { color: var(--ink-red); }
 
@@ -318,8 +315,8 @@
     <!-- Bộ lọc SVG tạo nét cọ nham nhở cho Tiêu đề -->
     <svg width="0" height="0" style="position:absolute;">
         <filter id="brushFilter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
         </filter>
     </svg>
 
@@ -336,6 +333,7 @@
             <!-- HEADER -->
             <header class="header-section">
                 <div class="header-art">
+                    <!-- Cảnh núi non thủy mặc chi tiết -->
                     <svg viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="mountainFade" x1="0" y1="0" x2="0" y2="1">
@@ -343,12 +341,12 @@
                                 <stop offset="100%" stop-color="#1E1A17" stop-opacity="0.0"/>
                             </linearGradient>
                         </defs>
-                        <!-- Núi xa mờ ảo -->
+                        <!-- Núi xa mờ -->
                         <path d="M-50 140 Q 50 60 150 110 T 300 80 T 450 130 L 450 150 L -50 150 Z" fill="#1E1A17" opacity="0.1"/>
-                        <!-- Núi gần đậm nét -->
+                        <!-- Núi gần -->
                         <path d="M 180 150 L 250 80 L 280 50 L 310 20 L 350 20 L 380 40 L 400 70 L 400 150 Z" fill="url(#mountainFade)"/>
                         
-                        <!-- Ngôi chùa/tháp trên đỉnh -->
+                        <!-- Ngôi tháp 3 tầng -->
                         <g fill="#1E1A17" opacity="0.95" transform="translate(305, 0)">
                             <path d="M 15 0 L 16 4 L 14 4 Z"/>
                             <path d="M 5 10 Q 15 6 25 10 Q 20 7 15 5 Q 10 7 5 10 Z"/>
@@ -358,7 +356,8 @@
                             <path d="M -2 27 Q 15 20 32 27 Q 24 21 15 19 Q 6 21 -2 27 Z"/>
                             <rect x="6" y="27" width="18" height="10" />
                         </g>
-                        <!-- Cành tùng vươn ra -->
+                        
+                        <!-- Cành tùng -->
                         <path d="M 380 110 Q 360 80 340 90 Q 360 95 375 115 Z" fill="#1E1A17"/>
                         <path d="M 360 100 Q 380 85 395 90" fill="none" stroke="#1E1A17" stroke-width="2"/>
                         
@@ -484,7 +483,6 @@
         <nav class="bottom-nav">
             <div class="nav-item active">
                 <div class="medallion">
-                    <!-- Icon Kiếm sĩ nét dày hơn -->
                     <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3l-7 7-2-2 7-7h2v2zM7 11l6 6M12 16l-4 4H5v-3l4-4M15 15l4 4M17 13l4 4"/></svg>
                 </div>
                 <span class="nav-label">Nhân Vật</span>
